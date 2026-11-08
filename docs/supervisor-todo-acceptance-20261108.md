@@ -1,0 +1,34 @@
+# 내 할 일 목록 관리 — 지휘자 단독 시험
+
+## 현재 상태
+
+실제 Gemini 질문 생성 완료, **사용자 답변 대기**다. Scope·기획안·작업 지시는 아직 생성하거나 승인하지 않았다. 제품 구현과 팀원 실행은 하지 않는다. 기존 재고 시험과 별도 프로젝트로 진행한다.
+
+- projectId: `supervisor-todo-acceptance-20261108`
+- [동의한 요청 및 표현/실행 경계](../examples/supervisor-todo-gemini/request.md), [설정](../examples/supervisor-todo-gemini/config.json)
+- GCP iceu-songpa11/global, Writer/Reviewer gemini-3.8-flash, ADC
+- Cloud 설정 observations_current=true / revision 1 / network enforced / 프로젝트·위치 변수 ready 확인. SDK 실제 호출 성공으로 기존 인증 사용도 확인했다.
+- 현재 상태: revision 2 / awaiting_answers / 질문 7개 / 다음 행동 answer
+- [질문 원문](acceptance/todo-20261108/questions.md), [원문 JSON](acceptance/todo-20261108/questions.json), [report](acceptance/todo-20261108/report.json), [체크포인트](acceptance/todo-20261108/runtime-checkpoint.json)
+
+## 질문 내용과 전달
+
+이용 화면, 제목 외 정보, 수정·삭제, 완료 취소, 목록 표시, 동일 제목 중복, 저장 방식이다. ‘장보기’, ‘물 마시기’, 실수로 완료 누르기 등의 예시가 있어 이전 재고 주제보다 직접 판단하기 쉽다. 채팅에서는 각 질문을 짧은 문장과 선택지로 전달했다. 원문은 수정하지 않았고 선택지에 없는 자유 답변도 가능하다. 아직 답변을 대신 만들거나 기본 선택을 제출된 답변으로 처리하지 않았다.
+
+저장 방식은 화면 형태에 따라 달라지므로 ‘세부 방식은 맡김’을 선택한 경우 사용자 조건에 맞는 제안을 Scope에 명시하고 검토받는다. Node.js CLI는 지휘자 시험 도구이며, 제품을 명령창 방식으로 정했다는 뜻은 아니다.
+
+질문 prompt에 업무 핵심 선택을 확인하도록 하는 기존 공통 지침을 사용했다. 쉬운 표현과 예시, 기술 절 분리 요구는 이번 프로젝트 입력으로 전달했으며 프레임워크 코드에 특정 주제 규칙을 추가하지 않았다.
+
+## 다음 순서
+
+1. 실제 사용자 답변을 Q-1~Q-7과 연결해 저장한다.
+2. Scope를 제안하고, 사용자 동작·포함/제외 기능·예시를 읽고 승인 또는 수정하게 한다.
+3. Scope 승인 후에만 Writer/Reviewer를 실행한다. 리뷰 이유와 수정본을 보존한다.
+4. 기획안은 사용자 동작 설명과 기술 절을 나누어 제시하고 최종 승인을 받는다.
+5. 승인 후 작업 지시 품질을 점검한다. 실제 제품 구현·팀원 연결은 하지 않는다.
+
+## 검증 및 사용량
+
+타입 검사와 전체 테스트 119개 통과. 기존 재고 프로젝트의 모든 파일 SHA-256을 전후 비교해 동일함을 확인했다. [manifest](acceptance/todo-20261108/manifest.json)에 비교 기준을 저장했다. 인증 코드·토큰·ADC 본문은 기록하지 않는다.
+
+[질문 사용량](acceptance/todo-20261108/usage.jsonl): 실제 모델 어댑터 호출 1회 성공, 입력 640 / 출력 371 / reasoning 1,102 토큰, 14,464ms. 공급자가 제공한 지표만 기록하며 비용을 추정하지 않는다. 아직 Reviewer 호출은 없다.

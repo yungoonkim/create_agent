@@ -1,0 +1,30 @@
+{
+  "projectId": "supervisor-todo-acceptance-20261108",
+  "createdAt": "2026-11-08T13:32:02.485655+00:00",
+  "config": "examples/supervisor-todo-gemini/config.json",
+  "request": "examples/supervisor-todo-gemini/request.md",
+  "gcpProject": "iceu-songpa11",
+  "location": "global",
+  "model": "gemini-3.8-flash",
+  "authentication": "ADC; values never recorded",
+  "status": "awaiting_user_answers",
+  "source": "user authorized accessible todo topic; no generated Scope or Plan approved",
+  "previousProjectFiles": {
+    ".adtf/projects/supervisor-gemini-acceptance/requirements.md": "185347f2dfd9d1319a894586ac727f47126cbc935e75258cc36ab54ad152c83e",
+    ".adtf/projects/supervisor-gemini-acceptance/supervisor/usage.jsonl": "5b5b6b1219cbc2e766b6c3524a7e6f374cec565dd7804ad9fedbfd389193d3f4",
+    ".adtf/projects/supervisor-gemini-acceptance/supervisor/state.json": "782e714dc4b836bf720df6894e48937d1618090a34333b1b1071d4651fcdbcb8",
+    ".adtf/projects/supervisor-gemini-acceptance/scope/v4.json": "ea2144d1f5e7e8c37a672255d75ff782f789253bfa3b7bd0615aee0b6ad321e0",
+    ".adtf/projects/supervisor-gemini-acceptance/planning/usage.jsonl": "846074c1893d1715446efda5870777ca2e68d24666b832d2d7e49154d5232a0e",
+    ".adtf/projects/supervisor-gemini-acceptance/planning/state.json": "f2bba8a5a893400c426c68846582b50332acb3ee122c1d915c7be788ccb300e4",
+    ".adtf/projects/supervisor-gemini-acceptance/scope/approval-links/scope-v4.json": "742054c30dab51f33216980fdda1f5fafe6aada165afb15f08ee724ae4091c10",
+    ".adtf/projects/supervisor-gemini-acceptance/planning/reviews/supervisor-gemini-acceptance-plan/v1.json": "535f535f6141b85ab7cc2ff5da163c93f64ad70bcf4229e98fa5a6be022db77c",
+    ".adtf/projects/supervisor-gemini-acceptance/planning/reviews/supervisor-gemini-acceptance-plan/v3.json": "fe7cdd134a93de941731bc06506be070d8eadbee17e15815d605e5bb485d965e",
+    ".adtf/projects/supervisor-gemini-acceptance/planning/reviews/supervisor-gemini-acceptance-plan/v2.json": "3275e4a08e140b0c05363b109ec962250ff470f44e8176e0555375ef28339cc5",
+    ".adtf/projects/supervisor-gemini-acceptance/planning/plans/supervisor-gemini-acceptance-plan/v1.json": "b12c81279ca47bdf3b407c909ec063de001499b361aabe38212ae2c34f4ac7c0",
+    ".adtf/projects/supervisor-gemini-acceptance/planning/plans/supervisor-gemini-acceptance-plan/v3.json": "9b5ee54daaea2ad31ed94bbc023091b7655db6a4773f2ec35de1cd122b16da7f",
+    ".adtf/projects/supervisor-gemini-acceptance/planning/plans/supervisor-gemini-acceptance-plan/v2.json": "fb90a45c8d4fec2342a4a84cb1424606d974fb2ac4806442b0c8acaa76ddbc6a"
+  },
+  "questions": 7,
+  "previousProjectUnchanged": true,
+  "lastObservedAt": "2026-11-08T13:33:03.745354+00:00"
+}

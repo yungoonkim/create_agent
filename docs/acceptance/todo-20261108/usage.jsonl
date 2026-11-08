@@ -1,0 +1,1 @@
+{"id":"usage-b9500b56-62e6-4f5d-b3cd-fa9eb6b540ff","projectId":"supervisor-todo-acceptance-20261108","operation":"questions","providerId":"vertex-ai","modelId":"gemini-3.8-flash","outcome":"success","durationMs":14464,"recordedAt":"2026-11-08T13:32:26.410Z","inputTokens":640,"outputTokens":371,"reasoningTokens":1102}

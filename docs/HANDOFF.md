@@ -3,6 +3,14 @@
 마지막 정리: 2026-11-08 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 새 주제 시험 — 내 할 일 목록 관리, 사용자 답변 대기
+
+사용자가 쉬운 일상 주제로 다시 시험하도록 요청했다. 재고 시험 완료 결과는 아래에 보존한다. 새 projectId는 `supervisor-todo-acceptance-20261108`, [설정](../examples/supervisor-todo-gemini/config.json), [원문](../examples/supervisor-todo-gemini/request.md), [진행 기록](supervisor-todo-acceptance-20261108.md)이다. 같은 `.adtf` 안의 별도 프로젝트로 기록하며 기존 재고 프로젝트는 바이트 단위로 그대로다.
+
+현재 revision 2 / awaiting_answers, 실제 Gemini 질문 7개 생성 완료. 채팅 선택지로 사용자에게 질문했고 **답변은 아직 없다**. [질문 원문](acceptance/todo-20261108/questions.md), [실행 체크포인트](acceptance/todo-20261108/runtime-checkpoint.json)를 보존했다. questions/start를 중복 실행하지 않는다. 다음은 실제 사용자 답변을 Q-1~Q-7에 매핑해 기록하고 Scope를 제안하는 단계다. 생성된 Scope와 최종 기획안은 각각 사용자 검토·승인을 받아야 한다. 제품 구현·팀원 실행은 보류하며, 사용자용 설명을 쉬운 말과 예시 중심으로 쓰고 기술 절을 분리한다. Node CLI는 시험 도구이며 계획할 제품의 화면 선택을 미리 확정하지 않는다.
+
+기존 ADC로 질문 호출 성공, GCP iceu-songpa11/global / gemini-3.8-flash 유지. 타입 검사 및 전체 119개 테스트 통과. 파일/토큰 값을 출력하지 않는다. 새 시험은 아직 진행 중이므로 재고 주제의 인수 완료 판정을 새 주제에 적용하지 않는다.
+
 ## 최신 상태 — 지휘자 단독 대표 인수 완료
 
 - 브랜치 `docs/supervisor-only-acceptance`. 구현 체크포인트 `3fef309`, typecheck 및 **119개 테스트** 통과. [최종 인수 보고서](supervisor-final-acceptance-20261108.md)를 우선한다.
