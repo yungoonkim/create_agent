@@ -38,6 +38,14 @@ Review는 `scopeContractId`와 `scopeVersion`을 명시적으로 포함한다. �
 설정은 JSON이며 `providerId`는 이번 단계에서 `fake`만 허용한다. 실제 Provider를 지정하면 실행 전에 오류를 낸다. `requireUserApproval`은 반드시 `true`여야 한다. 설정의 메모리 디렉터리와 CLI 입력 파일 경로는 프로젝트 루트 안으로 제한한다.
 외부 JSON의 평면 `providerId`/`modelId`는 내부 `PlanningRoleConfig.model`로 변환하며 Writer/Reviewer의 모델과 페르소나는 독립적으로 유지한다.
 
+## Vertex AI Gemini 라이브 실행
+
+라이브 실행은 별도 `planning:gemini` 명령으로 수행한다. 설정은 `providerId: "vertex-ai"`를 요구하고, Vertex AI 프로젝트는 `GOOGLE_CLOUD_PROJECT`, 위치는 `GOOGLE_CLOUD_LOCATION`에서 읽는다. 위치를 지정하지 않으면 `global`을 사용한다. 기본 예제는 Writer와 Reviewer 모두 `gemini-3.8-flash`를 선택한다.
+
+라이브 CLI는 모델 호출 전에 `CALL` 확인을 받고, 아직 승인 기록이 없는 Scope는 별도 문구로 승인을 기록한다. Reviewer의 통과는 최종 Plan 승인이 아니며, Controller는 최종 사용자 승인을 pending으로 남긴다. API 오류와 토큰 사용량은 로컬 Planning 메모리에 기록한다. ADC 자격 증명 파일을 저장소나 `.adtf`에 복사하지 않는다.
+
+로컬 실행 준비와 명령은 README의 **Gemini Planning (로컬 PC)** 항목을 따른다. 오프라인 데모는 기존 Fake 어댑터만 사용하고 외부 요청을 보내지 않는다.
+
 ```sh
 npm run planning:demo
 ```

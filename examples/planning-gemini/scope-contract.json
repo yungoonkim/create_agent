@@ -1,0 +1,31 @@
+{
+  "id": "planning-gemini-scope",
+  "projectId": "planning-gemini-sample",
+  "version": 1,
+  "goal": "Prepare an actionable plan for the approved requirements.",
+  "requiredFeatures": [
+    {
+      "id": "REQ-PLAN-001",
+      "statement": "Create a versioned plan with observable acceptance criteria."
+    },
+    {
+      "id": "REQ-PLAN-002",
+      "statement": "Review the plan and stop for separate user approval."
+    }
+  ],
+  "excludedFeatures": [
+    {
+      "id": "EX-PLAN-001",
+      "statement": "Do not execute implementation tasks from the planning run."
+    },
+    {
+      "id": "EX-PLAN-002",
+      "statement": "Do not grant final plan approval automatically."
+    }
+  ],
+  "technicalConstraints": [
+    "TypeScript strict mode",
+    "Project-local JSON memory"
+  ],
+  "createdAt": "2026-11-08T00:00:00.000Z"
+}

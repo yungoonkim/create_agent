@@ -36,13 +36,17 @@ export type { PlanningLoopControllerOptions, PlanningRunInput, PlanningRunResult
 export { FilePlanningMemoryStore } from "./memory-store.js";
 export { FakePlanningReviewer } from "./fake-reviewer.js";
 export { FakePlanningWriter } from "./fake-writer.js";
+export { GeminiPlanningReviewer, GeminiPlanningWriter, createVertexAiClient } from "./google-genai.js";
+export type { VertexAiClientOptions } from "./google-genai.js";
 export {
   assertSafeProjectId,
   assertSafeStorageId,
   loadPlanningConfig,
+  loadLivePlanningConfig,
   parseDemoApprovalFixture,
   parsePlanningConfig,
+  parseLivePlanningConfig,
   parseScopeContract,
   resolveProjectPath,
 } from "./config.js";
-export type { DemoApprovalFixture, FakeReviewScenario, OfflinePlanningConfig } from "./config.js";
+export type { DemoApprovalFixture, FakeReviewScenario, LivePlanningConfig, OfflinePlanningConfig } from "./config.js";

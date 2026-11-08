@@ -97,3 +97,10 @@
 - 결정: Review에 Scope ID/버전을 명시하고 공통 파서와 참조 검증을 Controller와 파일 저장소에서 재사용한다. 잘못된 필드·프로젝트·Plan/Scope 참조·중복 버전은 정식 Review로 저장하지 않는다. Controller는 별도 오류 로그와 실패 상태를 남긴다.
 - 이유: 존재하지 않는 Plan 버전이나 다른 프로젝트에 대한 응답을 정상 검토 이력에 포함하지 않기 위함이다. 품질 이슈나 Scope 변경 제안이 포함된 유효한 Review는 기존 정책 판단을 위해 보존한다.
 - 결과: Scope 필드가 없는 과거 Review는 자동 변환하지 않고 읽기 검증에서 거부한다. 오류 기록 타입과 `appendError`는 Planning 계약에 두며 Core의 `MemoryEvent`를 재사용한다. 외부 JSON 역할 설정은 내부 `PlanningRoleConfig.model`로 변환한다.
+
+## D-017 — STEP 2B의 Gemini 인증은 Vertex AI ADC 사용
+
+- 상태: 채택
+- 결정: 로컬 PC에서 실행하는 Gemini 모델 호출은 Vertex AI와 Google Gen AI SDK (`@google/genai`)로 구현하고, 자격 증명은 Application Default Credentials (ADC)에서 읽는다. GCP 프로젝트와 위치는 환경 변수, 모델 ID는 역할별 설정으로 받는다. Writer와 Reviewer는 초기 설정에서 `gemini-3.8-flash`를 사용한다.
+- 이유: API 키나 개인 자격 증명을 소스코드/저장소에 저장하지 않고, 개발 및 실행 환경의 ADC 공급 방식을 활용한다.
+- 결과: Writer와 Reviewer는 독립 모델 설정을 유지한다. 로컬 실사용 호출 전 ADC 및 GCP 프로젝트 접근 권한을 구성하고 확인해야 한다.

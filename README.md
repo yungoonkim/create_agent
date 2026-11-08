@@ -25,6 +25,19 @@ npm run planning:demo
 `npm test`는 TypeScript를 빌드한 뒤 Node 내장 테스트 러너로 핵심 계약을 확인한다. 생성 파일은 `dist/`에 저장된다.
 `npm run planning:demo`는 샘플 승인 fixture를 이용해 오프라인 개선 루프를 실행한다. fixture의 Scope 승인은 실제 사용자 승인이 아니며, 데모는 최종 Plan 승인을 pending 상태로 남긴다. 메모리는 `.adtf/projects/planning-demo/`에 저장되고 기존 실행 상태가 있으면 자동으로 덮어쓰지 않고 중단한다.
 
+## Gemini Planning (로컬 PC)
+
+라이브 실행은 Vertex AI의 Gemini 3.8 Flash를 사용하고 Google Gen AI SDK가 로컬 ADC 자격 증명을 찾도록 한다. ADC 파일이나 토큰을 저장소에 복사하지 않는다.
+
+```sh
+gcloud auth application-default login
+export GOOGLE_CLOUD_PROJECT="your-gcp-project-id"
+export GOOGLE_CLOUD_LOCATION="global"
+npm run planning:gemini -- --config examples/planning-gemini/config.json --scope examples/planning-gemini/scope-contract.json --requirements examples/planning-gemini/requirements.md
+```
+
+실행 명령은 실제 Scope 승인을 기록하고 모델 요청에 Google Cloud 사용량이 발생할 수 있음을 알린다. 모델을 호출하기 전에 `CALL`을 입력해야 하며, 검토 통과 후에도 최종 Plan 승인은 별도로 남는다. 데모 경로는 계속 오프라인이고 실제 API를 호출하지 않는다.
+
 ## 문서
 
 - [아키텍처](docs/architecture.md)
