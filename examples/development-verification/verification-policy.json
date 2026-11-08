@@ -1,0 +1,15 @@
+{
+  "commands": {
+    "typecheck": {
+      "executable": "node",
+      "args": ["node_modules/typescript/bin/tsc", "--noEmit", "-p", "tsconfig.json"],
+      "timeoutMs": 30000
+    },
+    "test": {
+      "executable": "node",
+      "args": ["--test", "test/feature.test.js"],
+      "timeoutMs": 30000
+    }
+  },
+  "outputLimitBytes": 16384
+}

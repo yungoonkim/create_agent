@@ -15,10 +15,23 @@ import type {
 } from "./contracts.js";
 import { canTransitionPlanningState, decideAfterReview, validatePlanReview } from "./policy.js";
 import type { LivePlanningConfig, OfflinePlanningConfig } from "./config.js";
+import { assertSafeStorageId } from "./config.js";
+import { isDeepStrictEqual } from "node:util";
+
+export interface PlanningResumeAuthorization {
+  readonly id: string;
+  readonly planId: string;
+  readonly expectedState: PlanningLoopState;
+  readonly kind: "answers" | "scope_change";
+  readonly scopeChangeRequestId?: string;
+  readonly scopeChangeDecision?: "approved" | "rejected";
+}
 
 export interface PlanningRunInput {
   readonly requirements: string;
   readonly scopeContract: ScopeContract;
+  /** Persisted clarification answers supplied by the supervisor; never replace original requirements. */
+  readonly clarificationDecisions?: readonly string[];
 }
 
 export interface PlanningRunResult {
@@ -44,14 +57,30 @@ export class PlanningLoopController {
   }
 
   async run(input: PlanningRunInput): Promise<PlanningRunResult> {
+    return this.execute(input);
+  }
+
+  async resume(input: PlanningRunInput, authorization: PlanningResumeAuthorization): Promise<PlanningRunResult> {
+    return this.execute(input, authorization);
+  }
+
+  private async execute(input: PlanningRunInput, authorization?: PlanningResumeAuthorization): Promise<PlanningRunResult> {
     const { config, memory } = this.options;
     const projectId = config.projectId;
     let lastState: PlanningLoopState | undefined;
     let operation = "validate";
     try {
       const state = await memory.getPlanningLoopState(projectId);
-      if (state !== undefined) {
+      if (state !== undefined && authorization === undefined) {
         throw new Error(`A previous run is ${state.status}; automatic resume is not supported. State was preserved.`);
+      }
+      let currentPlan: PlanDraft | undefined;
+      let previousReview: PlanReview | undefined;
+      let iterationCount = 0;
+      if (authorization !== undefined) {
+        if (state === undefined) throw new Error("No Planning state to resume.");
+        ({ plan: currentPlan, review: previousReview } = await this.validateResume(input, authorization, state));
+        iterationCount = state.iterationCount;
       }
 
       operation = "load original requirements";
@@ -60,7 +89,10 @@ export class PlanningLoopController {
       else if (storedRequirements !== input.requirements) {
         throw new Error("Original requirements differ from the project memory; create an approved Scope change first.");
       }
-      const settledDecisions = await memory.getSettledDecisions(projectId);
+      const settledDecisions = [
+        ...await memory.getSettledDecisions(projectId),
+        ...(input.clarificationDecisions ?? []),
+      ];
 
       operation = "load approved Scope";
       const scope = input.scopeContract;
@@ -90,16 +122,14 @@ export class PlanningLoopController {
         projectId,
         scopeContractId: scope.id,
         scopeVersion: scope.version,
-        iterationCount: 0,
+        iterationCount,
         maxIterations: config.planning.maxIterations,
         status: "drafting",
+        ...(authorization === undefined ? {} : { continuationId: authorization.id, currentPlanVersion: currentPlan!.version }),
       };
+      if (authorization !== undefined) this.stateFor(state, initialState);
       await memory.savePlanningLoopState(initialState);
       lastState = initialState;
-
-      let currentPlan: PlanDraft | undefined;
-      let previousReview: PlanReview | undefined;
-      let iterationCount = 0;
 
       while (true) {
         operation = "call Writer";
@@ -120,7 +150,7 @@ export class PlanningLoopController {
         currentPlan = nextPlan;
         this.log(`[Memory] Plan v${currentPlan.version} 저장`);
         const reviewingState = this.stateFor(lastState, {
-          ...this.stateBase(scope, iterationCount),
+          ...this.stateBase(scope, iterationCount, lastState.continuationId),
           status: "reviewing",
           currentPlanVersion: currentPlan.version,
         });
@@ -155,7 +185,7 @@ export class PlanningLoopController {
             lastState: reviewingState,
           });
           const failedState = this.stateFor(lastState, {
-            ...this.stateBase(scope, iterationCount),
+            ...this.stateBase(scope, iterationCount, lastState.continuationId),
             status: "failed",
             currentPlanVersion: currentPlan.version,
             reason,
@@ -211,7 +241,7 @@ export class PlanningLoopController {
     previousState: PlanningLoopState,
   ): Promise<PlanningRunResult> {
     const { config, memory } = this.options;
-    const base = this.stateBase(scope, iterationCount);
+    const base = this.stateBase(scope, iterationCount, previousState.continuationId);
     switch (decision.type) {
       case "REVISE": {
         const state = this.stateFor(previousState, {
@@ -311,14 +341,54 @@ export class PlanningLoopController {
     }
   }
 
-  private stateBase(scope: ScopeContract, iterationCount: number): Pick<PlanningLoopState, "projectId" | "scopeContractId" | "scopeVersion" | "iterationCount" | "maxIterations"> {
+  private stateBase(scope: ScopeContract, iterationCount: number, continuationId?: string): Pick<PlanningLoopState, "projectId" | "scopeContractId" | "scopeVersion" | "iterationCount" | "maxIterations" | "continuationId"> {
     return {
       projectId: scope.projectId,
       scopeContractId: scope.id,
       scopeVersion: scope.version,
       iterationCount,
       maxIterations: this.options.config.planning.maxIterations,
+      ...(continuationId === undefined ? {} : { continuationId }),
     };
+  }
+
+  private async validateResume(input: PlanningRunInput, authorization: PlanningResumeAuthorization, state: PlanningLoopState): Promise<{ plan: PlanDraft; review: PlanReview }> {
+    const { memory, config } = this.options;
+    assertSafeStorageId(authorization.id, "Continuation ID");
+    assertSafeStorageId(authorization.planId, "Plan ID");
+    if (!isDeepStrictEqual(state, authorization.expectedState) || state.projectId !== config.projectId ||
+        state.currentPlanVersion === undefined || state.maxIterations !== config.planning.maxIterations || state.iterationCount >= state.maxIterations) {
+      throw new Error("Resume source is stale, incompatible, or its iteration budget is exhausted.");
+    }
+    const plan = await memory.getPlanDraft(config.projectId, authorization.planId, state.currentPlanVersion);
+    const scope = await memory.getScopeContract(config.projectId, state.scopeVersion);
+    const review = await memory.getPlanReview(config.projectId, authorization.planId, state.currentPlanVersion);
+    if (plan === undefined || scope === undefined || review === undefined || scope.id !== state.scopeContractId || plan.scopeContractId !== scope.id || plan.scopeVersion !== scope.version) throw new Error("Resume source snapshots are missing or mismatched.");
+    validatePlanReview(review, plan, scope);
+    if ((state.status === "awaiting_user_input" || state.status === "awaiting_approval") && state.reviewId !== review.id) throw new Error("Resume Review does not match the current state.");
+    if (state.status === "awaiting_approval" || state.status === "user_approved") {
+      const finalApproval = await memory.get(state.approvalId);
+      if (finalApproval?.projectId !== config.projectId || finalApproval.subject !== `Approve plan ${plan.id} v${plan.version}` ||
+          (state.status === "user_approved" ? finalApproval.status !== "approved" : !["pending", "approved"].includes(finalApproval.status)) ||
+          decideAfterReview({ review, currentPlan: plan, approvedScope: scope, iterationCount: state.iterationCount, maxIterations: state.maxIterations }).type !== "REQUEST_USER_APPROVAL") throw new Error("Base Plan approval is invalid.");
+    }
+    const link = await memory.getScopeApprovalRecord(config.projectId, scope.id);
+    const approval = link === undefined ? undefined : await memory.get(link.approvalId);
+    if (approval?.status !== "approved" || approval.projectId !== config.projectId || approval.subject !== `Scope Contract ${scope.id} v${scope.version}` || approval.rationale?.startsWith("DEMO FIXTURE:") === true) throw new Error("Resume requires a real approved base Scope.");
+    if (authorization.kind === "answers") {
+      if (state.status !== "awaiting_user_input" || state.reviewId !== review.id || scopeSnapshotKey(scope) !== scopeSnapshotKey(input.scopeContract) ||
+          input.clarificationDecisions === undefined || input.clarificationDecisions.length === 0 || input.clarificationDecisions.some((item) => typeof item !== "string" || item.trim().length === 0)) throw new Error("User answers and unchanged approved Scope are required.");
+    } else {
+      if (!["awaiting_user_input", "awaiting_scope_change_approval", "awaiting_approval", "user_approved"].includes(state.status) || authorization.scopeChangeRequestId === undefined || authorization.scopeChangeDecision === undefined) throw new Error("Scope change cannot resume this Planning state.");
+      const request = await memory.getScopeChangeRequest(config.projectId, authorization.scopeChangeRequestId);
+      const decision = request === undefined ? undefined : await memory.get(request.approvalId);
+      if (request === undefined || request.baseScopeContractId !== scope.id || request.baseScopeVersion !== scope.version || decision?.status !== authorization.scopeChangeDecision || decision.projectId !== config.projectId || decision.subject !== `Scope change for plan ${plan.id} v${plan.version}` ||
+          (state.status === "awaiting_scope_change_approval" && state.changeRequestId !== request.id)) throw new Error("Scope change decision does not match the source.");
+      if (authorization.scopeChangeDecision === "approved") {
+        if (input.scopeContract.version <= scope.version || input.scopeContract.id === scope.id) throw new Error("Approved Scope change requires a new higher version.");
+      } else if (state.status !== "awaiting_scope_change_approval" || scopeSnapshotKey(scope) !== scopeSnapshotKey(input.scopeContract)) throw new Error("Rejected change must revise under the original Scope.");
+    }
+    return { plan, review };
   }
 
   private stateFor(previous: PlanningLoopState | undefined, next: PlanningLoopState): PlanningLoopState {

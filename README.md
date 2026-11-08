@@ -1,6 +1,6 @@
 # ADTF — Agent Development Team Framework
 
-ADTF는 여러 AI Agent를 하나의 개발팀으로 조율하기 위한 재사용 가능한 프레임워크다. 현재는 오프라인 Fake Writer/Reviewer로 총괄 PM의 Planning Loop를 실행하고 로컬 파일에 결과를 남긴다. 외부 LLM이나 Agent Runtime은 호출하지 않는다.
+ADTF는 여러 AI Agent를 하나의 개발팀으로 조율하기 위한 재사용 가능한 프레임워크다. 오프라인 Fake 및 Gemini 기반 Planning, 승인 기획의 수동 개발 작업 관리, 선택형 파일·명령 검증과 재작업 정책을 제공한다. 지휘자 겸 기획자 하나를 먼저 완성하고 이후 팀원 Agent를 순차 연결한다.
 
 ## 현재 상태
 
@@ -9,7 +9,11 @@ ADTF는 여러 AI Agent를 하나의 개발팀으로 조율하기 위한 재사�
 - Runtime과 LLM Provider/Model을 분리하고, Core는 특정 SDK에 종속되지 않는다.
 - 프로젝트별 로컬 JSON 메모리, Fake Writer/Reviewer, Planning Controller, 오프라인 CLI 데모를 제공한다.
 - 사용자 승인된 Scope와 최종 기획안 승인을 구분하며, 검토/계획 버전 이력을 보존한다.
-- 실제 LLM/Runtime 연동과 Development Loop는 후속 단계다.
+- Gemini Writer/Reviewer와 실제 Scope 승인 CLI, 기획안 최종 승인 및 수동 Development Loop를 제공한다.
+- 검증 프로필 작업은 파일 해시·실제 검사 결과를 수집하고 시도·재작업 한도를 관리한다. 객관적 검사 후 최종 완료 조건은 별도로 검수한다.
+- 지휘자 기본 통합 CLI로 원문·질문 답변·Scope 제안·개별 승인·기획·작업 분해·지시서·진행 보고를 연결한다.
+- 기획 중 추가 답변·Scope 변경 승인/거절 후 명시적 재개를 지원하며 원문·기획 버전·총 반복 한도를 보존한다.
+- 실제 모델 기획 품질 인수, Worker Runtime 자동 실행 및 무인 재작업 루프는 후속 단계다.
 
 ## 개발
 
@@ -38,11 +42,40 @@ npm run planning:gemini -- --config examples/planning-gemini/config.json --scope
 
 실행 명령은 실제 Scope 승인을 기록하고 모델 요청에 Google Cloud 사용량이 발생할 수 있음을 알린다. 모델을 호출하기 전에 `CALL`을 입력해야 하며, 검토 통과 후에도 최종 Plan 승인은 별도로 남는다. 데모 경로는 계속 오프라인이고 실제 API를 호출하지 않는다.
 
+## 지휘자 기본 통합 (STEP 5A)
+
+```sh
+npm run supervisor -- start --config examples/supervisor-demo/config.json --file examples/supervisor-demo/request.md
+npm run supervisor -- questions --config examples/supervisor-demo/config.json --fixture examples/supervisor-demo/fixture.json
+npm run supervisor -- report --config examples/supervisor-demo/config.json
+```
+
+예제는 TEST/STUB이며 실제 Gemini를 호출하지 않는다. 답변 → Scope 제안·승인 → 기획·최종 승인 → 작업 제안·수락으로 이어가는 전체 명령과 실제 Gemini 설정은 [지휘자 통합 사용법](docs/supervisor-workflow.md)에 정리했다. 자동 승인이나 실제 Worker 실행은 수행하지 않는다.
+
+## 수동 개발 작업 관리
+
+최종 기획안 승인을 기록한 후 작업을 생성할 수 있다. 다음 명령은 LLM API를 호출하지 않는다. 기획안 ID와 버전은 실제 Planning 메모리의 값을 사용한다.
+
+```sh
+npm run development -- plan-approve --config examples/planning-gemini/config.json --plan planning-gemini-sample-plan --reason "기획안 검토 완료"
+npm run development -- init --config examples/planning-gemini/config.json --plan planning-gemini-sample-plan --file examples/development-manual/tasks.json
+npm run development -- list --config examples/planning-gemini/config.json
+```
+
+작업 정의 예제를 승인 기획에 맞게 수정한 뒤 `init`을 실행한다. `plan-approve`는 기획안 본문을 표시하고 해당 버전의 승인 문구를 입력받는다. 이 명령을 실행했다고 다른 기획안이 함께 승인되지는 않는다. 담당자 지정·결과 제출·수동 검수 명령은 [Development Loop](docs/development-loop.md)에 설명되어 있다.
+
 ## 문서
 
+- [처음 읽는 총괄 PM·슈퍼바이저 안내서](docs/supervisor-guide.md)
+- [지휘자 테스트 주제·절차·실행 보고서 양식](docs/supervisor-test-plan.md)
+- [지휘자 통합 CLI 사용법](docs/supervisor-workflow.md)
+- [STEP 5A 구현·검증 보고서](docs/step5a-report.md)
+- [STEP 5B 재개·변경 승인 검증 보고서](docs/step5b-report.md)
 - [아키텍처](docs/architecture.md)
 - [PM Agent 명세](docs/pm-agent-spec.md)
 - [Planning Loop](docs/planning-loop.md)
 - [Development Loop](docs/development-loop.md)
+- [검증 근거 수집과 재작업 정책](docs/verification.md)
+- [STEP 4 구현·검증 보고서](docs/step4-report.md)
 - [로드맵](docs/roadmap.md)
 - [설계 결정](docs/decisions.md)

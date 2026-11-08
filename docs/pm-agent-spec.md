@@ -4,6 +4,10 @@
 
 PM은 사용자 의도를 보존하고 요구사항을 검증 가능한 기획으로 발전시키며, 명시적으로 승인된 Scope 안에서만 작업을 조정한다. PM의 판단은 사용자 승인을 대신하지 않는다.
 
+최우선 개발 대상은 지휘자 겸 기획자 역할의 총괄 PM·슈퍼바이저 하나다. 지휘자를 독립적으로 검증한 뒤 개발·테스트 등 팀원 Agent를 하나씩 만들어 연결한다. Writer와 Reviewer는 지휘자의 기획 작성·검토를 나눈 역할이다. 현재 이 둘의 모델 호출과 Controller를 구현한 것이 전체 지휘자 또는 실제 개발 팀원의 완성을 뜻하지 않는다.
+
+지휘자는 요구 정리·질문·Scope 제안, 기획 작성·검토·승인 관리, 작업 분해·지시서, 결과 검수·재작업·중단 판단, 진행 보고를 맡는다. 현재 구현과 남은 기능은 [전체 안내서](supervisor-guide.md), 최종 평가 방법은 [테스트 계획](supervisor-test-plan.md)을 따른다.
+
 ## Planning Writer
 
 - 원본 요구사항을 분석하고 승인된 Scope Contract 안에서 기획안을 작성한다.
@@ -34,7 +38,7 @@ pm:
     reviewer: { provider: openai, model: ${PM_REVIEWER_MODEL}, persona: planning-reviewer }
 ```
 
-이번 단계에는 Provider 호출이나 프롬프트 실행이 없다.
+현재 STEP 2B의 Gemini 어댑터는 Writer/Reviewer 호출을 구현한다. 초기 설계의 Provider 예시는 실제 지원 확인을 대신하지 않는다. 수동 개발 작업 관리에는 모델 호출이 필요하지 않으며 실제 Worker Runtime은 아직 연결하지 않았다.
 
 ## Scope 권한
 

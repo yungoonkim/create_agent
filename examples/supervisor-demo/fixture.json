@@ -1,0 +1,33 @@
+{
+  "label": "TEST/STUB",
+  "questions": ["어떤 단위로 재고를 관리하고 어디에 저장할까요?", "유통기한 날짜 기준과 제외할 기능은 무엇인가요?"],
+  "scope": {
+    "goal": "TEST/STUB: 로트별 재고와 만료 목록 CLI 기획",
+    "requiredFeatures": [
+      { "id": "REQ-1", "statement": "로트별 수량과 유통기한을 로컬 JSON으로 보관한다." },
+      { "id": "REQ-2", "statement": "오늘까지 만료된 로트를 목록으로 표시한다." }
+    ],
+    "excludedFeatures": [{ "id": "EX-1", "statement": "웹, 로그인, 결제, 외부 API 연동" }],
+    "technicalConstraints": ["Node.js CLI", "프로젝트별 로컬 JSON"]
+  },
+  "orders": [
+    {
+      "requirementIds": ["REQ-1"],
+      "task": {
+        "id": "storage", "title": "로트 저장 설계", "description": "TEST/STUB: 저장 형식과 수량 검증 규칙을 문서로 제안한다.",
+        "dependsOn": [], "expectedArtifacts": ["storage-design.md"],
+        "acceptanceCriteria": ["로트 식별자, 수량, 유통기한 필드를 정의한다.", "수량 오류 처리 규칙을 명시한다."],
+        "verificationMethod": "문서 검수; 실제 제품 구현 검증은 후속 Worker 연결 이후"
+      }
+    },
+    {
+      "requirementIds": ["REQ-2"],
+      "task": {
+        "id": "expiry", "title": "만료 조회 설계", "description": "TEST/STUB: 승인된 저장 형식을 바탕으로 만료 목록과 날짜 경계 예시를 제안한다.",
+        "dependsOn": ["storage"], "expectedArtifacts": ["expiry-design.md"],
+        "acceptanceCriteria": ["오늘 만료와 내일 만료를 구분하는 예시를 제시한다."],
+        "verificationMethod": "날짜 예시 수동 검수; 실제 제품 구현 검증은 후속 Worker 연결 이후"
+      }
+    }
+  ]
+}

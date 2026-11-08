@@ -32,7 +32,7 @@ export type { ScopeComparison } from "./policy.js";
 export { canTransitionPlanningState, compareScopeContracts, decideAfterReview, parsePlanReview, validatePlanReview, ReviewValidationError } from "./policy.js";
 export type { ReviewValidationErrorCode } from "./policy.js";
 export { PlanningLoopController } from "./controller.js";
-export type { PlanningLoopControllerOptions, PlanningRunInput, PlanningRunResult } from "./controller.js";
+export type { PlanningLoopControllerOptions, PlanningRunInput, PlanningRunResult, PlanningResumeAuthorization } from "./controller.js";
 export { FilePlanningMemoryStore } from "./memory-store.js";
 export { FakePlanningReviewer } from "./fake-reviewer.js";
 export { FakePlanningWriter } from "./fake-writer.js";
