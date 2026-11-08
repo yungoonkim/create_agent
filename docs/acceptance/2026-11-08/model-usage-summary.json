@@ -1,0 +1,15 @@
+{
+  "adapterCalls": 21,
+  "success": 20,
+  "failure": 1,
+  "copiedLedgerRowsDeduplicated": 4,
+  "providedTokens": {
+    "inputTokens": 137489,
+    "outputTokens": 38749,
+    "reasoningTokens": 16901
+  },
+  "durationMs": 410995,
+  "reviewerCalls": 6,
+  "reviewerRevisionRequests": 1,
+  "note": "Only provider-reported token fields are summed. Missing metrics are not estimated; adapter invocations are not billing/HTTP retry counts."
+}

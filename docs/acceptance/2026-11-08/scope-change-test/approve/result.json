@@ -1,0 +1,11 @@
+{
+  "branch": "approve",
+  "scopeVersion": 5,
+  "planVersion": 3,
+  "planningStatus": "awaiting_approval",
+  "iterations": 3,
+  "maxIterations": 5,
+  "oldScopePlanReviewPreserved": true,
+  "noTasksOrAgentRuntime": true,
+  "finalPlanUserApprovalRecorded": false
+}

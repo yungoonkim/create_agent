@@ -1,0 +1,34 @@
+{
+  "id": "review-1",
+  "projectId": "supervisor-gemini-acceptance",
+  "planId": "supervisor-gemini-acceptance-plan",
+  "planVersion": 1,
+  "scopeContractId": "scope-v4",
+  "scopeVersion": 4,
+  "outcome": "revise",
+  "issues": [
+    {
+      "id": "issue-5fd99cccfff946a2",
+      "kind": "omission",
+      "severity": "major",
+      "description": "JSON 영속 데이터 로드 시 개별 Lot 필드 검증만 기술되어 있고, 컬렉션 전체 수준의 불변식인 lotId 고유성(저장 파일 내 중복 lotId 존재 여부)에 대한 검증 명세가 누락되어 있습니다.",
+      "suggestedDirection": "저장소 계층의 JSON 로드 및 검증 단계에 파일 내 중복된 lotId가 발견될 경우 데이터 손상으로 간주하여 로드를 거부하고 기존 파일을 보존하는 컬렉션 불변식 검증 규칙을 추가하십시오.",
+      "relatedRequirementId": "REQ-05"
+    },
+    {
+      "id": "issue-1ee5fffc5a7532c3",
+      "kind": "implementation_risk",
+      "severity": "major",
+      "description": "원자적 영속화 설계에서 커밋(rename) 전후의 장애 경계, 프로세스 비정상 종료(SIGKILL, 전원 차단 등) 시 정리(cleanup) 루틴 미수행으로 인한 고아 임시 파일 발생 가능성 및 보장 한계 규정이 구체화되지 않았습니다.",
+      "suggestedDirection": "커밋 전후 실패 상황별 동작, 비정상 강제 종료로 cleanup이 실패했을 때 잔류하는 임시 파일의 처리 정책(예: 초기 기동 시 또는 저장 시 오래된 고아 임시 파일 정리), 그리고 원자적 보장의 명시적 한계를 기획안에 추가하십시오.",
+      "relatedRequirementId": "REQ-05"
+    }
+  ],
+  "suggestions": [
+    "저장된 JSON 로드 시 컬렉션 차원의 lotId 중복 검증 로직을 스키마 검증 절차에 반영하세요.",
+    "임시 파일 생성 후 rename 전 비정상 종료 시 남겨질 수 있는 고아 임시 파일의 라이프사이클 및 정리 방안을 명시하세요."
+  ],
+  "scopeViolation": false,
+  "userJudgmentRequired": false,
+  "reviewedAt": "2026-11-08T12:20:14.271Z"
+}

@@ -6,5 +6,7 @@
   "sourcePlanVersion": 2,
   "primaryUnchanged": true,
   "primaryHash": "782e714dc4b836bf720df6894e48937d1618090a34333b1b1071d4651fcdbcb8",
-  "userDecision": "pending"
+  "userDecision": "approved to run both isolated approve/reject branches",
+  "executionStatus": "completed",
+  "primaryAdoption": false
 }

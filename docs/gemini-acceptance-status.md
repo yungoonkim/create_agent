@@ -1,8 +1,8 @@
 # 실제 Gemini 기획 품질 인수 — 실행 현황
 
-## 최신 상태: primary 기획 승인 완료, 격리 Scope 변경 시험 결정 대기
+## 최신 상태: 지휘자 단독 대표 인수 완료
 
-primary Scope v4/Plan v3은 사용자가 승인했다. 실제 작업 지시 5개를 두 번 수정해 CLI 상세·수량 제약·선행 빌드 설정을 점검했다. 실제 승인 출처의 격리 TEST/STUB 실패 정책 시험을 수행했고, 독립 모델 재현은 Writer v1 → Reviewer 수정 요청 1회 → Writer v2 → Reviewer pass였다. primary는 그대로이며 제품/팀원 실행 없음이다. typecheck 및 전체 119개 테스트 통과. 현재 [시험용 Scope v5](acceptance/2026-11-08/scope-change-test/proposal.md)의 승인·거절 두 격리 분기 실행을 허용할지 사용자 결정을 기다린다. [최신 보고서](supervisor-work-orders-acceptance-20261108.md)를 우선한다. 아래는 시점별 준비 이력이다.
+primary Scope v4/Plan v3은 사용자가 승인했다. 실제 작업 지시 5개를 두 번 수정해 점검했고, 격리 실패 정책·독립 Reviewer 수정 반복·사용자 허용 Scope 변경 승인/거절 분기를 완료했다. 거절 분기는 기존 Scope/Plan을 보존하고, 승인 분기는 시험 Scope v5의 새 기획 최종 승인 대기에서 멈췄다. primary는 그대로이며 제품/팀원 실행 없음이다. 마지막 구현 검사에서 typecheck 및 전체 119개 테스트 통과. [최종 보고서](supervisor-final-acceptance-20261108.md), [Reviewer 사유 이력](acceptance/2026-11-08/reviewer-history.md)을 우선한다. 실제 검토 6회 / 수정 요청 1회이며 사용자 요청 수정과 구분한다. 아래는 시점별 준비 이력이다.
 
 ## 새 Cloud 환경 확인 (2026-11-08 17:52 한국 시간)
 

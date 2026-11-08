@@ -3,26 +3,24 @@
 마지막 정리: 2026-11-08 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
-## 최신 재개 상태 — primary 기획 승인 완료, 격리 Scope 변경 시험 결정 대기
+## 최신 상태 — 지휘자 단독 대표 인수 완료
 
-- 브랜치 `docs/supervisor-only-acceptance`. 이전 저장 커밋 `bd9d4dc` 이후 사용자 Plan v3 승인을 기록하고 실제 작업 지시·수정·정책 시험·독립 모델 재현을 진행했다. typecheck 및 **119개 테스트** 통과.
+- 브랜치 `docs/supervisor-only-acceptance`. 구현 체크포인트 `3fef309`, typecheck 및 **119개 테스트** 통과. [최종 인수 보고서](supervisor-final-acceptance-20261108.md)를 우선한다.
 - **primary 실제 상태:** 사용자 승인 Scope v4 / Plan v3, planning user_approved / iterationCount 3/5. Supervisor revision 16 / tasks_proposed, 작업 제안 5개 / taskRevisions 2개. [최종 지시서](acceptance/2026-11-08/primary-work-orders-v3.md). primary 작업 초기화·제품 구현·팀원 실행 없음.
-- 미수락 작업 재제안 revise-tasks와 불변 이력, 확인 stdin EOF 명시적 실패를 추가했다. 모델은 승인 출처·검증 프로필/예산을 바꾸지 못한다. 사용자 기획 승인과 운영자 수락을 구분한다.
-- [격리된 실제 승인 출처 정책 시험](acceptance/2026-11-08/approved-source-policy-fixture.json): 선행 조건/근거 부족 거부, 산출물 부재→재작업→한도 차단, 도구 부재→환경 차단(품질 카운터 0), 사실에 맞는 보고를 확인했다. TEST/STUB 텍스트만 사용했고 primary state가 그대로다.
-- [독립 실제 모델 재현](acceptance/2026-11-08/approved-scope-replay-20261108/result.json): 동일한 실제 Scope 승인 결합을 보존한 별도 메모리 경로에서 새 Writer v1 → Reviewer revise(major 2) → Writer v2 → Reviewer pass, 2/5. 실제 Reviewer 수정 요청 1회. 이 후보는 최종 사용자 승인하지 않았고 primary 승인 기획 v3을 대체하지 않는다. 자동 Reviewer의 세부 보장 설명에는 여전히 사람 점검이 필요하다.
-- **현재 사용자 질문:** [격리 시험용 Scope v5 변경안](acceptance/2026-11-08/scope-change-test/proposal.md)으로 별도 복사본의 승인/거절 두 분기를 각각 시험할지. N 생략 시 기본 7일 적용만 바꾸는 가정이며 실제 primary는 바꾸지 않는다. 아직 두 분기를 실행하거나 새 Scope를 승인/거절하지 않았다.
-- 시험 컨텍스트: `/workspace/scratch/approved-scope-replay-20261108/.adtf`, projectId는 genuine Scope 승인 결합을 유지하기 위해 primary와 같지만 메모리 루트/실행 ID가 다르다. Scope 변경 continuation `continue-83bf5e0b-7dc9-4f63-8af7-4ea940aed196`, status proposed, source replay Plan v2 / 2/5. [격리 체크포인트](acceptance/2026-11-08/scope-change-test/runtime-checkpoint.json)는 이 격리 루트에만 복원한다.
+- 질문·Scope 지침, 안전한 실패 분류, 승인 대기 기획 수정과 재개, 미수락 작업 재제안 이력, 확인 stdin EOF 실패를 개선했다. 기존 원문·승인·버전·총 예산을 보존한다.
+- [승인 출처 정책 시험](acceptance/2026-11-08/approved-source-policy-fixture.json): 선행 조건/근거 부족 거부, 재작업·한도, 환경 차단·품질 카운터 구분과 사실에 맞는 보고 확인. TEST/STUB 텍스트만 사용했다.
+- [독립 실제 모델 재현](acceptance/2026-11-08/approved-scope-replay-20261108/result.json): 새 Writer v1 → Reviewer revise(major 2) → Writer v2 → Reviewer pass, 2/5. 이 후보는 최종 사용자 승인하지 않았고 primary 승인 기획을 대체하지 않는다.
+- 사용자가 시험 Scope v5 원문을 검토하고 **두 격리 분기 실행을 승인했으며 시험 완료**했다. [결과](acceptance/2026-11-08/scope-change-test/results.json): 거절은 Scope v4/독립 Plan v2·2/5 유지, 모델 미호출. 승인은 시험 Scope v5/새 Plan v3·Reviewer pass·3/5이며 새 기획 최종 승인 pending. 양 분기에서 과거 스냅샷·총 예산을 보존했고 실제 primary는 그대로다. 시험 요구는 N 생략 시 기본 7일이며 실제 제품 변경으로 채택하지 않았다.
+- 실제 Reviewer 검토 **6회 / 수정 요청 1회**. 사유·심각도·관련 요구·수정 방향·원문은 [Reviewer 이력](acceptance/2026-11-08/reviewer-history.md)에 보존했다. primary v1→v2→v3의 수정은 사용자·진행자 요청이므로 Reviewer 자체 요청 횟수와 구분한다.
+- 전체 모델 어댑터 호출 21회(성공 20/실패 1), 제공 토큰 입력 137,489 / 출력 38,749 / reasoning 16,901, 호출 시간 410,995ms. [집계](acceptance/2026-11-08/model-usage-summary.json)는 복사 ledger 중복을 제거하며 미제공 지표를 추정하지 않는다.
 
-```sh
-# 사용자가 시험 Scope v5를 검토하고 승인/거절 두 격리 분기 진행을 허용한 후에만 실행한다.
-GOOGLE_APPLICATION_CREDENTIALS=/workspace/.gcloud-adc/application_default_credentials.json node --use-env-proxy examples/supervisor-gemini/approved-scope-change-cases.mjs --run-approved-test-cases
-```
+### 재개 시 경계
 
-이 스크립트는 검토한 proposal JSON 일치를 확인하고, 별도 reject/approve 디렉터리에서 결정을 기록한다. 거절은 Scope/Plan 보존·모델 미호출을, 승인은 새 Scope 출처로 기획 재개·총 예산·새 기획 최종 승인 대기를 확인한다. 실행 경로가 이미 있으면 재호출하지 않는다. started 실행은 먼저 상태를 확인한다. 이 시험의 새 기획도 사용자 승인 없이 작업으로 넘기지 않는다.
+현재 사용자 목표인 사람 승인형 CLI 지휘자·기획자 구현과 재고·유통기한 대표 단독 인수는 완료했다. 팀원 Agent 설계·개발·연결·제품 구현은 사용자 재지시 전까지 보류한다. `report.progress.completed=false`는 제품 작업 미완료 의미이며 이번 지휘자 인수 판정과 다르다. 모델 pass는 사람 승인이나 무인 품질 보장이 아니다.
 
-현재까지 실제 모델 호출 19회(성공 18/실패 1), 제공 토큰 입력 124,188 / 출력 35,340 / reasoning 15,296, 모델 호출 시간 375,316ms. 미제공 지표는 추정하지 않는다. [최신 인수 보고서](supervisor-work-orders-acceptance-20261108.md)에 역할·수정 전후·한계·남은 시험을 정리했다. `report.progress.completed`는 제품 작업 완료 의미이며 지휘자 인수 판정과 다르다.
+완료한 모델/결정 스크립트를 재실행하지 않는다. 격리 데이터는 `/workspace/scratch/approved-scope-replay-20261108`, `approved-scope-change-reject-20261108`, `approved-scope-change-approve-20261108`에 각각 있다. projectId는 기존 genuine Scope 승인 결합을 유지하기 위해 같지만 물리 메모리 루트와 실행 ID는 다르다. [원본 격리 체크포인트](acceptance/2026-11-08/scope-change-test/runtime-checkpoint.json), [거절 분기](acceptance/2026-11-08/scope-change-test/reject/runtime-checkpoint.json), [승인 분기](acceptance/2026-11-08/scope-change-test/approve/runtime-checkpoint.json)는 각 격리 루트에만 복원하며 primary와 합치지 않는다. 시험 후보의 최종 승인·작업 생성은 하지 않았다.
 
-ADC 파일 `/workspace/.gcloud-adc/application_default_credentials.json`은 현재 유효하고 토큰을 출력하지 않는다. GCP iceu-songpa11/global, Writer/Reviewer gemini-3.8-flash, Node 24.22.1의 --use-env-proxy를 유지한다. [primary 체크포인트](acceptance/2026-11-08/primary-runtime-checkpoint.json)는 실제 프로젝트 데이터이며 격리 체크포인트와 혼동하지 않는다. 실제 상태·해시를 확인하고 더 최신인 데이터를 덮어쓰거나 모델 호출·사용자 결정을 중복 실행하지 않는다. primary에서 start/plan/resume-plan을 다시 실행하지 않는다. 아래는 과거 구현 기록이다.
+ADC 파일 `/workspace/.gcloud-adc/application_default_credentials.json`은 마지막 호출에서 유효했고 토큰을 출력하지 않는다. GCP iceu-songpa11/global, Writer/Reviewer gemini-3.8-flash, Node 24.22.1의 --use-env-proxy를 사용했다. [primary 체크포인트](acceptance/2026-11-08/primary-runtime-checkpoint.json)는 실제 프로젝트 데이터다. 최신 상태·해시를 확인하고 더 최신인 데이터를 덮어쓰거나 모델 호출·사용자 결정을 중복 실행하지 않는다. primary에서 start/plan/resume-plan을 다시 실행하지 않는다. 아래는 과거 구현 기록이다.
 
 ## 기존 구현 상태 (실제 인수 전 기록)
 

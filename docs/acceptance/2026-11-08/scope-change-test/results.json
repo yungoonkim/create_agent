@@ -1,0 +1,26 @@
+{
+  "label": "user-authorized isolated Scope change acceptance",
+  "reject": {
+    "branch": "reject",
+    "scopeVersion": 4,
+    "planVersion": 2,
+    "planningStatus": "awaiting_approval",
+    "iterations": 2,
+    "maxIterations": 5,
+    "oldScopePlanReviewPreserved": true,
+    "noTasksOrAgentRuntime": true,
+    "finalPlanUserApprovalRecorded": false
+  },
+  "approve": {
+    "branch": "approve",
+    "scopeVersion": 5,
+    "planVersion": 3,
+    "planningStatus": "awaiting_approval",
+    "iterations": 3,
+    "maxIterations": 5,
+    "oldScopePlanReviewPreserved": true,
+    "noTasksOrAgentRuntime": true,
+    "finalPlanUserApprovalRecorded": false
+  },
+  "primaryUnchanged": true
+}
