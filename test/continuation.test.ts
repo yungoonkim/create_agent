@@ -227,6 +227,7 @@ test("proposal usage logs include success, invalid JSON and provider failure wit
   const context = { projectId: h.config.projectId, originalRequest: "PRIVATE request", clarifications: [] };
   await adapter.questions(context); mode = "bad"; await assert.rejects(adapter.scope(context), /preserved/); mode = "error"; await assert.rejects(adapter.questions(context), /preserved/);
   assert.deepEqual(records.map((item) => item.outcome), ["success", "failure", "failure"]); assert.equal(records[0]!.inputTokens, 12); assert.equal(records[1]!.outputTokens, 8);
+  assert.equal(records[1]!.failureKind, "invalid_response"); assert.equal(records[2]!.failureKind, "provider_error");
   const file = await readFile(join(h.config.memory.directory, "projects", h.config.projectId, "supervisor", "usage.jsonl"), "utf8");
   assert.equal(file.trim().split("\n").length, 3); assert.doesNotMatch(file, /PRIVATE|SECRET|TEST question/);
   const broken = new GeminiSupervisorProposer(client, role, async () => { throw new Error("TEST disk full"); });

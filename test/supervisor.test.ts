@@ -9,7 +9,7 @@ import { SupervisorController } from "../src/supervisor/controller.js";
 import { FileSupervisorStore } from "../src/supervisor/memory-store.js";
 import { parseOrders, parseSupervisorState } from "../src/supervisor/validation.js";
 import { GeminiSupervisorProposer } from "../src/supervisor/google-genai.js";
-import type { SupervisorProposer } from "../src/supervisor/contracts.js";
+import type { SupervisorProposer, SupervisorUsageRecord } from "../src/supervisor/contracts.js";
 import { FilePlanningMemoryStore } from "../src/planning/memory-store.js";
 import { parsePlanningConfig, type FakeReviewScenario } from "../src/planning/config.js";
 import { FakePlanningWriter } from "../src/planning/fake-writer.js";
@@ -274,6 +274,37 @@ test("Gemini proposal adapter sends bounded JSON requests without granting appro
   assert.match(JSON.stringify(calls), /Propose only/);
   const broken = new GeminiSupervisorProposer({ models: { generateContent: async () => { throw new Error("token=SECRET"); } } } as unknown as GoogleGenAI, { model: { providerId: "vertex-ai", modelId: "gemini-3.8-flash" }, personaId: "planning-writer" });
   await assert.rejects(broken.questions(context), (error: Error) => !error.message.includes("SECRET") && /preserved/.test(error.message));
+});
+
+test("proposal failures report safe actionable metadata and preserve state without retrying", async (t) => {
+  const h = await harness(t);
+  await h.controller.start(request);
+  const cases = [
+    { error: { status: 401, message: "Bearer SECRET" }, kind: "authentication", status: 401 },
+    { error: { response: { status: 403, data: "SECRET" } }, kind: "permission", status: 403 },
+    { error: { status: 404 }, kind: "model_not_found", status: 404 },
+    { error: { status: 429 }, kind: "rate_limit", status: 429 },
+    { error: { status: 400 }, kind: "invalid_request", status: 400 },
+    { error: { status: 503 }, kind: "provider_unavailable", status: 503 },
+    { error: { cause: { code: "EAI_AGAIN", message: "SECRET" } }, kind: "network", status: undefined },
+    { error: { status: "SECRET", code: "SECRET" }, kind: "provider_error", status: undefined },
+  ];
+  let calls = 0;
+  const records: SupervisorUsageRecord[] = [];
+  const before = await h.store.get(h.config.projectId);
+  for (const item of cases) {
+    const client = { models: { generateContent: async () => { calls++; throw item.error; } } } as unknown as GoogleGenAI;
+    const proposer = new GeminiSupervisorProposer(client, { model: { providerId: "vertex-ai", modelId: "gemini-3.8-flash" }, personaId: "planning-writer" }, async (usage) => { records.push(usage); await h.store.appendUsage(usage); });
+    await assert.rejects(new SupervisorController({ ...h.options, proposer }).questions(), (error: Error) => error.message.includes(item.kind) && !/SECRET|Bearer/.test(error.message));
+    assert.equal(records.at(-1)!.failureKind, item.kind);
+    assert.equal(records.at(-1)!.httpStatus, item.status);
+    assert.deepEqual(await h.store.get(h.config.projectId), before);
+  }
+  assert.equal(calls, cases.length);
+  assert.doesNotMatch(await readFile(join(h.config.memory.directory, "projects", h.config.projectId, "supervisor", "usage.jsonl"), "utf8"), /SECRET|Bearer/);
+  await assert.rejects(h.store.appendUsage({ ...records[0]!, failureKind: "SECRET" } as unknown as SupervisorUsageRecord), /failure metadata/);
+  await assert.rejects(h.store.appendUsage({ ...records[0]!, httpStatus: 999 }), /failure metadata/);
+  await assert.rejects(h.store.appendUsage({ ...records[0]!, outcome: "success" }), /failure metadata/);
 });
 
 test("CLI runs complete offline supervisor flow and reads live-config reports without ADC", async (t) => {

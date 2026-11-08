@@ -1,0 +1,8 @@
+{
+  "id": "approval-2c1ec6a8-53fe-4915-bcec-36904e469a20",
+  "projectId": "supervisor-gemini-acceptance",
+  "subject": "Scope Contract scope-v4 v4",
+  "status": "approved",
+  "decidedAt": "2026-11-08T09:51:02.848Z",
+  "rationale": "사용자가 2026-11-08 채팅의 Scope 승인 요청에서 primary 프로젝트 scope-v4 버전 4를 명시적으로 승인"
+}

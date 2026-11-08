@@ -1,0 +1,16 @@
+{
+  "id": "review-1",
+  "projectId": "supervisor-gemini-acceptance",
+  "planId": "supervisor-gemini-acceptance-plan",
+  "planVersion": 1,
+  "scopeContractId": "scope-v4",
+  "scopeVersion": 4,
+  "outcome": "pass",
+  "issues": [],
+  "suggestions": [
+    "상세 작업 지시서(Work Order) 작성 단계에서 CLI 명령어 및 옵션 플래그 네이밍 체계(예: add, list, expire 등)와 기본 파일 경로(예: ./data/inventory.json)의 구체적인 명세를 확정하여 반영할 것을 권장합니다."
+  ],
+  "scopeViolation": false,
+  "userJudgmentRequired": false,
+  "reviewedAt": "2026-11-08T09:52:00.825Z"
+}

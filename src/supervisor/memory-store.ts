@@ -3,6 +3,7 @@ import { appendFile, mkdir, open, readFile, rename, rm, writeFile } from "node:f
 import { dirname, join, resolve } from "node:path";
 import { assertSafeProjectId } from "../planning/config.js";
 import type { SupervisorState, SupervisorUsageRecord } from "./contracts.js";
+import { SUPERVISOR_FAILURE_KINDS } from "./contracts.js";
 import { parseSupervisorState, same } from "./validation.js";
 
 /** One supervisor command per project. Lock covers model calls and downstream writes. */
@@ -18,6 +19,8 @@ export class FileSupervisorStore {
     catch (error) { if (isCode(error, "ENOENT")) return undefined; throw error; }
   }
   async appendUsage(record: SupervisorUsageRecord): Promise<void> {
+    if ((record.failureKind !== undefined && (record.outcome !== "failure" || !SUPERVISOR_FAILURE_KINDS.includes(record.failureKind))) ||
+        (record.httpStatus !== undefined && (record.outcome !== "failure" || !Number.isInteger(record.httpStatus) || record.httpStatus < 100 || record.httpStatus > 599))) throw new Error("Invalid supervisor failure metadata.");
     if (!["questions", "scope", "tasks"].includes(record.operation) || !["success", "failure"].includes(record.outcome) || record.providerId !== "vertex-ai" || record.modelId.trim().length === 0 ||
         [record.durationMs, record.inputTokens, record.outputTokens, record.reasoningTokens].some((value) => value !== undefined && (!Number.isSafeInteger(value) || value < 0))) throw new Error("Invalid supervisor usage record.");
     const directory = dirname(this.path(record.projectId));

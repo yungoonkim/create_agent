@@ -3,7 +3,28 @@
 마지막 정리: 2026-11-08 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
-## 현재 상태
+## 최신 재개 상태 — 기획안 v1 최종 승인 대기
+
+- 브랜치 `docs/supervisor-only-acceptance`, 기준 `2681579`에 질문·Scope 지침 및 안전한 오류 분류를 수정했다. typecheck, 전체 **112개 테스트**, diff 검사 통과.
+- Cloud ADC 로그인/SDK 갱신 완료. 실제 모델 호출에 성공했다. 인증 파일은 `/workspace/.gcloud-adc/application_default_credentials.json` (권한 600)이며 토큰·코드를 출력하지 않는다. Node 24.22.1에서 `--use-env-proxy`와 파일 selector를 사용한다. GCP `iceu-songpa11` / `global`, Writer/Reviewer `gemini-3.8-flash` 유지.
+- 사용자가 primary `supervisor-gemini-acceptance`의 **scope-v4 v4를 명시적으로 승인**했다. 동일 스냅샷 확인 후 승인 결정을 저장했다. qfix 비교 실행의 결함 있는 Scope는 별도 프로젝트에서 pending으로 보존한다.
+- `plan` 1회 실행: Writer 기획 **v1**, Reviewer **review-1 / pass / issues 0**, iterationCount 1 / maxIterations 5 / **awaiting_approval**. 자동 수정 반복은 없었다. Supervisor revision 6 / scope_approved다.
+- **현재 사용자 결정 대기:** `supervisor-gemini-acceptance-plan v1` 최종 승인. 오른쪽에 [실제 기획안 원문](acceptance/2026-11-08/primary-plan-v1.md)을 열고 승인 질문을 보냈다. Reviewer pass를 최종 사용자 승인으로 취급하지 않는다.
+- [독립 점검](acceptance/2026-11-08/primary-plan-v1-assessment.md): 핵심 lot·수량·날짜·저장 규칙은 포함됐다. CLI 문법/기본 경로, 숫자 입력 표기 설명, 로드 JSON 구조/업무 검증, atomic rename 내구성 한계는 상세 작업 지시에서 구체화할 항목이다. 원본 기획은 수정하지 않았다.
+- 미승인 Scope에서 plan 차단, 미승인 Plan에서 propose-tasks 차단을 실제 CLI로 확인했다. 두 차단 모두 상태·usage 변화와 후속 산출물 생성이 없었다.
+- 전체 실제 모델 어댑터 호출 7회(성공 6/실패 1), 제공 토큰 입력 12,547 / 출력 6,040 / reasoning 6,004. 미제공 실패 지표는 추정하지 않았다. 모델 소요시간 합계 104,385ms.
+- 다음: **사용자의 Plan v1 최종 승인** 후 approve-plan → propose-tasks. 작업 지시의 요구 추적·완료 조건·검증·의존성 및 위 점검 항목을 평가한다. 실제 제품 구현·팀원 Agent 실행은 보류한다. 추가 답변/범위 변경/전체 독립 반복 시험은 아직 남았다.
+
+```sh
+# Plan v1 승인 결정 후에만 실행한다. 현재는 사용자 결정 대기다.
+node dist/src/cli/supervisor.js approve-plan --config examples/supervisor-gemini/config.json --reason "사용자가 기획안 v1 원문을 검토하고 최종 승인"
+# CLI의 정확한 문구: APPROVE supervisor-gemini-acceptance-plan v1
+GOOGLE_APPLICATION_CREDENTIALS=/workspace/.gcloud-adc/application_default_credentials.json node --use-env-proxy dist/src/cli/supervisor.js propose-tasks --config examples/supervisor-gemini/config.json
+```
+
+`start` 또는 일반 `plan`을 다시 실행하지 않는다. 이미 기획 상태가 있다. JSON 스냅샷·승인·ledger·점검·재현 명령은 [실제 인수 보고서](supervisor-live-acceptance-20261108.md)와 `docs/acceptance/2026-11-08/`에 저장했다. primary 실행 데이터는 [경로·SHA-256·본문 체크포인트](acceptance/2026-11-08/primary-runtime-checkpoint.json)에도 저장했다. 새 실행 환경에는 ADC와 Git 제외 `.adtf`가 자동 이전되지 않으므로 실제 파일 존재를 먼저 확인한다. 체크포인트는 자격 증명·잠금을 포함하지 않는다. 복원 시 새 상태를 덮어쓰지 않고 경로·해시·외부 데이터 검증을 적용해야 한다. 스냅샷만 보고 기획 호출이나 승인 결정을 중복 실행하지 않는다. 아래는 기존 구현 인수인계다.
+
+## 기존 구현 상태 (실제 인수 전 기록)
 
 **사용자 최신 우선순위:** 현재 지휘자 겸 기획자 Agent 하나를 확실히 완성하고 테스트한다. 팀원 Agent 설계·개발·연결은 사용자 재지시 전까지 보류하며, 인수 완료 후에도 자동으로 착수하지 않는다. [현재 Agent 완료 기준](supervisor-acceptance.md)에 따라 부족한 부분을 수정·재시험한다.
 

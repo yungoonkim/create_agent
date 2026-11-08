@@ -31,6 +31,9 @@ export interface PlanningContinuation {
   readonly scopeApprovalId?: string;
 }
 
+export const SUPERVISOR_FAILURE_KINDS = ["authentication", "permission", "model_not_found", "rate_limit", "invalid_request", "provider_unavailable", "network", "provider_error", "invalid_response"] as const;
+export type SupervisorFailureKind = typeof SUPERVISOR_FAILURE_KINDS[number];
+
 export interface SupervisorUsageRecord {
   readonly id: string;
   readonly projectId: string;
@@ -43,6 +46,8 @@ export interface SupervisorUsageRecord {
   readonly inputTokens?: number;
   readonly outputTokens?: number;
   readonly reasoningTokens?: number;
+  readonly failureKind?: SupervisorFailureKind;
+  readonly httpStatus?: number;
 }
 
 export interface WorkOrder {

@@ -110,7 +110,7 @@ npm run supervisor -- initialize-tasks --config examples/supervisor-demo/config.
 - 질문·변경 대기는 report에 수집/제안/결정/재개 명령을 표시한다. 반복 한도·실패·모델 호출 도중 중단은 STOP이다. 일반 `plan`으로 기존 상태를 재실행하지 않는다.
 - 기획의 총 iterationCount/maxIterations는 재개 사이에도 유지한다. 설정을 바꿔 예산을 초기화하지 못하며 소진되면 호출하지 않는다. 한도를 늘려 기존 실행을 복구하는 기능은 없다.
 - 재개 시작 후 모델 실행이 완료됐으나 supervisor 기록만 실패했다면 `resume-plan` 재시도가 완료 기록만 마무리한다. Planning의 continuationId·버전·Scope로 확인하며 모델을 다시 부르지 않는다. 도중 끊긴 drafting/reviewing 상태는 자동 재호출하지 않는다.
-- **남음:** 실제 Gemini로 전체 주제 기획의 의미상 인수 시험. 현재 Cloud에는 ADC와 Vertex AI 접속 설정이 없어 실행하지 않았다.
+- **남음:** 실제 Gemini로 전체 주제 기획의 의미상 인수 시험. 현재 Cloud에서 primary Scope v4 승인 후 실제 Writer 기획 v1 / Reviewer pass까지 확인했다. 기획 최종 승인 대기이며 작업 지시는 아직 실행하지 않았다. [실제 인수 보고서](supervisor-live-acceptance-20261108.md)를 따른다.
 - Scope 승인 또는 작업 초기화의 하위 저장 직후 중단되면 같은 명령으로 명시적으로 재시도할 수 있다. 기획 도중 중단된 실행의 자동 복구는 지원하지 않는다.
 - 여러 저장소를 묶는 DB 트랜잭션은 없다. 기획·개발 명령을 같은 프로젝트에서 동시에 실행하지 않는다. 남은 잠금은 실제 프로세스 종료를 확인한 운영자가 복구하며 자동 제거하지 않는다.
 - 실제 개발·테스트 팀원 Runtime, 자동 Worker 재호출, 제품 개발 완료, 모바일 푸시 전송은 이번 구현에 포함되지 않는다.

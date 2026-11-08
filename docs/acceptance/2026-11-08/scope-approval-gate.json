@@ -1,0 +1,6 @@
+{
+  "exitCode": 1,
+  "message": "[ADTF] Operation is not allowed in scope_proposed.",
+  "stateAndUsageUnchanged": true,
+  "planningStateCreated": false
+}
