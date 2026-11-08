@@ -1,4 +1,5 @@
 import type { AgentResult, TaskRecord, VerificationResult } from "../core/types.js";
+import type { VerificationEvidence, VerificationProfile } from "../verification/contracts.js";
 
 export interface DevelopmentTask extends TaskRecord {
   readonly expectedArtifacts: readonly string[];
@@ -7,6 +8,13 @@ export interface DevelopmentTask extends TaskRecord {
   /** Worker-reported output, not independently verified evidence. */
   readonly result?: AgentResult;
   readonly review?: VerificationResult;
+  readonly verificationProfile?: VerificationProfile;
+  readonly maxReworkAttempts?: number;
+  /** Assignment attempts; no claim that an Agent Runtime was executed. */
+  readonly attemptCount?: number;
+  readonly reworkCount?: number;
+  readonly evidence?: VerificationEvidence;
+  readonly blockReason?: "environment" | "verification_limit" | "manual";
 }
 
 export interface ApprovedPlanReference {

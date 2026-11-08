@@ -1,16 +1,17 @@
 # Development Loop
 
-## 현재 구현: STEP 3 수동 작업 관리
+## 현재 구현: STEP 3 수동 관리와 STEP 4 선택형 검증
 
-`src/development/`는 Core의 TaskStateManager 계약을 구현한다. 개발 명령은 별도의 모델 호출이나 Worker 실행 없이 파일로 상태를 관리한다. 실제 실행 환경이 Cloud인지 로컬인지와 무관하게 해당 작업환경의 메모리 디렉터리를 사용한다. Windows PC의 `.adtf` 기록은 Cloud로 자동 복사되지 않는다.
+`src/development/`는 Core의 TaskStateManager 계약을 구현한다. 모델이나 Worker를 호출하지 않고 파일로 상태를 관리한다. 검증 프로필을 지정한 작업의 `verify` 명령은 선언된 파일과 운영자 허용 검사 명령을 실제로 실행한다. Windows PC의 `.adtf` 기록은 Cloud로 자동 복사되지 않는다.
 
 1. `development plan-approve`로 현재 기획안의 최종 사용자 승인을 기록한다.
 2. `development init`으로 사용자가 작성한 작업 JSON을 승인 Plan/Scope 버전에 연결한다.
 3. `development assign`으로 담당자를 지정한다. 이 명령은 위임을 기록하며 실제 Worker를 실행하지 않는다.
 4. `development submit`으로 Worker가 보고한 요약과 산출물 목록을 제출한다.
-5. `development review`로 사람이 수행한 검수 결과를 기록한다. 체크 이름은 작업의 acceptanceCriteria 문구와 일치해야 하고, 통과할 때 모든 조건을 포함해야 한다.
+5. 검증 프로필 작업은 `development verify`로 실제 근거를 수집한다. 실패는 재작업 또는 차단으로 기록한다.
+6. `development review`로 사람이 수행한 검수 결과를 기록한다. 체크 이름은 작업의 acceptanceCriteria 문구와 일치해야 하고, 통과할 때 모든 조건을 포함해야 한다. 프로필 작업은 현재 시도의 통과 근거와 변경되지 않은 선언 파일도 필요하다.
 
-산출물 목록은 파일의 존재나 코드 변경을 입증하지 않는다. 검수자가 실제 파일을 확인하고 체크별 details에 근거를 적는다. 도구 실행 결과를 독립적으로 수집하는 기능은 STEP 4에서 추가한다. 예제 result/review JSON은 실제 작업 결과가 아니며, review 템플릿은 미검토(false)로 시작한다.
+제출된 산출물 목록만으로 파일의 존재나 코드 변경을 입증하지 않는다. STEP 4의 [검증 프로필과 명령](verification.md)은 실제 파일·검사 결과를 수집한다. 프로필 없는 기존 수동 작업은 검수자가 직접 파일을 확인한다. 예제 result/review JSON은 실제 작업 결과가 아니며, review 템플릿은 미검토(false)로 시작한다.
 
 ```sh
 npm run development -- assign --config examples/planning-gemini/config.json --task TASK-001 --agent worker-1 --reason "수동 위임"
@@ -23,7 +24,7 @@ npm run development -- transition --config examples/planning-gemini/config.json 
 
 ## 상태 및 저장
 
-일반 흐름은 `pending → ready → in_progress → awaiting_review → approved`다. 검수 실패는 `rework`로 기록하며 사용자가 `ready`로 바꾼 뒤 다시 담당자를 지정한다. 새 시도는 이전 결과와 검수를 사용하지 않는다. 이전 내용은 이력의 before/after 스냅샷에 보존된다. `blocked → pending → ready`로 수동 복구할 수 있고, approved/cancelled는 종료 상태다. 선행 작업이 모두 approved일 때만 ready/실행/검수 상태가 가능하다.
+일반 흐름은 `pending → ready → in_progress → awaiting_review → approved`다. 품질 실패는 예산 내에서 `rework`, 프로필의 한도 소진은 `blocked`로 기록한다. 환경·설정 차단은 별도 사유로 기록하며 예산을 소비하지 않는다. 사용자가 `ready`로 바꾼 뒤 다시 담당자를 지정하고, 이전 결과·검수·근거는 이력에 보존한다. 환경·수동 blocked는 `pending → ready`로 복구할 수 있지만 한도 차단은 상태 초기화로 재개할 수 없다. approved/cancelled는 종료 상태다.
 
 기획안의 최종 승인 기록, Scope의 실제 승인, Plan/Scope 버전과 해시를 매 변경마다 확인한다. 기획 또는 Scope 변경 후 기존 작업을 자동으로 옮기지 않는다. 새 프로젝트 실행 컨텍스트에서 작업을 검토·초기화한다. 작업 정의·기존 이력은 덮어쓰지 않는다.
 

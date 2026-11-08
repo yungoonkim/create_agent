@@ -25,11 +25,12 @@ export class FileDevelopmentStore {
   }
 
   async save(state: DevelopmentState, expectedRevision: number): Promise<DevelopmentState> {
-    const parsed = parseDevelopmentState(state, state.projectId);
-    if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0 || parsed.revision !== expectedRevision + 1) {
-      throw new Error("Invalid development revision.");
-    }
-    const file = this.path(state.projectId);
+    return this.update(state.projectId, expectedRevision, async () => state);
+  }
+
+  async update(projectId: string, expectedRevision: number, mutate: (current: DevelopmentState | undefined) => Promise<DevelopmentState>): Promise<DevelopmentState> {
+    if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0) throw new Error("Invalid development revision.");
+    const file = this.path(projectId);
     await mkdir(dirname(file), { recursive: true });
     const lockPath = `${file}.lock`;
     const lock = await open(lockPath, "wx").catch((error: unknown) => {
@@ -38,13 +39,15 @@ export class FileDevelopmentStore {
     });
     const temporary = `${file}.${randomUUID()}.tmp`;
     try {
-      const current = await this.get(state.projectId);
+      const current = await this.get(projectId);
       if ((current?.revision ?? 0) !== expectedRevision) throw new Error("Development revision conflict; reload before retrying.");
+      const parsed = parseDevelopmentState(await mutate(current), projectId);
+      if (parsed.revision !== expectedRevision + 1) throw new Error("Invalid development revision.");
       if (current !== undefined) {
         if (JSON.stringify(current.source) !== JSON.stringify(parsed.source) ||
             JSON.stringify(parsed.events.slice(0, current.events.length)) !== JSON.stringify(current.events) ||
             parsed.events.length <= current.events.length) throw new Error("Source and existing history are immutable.");
-        const definitions = (snapshot: DevelopmentState) => snapshot.tasks.map(({ status: _status, assignedAgentId: _agent, result: _result, review: _review, ...definition }) => definition);
+        const definitions = (snapshot: DevelopmentState) => snapshot.tasks.map(({ status: _status, assignedAgentId: _agent, result: _result, review: _review, attemptCount: _attempt, reworkCount: _rework, evidence: _evidence, blockReason: _blocked, ...definition }) => definition);
         if (JSON.stringify(definitions(current)) !== JSON.stringify(definitions(parsed))) throw new Error("Task definitions are immutable; initialize a new approved plan separately.");
       }
       await writeFile(temporary, JSON.stringify(parsed, null, 2) + "\n", { encoding: "utf8", flag: "wx" });

@@ -9,6 +9,7 @@ import { FilePlanningMemoryStore } from "../planning/memory-store.js";
 import { approvePlan, FileDevelopmentStore, ManualDevelopmentController } from "../development/index.js";
 import { record, statuses, text } from "../development/validation.js";
 import type { TaskStatus } from "../core/types.js";
+import { LocalVerificationEngine } from "../verification/index.js";
 
 async function main(): Promise<void> {
   const [command, ...values] = process.argv.slice(2);
@@ -16,8 +17,9 @@ async function main(): Promise<void> {
     "plan-approve": ["plan", "reason"], init: ["plan", "file"], list: [],
     assign: ["task", "agent", "reason"], submit: ["task", "file", "reason"],
     review: ["task", "file", "reason"], transition: ["task", "status", "reason"],
+    verify: ["task", "workspace", "verification-config", "reason"],
   };
-  if (command === undefined || !Object.hasOwn(commands, command)) throw new Error("Usage: development <plan-approve|init|list|assign|submit|review|transition> --config <file> ...");
+  if (command === undefined || !Object.hasOwn(commands, command)) throw new Error("Usage: development <plan-approve|init|list|assign|submit|verify|review|transition> --config <file> ...");
   const args = new Map<string, string>();
   const allowed = new Set(["config", ...(commands[command] ?? [])]);
   for (let index = 0; index < values.length; index += 2) {
@@ -59,6 +61,15 @@ async function main(): Promise<void> {
     case "assign": result = await controller.assign(arg("task"), arg("agent"), arg("reason")); break;
     case "submit": result = await controller.submit(arg("task"), await readJson(arg("file")), arg("reason")); break;
     case "review": result = await controller.review(arg("task"), await readJson(arg("file")), arg("reason")); break;
+    case "verify": {
+      const state = await controller.state();
+      const engine = new LocalVerificationEngine(resolveProjectPath(root, arg("workspace")), await readJson(arg("verification-config")), state.source.contentHash);
+      const verified = await controller.verify(arg("task"), engine, arg("reason"));
+      result = verified;
+      const outcome = verified.tasks.find((task) => task.id === arg("task"))?.evidence?.outcome;
+      process.exitCode = outcome === "passed" ? 0 : outcome === "failed" ? 1 : 2;
+      break;
+    }
     case "transition": {
       const status = arg("status");
       if (!statuses.includes(status as TaskStatus) || !["ready", "pending", "blocked", "cancelled"].includes(status)) {

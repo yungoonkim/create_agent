@@ -1,6 +1,6 @@
 # ADTF — Agent Development Team Framework
 
-ADTF는 여러 AI Agent를 하나의 개발팀으로 조율하기 위한 재사용 가능한 프레임워크다. 오프라인 Fake 및 Vertex AI Gemini 기반 PM Planning Loop와 승인된 기획안의 수동 개발 작업 관리를 제공한다.
+ADTF는 여러 AI Agent를 하나의 개발팀으로 조율하기 위한 재사용 가능한 프레임워크다. 오프라인 Fake 및 Gemini 기반 Planning, 승인 기획의 수동 개발 작업 관리, 선택형 파일·명령 검증과 재작업 정책을 제공한다. 지휘자 겸 기획자 하나를 먼저 완성하고 이후 팀원 Agent를 순차 연결한다.
 
 ## 현재 상태
 
@@ -10,7 +10,8 @@ ADTF는 여러 AI Agent를 하나의 개발팀으로 조율하기 위한 재사�
 - 프로젝트별 로컬 JSON 메모리, Fake Writer/Reviewer, Planning Controller, 오프라인 CLI 데모를 제공한다.
 - 사용자 승인된 Scope와 최종 기획안 승인을 구분하며, 검토/계획 버전 이력을 보존한다.
 - Gemini Writer/Reviewer와 실제 Scope 승인 CLI, 기획안 최종 승인 및 수동 Development Loop를 제공한다.
-- Worker Runtime 자동 실행과 도구 기반 검증 증거 수집은 후속 단계다.
+- 검증 프로필 작업은 파일 해시·실제 검사 결과를 수집하고 시도·재작업 한도를 관리한다. 객관적 검사 후 최종 완료 조건은 별도로 검수한다.
+- 통합 지휘자, Worker Runtime 자동 실행 및 무인 재작업 루프는 후속 단계다.
 
 ## 개발
 
@@ -59,5 +60,7 @@ npm run development -- list --config examples/planning-gemini/config.json
 - [PM Agent 명세](docs/pm-agent-spec.md)
 - [Planning Loop](docs/planning-loop.md)
 - [Development Loop](docs/development-loop.md)
+- [검증 근거 수집과 재작업 정책](docs/verification.md)
+- [STEP 4 구현·검증 보고서](docs/step4-report.md)
 - [로드맵](docs/roadmap.md)
 - [설계 결정](docs/decisions.md)

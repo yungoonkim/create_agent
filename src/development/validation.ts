@@ -1,6 +1,7 @@
 import type { AgentResult, TaskStatus, VerificationResult } from "../core/types.js";
 import { assertSafeProjectId, assertSafeStorageId } from "../planning/config.js";
 import type { DevelopmentState, DevelopmentTask } from "./contracts.js";
+import { artifactPath, count, hash, parseVerificationEvidence, parseVerificationProfile } from "../verification/validation.js";
 
 export const statuses: readonly TaskStatus[] = ["pending", "ready", "in_progress", "awaiting_review", "blocked", "approved", "rework", "cancelled"];
 
@@ -54,6 +55,14 @@ export function parseTask(raw: unknown, projectId: string, initial = false): Dev
   if (initial && (value.assignedAgentId !== undefined || value.result !== undefined || value.review !== undefined || (value.status !== undefined && value.status !== "pending"))) {
     throw new Error("New tasks must be pending and have no assignment, result or review.");
   }
+  const profile = value.verificationProfile === undefined ? undefined : parseVerificationProfile(value.verificationProfile);
+  if (initial && [value.attemptCount, value.reworkCount, value.evidence, value.blockReason].some((item) => item !== undefined)) throw new Error("New tasks cannot import attempts or evidence.");
+  if (profile === undefined && [value.maxReworkAttempts, value.attemptCount, value.reworkCount, value.evidence, value.blockReason].some((item) => item !== undefined)) throw new Error("Evidence fields require a verification profile.");
+  const maxReworkAttempts = profile === undefined ? undefined : count(value.maxReworkAttempts, 100);
+  const attemptCount = profile === undefined ? undefined : initial ? 0 : count(value.attemptCount);
+  const reworkCount = profile === undefined ? undefined : initial ? 0 : count(value.reworkCount);
+  if (reworkCount !== undefined && (reworkCount > maxReworkAttempts! || reworkCount > attemptCount!)) throw new Error("Inconsistent rework counters.");
+  if (value.blockReason !== undefined && (status !== "blocked" || !["environment", "verification_limit", "manual"].includes(String(value.blockReason)))) throw new Error("Invalid blocked task reason.");
   const task: DevelopmentTask = {
     id, projectId, status: status as TaskStatus,
     title: text(value.title), description: text(value.description),
@@ -62,7 +71,27 @@ export function parseTask(raw: unknown, projectId: string, initial = false): Dev
     ...(value.assignedAgentId === undefined ? {} : { assignedAgentId: text(value.assignedAgentId) }),
     ...(value.result === undefined ? {} : { result: parseResult(value.result) }),
     ...(value.review === undefined ? {} : { review: parseReview(value.review) }),
+    ...(profile === undefined ? {} : { verificationProfile: profile, maxReworkAttempts: maxReworkAttempts!, attemptCount: attemptCount!, reworkCount: reworkCount! }),
+    ...(value.evidence === undefined ? {} : { evidence: parseVerificationEvidence(value.evidence) }),
+    ...(value.blockReason === undefined ? {} : { blockReason: value.blockReason as "environment" | "verification_limit" | "manual" }),
   };
+  if (profile !== undefined) {
+    task.expectedArtifacts.forEach(artifactPath);
+    if (["in_progress", "awaiting_review", "approved", "rework"].includes(task.status) && attemptCount! < 1) throw new Error("Active profiled tasks require an assignment attempt.");
+    if (task.status === "rework" && reworkCount! >= maxReworkAttempts!) throw new Error("An exhausted rework allowance must block the task.");
+    const evidence = task.evidence;
+    if (evidence !== undefined) {
+      if (task.result === undefined || evidence.projectId !== projectId || evidence.taskId !== id || evidence.attempt !== attemptCount || evidence.resultHash !== hash(task.result) || evidence.profileHash !== hash(profile)) {
+        throw new Error("Evidence does not match the task, attempt or submitted result.");
+      }
+      if (evidence.outcome === "passed") {
+        const paths = new Set([...task.expectedArtifacts, ...profile.inputFiles]);
+        if (evidence.artifacts.length !== paths.size || evidence.artifacts.some((item) => !paths.has(item.path)) ||
+            JSON.stringify(evidence.commands.map((item) => item.id)) !== JSON.stringify(profile.commandIds)) throw new Error("Passing evidence must cover every declared input and command.");
+      }
+    }
+    if (task.status === "approved" && evidence?.outcome !== "passed") throw new Error("Profiled approval requires passing collected evidence.");
+  }
   if (["in_progress", "awaiting_review", "approved", "rework"].includes(task.status) && task.assignedAgentId === undefined) {
     throw new Error("Active tasks require an assigned agent.");
   }
@@ -119,6 +148,9 @@ export function parseDevelopmentState(raw: unknown, expectedProjectId: string): 
   if (!Array.isArray(value.tasks) || !Array.isArray(value.events) || value.events.length === 0) throw new Error("Missing tasks or history.");
   const tasks = value.tasks.map((item: unknown) => parseTask(item, expectedProjectId));
   validateGraph(tasks);
+  for (const task of tasks) {
+    if (task.evidence !== undefined && task.evidence.sourceHash !== contentHash) throw new Error("Evidence belongs to a different approved source snapshot.");
+  }
   return {
     schemaVersion: 1, projectId: expectedProjectId, revision: positive(value.revision),
     source: { planId, planVersion: positive(source.planVersion), scopeContractId, scopeVersion: positive(source.scopeVersion), approvalId, contentHash },
@@ -130,6 +162,7 @@ export function parseDevelopmentState(raw: unknown, expectedProjectId: string): 
       if (event.taskId !== undefined && !tasks.some((task) => task.id === event.taskId)) throw new Error("Unknown history task.");
       for (const snapshot of [event.before, event.after]) {
         if (snapshot !== undefined && record(snapshot).id !== event.taskId) throw new Error("History task snapshot mismatch.");
+        if (snapshot !== undefined && record(snapshot).evidence !== undefined && record(record(snapshot).evidence).sourceHash !== contentHash) throw new Error("Historical evidence source mismatch.");
       }
       return {
         at, action: text(event.action), rationale: text(event.rationale),

@@ -1,0 +1,16 @@
+[
+  {
+    "id": "TASK-VERIFIED",
+    "title": "Implement the approved feature",
+    "description": "TEMPLATE: replace paths and acceptance criteria to match the approved plan before initialization.",
+    "dependsOn": [],
+    "expectedArtifacts": ["src/feature.ts"],
+    "acceptanceCriteria": ["The implementation satisfies the approved feature requirements."],
+    "verificationMethod": "Collect typecheck/test evidence, then inspect every acceptance criterion.",
+    "verificationProfile": {
+      "commandIds": ["typecheck", "test"],
+      "inputFiles": ["tsconfig.json", "test/feature.test.js"]
+    },
+    "maxReworkAttempts": 2
+  }
+]
