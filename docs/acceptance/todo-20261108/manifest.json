@@ -7,7 +7,7 @@
   "location": "global",
   "model": "gemini-3.8-flash",
   "authentication": "ADC; values never recorded",
-  "status": "awaiting_user_answers",
+  "status": "awaiting_scope_approval",
   "source": "user authorized accessible todo topic; no generated Scope or Plan approved",
   "previousProjectFiles": {
     ".adtf/projects/supervisor-gemini-acceptance/requirements.md": "185347f2dfd9d1319a894586ac727f47126cbc935e75258cc36ab54ad152c83e",
@@ -26,5 +26,8 @@
   },
   "questions": 7,
   "previousProjectUnchanged": true,
-  "lastObservedAt": "2026-11-08T13:33:03.745354+00:00"
+  "lastObservedAt": "2026-11-08T13:44:00.608492+00:00",
+  "answeredQuestions": 7,
+  "scopeId": "scope-v6",
+  "scopeVersion": 6
 }
