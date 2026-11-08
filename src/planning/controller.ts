@@ -19,6 +19,8 @@ import type { LivePlanningConfig, OfflinePlanningConfig } from "./config.js";
 export interface PlanningRunInput {
   readonly requirements: string;
   readonly scopeContract: ScopeContract;
+  /** Persisted clarification answers supplied by the supervisor; never replace original requirements. */
+  readonly clarificationDecisions?: readonly string[];
 }
 
 export interface PlanningRunResult {
@@ -60,7 +62,10 @@ export class PlanningLoopController {
       else if (storedRequirements !== input.requirements) {
         throw new Error("Original requirements differ from the project memory; create an approved Scope change first.");
       }
-      const settledDecisions = await memory.getSettledDecisions(projectId);
+      const settledDecisions = [
+        ...await memory.getSettledDecisions(projectId),
+        ...(input.clarificationDecisions ?? []),
+      ];
 
       operation = "load approved Scope";
       const scope = input.scopeContract;

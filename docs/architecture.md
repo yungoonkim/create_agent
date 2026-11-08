@@ -4,23 +4,23 @@
 
 Core는 도메인 계약과 정책을 소유한다. Runtime SDK, 모델 Provider, 파일 저장소, 검증 도구는 어댑터 뒤에 둔다. Agent Runtime과 LLM Provider/Model은 별도로 선택하며, 호환성이 확인된 조합만 사용한다. 이 계약은 확인되지 않은 SDK 기능을 가정하지 않는다.
 
-현재는 Fake/Gemini Planning, 최종 Plan 승인, 수동 Development Loop와 선택형 파일·명령 검증을 구현한다. 지휘자 전체 통합과 실제 Worker Runtime 실행은 후속 단계다.
+현재는 Fake/Gemini Planning, 최종 Plan 승인, 수동 Development Loop, 선택형 파일·명령 검증과 지휘자 기본 통합을 구현한다. 기획 중 변경 승인 후 재개와 실제 Worker Runtime 실행은 후속 단계다.
 
 ## 논리 모듈
 
 | 모듈 | 책임 | 현재 상태 |
 | --- | --- | --- |
-| Agent Orchestrator | Loop와 프로젝트 작업 상태 조정 | 설계만 |
+| Agent Orchestrator | Loop와 프로젝트 작업 상태 조정 | Supervisor 기본 통합 CLI, 실제 Worker 실행 없음 |
 | Planning Loop Controller | Scope, Writer/Reviewer, 결정, 승인, 반복 한도 조정 | Fake/Gemini 구현, 최종 승인 CLI |
 | Development Loop Controller | 의존성 순서로 작업 위임 및 검수 | 수동 CLI 구현 |
 | Persona Engine | 역할 템플릿과 파라미터를 지시문으로 조합 | 계약/설계만 |
 | Agent Runtime Adapter | 공통 요청을 Runtime 형식으로 변환하고 결과 정규화 | 인터페이스만 |
-| LLM 설정 | 역할별 Provider/Model 및 Runtime 별도 선택 | 타입과 설계만 |
+| LLM 설정 | 역할별 Provider/Model 및 Runtime 별도 선택 | Planning·제안 모델 설정 구현, 실제 Runtime 선택은 후속 |
 | Memory Store | 프로젝트 격리 및 계획/검토 이력 보존 | 로컬 파일 JSON 구현 |
 | Task State Manager | 작업 상태 전이와 의존성 검증 | 프로젝트별 수동 구현 및 파일 저장소 |
 | Verification Engine | 파일·검사 결과 수집과 제출 결과·시도 연결 | LocalVerificationEngine 및 CLI 구현, 수동 최종 검수 유지 |
-| Approval Manager | 사용자 승인과 Scope 변경 승인 기록 | 인터페이스만 |
-| CLI | 설정 및 사용자 상호작용 진입점 | Planning 데모/Gemini, 최종 승인·수동 개발 명령 |
+| Approval Manager | 사용자 승인과 Scope 변경 승인 기록 | 파일 승인 저장 구현, 변경 승인 후 재개는 후속 |
+| CLI | 설정 및 사용자 상호작용 진입점 | Supervisor, Planning 데모/Gemini, 최종 승인·수동 개발 명령 |
 | Fake Writer/Reviewer | 결정론적 오프라인 작성 및 검토 시나리오 | 구현 |
 
 ## Planning 도메인 경계
@@ -69,3 +69,9 @@ Core와 Planning 계약은 SDK, HTTP 클라이언트, DB, 특정 Provider에 의
 ## 수동 Development 경계
 
 `src/development/`는 승인 참조·작업·최종 승인·Controller·파일 저장소로 구성된다. Controller는 Core TaskStateManager를 구현한다. `src/verification/LocalVerificationEngine`은 Core VerificationEngine을 구현하고 선언 파일·운영자 명령으로 객관적 근거를 수집한다. Controller는 현재 작업·기획·시도와 연결하고, 품질 실패·환경 차단·재작업 한도를 판단한다. 파일 저장소는 상태와 변경 전후 근거를 단일 revision으로 기록하고 검사 중 프로젝트 쓰기를 잠근다. 최종 완료 조건은 별도 수동 검수하며 실제 Runtime은 아직 연결하지 않는다.
+
+## 지휘자 기본 통합 경계 (STEP 5A)
+
+`src/supervisor/`의 Controller는 원문·질문 답변·Scope 제안과 승인·Planning·작업 제안·초기화·보고를 조정한다. Proposer 포트는 질문·Scope·작업의 미승인 데이터만 반환하며 Gemini SDK는 별도 어댑터에 둔다. 질문 답변은 원문을 대체하지 않고 Writer/Reviewer의 settledDecisions 문맥으로 전달한다. 작업 제안은 승인 출처 해시에 연결하고 요구 ID 전체 커버리지와 의존성 DAG를 검사한다. 자연어의 의미상 적합성은 별도 검토가 필요하다.
+
+`FileSupervisorStore`는 schemaVersion 1 / revision / 불변 원문·답변·이력을 단일 파일에 원자적으로 저장한다. 프로젝트 잠금은 모델 호출과 하위 저장 작업까지 유지한다. 하위 Planning/Development 저장소 전체의 트랜잭션이나 잠금을 대신하지 않으므로 같은 프로젝트의 별도 명령을 동시에 실행하지 않는다. 승인·작업 초기화 일부 중단은 재시도 가능하지만 기획 중단의 자동 재개는 구현하지 않았다. 기존 개발 Controller와 VerificationEngine은 같은 config의 Development 명령으로 사용한다.

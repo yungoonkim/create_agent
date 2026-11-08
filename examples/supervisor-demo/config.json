@@ -1,0 +1,11 @@
+{
+  "projectId": "supervisor-demo",
+  "planning": {
+    "writer": { "providerId": "fake", "modelId": "fake-writer", "personaId": "planning-writer" },
+    "reviewer": { "providerId": "fake", "modelId": "fake-reviewer", "personaId": "planning-reviewer" },
+    "maxIterations": 3,
+    "requireUserApproval": true,
+    "scenario": "improve-once"
+  },
+  "memory": { "type": "file", "directory": ".adtf" }
+}

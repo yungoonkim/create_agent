@@ -11,7 +11,8 @@ ADTF는 여러 AI Agent를 하나의 개발팀으로 조율하기 위한 재사�
 - 사용자 승인된 Scope와 최종 기획안 승인을 구분하며, 검토/계획 버전 이력을 보존한다.
 - Gemini Writer/Reviewer와 실제 Scope 승인 CLI, 기획안 최종 승인 및 수동 Development Loop를 제공한다.
 - 검증 프로필 작업은 파일 해시·실제 검사 결과를 수집하고 시도·재작업 한도를 관리한다. 객관적 검사 후 최종 완료 조건은 별도로 검수한다.
-- 통합 지휘자, Worker Runtime 자동 실행 및 무인 재작업 루프는 후속 단계다.
+- 지휘자 기본 통합 CLI로 원문·질문 답변·Scope 제안·개별 승인·기획·작업 분해·지시서·진행 보고를 연결한다.
+- 기획 중 Scope 변경 승인 후 재개, Worker Runtime 자동 실행 및 무인 재작업 루프는 후속 단계다.
 
 ## 개발
 
@@ -40,6 +41,16 @@ npm run planning:gemini -- --config examples/planning-gemini/config.json --scope
 
 실행 명령은 실제 Scope 승인을 기록하고 모델 요청에 Google Cloud 사용량이 발생할 수 있음을 알린다. 모델을 호출하기 전에 `CALL`을 입력해야 하며, 검토 통과 후에도 최종 Plan 승인은 별도로 남는다. 데모 경로는 계속 오프라인이고 실제 API를 호출하지 않는다.
 
+## 지휘자 기본 통합 (STEP 5A)
+
+```sh
+npm run supervisor -- start --config examples/supervisor-demo/config.json --file examples/supervisor-demo/request.md
+npm run supervisor -- questions --config examples/supervisor-demo/config.json --fixture examples/supervisor-demo/fixture.json
+npm run supervisor -- report --config examples/supervisor-demo/config.json
+```
+
+예제는 TEST/STUB이며 실제 Gemini를 호출하지 않는다. 답변 → Scope 제안·승인 → 기획·최종 승인 → 작업 제안·수락으로 이어가는 전체 명령과 실제 Gemini 설정은 [지휘자 통합 사용법](docs/supervisor-workflow.md)에 정리했다. 자동 승인이나 실제 Worker 실행은 수행하지 않는다.
+
 ## 수동 개발 작업 관리
 
 최종 기획안 승인을 기록한 후 작업을 생성할 수 있다. 다음 명령은 LLM API를 호출하지 않는다. 기획안 ID와 버전은 실제 Planning 메모리의 값을 사용한다.
@@ -56,6 +67,8 @@ npm run development -- list --config examples/planning-gemini/config.json
 
 - [처음 읽는 총괄 PM·슈퍼바이저 안내서](docs/supervisor-guide.md)
 - [지휘자 테스트 주제·절차·실행 보고서 양식](docs/supervisor-test-plan.md)
+- [지휘자 통합 CLI 사용법](docs/supervisor-workflow.md)
+- [STEP 5A 구현·검증 보고서](docs/step5a-report.md)
 - [아키텍처](docs/architecture.md)
 - [PM Agent 명세](docs/pm-agent-spec.md)
 - [Planning Loop](docs/planning-loop.md)

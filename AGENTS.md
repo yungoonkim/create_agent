@@ -3,7 +3,7 @@
 ## 프로젝트 경계
 
 - ADTF는 특정 관리 대상 프로젝트에 종속되지 않는 프레임워크다. 프로젝트별 데이터와 프레임워크 구현을 섞지 않는다.
-- 실행 환경은 Node.js CLI다. STEP 2A 오프라인 Planning, STEP 2B Gemini, STEP 3 수동 개발, STEP 4 선택형 검증 근거·재작업 정책을 제공한다. 현재 범위는 `docs/roadmap.md`를 따른다. 지휘자 통합 이후 팀원 Agent를 순차 연결하며 Worker Runtime 자동 실행은 아직 없다.
+- 실행 환경은 Node.js CLI다. STEP 2A 오프라인 Planning, STEP 2B Gemini, STEP 3 수동 개발, STEP 4 선택형 검증 근거·재작업 정책, STEP 5A 지휘자 기본 통합을 제공한다. 현재 범위는 `docs/roadmap.md`를 따른다. 지휘자 인수 검증 이후 팀원 Agent를 순차 연결하며 Worker Runtime 자동 실행은 아직 없다.
 - Runtime과 LLM Provider/Model은 서로 다른 개념이다. Core에서 특정 SDK나 공급자에 직접 의존하지 않는다.
 
 ## 구현 규칙
@@ -20,6 +20,6 @@
 ## 변경 및 검증
 
 - 구현 범위는 `docs/roadmap.md`를 따른다. 제외된 기능을 선행 구현하지 않는다.
-- 공통 모델은 `src/core/`, Planning은 `src/planning/`, 작업 관리는 `src/development/`, 파일·명령 검증은 `src/verification/`에 둔다. 구체 어댑터와 저장소는 별도 모듈로 둔다.
+- 공통 모델은 `src/core/`, Planning은 `src/planning/`, 작업 관리는 `src/development/`, 파일·명령 검증은 `src/verification/`, 지휘자 통합은 `src/supervisor/`에 둔다. 구체 어댑터와 저장소는 별도 모듈로 둔다.
 - 변경 후 `npm run typecheck`와 `npm test`를 실행하고 결과를 보고한다.
 - 종속성은 필요한 경우에만 추가하고, Node 내장 기능으로 충분하면 런타임 종속성을 추가하지 않는다.
