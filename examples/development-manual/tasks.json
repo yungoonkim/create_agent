@@ -1,0 +1,20 @@
+[
+  {
+    "id": "TASK-001",
+    "title": "Document implementation steps",
+    "description": "Replace this sample with tasks that match the approved plan.",
+    "dependsOn": [],
+    "expectedArtifacts": ["docs/implementation-plan.md"],
+    "acceptanceCriteria": ["Implementation steps cover every approved requirement."],
+    "verificationMethod": "Manually inspect the document against the approved plan and Scope."
+  },
+  {
+    "id": "TASK-002",
+    "title": "Prepare a verification checklist",
+    "description": "Create a checklist from the approved implementation steps.",
+    "dependsOn": ["TASK-001"],
+    "expectedArtifacts": ["docs/verification-checklist.md"],
+    "acceptanceCriteria": ["Every implementation step has an observable verification method."],
+    "verificationMethod": "Manually compare the checklist and the approved implementation steps."
+  }
+]

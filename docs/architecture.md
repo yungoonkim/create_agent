@@ -4,23 +4,23 @@
 
 Core는 도메인 계약과 정책을 소유한다. Runtime SDK, 모델 Provider, 파일 저장소, 검증 도구는 어댑터 뒤에 둔다. Agent Runtime과 LLM Provider/Model은 별도로 선택하며, 호환성이 확인된 조합만 사용한다. 이 계약은 확인되지 않은 SDK 기능을 가정하지 않는다.
 
-현재 STEP 2A는 Fake Writer/Reviewer를 연결하는 오프라인 Planning Controller와 로컬 파일 저장소를 구현한다. 외부 LLM 호출, Agent Runtime 실행, Development Loop는 포함하지 않는다.
+현재는 Fake 기반 오프라인 및 Vertex AI Gemini Planning, 최종 Plan 승인, 파일 기반 수동 Development Loop를 구현한다. 실제 Worker Runtime 실행과 자동 검증 증거 수집은 후속 단계다.
 
 ## 논리 모듈
 
 | 모듈 | 책임 | 현재 상태 |
 | --- | --- | --- |
 | Agent Orchestrator | Loop와 프로젝트 작업 상태 조정 | 설계만 |
-| Planning Loop Controller | Scope, Writer/Reviewer, 결정, 승인, 반복 한도 조정 | 오프라인 실행 구현 |
-| Development Loop Controller | 의존성 순서로 작업 위임 및 검수 | 설계만 |
+| Planning Loop Controller | Scope, Writer/Reviewer, 결정, 승인, 반복 한도 조정 | Fake/Gemini 구현, 최종 승인 CLI |
+| Development Loop Controller | 의존성 순서로 작업 위임 및 검수 | 수동 CLI 구현 |
 | Persona Engine | 역할 템플릿과 파라미터를 지시문으로 조합 | 계약/설계만 |
 | Agent Runtime Adapter | 공통 요청을 Runtime 형식으로 변환하고 결과 정규화 | 인터페이스만 |
 | LLM 설정 | 역할별 Provider/Model 및 Runtime 별도 선택 | 타입과 설계만 |
 | Memory Store | 프로젝트 격리 및 계획/검토 이력 보존 | 로컬 파일 JSON 구현 |
-| Task State Manager | 작업 상태 전이와 의존성 검증 | 인터페이스만 |
+| Task State Manager | 작업 상태 전이와 의존성 검증 | 프로젝트별 수동 구현 및 파일 저장소 |
 | Verification Engine | 테스트·정적 분석·수동 검토 증거 정규화 | 인터페이스만 |
 | Approval Manager | 사용자 승인과 Scope 변경 승인 기록 | 인터페이스만 |
-| CLI | 설정 및 사용자 상호작용 진입점 | 오프라인 데모 명령 |
+| CLI | 설정 및 사용자 상호작용 진입점 | Planning 데모/Gemini, 최종 승인·수동 개발 명령 |
 | Fake Writer/Reviewer | 결정론적 오프라인 작성 및 검토 시나리오 | 구현 |
 
 ## Planning 도메인 경계
@@ -65,3 +65,7 @@ CLI → Orchestrator → Planning Controller → 순수 Planning 정책
 ```
 
 Core와 Planning 계약은 SDK, HTTP 클라이언트, DB, 특정 Provider에 의존하지 않는다. 파일 저장소 등 구체 어댑터는 도메인 계약을 바꾸지 않고 추가할 수 있다.
+
+## 수동 Development 경계
+
+`src/development/`는 승인 Plan/Scope 참조와 작업 계약, 입력 검증, 최종 승인 연결, 수동 Controller 및 파일 저장소로 구성된다. Controller는 Core TaskStateManager를 구현하고, 파일 저장소는 작업 상태와 변경 전후 이력을 하나의 revision 스냅샷으로 교체한다. `src/cli/development.ts`는 이 포트를 사용하는 별도 명령이다. Worker 결과는 보고이며, 수동 검수 체크가 통과해야만 작업을 승인하고 후속 작업을 준비한다. 실제 Runtime 실행·도구 검증은 이 경계에 후속 구현으로 연결한다.

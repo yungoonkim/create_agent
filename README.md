@@ -1,6 +1,6 @@
 # ADTF — Agent Development Team Framework
 
-ADTF는 여러 AI Agent를 하나의 개발팀으로 조율하기 위한 재사용 가능한 프레임워크다. 현재는 오프라인 Fake Writer/Reviewer로 총괄 PM의 Planning Loop를 실행하고 로컬 파일에 결과를 남긴다. 외부 LLM이나 Agent Runtime은 호출하지 않는다.
+ADTF는 여러 AI Agent를 하나의 개발팀으로 조율하기 위한 재사용 가능한 프레임워크다. 오프라인 Fake 및 Vertex AI Gemini 기반 PM Planning Loop와 승인된 기획안의 수동 개발 작업 관리를 제공한다.
 
 ## 현재 상태
 
@@ -9,7 +9,8 @@ ADTF는 여러 AI Agent를 하나의 개발팀으로 조율하기 위한 재사�
 - Runtime과 LLM Provider/Model을 분리하고, Core는 특정 SDK에 종속되지 않는다.
 - 프로젝트별 로컬 JSON 메모리, Fake Writer/Reviewer, Planning Controller, 오프라인 CLI 데모를 제공한다.
 - 사용자 승인된 Scope와 최종 기획안 승인을 구분하며, 검토/계획 버전 이력을 보존한다.
-- 실제 LLM/Runtime 연동과 Development Loop는 후속 단계다.
+- Gemini Writer/Reviewer와 실제 Scope 승인 CLI, 기획안 최종 승인 및 수동 Development Loop를 제공한다.
+- Worker Runtime 자동 실행과 도구 기반 검증 증거 수집은 후속 단계다.
 
 ## 개발
 
@@ -37,6 +38,18 @@ npm run planning:gemini -- --config examples/planning-gemini/config.json --scope
 ```
 
 실행 명령은 실제 Scope 승인을 기록하고 모델 요청에 Google Cloud 사용량이 발생할 수 있음을 알린다. 모델을 호출하기 전에 `CALL`을 입력해야 하며, 검토 통과 후에도 최종 Plan 승인은 별도로 남는다. 데모 경로는 계속 오프라인이고 실제 API를 호출하지 않는다.
+
+## 수동 개발 작업 관리
+
+최종 기획안 승인을 기록한 후 작업을 생성할 수 있다. 다음 명령은 LLM API를 호출하지 않는다. 기획안 ID와 버전은 실제 Planning 메모리의 값을 사용한다.
+
+```sh
+npm run development -- plan-approve --config examples/planning-gemini/config.json --plan planning-gemini-sample-plan --reason "기획안 검토 완료"
+npm run development -- init --config examples/planning-gemini/config.json --plan planning-gemini-sample-plan --file examples/development-manual/tasks.json
+npm run development -- list --config examples/planning-gemini/config.json
+```
+
+작업 정의 예제를 승인 기획에 맞게 수정한 뒤 `init`을 실행한다. `plan-approve`는 기획안 본문을 표시하고 해당 버전의 승인 문구를 입력받는다. 이 명령을 실행했다고 다른 기획안이 함께 승인되지는 않는다. 담당자 지정·결과 제출·수동 검수 명령은 [Development Loop](docs/development-loop.md)에 설명되어 있다.
 
 ## 문서
 

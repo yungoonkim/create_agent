@@ -1,0 +1,11 @@
+{
+  "passed": false,
+  "summary": "SAMPLE: this template is not a completed review. Inspect actual files before editing.",
+  "checks": [
+    {
+      "name": "Implementation steps cover every approved requirement.",
+      "passed": false,
+      "details": "Not reviewed yet. Replace with the manual inspection findings."
+    }
+  ]
+}

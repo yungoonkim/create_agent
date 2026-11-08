@@ -19,19 +19,26 @@
 - Scope 승인 fixture 검증, append-only Plan/Review 버전, 반복 한도, 사용자 승인 대기 및 실패 기록
 - LLM API, Runtime Worker, 자동 최종 승인 미구현
 
-## 다음: STEP 2B — 실제 Writer/Reviewer 연결
+## 완료: STEP 2B — 실제 Writer/Reviewer 연결
 
 - **확정:** Gemini를 Vertex AI에서 사용하고, 인증은 로컬 PC의 Application Default Credentials (ADC)로 처리한다.
 - Google Gen AI SDK (`@google/genai`)와 Vertex AI 조합을 공식 문서 기준으로 적용한다.
 - **확정:** Writer와 Reviewer는 `gemini-3.8-flash`를 사용한다. GCP 프로젝트와 위치는 로컬 실행 환경 변수로 받는다.
 - 비밀 키 파일을 저장소에 넣지 않는다.
-- Fake 포트를 실제 구현으로 교체하고 비밀정보 설정, 오류/사용량 기록, 승인 UX를 정의한다.
-- 실제 API 호출은 별도 승인을 받은 범위에서만 추가한다.
+- 기존 Fake 데모와 별도로 Gemini 포트 구현, 오류/사용량 기록, 실제 Scope 승인 CLI를 추가했다.
+- 사용자의 Windows 로컬 실행 결과에서 Writer 생성·저장, Reviewer 검토와 최종 승인 대기까지 확인했다. Cloud에서 로컬 ADC를 공유하거나 실제 API를 재호출한 검증은 아니다.
+
+## 완료: STEP 3 — 작업 상태 관리와 수동 Development Loop
+
+- 최종 기획안 승인 명령과 승인된 Plan/Scope 스냅샷 연결
+- 수동 JSON 작업 분해, 산출물/완료 조건/검증 방법, 의존성·순환 검사
+- 담당자 지정, 결과 제출, 수동 검수, 명시적 재작업·차단·취소 전이
+- 프로젝트별 파일 상태/이력, 버전 충돌 및 동시 쓰기 방지
+- Worker 결과는 보고된 내용으로 취급한다. 실제 Runtime 실행과 도구 기반 증거 수집은 후속 단계다.
 
 ## 후속 단계
 
-3. Task State Manager와 수동 Development Loop 위임/검수 구현
-4. 검증 증거 수집과 제한된 재작업 적용
+4. 검증 증거 수집과 제한된 재작업 적용 (다음)
 5. 명시적 호환성 표를 갖춘 추가 Runtime Adapter
 6. 실제 사용 필요가 확인된 경우 SQLite/PostgreSQL 및 웹 대시보드 검토
 
