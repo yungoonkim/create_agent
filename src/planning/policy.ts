@@ -25,7 +25,7 @@ const allowedTransitions: Readonly<Record<PlanningLoopStatus, readonly PlanningL
   awaiting_user_input: ["drafting", "stopped", "failed"],
   awaiting_scope_change_approval: ["drafting", "stopped", "failed"],
   awaiting_approval: ["user_approved", "drafting", "stopped", "failed"],
-  user_approved: [],
+  user_approved: ["drafting"],
   limit_reached: [],
   failed: [],
   stopped: [],

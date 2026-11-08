@@ -14,6 +14,8 @@
 
 `decideAfterReview`는 순수 정책 함수이며 Loop 실행기가 아니다. 반환하는 결정은 다음과 같다.
 
+STEP 5B에서는 `PlanningLoopController.resume`을 Supervisor의 명시적 재개 경로로 연결했다. 추가 답변 또는 승인/거절된 Scope 변경을 검증한 뒤 같은 Plan ID의 다음 버전으로 진행한다. 원문·이전 스냅샷·총 반복 한도를 보존하며, 일반 `run`의 기존 상태 재실행 금지는 유지한다. 입력·승인 명령과 중단 복구의 한계는 [지휘자 통합 사용법](supervisor-workflow.md)을 따른다.
+
 - `REVISE`: 수정할 중대 이슈가 남았고 반복 한도를 넘지 않은 경우
 - `REQUEST_USER_INPUT`: 필수 정보나 사람의 판단이 필요하거나 같은 중대 이슈가 반복된 경우
 - `REQUEST_SCOPE_CHANGE_APPROVAL`: 검토에서 범위 위반을 찾은 경우. 변경을 승인하기 전까지 수정 루프를 진행하지 않는다.

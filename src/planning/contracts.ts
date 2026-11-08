@@ -133,6 +133,8 @@ interface PlanningLoopBase {
   readonly scopeVersion: number;
   readonly iterationCount: number;
   readonly maxIterations: number;
+  /** Binds a resumed run to its durable supervisor authorization. */
+  readonly continuationId?: string;
 }
 
 export type PlanningLoopState =

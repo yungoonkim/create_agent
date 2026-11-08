@@ -12,7 +12,8 @@ ADTF는 여러 AI Agent를 하나의 개발팀으로 조율하기 위한 재사�
 - Gemini Writer/Reviewer와 실제 Scope 승인 CLI, 기획안 최종 승인 및 수동 Development Loop를 제공한다.
 - 검증 프로필 작업은 파일 해시·실제 검사 결과를 수집하고 시도·재작업 한도를 관리한다. 객관적 검사 후 최종 완료 조건은 별도로 검수한다.
 - 지휘자 기본 통합 CLI로 원문·질문 답변·Scope 제안·개별 승인·기획·작업 분해·지시서·진행 보고를 연결한다.
-- 기획 중 Scope 변경 승인 후 재개, Worker Runtime 자동 실행 및 무인 재작업 루프는 후속 단계다.
+- 기획 중 추가 답변·Scope 변경 승인/거절 후 명시적 재개를 지원하며 원문·기획 버전·총 반복 한도를 보존한다.
+- 실제 모델 기획 품질 인수, Worker Runtime 자동 실행 및 무인 재작업 루프는 후속 단계다.
 
 ## 개발
 
@@ -69,6 +70,7 @@ npm run development -- list --config examples/planning-gemini/config.json
 - [지휘자 테스트 주제·절차·실행 보고서 양식](docs/supervisor-test-plan.md)
 - [지휘자 통합 CLI 사용법](docs/supervisor-workflow.md)
 - [STEP 5A 구현·검증 보고서](docs/step5a-report.md)
+- [STEP 5B 재개·변경 승인 검증 보고서](docs/step5b-report.md)
 - [아키텍처](docs/architecture.md)
 - [PM Agent 명세](docs/pm-agent-spec.md)
 - [Planning Loop](docs/planning-loop.md)

@@ -9,6 +9,8 @@ import type { PlanningReviewer, PlanningWriter, ScopeContract } from "../plannin
 import type { SupervisorProposer, SupervisorState } from "./contracts.js";
 import { FileSupervisorStore } from "./memory-store.js";
 import { parseOrders, same } from "./validation.js";
+import { PlanningContinuationController } from "./continuation.js";
+import { activeContinuation, assertNoPendingContinuation, continuationNextAction } from "./continuation-validation.js";
 
 export interface SupervisorOptions {
   readonly config: LivePlanningConfig | OfflinePlanningConfig;
@@ -61,7 +63,13 @@ export class SupervisorController {
         if (!state.clarifications.some((item) => item.id === id && item.answer === undefined)) throw new Error("Unknown or already answered question.");
       }
       const clarifications = state.clarifications.map((item) => Object.hasOwn(answers, item.id) ? { ...item, answer: text(answers[item.id]) } : item);
-      return { ...state, clarifications, phase: clarifications.some((item) => item.answer === undefined) ? "awaiting_answers" : "ready_for_scope" };
+      const pending = clarifications.some((item) => item.answer === undefined);
+      const continuation = activeContinuation(state);
+      if (continuation?.kind === "answers") {
+        return { ...state, clarifications, phase: pending ? "awaiting_answers" : "scope_approved",
+          continuations: [...state.continuations!.slice(0, -1), { ...continuation, status: pending ? "awaiting_answers" : "ready" }] };
+      }
+      return { ...state, clarifications, phase: pending ? "awaiting_answers" : "ready_for_scope" };
     });
   }
 
@@ -112,6 +120,7 @@ export class SupervisorController {
   async approvePlan(confirmation: string, rationale: string): Promise<SupervisorState> {
     return this.change("approve-plan", text(rationale), async (state) => {
       this.phase(state, "scope_approved");
+      assertNoPendingContinuation(state);
       const planning = await this.options.memory.getPlanningLoopState(this.projectId);
       if (planning?.currentPlanVersion === undefined || confirmation !== `APPROVE ${this.planId()} v${planning.currentPlanVersion}`) throw new Error("Plan confirmation does not match current plan.");
       await approvePlan(this.options.memory, this.projectId, this.planId(), rationale);
@@ -122,6 +131,7 @@ export class SupervisorController {
   async proposeTasks(): Promise<SupervisorState> {
     return this.change("propose-tasks", "Work orders proposed; no workers have been run.", async (state) => {
       this.phase(state, "scope_approved");
+      assertNoPendingContinuation(state);
       await this.ensureScope(state);
       const source = await requireApprovedPlan(this.options.memory, this.projectId, this.planId());
       const plan = await this.options.memory.getPlanDraft(this.projectId, source.planId, source.planVersion);
@@ -180,8 +190,9 @@ export class SupervisorController {
       catch { sourceCurrent = false; }
     }
     const counts = Object.fromEntries(["pending", "ready", "in_progress", "awaiting_review", "approved", "rework", "blocked", "cancelled"].map((status) => [status, tasks.filter((task) => task.status === status).length]));
+    const exhausted = planning !== undefined && planning.iterationCount >= planning.maxIterations && ["awaiting_user_input", "awaiting_scope_change_approval"].includes(planning.status);
     return { projectId: this.projectId, supervisor: state, scopeApproval, planning, plan, review, planApproval, scopeChangeRequest,
-      nextAction: sourceCurrent ? this.nextAction(state, planning?.status) : "STOP: approved source changed or is unavailable.",
+      nextAction: sourceCurrent ? exhausted ? "STOP: Planning iteration budget is exhausted." : continuationNextAction(state, planning) ?? this.nextAction(state, planning?.status) : "STOP: approved source changed or is unavailable.",
       progress: { counts, sourceCurrent, completed: sourceCurrent && tasks.length > 0 && tasks.every((task) => task.status === "approved"),
         evidencePassed: tasks.filter((task) => task.evidence?.outcome === "passed").length,
         evidenceFailed: tasks.filter((task) => task.evidence?.outcome === "failed").length,
@@ -194,6 +205,8 @@ export class SupervisorController {
   development(): ManualDevelopmentController {
     return new ManualDevelopmentController(this.projectId, this.options.memory, this.options.developmentStore, this.now);
   }
+
+  continuation(): PlanningContinuationController { return new PlanningContinuationController(this.options); }
 
   private async change(action: string, detail: string, mutate: (state: SupervisorState) => Promise<SupervisorState>): Promise<SupervisorState> {
     return this.options.store.update(this.projectId, async (state) => {
@@ -241,6 +254,8 @@ export class SupervisorController {
       if (planningStatus === undefined) return "plan";
       if (planningStatus === "awaiting_approval") return "approve-plan";
       if (planningStatus === "user_approved") return "propose-tasks";
+      if (planningStatus === "awaiting_user_input") return "collect-feedback";
+      if (planningStatus === "awaiting_scope_change_approval") return "request-scope-change";
       return `STOP: Planning ${planningStatus}; inspect stored review/change request. Automatic resume is unavailable.`;
     }
     return ({ intake: "questions", awaiting_answers: "answer", ready_for_scope: "propose-scope", scope_proposed: "approve-scope or reject-scope", tasks_proposed: "initialize-tasks", tasks_initialized: "Use development commands for assignment, submission, verification and review." } as const)[state.phase];

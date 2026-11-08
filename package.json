@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "npm run build && node --test dist/test/contracts.test.js dist/test/planning-contracts.test.js dist/test/planning-loop.test.js dist/test/development-loop.test.js dist/test/verification.test.js dist/test/supervisor.test.js",
+    "test": "npm run build && node --test dist/test/contracts.test.js dist/test/planning-contracts.test.js dist/test/planning-loop.test.js dist/test/development-loop.test.js dist/test/verification.test.js dist/test/supervisor.test.js dist/test/continuation.test.js",
     "planning:demo": "npm run build && node dist/src/cli/planning.js --config examples/planning-demo/config.json --scope examples/planning-demo/scope-contract.json --approval-fixture examples/planning-demo/approval-fixture.json --requirements examples/planning-demo/requirements.md",
     "planning:gemini": "npm run build && node dist/src/cli/planning-gemini.js",
     "development": "npm run build && node dist/src/cli/development.js",

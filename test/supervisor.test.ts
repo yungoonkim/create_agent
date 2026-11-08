@@ -152,7 +152,8 @@ for (const scenario of ["scope-violation", "needs-user-input", "always-revise", 
     await assert.rejects(h.controller.proposeTasks(), /user-approved/);
     await assert.rejects(h.controller.plan(), /already exists/);
     assert.deepEqual(await h.memory.getPlanningLoopState(h.config.projectId), before);
-    assert.match(String(record(await h.controller.report()).nextAction), /STOP/);
+    const action = String(record(await h.controller.report()).nextAction);
+    assert.match(action, scenario === "needs-user-input" ? /collect-feedback/ : scenario === "scope-violation" ? /request-scope-change/ : /STOP/);
   });
 }
 

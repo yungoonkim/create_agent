@@ -49,6 +49,7 @@ export async function approvePlan(memory: PlanningApprovalStore, projectId: stri
       projectId, scopeContractId: state.scopeContractId, scopeVersion: state.scopeVersion,
       iterationCount: state.iterationCount, maxIterations: state.maxIterations,
       currentPlanVersion: plan.version, status: "user_approved", approvalId: state.approvalId,
+      ...(state.continuationId === undefined ? {} : { continuationId: state.continuationId }),
     });
   }
   return requireApprovedPlan(memory, projectId, planId);

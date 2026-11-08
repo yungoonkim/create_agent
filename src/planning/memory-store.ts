@@ -401,7 +401,7 @@ export class FilePlanningMemoryStore implements PlanningMemoryStore, ApprovalMan
   }
 }
 
-function parsePlanningLoopState(raw: unknown): PlanningLoopState {
+export function parsePlanningLoopState(raw: unknown): PlanningLoopState {
   const value = asRecord(raw, "Planning Loop state");
   const base = {
     projectId: requiredString(value.projectId, "State projectId"),
@@ -409,9 +409,11 @@ function parsePlanningLoopState(raw: unknown): PlanningLoopState {
     scopeVersion: positiveInteger(value.scopeVersion, "State scopeVersion"),
     iterationCount: nonNegativeInteger(value.iterationCount, "State iterationCount"),
     maxIterations: positiveInteger(value.maxIterations, "State maxIterations"),
+    ...(value.continuationId === undefined ? {} : { continuationId: requiredString(value.continuationId, "State continuationId") }),
   };
   assertSafeProjectId(base.projectId);
   assertSafeStorageId(base.scopeContractId, "State scopeContractId");
+  if (base.continuationId !== undefined) assertSafeStorageId(base.continuationId, "State continuationId");
   if (base.iterationCount > base.maxIterations) throw new Error("Stored state exceeds its iteration limit.");
   const currentPlanVersion = () => positiveInteger(value.currentPlanVersion, "State currentPlanVersion");
   switch (value.status) {

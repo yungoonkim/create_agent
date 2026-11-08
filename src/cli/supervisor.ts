@@ -18,6 +18,8 @@ async function main(): Promise<void> {
   const commands: Readonly<Record<string, readonly string[]>> = {
     start: ["file"], questions: [], answer: ["file"], "propose-scope": [], "approve-scope": ["reason"], "reject-scope": ["reason"],
     plan: [], "approve-plan": ["reason"], "propose-tasks": [], "configure-verification": ["file"], "initialize-tasks": [], report: [],
+    "collect-feedback": [], "request-scope-change": ["reason"], "propose-scope-change": [],
+    "approve-scope-change": ["reason"], "reject-scope-change": ["reason"], "resume-plan": [],
   };
   const [command, ...values] = process.argv.slice(2);
   if (command === undefined || !Object.hasOwn(commands, command)) throw new Error(`Usage: supervisor <${Object.keys(commands).join("|")}> --config <file> ...`);
@@ -41,7 +43,7 @@ async function main(): Promise<void> {
   if (!fake && args.has("fixture")) throw new Error("Fixtures are allowed only with fake models.");
   const memory = new FilePlanningMemoryStore(config.memory.directory);
   const store = new FileSupervisorStore(config.memory.directory);
-  const modelCommands = ["questions", "propose-scope", "plan", "propose-tasks"];
+  const modelCommands = ["questions", "propose-scope", "plan", "propose-tasks", "propose-scope-change", "resume-plan"];
   // Report/approval/intake never require credentials or construct a provider client.
   const live = !fake && modelCommands.includes(command);
   const confirm = async (phrase: string, label: string): Promise<string> => {
@@ -56,7 +58,7 @@ async function main(): Promise<void> {
   const client = live ? createVertexAiClient() : undefined;
   const unavailable = async (): Promise<never> => { throw new Error("Fake proposals need --fixture <TEST/STUB JSON file>."); };
   let proposer: SupervisorProposer = { questions: unavailable, scope: unavailable, tasks: unavailable };
-  if (client !== undefined) proposer = new GeminiSupervisorProposer(client, config.planning.writer);
+  if (client !== undefined) proposer = new GeminiSupervisorProposer(client, config.planning.writer, (usage) => store.appendUsage(usage));
   else if (args.has("fixture")) {
     const fixture = record(await readJson(arg("fixture")));
     if (fixture.label !== "TEST/STUB") throw new Error("Fixture must be labeled TEST/STUB.");
@@ -97,6 +99,18 @@ async function main(): Promise<void> {
       result = await controller.initializeTasks(await confirm(`ACCEPT TASKS r${state.revision}`, "Review tasks before initializing manual development.")); break;
     }
     case "report": result = await controller.report(); break;
+    case "collect-feedback": result = await controller.continuation().collectFeedback(); break;
+    case "request-scope-change": result = await controller.continuation().requestScopeChange(arg("reason")); break;
+    case "propose-scope-change": result = await controller.continuation().proposeScopeChange(); break;
+    case "resume-plan": result = await controller.continuation().resumePlan(); break;
+    case "approve-scope-change": case "reject-scope-change": {
+      const item = (await store.get(config.projectId))?.continuations?.at(-1);
+      if (item?.proposedScope === undefined) throw new Error("No Scope change proposal.");
+      console.log(JSON.stringify({ baseScope: item.baseScope, reason: item.reason, proposedScope: item.proposedScope, changeApprovalId: item.changeApprovalId, scopeApprovalId: item.scopeApprovalId }, null, 2));
+      const approved = command === "approve-scope-change";
+      const phrase = `${approved ? "APPROVE" : "REJECT"} CHANGE ${item.id} ${item.proposedScope.id} v${item.proposedScope.version}`;
+      result = await controller.continuation().decideScopeChange(approved, await confirm(phrase, "This explicitly decides BOTH the Scope change request and the complete new Scope snapshot above. No model is called."), arg("reason")); break;
+    }
   }
   console.log(JSON.stringify(result, null, 2));
 }

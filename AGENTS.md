@@ -3,7 +3,7 @@
 ## 프로젝트 경계
 
 - ADTF는 특정 관리 대상 프로젝트에 종속되지 않는 프레임워크다. 프로젝트별 데이터와 프레임워크 구현을 섞지 않는다.
-- 실행 환경은 Node.js CLI다. STEP 2A 오프라인 Planning, STEP 2B Gemini, STEP 3 수동 개발, STEP 4 선택형 검증 근거·재작업 정책, STEP 5A 지휘자 기본 통합을 제공한다. 현재 범위는 `docs/roadmap.md`를 따른다. 지휘자 인수 검증 이후 팀원 Agent를 순차 연결하며 Worker Runtime 자동 실행은 아직 없다.
+- 실행 환경은 Node.js CLI다. STEP 2A 오프라인 Planning, STEP 2B Gemini, STEP 3 수동 개발, STEP 4 선택형 검증 근거·재작업 정책, STEP 5A 지휘자 기본 통합, STEP 5B 명시적 기획 재개를 제공한다. 현재 범위는 `docs/roadmap.md`를 따른다. 실제 모델 기획 품질 인수 이후 팀원 Agent를 순차 연결하며 Worker Runtime 자동 실행은 아직 없다.
 - Runtime과 LLM Provider/Model은 서로 다른 개념이다. Core에서 특정 SDK나 공급자에 직접 의존하지 않는다.
 
 ## 구현 규칙

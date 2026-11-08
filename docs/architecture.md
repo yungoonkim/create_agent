@@ -4,7 +4,7 @@
 
 Core는 도메인 계약과 정책을 소유한다. Runtime SDK, 모델 Provider, 파일 저장소, 검증 도구는 어댑터 뒤에 둔다. Agent Runtime과 LLM Provider/Model은 별도로 선택하며, 호환성이 확인된 조합만 사용한다. 이 계약은 확인되지 않은 SDK 기능을 가정하지 않는다.
 
-현재는 Fake/Gemini Planning, 최종 Plan 승인, 수동 Development Loop, 선택형 파일·명령 검증과 지휘자 기본 통합을 구현한다. 기획 중 변경 승인 후 재개와 실제 Worker Runtime 실행은 후속 단계다.
+현재는 Fake/Gemini Planning, 최종 Plan 승인, 수동 Development Loop, 선택형 파일·명령 검증, 지휘자 통합 및 기획 중 추가 답변·변경 승인 후 명시적 재개를 구현한다. 실제 모델 품질 인수와 Worker Runtime 실행은 후속 단계다.
 
 ## 논리 모듈
 
@@ -19,7 +19,7 @@ Core는 도메인 계약과 정책을 소유한다. Runtime SDK, 모델 Provider
 | Memory Store | 프로젝트 격리 및 계획/검토 이력 보존 | 로컬 파일 JSON 구현 |
 | Task State Manager | 작업 상태 전이와 의존성 검증 | 프로젝트별 수동 구현 및 파일 저장소 |
 | Verification Engine | 파일·검사 결과 수집과 제출 결과·시도 연결 | LocalVerificationEngine 및 CLI 구현, 수동 최종 검수 유지 |
-| Approval Manager | 사용자 승인과 Scope 변경 승인 기록 | 파일 승인 저장 구현, 변경 승인 후 재개는 후속 |
+| Approval Manager | 사용자 승인과 Scope 변경 승인 기록 | 파일 승인 저장 및 작업 제안 전 변경 후 재개 구현 |
 | CLI | 설정 및 사용자 상호작용 진입점 | Supervisor, Planning 데모/Gemini, 최종 승인·수동 개발 명령 |
 | Fake Writer/Reviewer | 결정론적 오프라인 작성 및 검토 시나리오 | 구현 |
 
@@ -75,3 +75,7 @@ Core와 Planning 계약은 SDK, HTTP 클라이언트, DB, 특정 Provider에 의
 `src/supervisor/`의 Controller는 원문·질문 답변·Scope 제안과 승인·Planning·작업 제안·초기화·보고를 조정한다. Proposer 포트는 질문·Scope·작업의 미승인 데이터만 반환하며 Gemini SDK는 별도 어댑터에 둔다. 질문 답변은 원문을 대체하지 않고 Writer/Reviewer의 settledDecisions 문맥으로 전달한다. 작업 제안은 승인 출처 해시에 연결하고 요구 ID 전체 커버리지와 의존성 DAG를 검사한다. 자연어의 의미상 적합성은 별도 검토가 필요하다.
 
 `FileSupervisorStore`는 schemaVersion 1 / revision / 불변 원문·답변·이력을 단일 파일에 원자적으로 저장한다. 프로젝트 잠금은 모델 호출과 하위 저장 작업까지 유지한다. 하위 Planning/Development 저장소 전체의 트랜잭션이나 잠금을 대신하지 않으므로 같은 프로젝트의 별도 명령을 동시에 실행하지 않는다. 승인·작업 초기화 일부 중단은 재시도 가능하지만 기획 중단의 자동 재개는 구현하지 않았다. 기존 개발 Controller와 VerificationEngine은 같은 config의 Development 명령으로 사용한다.
+
+STEP 5B의 `PlanningContinuationController`는 대기 중인 기획의 전체 상태·원본 Scope·Plan/Review 출처 해시를 continuation에 보존한다. 질문 답변 또는 명시적 변경 결정 후 `resume-plan`으로만 다음 버전을 생성한다. 변경 승인은 변경 요청과 새 Scope 전체를 함께 결정하며 이전 승인 기록을 변경하지 않는다. `user_approved → drafting`은 작업 제안 전 승인된 Scope 변경의 명시적 재개에서만 사용한다. 새 Plan은 다시 사용자 승인을 받아야 한다.
+
+재개 시작 권한을 먼저 저장하고 Planning 상태의 continuationId와 연결한다. 이미 완료된 기획은 supervisor 완료 기록만 복구할 수 있고, 모델 호출 도중 끊긴 drafting/reviewing 상태를 자동 재호출하지 않는다. iterationCount/maxIterations는 이전 실행에서 이어받고 설정으로 재설정하지 못한다. 모델 제안 호출의 메타데이터는 supervisor/usage.jsonl에 저장하며 원문·응답 본문·자격 증명을 넣지 않는다.

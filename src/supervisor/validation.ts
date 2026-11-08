@@ -5,6 +5,7 @@ import { isDeepStrictEqual } from "node:util";
 import type { ApprovedPlanReference } from "../development/contracts.js";
 import type { ScopeContract } from "../planning/contracts.js";
 import type { SupervisorState, WorkOrder } from "./contracts.js";
+import { parseContinuations, isPendingContinuation } from "./continuation-validation.js";
 
 export function parseOrders(raw: unknown, projectId: string, scope: ScopeContract, operatorProfiles = false): WorkOrder[] {
   if (!Array.isArray(raw) || raw.length === 0) throw new Error("Expected nonempty work orders.");
@@ -68,11 +69,19 @@ export function parseSupervisorState(raw: unknown, projectId: string): Superviso
     taskProposal = { source, orders: parseOrders(proposal.orders, projectId, scope, true) };
   }
   if (["tasks_proposed", "tasks_initialized"].includes(phase) !== (taskProposal !== undefined)) throw new Error("Task proposal does not match phase.");
+  const continuations = value.continuations === undefined ? undefined : parseContinuations(value.continuations, projectId);
+  for (const continuation of continuations ?? []) {
+    if (continuation.questionIds.some((id) => !clarifications.some((item) => item.id === id))) throw new Error("Continuation refers to an unknown question.");
+    if (continuation.kind === "answers" && continuation.status !== "awaiting_answers" && continuation.questionIds.some((id) => clarifications.find((item) => item.id === id)?.answer === undefined)) throw new Error("Continuation answers are missing.");
+  }
+  const active = continuations?.at(-1);
+  if (active !== undefined && isPendingContinuation(active) && ((active.status === "awaiting_answers" && phase !== "awaiting_answers") || (active.status !== "awaiting_answers" && phase !== "scope_approved"))) throw new Error("Continuation does not match supervisor phase.");
   return {
     schemaVersion: 1, projectId, revision: positive(value.revision), phase: phase as SupervisorState["phase"],
     originalRequest: text(value.originalRequest), clarifications,
     ...(scope === undefined ? {} : { scope }), ...(scopeApprovalId === undefined ? {} : { scopeApprovalId }),
     ...(taskProposal === undefined ? {} : { taskProposal }),
+    ...(continuations === undefined ? {} : { continuations }),
     events: value.events.map((rawEvent: unknown) => { const event = record(rawEvent); return { at: text(event.at), action: text(event.action), detail: text(event.detail) }; }),
   };
 }
