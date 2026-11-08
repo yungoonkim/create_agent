@@ -19,6 +19,7 @@ async function main(): Promise<void> {
     start: ["file"], questions: [], answer: ["file"], "propose-scope": [], "approve-scope": ["reason"], "reject-scope": ["reason"],
     plan: [], "approve-plan": ["reason"], "propose-tasks": [], "configure-verification": ["file"], "initialize-tasks": [], report: [],
     "collect-feedback": [], "request-scope-change": ["reason"], "propose-scope-change": [],
+    "request-plan-revision": ["reason"],
     "approve-scope-change": ["reason"], "reject-scope-change": ["reason"], "resume-plan": [],
   };
   const [command, ...values] = process.argv.slice(2);
@@ -100,6 +101,7 @@ async function main(): Promise<void> {
     }
     case "report": result = await controller.report(); break;
     case "collect-feedback": result = await controller.continuation().collectFeedback(); break;
+    case "request-plan-revision": result = await controller.continuation().requestPlanRevision(arg("reason")); break;
     case "request-scope-change": result = await controller.continuation().requestScopeChange(arg("reason")); break;
     case "propose-scope-change": result = await controller.continuation().proposeScopeChange(); break;
     case "resume-plan": result = await controller.continuation().resumePlan(); break;

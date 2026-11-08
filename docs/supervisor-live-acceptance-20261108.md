@@ -1,4 +1,6 @@
-# 지휘자 단독 실제 Gemini 인수 보고서 — 2026-11-08
+# 지휘자 단독 실제 Gemini 인수 보고서 — 2026-11-08 (v1 시점 기록)
+
+> 후속 사용자 수정 요청으로 v3 작성·재검토까지 완료했다. 최신 상태는 [수정 보고서](supervisor-plan-revision-20261108.md)를 따른다. 아래 상태·사용량은 v1 완료 시점의 이력이다.
 
 - 현재 판정: **Scope 승인 후 실제 Writer 기획 v1 / Reviewer pass. 최종 기획안 사용자 승인 대기. 전체 인수 미완료.**
 - 기준 코드: `2681579` + `docs/supervisor-only-acceptance`의 이번 변경. 제안 어댑터 파일 SHA-256: `8b3bc16beb6650a6f0a767b68944fb34b6d8be9c4956ab098310af9b53ee3d12`.

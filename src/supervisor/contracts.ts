@@ -16,7 +16,7 @@ export interface SupervisorContext {
 
 export interface PlanningContinuation {
   readonly id: string;
-  readonly kind: "answers" | "scope_change";
+  readonly kind: "answers" | "scope_change" | "revision";
   readonly status: "awaiting_answers" | "ready" | "requested" | "proposed" | "approved" | "rejected" | "started" | "completed";
   readonly base: PlanningLoopState;
   readonly planId: string;

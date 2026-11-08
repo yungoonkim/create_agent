@@ -1,0 +1,15 @@
+{
+  "planVersion": 3,
+  "taskGateExitCode": 1,
+  "taskGateMessage": "[ADTF] Development requires a user-approved current plan.",
+  "staleFinalConfirmationExitCode": 1,
+  "staleFinalConfirmationMessage": "[ADTF] Confirmation did not match.",
+  "stateAndUsageUnchanged": true,
+  "ScopeAndV1HashesUnchanged": {
+    ".adtf/projects/supervisor-gemini-acceptance/scope/v4.json": "ea2144d1f5e7e8c37a672255d75ff782f789253bfa3b7bd0615aee0b6ad321e0",
+    ".adtf/projects/supervisor-gemini-acceptance/planning/plans/supervisor-gemini-acceptance-plan/v1.json": "b12c81279ca47bdf3b407c909ec063de001499b361aabe38212ae2c34f4ac7c0",
+    ".adtf/projects/supervisor-gemini-acceptance/planning/reviews/supervisor-gemini-acceptance-plan/v1.json": "535f535f6141b85ab7cc2ff5da163c93f64ad70bcf4229e98fa5a6be022db77c"
+  },
+  "v2SnapshotsUnchanged": true,
+  "taskProposalCreated": false
+}

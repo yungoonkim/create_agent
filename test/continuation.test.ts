@@ -55,6 +55,86 @@ async function harness(t: { after(fn: () => Promise<void>): void }, first: "answ
   return { root, config, memory, store, options, controller, writerContexts, calls: () => calls, proposeChange, decideChange };
 }
 
+test("user plan revisions preserve Scope and snapshots, reach both roles and require fresh final approval", async (t) => {
+  const h = await harness(t, "pass");
+  const before = (await h.memory.getPlanningLoopState(h.config.projectId))!;
+  assert.ok(before.status === "awaiting_approval");
+  const oldPlan = await h.memory.getPlanDraft(h.config.projectId, `${h.config.projectId}-plan`, 1);
+  const oldReview = await h.memory.getPlanReview(h.config.projectId, `${h.config.projectId}-plan`, 1);
+  const scope = (await h.store.get(h.config.projectId))!.scope;
+  const reason = "TEST 사용자 요청: 숫자 표기와 저장 JSON 검증을 명확히 한다";
+  const requested = await h.controller.continuation().requestPlanRevision(reason);
+  assert.equal(h.calls(), 1);
+  assert.equal(requested.continuations!.at(-1)!.kind, "revision");
+  assert.equal(record(await h.controller.report()).nextAction, "resume-plan");
+  await assert.rejects(h.controller.approvePlan(`APPROVE ${h.config.projectId}-plan v1`, "TEST premature"), /continuation/);
+  assert.throws(() => parseSupervisorState({ ...requested, continuations: requested.continuations!.map((item) => ({ ...item, status: "approved" })) }, h.config.projectId), /revision continuation/);
+  let reviews = 0;
+  const fresh = new SupervisorController({ ...h.options, reviewer: { review: async (context, role) => {
+    reviews++; assert.match(context.settledDecisions.join("\n"), /TEST 사용자 요청/);
+    return h.options.reviewer.review(context, role);
+  } } });
+  await fresh.continuation().resumePlan();
+  const after = (await h.memory.getPlanningLoopState(h.config.projectId))!;
+  assert.equal(after.currentPlanVersion, 2); assert.equal(after.iterationCount, 2); assert.equal(after.maxIterations, before.maxIterations);
+  assert.equal(after.status, "awaiting_approval"); assert.notEqual(after.approvalId, before.approvalId);
+  assert.equal(reviews, 1); assert.match(JSON.stringify(h.writerContexts.at(-1)), /TEST 사용자 요청/);
+  assert.deepEqual((await h.store.get(h.config.projectId))!.scope, scope);
+  assert.deepEqual(await h.memory.getPlanDraft(h.config.projectId, `${h.config.projectId}-plan`, 1), oldPlan);
+  assert.deepEqual(await h.memory.getPlanReview(h.config.projectId, `${h.config.projectId}-plan`, 1), oldReview);
+  assert.equal((await h.memory.get(before.approvalId))!.status, "pending");
+  await assert.rejects(fresh.proposeTasks(), /user-approved/);
+  await assert.rejects(fresh.approvePlan(`APPROVE ${h.config.projectId}-plan v1`, "TEST stale"), /current plan/);
+});
+
+test("plan revision requests reject missing reasons, overlapping work and approved plans", async (t) => {
+  const h = await harness(t, "pass");
+  await assert.rejects(h.controller.continuation().requestPlanRevision(" "), /string/);
+  const waiting = await harness(t);
+  await assert.rejects(waiting.controller.continuation().requestPlanRevision("TEST"), /awaiting final approval/);
+  await h.controller.continuation().requestPlanRevision("TEST fix");
+  await assert.rejects(h.controller.continuation().requestPlanRevision("TEST duplicate"), /continuation/);
+  const approved = await harness(t, "pass");
+  await approved.controller.approvePlan(`APPROVE ${approved.config.projectId}-plan v1`, "TEST final");
+  await assert.rejects(approved.controller.continuation().requestPlanRevision("TEST"), /awaiting final approval/);
+  await approved.controller.proposeTasks();
+  await assert.rejects(approved.controller.continuation().requestPlanRevision("TEST late"), /before task/);
+});
+
+test("plan revision requests retain the shared iteration budget and reject changed source snapshots", async (t) => {
+  const h = await harness(t, "pass");
+  for (const version of [2, 3]) {
+    await h.controller.continuation().requestPlanRevision(`TEST revision ${version}`);
+    await h.controller.continuation().resumePlan();
+  }
+  const calls = h.calls();
+  await assert.rejects(h.controller.continuation().requestPlanRevision("TEST exhausted"), /budget/);
+  assert.equal(h.calls(), calls);
+  const stale = await harness(t, "pass");
+  await stale.controller.continuation().requestPlanRevision("TEST fix");
+  const file = join(stale.config.memory.directory, "projects", stale.config.projectId, "planning", "plans", `${stale.config.projectId}-plan`, "v1.json");
+  const plan = JSON.parse(await readFile(file, "utf8")) as Record<string, unknown>;
+  await writeFile(file, JSON.stringify({ ...plan, content: "TEST tampered" }));
+  await assert.rejects(stale.controller.continuation().resumePlan(), /snapshots changed/);
+  assert.equal(stale.calls(), 1);
+});
+
+test("CLI records a revision without changing Scope and retains the bounded Writer/Reviewer loop", async (t) => {
+  const h = await harness(t, "pass");
+  await writeFile(join(h.root, "config.json"), JSON.stringify(rawConfig));
+  const cli = resolve("dist/src/cli/supervisor.js");
+  const run = (command: string, args: string[] = []) => execFileSync(process.execPath, [cli, command, "--config", "config.json", ...args], { cwd: h.root, encoding: "utf8" });
+  const scope = (await h.store.get(h.config.projectId))!.scope;
+  run("request-plan-revision", ["--reason", "TEST 사용자 수정: 저장 규칙 보완"]);
+  assert.equal(h.calls(), 1); assert.match(run("report"), /resume-plan/);
+  run("resume-plan");
+  const state = (await h.memory.getPlanningLoopState(h.config.projectId))!;
+  // The configured improve-once Reviewer revises v2 before passing v3.
+  assert.equal(state.currentPlanVersion, 3); assert.equal(state.iterationCount, 3); assert.equal(state.status, "awaiting_approval");
+  assert.deepEqual((await h.store.get(h.config.projectId))!.scope, scope);
+  assert.match((await h.memory.getPlanDraft(h.config.projectId, `${h.config.projectId}-plan`, 3))!.content, /TEST 사용자 수정/);
+});
+
 test("additional answers resume in a fresh controller, preserve snapshots and require new final approval", async (t) => {
   const h = await harness(t);
   const old = await h.memory.getPlanDraft(h.config.projectId, `${h.config.projectId}-plan`, 1);

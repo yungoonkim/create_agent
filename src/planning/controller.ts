@@ -22,7 +22,8 @@ export interface PlanningResumeAuthorization {
   readonly id: string;
   readonly planId: string;
   readonly expectedState: PlanningLoopState;
-  readonly kind: "answers" | "scope_change";
+  readonly kind: "answers" | "scope_change" | "revision";
+  readonly revisionReason?: string;
   readonly scopeChangeRequestId?: string;
   readonly scopeChangeDecision?: "approved" | "rejected";
 }
@@ -92,6 +93,7 @@ export class PlanningLoopController {
       const settledDecisions = [
         ...await memory.getSettledDecisions(projectId),
         ...(input.clarificationDecisions ?? []),
+        ...(authorization?.kind === "revision" ? [`User requested plan revision within the unchanged approved Scope:\n${authorization.revisionReason!}`] : []),
       ];
 
       operation = "load approved Scope";
@@ -378,6 +380,11 @@ export class PlanningLoopController {
     if (authorization.kind === "answers") {
       if (state.status !== "awaiting_user_input" || state.reviewId !== review.id || scopeSnapshotKey(scope) !== scopeSnapshotKey(input.scopeContract) ||
           input.clarificationDecisions === undefined || input.clarificationDecisions.length === 0 || input.clarificationDecisions.some((item) => typeof item !== "string" || item.trim().length === 0)) throw new Error("User answers and unchanged approved Scope are required.");
+    } else if (authorization.kind === "revision") {
+      if (state.status !== "awaiting_approval" || scopeSnapshotKey(scope) !== scopeSnapshotKey(input.scopeContract) ||
+          typeof authorization.revisionReason !== "string" || authorization.revisionReason.trim().length === 0 ||
+          authorization.scopeChangeRequestId !== undefined || authorization.scopeChangeDecision !== undefined ||
+          (await memory.get(state.approvalId))?.status !== "pending") throw new Error("Plan revision needs a pending final approval, an explicit reason and unchanged approved Scope.");
     } else {
       if (!["awaiting_user_input", "awaiting_scope_change_approval", "awaiting_approval", "user_approved"].includes(state.status) || authorization.scopeChangeRequestId === undefined || authorization.scopeChangeDecision === undefined) throw new Error("Scope change cannot resume this Planning state.");
       const request = await memory.getScopeChangeRequest(config.projectId, authorization.scopeChangeRequestId);

@@ -61,6 +61,17 @@ npm run supervisor -- resume-plan --config examples/supervisor-gemini/config.jso
 
 Reviewer 질문은 기존 질문 뒤의 새 Q-ID로 기록한다. 모든 질문에 답해야 재개할 수 있다. 답변 저장은 API를 호출하지 않는다. `resume-plan`은 별도 CALL 확인을 거쳐 같은 Plan ID의 다음 버전을 만들고 Reviewer에게 검토받는다. 원문과 이전 Plan/Review는 보존하고, 검토 통과 후 새 버전의 최종 승인을 다시 받는다.
 
+## 승인 대기 중인 기획안 수정 후 재개
+
+Scope를 바꾸지 않는 사용자 수정 요청은 `request-plan-revision --reason`으로 기록한다. 현재 기획의 최종 승인이 pending이고 아직 작업 제안 전일 때만 가능하다. 요청 기록은 API를 호출하지 않으며 Scope·기존 Plan/Review·이전 승인 기록을 변경하지 않는다.
+
+```sh
+npm run supervisor -- request-plan-revision --config examples/supervisor-gemini/config.json --reason "숫자 표기, 저장 JSON 검증, 저장 실패 처리를 구체화"
+npm run supervisor -- resume-plan --config examples/supervisor-gemini/config.json
+```
+
+`resume-plan`은 CALL 확인 후 같은 Plan ID의 다음 버전을 작성·검토한다. 수정 이유를 Writer와 Reviewer 모두에게 전달하며 Reviewer는 각 요청의 해결 여부를 확인한다. 기존 총 반복 예산을 유지하고 새 Plan의 최종 사용자 승인을 다시 받아야 한다. 이미 최종 승인한 기획이나 Scope 변경은 이 명령으로 처리하지 않는다. 중단·중복 호출·출처 해시 검증은 기존 continuation 정책과 같다.
+
 ## Scope 변경 승인 또는 거절 후 재개
 
 작업 제안 **이전**의 검토된 기획에서 사용자가 변경을 요청하거나 Reviewer가 범위 위반을 보고하면 다음을 사용한다. 진행 중인 다른 continuation은 먼저 완료하거나 결정해야 한다. 초기화된 작업 정의를 변경하는 명령은 아니다.
@@ -110,7 +121,7 @@ npm run supervisor -- initialize-tasks --config examples/supervisor-demo/config.
 - 질문·변경 대기는 report에 수집/제안/결정/재개 명령을 표시한다. 반복 한도·실패·모델 호출 도중 중단은 STOP이다. 일반 `plan`으로 기존 상태를 재실행하지 않는다.
 - 기획의 총 iterationCount/maxIterations는 재개 사이에도 유지한다. 설정을 바꿔 예산을 초기화하지 못하며 소진되면 호출하지 않는다. 한도를 늘려 기존 실행을 복구하는 기능은 없다.
 - 재개 시작 후 모델 실행이 완료됐으나 supervisor 기록만 실패했다면 `resume-plan` 재시도가 완료 기록만 마무리한다. Planning의 continuationId·버전·Scope로 확인하며 모델을 다시 부르지 않는다. 도중 끊긴 drafting/reviewing 상태는 자동 재호출하지 않는다.
-- **남음:** 실제 Gemini로 전체 주제 기획의 의미상 인수 시험. 현재 Cloud에서 primary Scope v4 승인 후 실제 Writer 기획 v1 / Reviewer pass까지 확인했다. 기획 최종 승인 대기이며 작업 지시는 아직 실행하지 않았다. [실제 인수 보고서](supervisor-live-acceptance-20261108.md)를 따른다.
+- **남음:** 실제 Gemini로 전체 주제 기획의 의미상 인수 시험. 현재 Cloud에서 primary Scope v4 승인 후 실제 사용자 수정 요청 후 Writer 기획 v3 / Reviewer pass까지 확인했다. v3 최종 승인 대기이며 작업 지시는 아직 실행하지 않았다. [실제 인수 보고서](supervisor-live-acceptance-20261108.md)를 따른다.
 - Scope 승인 또는 작업 초기화의 하위 저장 직후 중단되면 같은 명령으로 명시적으로 재시도할 수 있다. 기획 도중 중단된 실행의 자동 복구는 지원하지 않는다.
 - 여러 저장소를 묶는 DB 트랜잭션은 없다. 기획·개발 명령을 같은 프로젝트에서 동시에 실행하지 않는다. 남은 잠금은 실제 프로세스 종료를 확인한 운영자가 복구하며 자동 제거하지 않는다.
 - 실제 개발·테스트 팀원 Runtime, 자동 Worker 재호출, 제품 개발 완료, 모바일 푸시 전송은 이번 구현에 포함되지 않는다.

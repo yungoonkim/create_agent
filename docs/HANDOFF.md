@@ -3,26 +3,27 @@
 마지막 정리: 2026-11-08 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
-## 최신 재개 상태 — 기획안 v1 최종 승인 대기
+## 최신 재개 상태 — 기획 수정 완료, v3 최종 승인 대기
 
-- 브랜치 `docs/supervisor-only-acceptance`, 기준 `2681579`에 질문·Scope 지침 및 안전한 오류 분류를 수정했다. typecheck, 전체 **112개 테스트**, diff 검사 통과.
-- Cloud ADC 로그인/SDK 갱신 완료. 실제 모델 호출에 성공했다. 인증 파일은 `/workspace/.gcloud-adc/application_default_credentials.json` (권한 600)이며 토큰·코드를 출력하지 않는다. Node 24.22.1에서 `--use-env-proxy`와 파일 selector를 사용한다. GCP `iceu-songpa11` / `global`, Writer/Reviewer `gemini-3.8-flash` 유지.
-- 사용자가 primary `supervisor-gemini-acceptance`의 **scope-v4 v4를 명시적으로 승인**했다. 동일 스냅샷 확인 후 승인 결정을 저장했다. qfix 비교 실행의 결함 있는 Scope는 별도 프로젝트에서 pending으로 보존한다.
-- `plan` 1회 실행: Writer 기획 **v1**, Reviewer **review-1 / pass / issues 0**, iterationCount 1 / maxIterations 5 / **awaiting_approval**. 자동 수정 반복은 없었다. Supervisor revision 6 / scope_approved다.
-- **현재 사용자 결정 대기:** `supervisor-gemini-acceptance-plan v1` 최종 승인. 오른쪽에 [실제 기획안 원문](acceptance/2026-11-08/primary-plan-v1.md)을 열고 승인 질문을 보냈다. Reviewer pass를 최종 사용자 승인으로 취급하지 않는다.
-- [독립 점검](acceptance/2026-11-08/primary-plan-v1-assessment.md): 핵심 lot·수량·날짜·저장 규칙은 포함됐다. CLI 문법/기본 경로, 숫자 입력 표기 설명, 로드 JSON 구조/업무 검증, atomic rename 내구성 한계는 상세 작업 지시에서 구체화할 항목이다. 원본 기획은 수정하지 않았다.
-- 미승인 Scope에서 plan 차단, 미승인 Plan에서 propose-tasks 차단을 실제 CLI로 확인했다. 두 차단 모두 상태·usage 변화와 후속 산출물 생성이 없었다.
-- 전체 실제 모델 어댑터 호출 7회(성공 6/실패 1), 제공 토큰 입력 12,547 / 출력 6,040 / reasoning 6,004. 미제공 실패 지표는 추정하지 않았다. 모델 소요시간 합계 104,385ms.
-- 다음: **사용자의 Plan v1 최종 승인** 후 approve-plan → propose-tasks. 작업 지시의 요구 추적·완료 조건·검증·의존성 및 위 점검 항목을 평가한다. 실제 제품 구현·팀원 Agent 실행은 보류한다. 추가 답변/범위 변경/전체 독립 반복 시험은 아직 남았다.
+- 브랜치 `docs/supervisor-only-acceptance`. 이전 저장 커밋 `2b7568e` 이후 사용자 수정 요청 기능과 역할 지침을 보완했다. typecheck, 전체 **116개 테스트**, diff 검사 통과.
+- 사용 한도 중단 후 확인 당시 실제 상태는 v1 / awaiting_approval이고 v2 호출은 없었다. 미완성 소스 변경을 검증·완성한 뒤 기존 프로젝트에서 정상 재개했다.
+- primary `supervisor-gemini-acceptance`의 사용자 승인 Scope는 **scope-v4 v4** 그대로다. Scope·Plan v1·Review v1 해시 및 v2 JSON 사본 일치를 확인했다. 이전 Plan 승인을 대신 만들지 않았다.
+- 사용자 요청(숫자 표기/안전 정수 구분, 저장 JSON 필드·값 검증, 원자적 저장 보장·실패 처리)을 request-plan-revision으로 기록했다. v2 작성/검토 후 보장 한계의 미해결점을 진행자가 구체화해 v3을 작성/재검토했다.
+- **현재 Plan v3 / review-3 pass / awaiting_approval**, iterationCount **3/5**, Supervisor revision **12 / scope_approved**. 두 revision continuation은 completed다. Writer 3회·Reviewer 3회 모두 pass, Reviewer 자체 수정 요청 0회다. 사용자/진행자의 피드백으로 수정한 사실과 자동 Reviewer 한계를 구분한다.
+- [v3 원문](acceptance/2026-11-08/primary-plan-v3.md), [v3 점검](acceptance/2026-11-08/primary-plan-v3-assessment.md), [실제 수정 보고서](supervisor-plan-revision-20261108.md). 세 요청의 구체 조건을 확인했고, CLI 명령/기본 경로는 상세 작업 지시에서 확정할 항목으로 남았다.
+- **사용자 최종 승인 대기 대상은 v3**다. v3 승인 질문과 원문 링크를 제시했다. `open_in_codex` 파일 열기 호출은 handler 부재로 실패해 링크로 제공했다. 승인 전 작업 제안과 오래된 v1 승인 문구가 상태·usage 변화 없이 차단됨을 실제 CLI로 확인했다.
+- 다음: 사용자의 v3 승인 후 approve-plan → propose-tasks. 팀원 Agent·제품 구현은 계속 보류한다. 전체 반복/변경 시나리오와 작업 지시 품질은 아직 전체 인수 완료로 판정하지 않는다.
 
 ```sh
-# Plan v1 승인 결정 후에만 실행한다. 현재는 사용자 결정 대기다.
-node dist/src/cli/supervisor.js approve-plan --config examples/supervisor-gemini/config.json --reason "사용자가 기획안 v1 원문을 검토하고 최종 승인"
-# CLI의 정확한 문구: APPROVE supervisor-gemini-acceptance-plan v1
+# v3 최종 승인 결정 후에만 실행한다. 지금은 사용자 결정 대기다.
+node dist/src/cli/supervisor.js approve-plan --config examples/supervisor-gemini/config.json --reason "사용자가 기획안 v3 원문을 검토하고 최종 승인"
+# 정확한 입력 문구: APPROVE supervisor-gemini-acceptance-plan v3
 GOOGLE_APPLICATION_CREDENTIALS=/workspace/.gcloud-adc/application_default_credentials.json node --use-env-proxy dist/src/cli/supervisor.js propose-tasks --config examples/supervisor-gemini/config.json
 ```
 
-`start` 또는 일반 `plan`을 다시 실행하지 않는다. 이미 기획 상태가 있다. JSON 스냅샷·승인·ledger·점검·재현 명령은 [실제 인수 보고서](supervisor-live-acceptance-20261108.md)와 `docs/acceptance/2026-11-08/`에 저장했다. primary 실행 데이터는 [경로·SHA-256·본문 체크포인트](acceptance/2026-11-08/primary-runtime-checkpoint.json)에도 저장했다. 새 실행 환경에는 ADC와 Git 제외 `.adtf`가 자동 이전되지 않으므로 실제 파일 존재를 먼저 확인한다. 체크포인트는 자격 증명·잠금을 포함하지 않는다. 복원 시 새 상태를 덮어쓰지 않고 경로·해시·외부 데이터 검증을 적용해야 한다. 스냅샷만 보고 기획 호출이나 승인 결정을 중복 실행하지 않는다. 아래는 기존 구현 인수인계다.
+Cloud ADC 파일 `/workspace/.gcloud-adc/application_default_credentials.json`(권한 600)은 그대로 유효해 실제 호출에 사용했다. GCP `iceu-songpa11/global`, Writer/Reviewer `gemini-3.8-flash` 유지. 토큰을 출력하거나 로그인을 반복하지 않는다. Node 24.22.1에서는 `--use-env-proxy`를 사용한다.
+
+`start`/일반 `plan`/완료한 `resume-plan`을 다시 실행하지 않는다. [재개 체크포인트](acceptance/2026-11-08/primary-runtime-checkpoint.json)는 primary 데이터와 연결된 승인 기록 17개 파일의 경로·해시·본문을 포함한다. ADC·잠금은 제외했다. 실제 상태를 먼저 읽고 더 최신인 데이터를 덮어쓰지 않으며 외부 데이터·해시를 검증한다. 원문·v1/v2/v3·각 Review·사용량은 `docs/acceptance/2026-11-08/`에 보존했다. 아래는 과거 구현 기록이다.
 
 ## 기존 구현 상태 (실제 인수 전 기록)
 

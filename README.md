@@ -80,3 +80,5 @@ npm run development -- list --config examples/planning-gemini/config.json
 - [STEP 4 구현·검증 보고서](docs/step4-report.md)
 - [로드맵](docs/roadmap.md)
 - [설계 결정](docs/decisions.md)
+
+실제 Gemini 인수는 [v1 시험 기록](docs/supervisor-live-acceptance-20261108.md)과 [사용자 수정 요청·v3 재시험](docs/supervisor-plan-revision-20261108.md)에 정리했다. 최신 상태는 기획안 v3 최종 사용자 승인 대기이며 팀원 실행은 보류한다.

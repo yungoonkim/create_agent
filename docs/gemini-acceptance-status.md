@@ -1,8 +1,8 @@
 # 실제 Gemini 기획 품질 인수 — 실행 현황
 
-## 최신 상태: Scope 승인 완료, 기획안 v1 최종 승인 대기
+## 최신 상태: 사용자 요청 수정 완료, 기획안 v3 최종 승인 대기
 
-ADC와 SDK 갱신 성공 후 실제 모델 7회(성공 6/실패 1)를 실행했다. 질문·Scope·오류 보고를 수정·재시험했고 primary Scope v4는 사용자가 승인했다. 이후 Writer 기획 v1과 Reviewer review-1/pass를 저장했다. 현재 Plan v1 최종 사용자 승인 대기, 작업 지시 미생성, 팀원/제품 구현 없음이다. 전체 112개 자동 테스트와 typecheck 통과. [최신 인수 보고서](supervisor-live-acceptance-20261108.md), [기획 원문](acceptance/2026-11-08/primary-plan-v1.md), [독립 점검](acceptance/2026-11-08/primary-plan-v1-assessment.md)을 우선한다. 아래 절들은 준비 과정의 시점별 이력이다.
+중단 지점을 확인해 사용자 기획 수정 요청 경로를 완성했고, 동일 Scope v4에서 v2/v3를 작성·재검토했다. 현재 Plan v3 / Reviewer pass / iterationCount 3/5 / 최종 사용자 승인 대기다. 세 요청의 반영을 독립 점검했고 실제 제품·팀원 실행은 없다. typecheck와 전체 116개 테스트 통과. 누적 모델 11회(성공 10/실패 1). [수정 보고서](supervisor-plan-revision-20261108.md), [v3 원문](acceptance/2026-11-08/primary-plan-v3.md), [v3 점검](acceptance/2026-11-08/primary-plan-v3-assessment.md)을 우선한다. 아래 절들은 준비 과정의 시점별 이력이다.
 
 ## 새 Cloud 환경 확인 (2026-11-08 17:52 한국 시간)
 
