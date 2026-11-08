@@ -45,6 +45,10 @@ export class FileSupervisorStore {
             const after = next.clarifications[index];
             return after?.id !== item.id || after.question !== item.question || (item.answer !== undefined && after.answer !== item.answer);
           }))) throw new Error("Original request, answers and history are immutable.");
+      const oldTaskRevisions = current?.taskRevisions ?? [], newTaskRevisions = next.taskRevisions ?? [];
+      if (newTaskRevisions.length < oldTaskRevisions.length || newTaskRevisions.length > oldTaskRevisions.length + 1 ||
+          !same(newTaskRevisions.slice(0, oldTaskRevisions.length), oldTaskRevisions) ||
+          (newTaskRevisions.length > oldTaskRevisions.length && !same(newTaskRevisions.at(-1)!.previous, current?.taskProposal))) throw new Error("Task revision history is immutable and must preserve the previous proposal.");
       if (current?.continuations !== undefined) {
         const old = current.continuations, updated = next.continuations ?? [];
         if (updated.length < old.length || !same(updated.slice(0, Math.max(0, old.length - 1)), old.slice(0, -1))) throw new Error("Continuation history is immutable.");

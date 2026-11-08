@@ -1,8 +1,8 @@
 # 실제 Gemini 기획 품질 인수 — 실행 현황
 
-## 최신 상태: 사용자 요청 수정 완료, 기획안 v3 최종 승인 대기
+## 최신 상태: primary 기획 승인 완료, 격리 Scope 변경 시험 결정 대기
 
-중단 지점을 확인해 사용자 기획 수정 요청 경로를 완성했고, 동일 Scope v4에서 v2/v3를 작성·재검토했다. 현재 Plan v3 / Reviewer pass / iterationCount 3/5 / 최종 사용자 승인 대기다. 세 요청의 반영을 독립 점검했고 실제 제품·팀원 실행은 없다. typecheck와 전체 116개 테스트 통과. 누적 모델 11회(성공 10/실패 1). [수정 보고서](supervisor-plan-revision-20261108.md), [v3 원문](acceptance/2026-11-08/primary-plan-v3.md), [v3 점검](acceptance/2026-11-08/primary-plan-v3-assessment.md)을 우선한다. 아래 절들은 준비 과정의 시점별 이력이다.
+primary Scope v4/Plan v3은 사용자가 승인했다. 실제 작업 지시 5개를 두 번 수정해 CLI 상세·수량 제약·선행 빌드 설정을 점검했다. 실제 승인 출처의 격리 TEST/STUB 실패 정책 시험을 수행했고, 독립 모델 재현은 Writer v1 → Reviewer 수정 요청 1회 → Writer v2 → Reviewer pass였다. primary는 그대로이며 제품/팀원 실행 없음이다. typecheck 및 전체 119개 테스트 통과. 현재 [시험용 Scope v5](acceptance/2026-11-08/scope-change-test/proposal.md)의 승인·거절 두 격리 분기 실행을 허용할지 사용자 결정을 기다린다. [최신 보고서](supervisor-work-orders-acceptance-20261108.md)를 우선한다. 아래는 시점별 준비 이력이다.
 
 ## 새 Cloud 환경 확인 (2026-11-08 17:52 한국 시간)
 

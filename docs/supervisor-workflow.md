@@ -92,6 +92,14 @@ Reviewer가 이미 생성한 요청이 있으면 그 요청·승인 ID를 재사
 
 ## 검증 프로필 연결
 
+미수락 작업 지시의 내용 오류는 `revise-tasks --reason "수정할 점"`으로 재제안한다. CALL 확인 후 같은 승인 Scope/Plan 출처로 모델을 호출하며, 현재 제안을 `taskRevisions[].previous`에 보존한다. 이전 이력은 수정할 수 없고 수락 문구의 revision도 바뀐다. 작업 초기화 후에는 지시 정의를 바꾸지 않는다. 재제안은 새 작업을 수락하거나 제품·Agent를 실행하지 않는다. 검증 프로필·예산은 운영자가 다시 확인한다.
+
+```sh
+npm run supervisor -- revise-tasks --config examples/supervisor-gemini/config.json --reason "CLI 구문과 선행 빌드 설정을 명시"
+```
+
+CLI 확인 입력이 결정 없이 닫히면 명시적으로 exit 1을 반환하며 모델/승인/작업을 실행하지 않는다.
+
 모델이 검사 실행 파일이나 재작업 예산을 결정하지 않도록, 자동 생성 작업은 기본 수동 검수 방식이다. `initialize-tasks` **이전**에 운영자가 필요한 작업의 프로필을 지정할 수 있다.
 
 ```json
@@ -121,7 +129,7 @@ npm run supervisor -- initialize-tasks --config examples/supervisor-demo/config.
 - 질문·변경 대기는 report에 수집/제안/결정/재개 명령을 표시한다. 반복 한도·실패·모델 호출 도중 중단은 STOP이다. 일반 `plan`으로 기존 상태를 재실행하지 않는다.
 - 기획의 총 iterationCount/maxIterations는 재개 사이에도 유지한다. 설정을 바꿔 예산을 초기화하지 못하며 소진되면 호출하지 않는다. 한도를 늘려 기존 실행을 복구하는 기능은 없다.
 - 재개 시작 후 모델 실행이 완료됐으나 supervisor 기록만 실패했다면 `resume-plan` 재시도가 완료 기록만 마무리한다. Planning의 continuationId·버전·Scope로 확인하며 모델을 다시 부르지 않는다. 도중 끊긴 drafting/reviewing 상태는 자동 재호출하지 않는다.
-- **남음:** 실제 Gemini로 전체 주제 기획의 의미상 인수 시험. 현재 Cloud에서 primary Scope v4 승인 후 실제 사용자 수정 요청 후 Writer 기획 v3 / Reviewer pass까지 확인했다. v3 최종 승인 대기이며 작업 지시는 아직 실행하지 않았다. [실제 인수 보고서](supervisor-live-acceptance-20261108.md)를 따른다.
+- **남음:** 실제 Gemini로 전체 주제 기획의 의미상 인수 시험. 현재 Cloud에서 primary Scope v4 승인 후 실제 사용자 수정 요청 후 Writer 기획 v3 / Reviewer pass까지 확인했다. v3 승인 후 작업 지시 제안·수정과 격리 정책·모델 재현을 수행했다. 실제 제품 구현이나 Worker Runtime 실행은 하지 않았다. 최신 상태는 [승인 후 보고서](supervisor-work-orders-acceptance-20261108.md)를 따른다. [실제 인수 보고서](supervisor-live-acceptance-20261108.md)를 따른다.
 - Scope 승인 또는 작업 초기화의 하위 저장 직후 중단되면 같은 명령으로 명시적으로 재시도할 수 있다. 기획 도중 중단된 실행의 자동 복구는 지원하지 않는다.
 - 여러 저장소를 묶는 DB 트랜잭션은 없다. 기획·개발 명령을 같은 프로젝트에서 동시에 실행하지 않는다. 남은 잠금은 실제 프로세스 종료를 확인한 운영자가 복구하며 자동 제거하지 않는다.
 - 실제 개발·테스트 팀원 Runtime, 자동 Worker 재호출, 제품 개발 완료, 모바일 푸시 전송은 이번 구현에 포함되지 않는다.

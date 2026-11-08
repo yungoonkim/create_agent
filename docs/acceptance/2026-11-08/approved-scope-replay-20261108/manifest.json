@@ -1,0 +1,10 @@
+{
+  "runId": "approved-scope-replay-20261108",
+  "kind": "independent live-model acceptance",
+  "projectId": "supervisor-gemini-acceptance",
+  "isolation": "Separate memory root; project identity retained to preserve the genuine Scope approval binding",
+  "scopeId": "scope-v4",
+  "scopeVersion": 4,
+  "scopeApprovalId": "approval-2c1ec6a8-53fe-4915-bcec-36904e469a20",
+  "note": "No new Scope, user approval, task initialization, product implementation or Agent Runtime execution"
+}

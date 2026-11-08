@@ -12,6 +12,7 @@ export interface SupervisorContext {
   readonly originalRequest: string;
   readonly clarifications: readonly Clarification[];
   readonly scopeChange?: { readonly baseScope: ScopeContract; readonly reason: string; readonly proposedChanges: readonly string[] };
+  readonly taskRevision?: { readonly reason: string; readonly previousOrders: readonly WorkOrder[] };
 }
 
 export interface PlanningContinuation {
@@ -55,6 +56,11 @@ export interface WorkOrder {
   readonly requirementIds: readonly string[];
 }
 
+export interface TaskProposal {
+  readonly source: ApprovedPlanReference;
+  readonly orders: readonly WorkOrder[];
+}
+
 /** Proposals only. Model outputs cannot approve, assign, run commands, or report completion. */
 export interface SupervisorProposer {
   questions(context: SupervisorContext): Promise<unknown>;
@@ -68,7 +74,8 @@ export interface SupervisorState extends SupervisorContext {
   readonly phase: "intake" | "awaiting_answers" | "ready_for_scope" | "scope_proposed" | "scope_approved" | "tasks_proposed" | "tasks_initialized";
   readonly scope?: ScopeContract;
   readonly scopeApprovalId?: string;
-  readonly taskProposal?: { readonly source: ApprovedPlanReference; readonly orders: readonly WorkOrder[] };
+  readonly taskProposal?: TaskProposal;
+  readonly taskRevisions?: readonly { readonly reason: string; readonly previous: TaskProposal; readonly revisedAt: string }[];
   readonly continuations?: readonly PlanningContinuation[];
   readonly events: readonly { readonly at: string; readonly action: string; readonly detail: string }[];
 }

@@ -69,6 +69,15 @@ export function parseSupervisorState(raw: unknown, projectId: string): Superviso
     taskProposal = { source, orders: parseOrders(proposal.orders, projectId, scope, true) };
   }
   if (["tasks_proposed", "tasks_initialized"].includes(phase) !== (taskProposal !== undefined)) throw new Error("Task proposal does not match phase.");
+  const taskRevisions = value.taskRevisions === undefined ? undefined : (() => {
+    if (!Array.isArray(value.taskRevisions) || taskProposal === undefined || scope === undefined) throw new Error("Invalid task revision history.");
+    return value.taskRevisions.map((rawRevision: unknown) => {
+      const revision = record(rawRevision), previous = record(revision.previous);
+      const source = parseSource(previous.source);
+      if (!same(source, taskProposal.source)) throw new Error("Task revision history has a different approved source.");
+      return { reason: text(revision.reason), revisedAt: text(revision.revisedAt), previous: { source, orders: parseOrders(previous.orders, projectId, scope, true) } };
+    });
+  })();
   const continuations = value.continuations === undefined ? undefined : parseContinuations(value.continuations, projectId);
   for (const continuation of continuations ?? []) {
     if (continuation.questionIds.some((id) => !clarifications.some((item) => item.id === id))) throw new Error("Continuation refers to an unknown question.");
@@ -81,6 +90,7 @@ export function parseSupervisorState(raw: unknown, projectId: string): Superviso
     originalRequest: text(value.originalRequest), clarifications,
     ...(scope === undefined ? {} : { scope }), ...(scopeApprovalId === undefined ? {} : { scopeApprovalId }),
     ...(taskProposal === undefined ? {} : { taskProposal }),
+    ...(taskRevisions === undefined ? {} : { taskRevisions }),
     ...(continuations === undefined ? {} : { continuations }),
     events: value.events.map((rawEvent: unknown) => { const event = record(rawEvent); return { at: text(event.at), action: text(event.action), detail: text(event.detail) }; }),
   };

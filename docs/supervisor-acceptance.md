@@ -32,8 +32,10 @@ Writer와 Reviewer는 현재 Agent의 내부 기획 역할이다. 기존 수동 
 
 ## 현재 판정
 
-- 기존 111개에 안전한 오류 분류 회귀 검증을 추가해 현재 전체 116개 테스트 및 typecheck 통과. 정책·저장·CLI 및 fixture를 포함한 결과다.
-- 실제 Gemini: 질문·Scope 생성과 수정·재시험을 진행했다. primary Scope v4 사용자 승인 후 Writer v1 이후 사용자 수정 요청을 반영한 v3 / Reviewer pass까지 확인했다. 최종 v3 승인 대기이며 작업 지시 품질은 아직 미평가다. [실제 보고서](supervisor-live-acceptance-20261108.md)에 결함과 보존된 원문이 있다.
+[승인 후 최신 인수 보고서](supervisor-work-orders-acceptance-20261108.md)의 실제/TEST-STUB/미실행 구분을 우선한다.
+
+- 기존 111개에 안전한 오류 분류 회귀 검증을 추가해 현재 전체 119개 테스트 및 typecheck 통과. 정책·저장·CLI 및 fixture를 포함한 결과다.
+- 실제 Gemini: 질문·Scope 생성과 수정·재시험을 진행했다. primary Scope v4 사용자 승인 후 Writer v1 이후 사용자 수정 요청을 반영한 v3 / Reviewer pass까지 확인했다. v3 승인 후 작업 지시 생성·두 번 수정·점검과 격리 실패 정책을 수행했다. 독립 모델 재현에서 Reviewer 수정 요청 1회 후 통과도 확인했다. 격리 Scope 변경 승인/거절 분기는 아직 사용자 결정 대기다. [실제 보고서](supervisor-live-acceptance-20261108.md)에 결함과 보존된 원문이 있다.
 - 현재 Agent 전체 완료: 인수 대기. 위 실제 품질 평가와 수정·재시험 결과를 확인한 뒤 판정한다.
 - 알려진 동작: 명령을 단계별로 실행하는 CLI다. 모델 호출 도중 중단된 실행은 자동 재호출하지 않고 중단 상태를 보존한다. 이미 제안/초기화한 작업의 범위 변경·이관은 지원하지 않는다. 이 한계들을 숨기지 않고 시험 결과에 명시한다.
 

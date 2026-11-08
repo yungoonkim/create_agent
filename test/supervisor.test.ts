@@ -54,6 +54,43 @@ async function harness(t: { after(fn: () => Promise<void>): void }, scenario: Fa
   return { root, config, memory, store, developmentStore, seen, options, controller, ready, approvedScope, approvedPlan };
 }
 
+test("unaccepted task revisions preserve prior orders and approval source, and invalidate stale acceptance", async (t) => {
+  const h = await harness(t); await h.approvedPlan();
+  const previous = await h.controller.proposeTasks();
+  let seen: unknown;
+  const fresh = new SupervisorController({ ...h.options, proposer: { ...h.options.proposer, tasks: async (context) => {
+    seen = context.taskRevision;
+    return orders.map((order) => ({ ...order, task: { ...order.task, description: `${order.task.description} TEST revised details` } }));
+  } } });
+  const revised = await fresh.reviseTasks("TEST clarify CLI and numeric rules");
+  assert.deepEqual(record(seen).previousOrders, previous.taskProposal!.orders);
+  assert.equal(record(seen).reason, "TEST clarify CLI and numeric rules");
+  assert.deepEqual(revised.taskProposal!.source, previous.taskProposal!.source);
+  assert.deepEqual(revised.taskRevisions![0]!.previous, previous.taskProposal);
+  assert.match(revised.taskProposal!.orders[0]!.task.description, /revised details/);
+  await assert.rejects(fresh.initializeTasks(`ACCEPT TASKS r${previous.revision}`), /revision/);
+  await assert.rejects(h.store.update(h.config.projectId, async (state) => ({ ...state!, revision: state!.revision + 1, taskRevisions: state!.taskRevisions!.map((item) => ({ ...item, reason: "rewrite history" })), events: [...state!.events, { action: "bad", at: "now", detail: "bad" }] })), /immutable/);
+  assert.throws(() => parseSupervisorState({ ...revised, taskRevisions: revised.taskRevisions!.map((item) => ({ ...item, previous: { ...item.previous, source: { ...item.previous.source, contentHash: "a".repeat(64) } } })) }, h.config.projectId), /different approved source/);
+  await fresh.initializeTasks(`ACCEPT TASKS r${revised.revision}`);
+  await assert.rejects(fresh.reviseTasks("TEST too late"), /tasks_initialized/);
+});
+
+test("invalid or stale task revisions cannot replace the current proposal or history", async (t) => {
+  const h = await harness(t); await h.approvedPlan(); await h.controller.proposeTasks();
+  const before = await h.store.get(h.config.projectId);
+  const invalid = new SupervisorController({ ...h.options, proposer: { ...h.options.proposer, tasks: async () => [orders[0]] } });
+  await assert.rejects(invalid.reviseTasks("TEST incomplete coverage"), /cover every/);
+  assert.deepEqual(await h.store.get(h.config.projectId), before);
+  let calls = 0;
+  const guarded = new SupervisorController({ ...h.options, proposer: { ...h.options.proposer, tasks: async () => { calls++; return orders; } } });
+  const state = (await h.memory.getPlanningLoopState(h.config.projectId))!;
+  const file = join(h.config.memory.directory, "projects", h.config.projectId, "planning", "plans", `${h.config.projectId}-plan`, `v${state.currentPlanVersion!}.json`);
+  const plan = JSON.parse(await readFile(file, "utf8")) as Record<string, unknown>;
+  await writeFile(file, JSON.stringify({ ...plan, content: "TEST changed after approval" }));
+  await assert.rejects(guarded.reviseTasks("TEST stale source")); assert.equal(calls, 0);
+  assert.deepEqual(await h.store.get(h.config.projectId), before);
+});
+
 test("supervisor preserves raw request and immutable answers across process-style reloads", async (t) => {
   const h = await harness(t);
   await h.controller.start(request);
@@ -329,4 +366,16 @@ test("CLI runs complete offline supervisor flow and reads live-config reports wi
   await writeFile(join(h.root, "config.json"), JSON.stringify(live));
   assert.equal(record(JSON.parse(run("report"))).workerRuntimeConnected, false);
   assert.equal(await readFile(join(h.config.memory.directory, "projects", h.config.projectId, "requirements.md"), "utf8"), request);
+});
+
+test("CLI confirmation EOF fails explicitly without creating usage or workflow state", async (t) => {
+  const h = await harness(t);
+  const live = { projectId: "confirmation-eof-test", planning: { writer: { providerId: "vertex-ai", modelId: "gemini-3.8-flash", personaId: "planning-writer" }, reviewer: { providerId: "vertex-ai", modelId: "gemini-3.8-flash", personaId: "planning-reviewer" }, maxIterations: 5, requireUserApproval: true }, memory: { type: "file", directory: ".adtf" } };
+  await writeFile(join(h.root, "live.json"), JSON.stringify(live));
+  assert.throws(() => execFileSync(process.execPath, [resolve("dist/src/cli/supervisor.js"), "questions", "--config", "live.json"], { cwd: h.root, input: "", encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] }), (error: unknown) => {
+    const result = error as { status: number; stderr: string };
+    return result.status === 1 && /Confirmation input closed/.test(String(result.stderr));
+  });
+  assert.equal(await h.store.get(live.projectId), undefined);
+  await assert.rejects(readFile(join(h.config.memory.directory, "projects", live.projectId, "supervisor", "usage.jsonl")), { code: "ENOENT" });
 });

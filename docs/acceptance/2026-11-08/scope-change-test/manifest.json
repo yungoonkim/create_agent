@@ -1,0 +1,10 @@
+{
+  "label": "isolated acceptance scenario",
+  "memoryRoot": "/workspace/scratch/approved-scope-replay-20261108/.adtf",
+  "projectId": "supervisor-gemini-acceptance",
+  "continuationId": "continue-83bf5e0b-7dc9-4f63-8af7-4ea940aed196",
+  "sourcePlanVersion": 2,
+  "primaryUnchanged": true,
+  "primaryHash": "782e714dc4b836bf720df6894e48937d1618090a34333b1b1071d4651fcdbcb8",
+  "userDecision": "pending"
+}
