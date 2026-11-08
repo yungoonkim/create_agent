@@ -5,7 +5,9 @@
 
 ## 현재 상태
 
-STEP 1 / 1.5 / 2A / 2B / 3까지 구현했다. 현재 브랜치는 `feature/manual-development-loop`이며, Gemini 연결 코드 `4d78972`를 기반으로 한다. 다음 단계는 STEP 4의 검증 증거 수집과 제한된 재작업이다.
+STEP 1 / 1.5 / 2A / 2B / 3까지 구현했다. 구현 기준 커밋은 `d5780ac`이며 Gemini 연결 코드 `4d78972`를 포함한다. 이 안내서 정리 작업은 `docs/supervisor-first-guide` 브랜치에서 진행한다. 다음 단계는 STEP 4의 검증 증거 수집과 제한된 재작업이다.
+
+사용자는 지휘자 겸 기획자 Agent 하나를 먼저 완성하고 이후 팀원 Agent를 하나씩 연결하는 순서를 확인했다. 현재 Writer/Reviewer와 Controller는 그 기반이며 통합 지휘자 전체가 완성된 상태는 아니다. STEP 4 이후 요구 정리·Scope 제안·작업 분해·지시서·보고의 통합과 지휘자 단독 인수 테스트가 남아 있다. [전체 안내서](supervisor-guide.md)와 [테스트 계획](supervisor-test-plan.md)을 먼저 읽는다.
 
 - TypeScript 타입 검사 통과, Node 테스트 53개 통과(기존 40개 + STEP 3 신규 13개).
 - 신규 CLI 통합 테스트에서 기획안 최종 승인 → 작업 생성 → 담당자 지정 → 결과 제출 → 수동 검수 → 후속 작업 준비를 Cloud의 격리된 임시 디렉터리에서 확인했다.

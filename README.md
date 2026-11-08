@@ -53,6 +53,8 @@ npm run development -- list --config examples/planning-gemini/config.json
 
 ## 문서
 
+- [처음 읽는 총괄 PM·슈퍼바이저 안내서](docs/supervisor-guide.md)
+- [지휘자 테스트 주제·절차·실행 보고서 양식](docs/supervisor-test-plan.md)
 - [아키텍처](docs/architecture.md)
 - [PM Agent 명세](docs/pm-agent-spec.md)
 - [Planning Loop](docs/planning-loop.md)
