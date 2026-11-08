@@ -1,6 +1,6 @@
 # ADTF — Agent Development Team Framework
 
-ADTF는 여러 AI Agent를 하나의 개발팀으로 조율하기 위한 재사용 가능한 프레임워크다. 오프라인 Fake 및 Gemini 기반 Planning, 승인 기획의 수동 개발 작업 관리, 선택형 파일·명령 검증과 재작업 정책을 제공한다. 지휘자 겸 기획자 하나를 먼저 완성하고 이후 팀원 Agent를 순차 연결한다.
+ADTF는 여러 AI Agent를 조율하기 위한 재사용 가능한 프레임워크다. 현재 개발 목표는 지휘자 겸 기획자 Agent 하나의 완성과 단독 검증이다. 요구 정리·기획·검토·승인·작업 지시·판단·보고를 시험하며, 팀원 Agent 관련 작업은 보류한다. 현재 Agent의 [완료·합격 기준](docs/supervisor-acceptance.md)을 따른다.
 
 ## 현재 상태
 
