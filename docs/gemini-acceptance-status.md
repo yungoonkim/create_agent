@@ -40,7 +40,7 @@ node dist/src/cli/supervisor.js report --config examples/supervisor-gemini/confi
 
 ## 이어서 실행할 지점
 
-실제 모델 호출에는 실행할 환경의 ADC와 Vertex AI/OAuth 접속이 필요하다. 사용자가 이전에 완료한 Windows ADC는 그 PC의 SDK가 사용한다. 이 Cloud에서 해당 PC의 명령을 실행하거나 인증 파일을 가져올 연결은 현재 없다. 환경 연결 방법을 사용자에게 요청한 상태다.
+실제 모델 호출에는 실행할 환경의 ADC와 Vertex AI/OAuth 접속이 필요하다. 사용자는 **Cloud 환경에 GCP 인증·접속을 추가하는 방식**을 선택했다. 필요한 값과 적용 후 확인 절차는 [Cloud GCP 설정](cloud-gcp-setup.md)에 정리했다. 현재 환경 변경 도구가 없어 설정 화면 확인이 필요하며 아직 인증·접속이 적용되지는 않았다.
 
 - **같은 Cloud가 연결되는 경우:** 적용된 환경 설정을 다시 확인하고 새 프로세스에서 인증·접속을 확인한다. 이미 intake를 등록했으므로 start를 반복하지 않고 questions부터 이어간다.
 - **기존 Windows 로컬 ADC를 사용하는 경우:** `29160fc`를 포함하는 저장소가 열린 Codex 로컬 실행 환경에서 진행한다. 로컬의 기존 인수 상태를 먼저 확인하고, 없다면 같은 원문으로 새 intake를 만든다. 인증이 유효한지 확인하기 전부터 로그인을 반복하지 않는다.
