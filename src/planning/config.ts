@@ -23,6 +23,17 @@ export interface OfflinePlanningConfig {
   readonly memory: { readonly type: "file"; readonly directory: string };
 }
 
+export interface LivePlanningConfig {
+  readonly projectId: string;
+  readonly planning: {
+    readonly writer: PlanningRoleConfig;
+    readonly reviewer: PlanningRoleConfig;
+    readonly maxIterations: number;
+    readonly requireUserApproval: true;
+  };
+  readonly memory: { readonly type: "file"; readonly directory: string };
+}
+
 export interface DemoApprovalFixture {
   readonly approval: ApprovalRecord;
   readonly scopeApproval: ScopeApprovalRecord;
@@ -42,6 +53,13 @@ export async function loadPlanningConfig(configPath: string, projectRoot: string
   const filePath = resolveProjectPath(root, configPath);
   const raw: unknown = JSON.parse(await readFile(filePath, "utf8"));
   return parsePlanningConfig(raw, root);
+}
+
+export async function loadLivePlanningConfig(configPath: string, projectRoot: string): Promise<LivePlanningConfig> {
+  const root = resolve(projectRoot);
+  const filePath = resolveProjectPath(root, configPath);
+  const raw: unknown = JSON.parse(await readFile(filePath, "utf8"));
+  return parseLivePlanningConfig(raw, root);
 }
 
 export function parsePlanningConfig(raw: unknown, projectRoot: string): OfflinePlanningConfig {
@@ -79,6 +97,30 @@ export function parsePlanningConfig(raw: unknown, projectRoot: string): OfflineP
       scenario: scenarioValue,
     },
     memory: { type: "file", directory: resolveProjectPath(root, memoryDirectory) },
+  };
+}
+
+export function parseLivePlanningConfig(raw: unknown, projectRoot: string): LivePlanningConfig {
+  const root = resolve(projectRoot);
+  const value = asRecord(raw, "config");
+  const projectId = requiredString(value.projectId, "projectId");
+  assertSafeProjectId(projectId);
+  const planning = asRecord(value.planning, "planning");
+  const writer = parseVertexRole(planning.writer, "planning.writer", "planning-writer");
+  const reviewer = parseVertexRole(planning.reviewer, "planning.reviewer", "planning-reviewer");
+  const maxIterations = planning.maxIterations;
+  if (typeof maxIterations !== "number" || !Number.isInteger(maxIterations) || maxIterations < 1) {
+    throw new Error("planning.maxIterations must be an integer greater than or equal to 1.");
+  }
+  if (planning.requireUserApproval !== true) {
+    throw new Error("planning.requireUserApproval must be true; reviewer success cannot replace user approval.");
+  }
+  const memory = asRecord(value.memory, "memory");
+  if (memory.type !== "file") throw new Error("Only memory.type = 'file' is supported.");
+  return {
+    projectId,
+    planning: { writer, reviewer, maxIterations, requireUserApproval: true },
+    memory: { type: "file", directory: resolveProjectPath(root, requiredString(memory.directory, "memory.directory")) },
   };
 }
 
@@ -179,6 +221,17 @@ function parseFakeRole(
   }
   return {
     model: { providerId: "fake", modelId: requiredString(role.modelId, `${field}.modelId`) },
+    personaId: role.personaId === undefined ? personaId : requiredString(role.personaId, `${field}.personaId`),
+  };
+}
+
+function parseVertexRole(raw: unknown, field: string, personaId: string): PlanningRoleConfig {
+  const role = asRecord(raw, field);
+  const providerId = requiredString(role.providerId, `${field}.providerId`);
+  if (providerId !== "vertex-ai") throw new Error(`${field}.providerId must be 'vertex-ai'.`);
+  const modelId = requiredString(role.modelId, `${field}.modelId`);
+  return {
+    model: { providerId, modelId },
     personaId: role.personaId === undefined ? personaId : requiredString(role.personaId, `${field}.personaId`),
   };
 }

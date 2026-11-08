@@ -21,7 +21,10 @@
 
 ## 다음: STEP 2B — 실제 Writer/Reviewer 연결
 
-- 실제 LLM Provider/Model 및 Runtime 조합을 선택하고 공식 문서와 호환성을 확인한다.
+- **확정:** Gemini를 Vertex AI에서 사용하고, 인증은 로컬 PC의 Application Default Credentials (ADC)로 처리한다.
+- Google Gen AI SDK (`@google/genai`)와 Vertex AI 조합을 공식 문서 기준으로 적용한다.
+- **확정:** Writer와 Reviewer는 `gemini-3.8-flash`를 사용한다. GCP 프로젝트와 위치는 로컬 실행 환경 변수로 받는다.
+- 비밀 키 파일을 저장소에 넣지 않는다.
 - Fake 포트를 실제 구현으로 교체하고 비밀정보 설정, 오류/사용량 기록, 승인 UX를 정의한다.
 - 실제 API 호출은 별도 승인을 받은 범위에서만 추가한다.
 

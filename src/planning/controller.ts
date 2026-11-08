@@ -14,7 +14,7 @@ import type {
   ScopeContract,
 } from "./contracts.js";
 import { canTransitionPlanningState, decideAfterReview, validatePlanReview } from "./policy.js";
-import type { OfflinePlanningConfig } from "./config.js";
+import type { LivePlanningConfig, OfflinePlanningConfig } from "./config.js";
 
 export interface PlanningRunInput {
   readonly requirements: string;
@@ -28,7 +28,7 @@ export interface PlanningRunResult {
 }
 
 export interface PlanningLoopControllerOptions {
-  readonly config: OfflinePlanningConfig;
+  readonly config: OfflinePlanningConfig | LivePlanningConfig;
   readonly memory: PlanningMemoryStore & ApprovalManager;
   readonly writer: PlanningWriter;
   readonly reviewer: PlanningReviewer;
