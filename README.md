@@ -71,6 +71,7 @@ npm run development -- list --config examples/planning-gemini/config.json
 - [지휘자 통합 CLI 사용법](docs/supervisor-workflow.md)
 - [STEP 5A 구현·검증 보고서](docs/step5a-report.md)
 - [STEP 5B 재개·변경 승인 검증 보고서](docs/step5b-report.md)
+- [실제 Gemini 인수 실행 현황·환경 연결 대기](docs/gemini-acceptance-status.md)
 - [아키텍처](docs/architecture.md)
 - [PM Agent 명세](docs/pm-agent-spec.md)
 - [Planning Loop](docs/planning-loop.md)
