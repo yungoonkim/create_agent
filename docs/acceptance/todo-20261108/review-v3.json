@@ -1,0 +1,16 @@
+{
+  "id": "review-3",
+  "projectId": "supervisor-todo-acceptance-20261108",
+  "planId": "supervisor-todo-acceptance-20261108-plan",
+  "planVersion": 3,
+  "scopeContractId": "scope-v6",
+  "scopeVersion": 6,
+  "outcome": "pass",
+  "issues": [],
+  "suggestions": [
+    "최종 사용자 검토 시 제안된 로컬 저장소 키 명칭('todo_app_data_v1')과 마감일시 표준 표기 방식('YYYY-MM-DDTHH:mm')에 대한 사용자 승인 여부를 명시적으로 확인받을 것을 권장합니다."
+  ],
+  "scopeViolation": false,
+  "userJudgmentRequired": false,
+  "reviewedAt": "2026-11-08T13:59:49.249Z"
+}

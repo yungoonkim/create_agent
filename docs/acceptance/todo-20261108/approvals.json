@@ -1,0 +1,34 @@
+[
+  {
+    "id": "approval-45eca234-a3f5-4623-9121-7477668d3cf6",
+    "projectId": "supervisor-todo-acceptance-20261108",
+    "subject": "Approve plan supervisor-todo-acceptance-20261108-plan v2",
+    "status": "pending"
+  },
+  {
+    "id": "approval-2361bcda-38e2-40bf-9bd4-5e6be0546660",
+    "projectId": "supervisor-todo-acceptance-20261108",
+    "subject": "Approve plan supervisor-todo-acceptance-20261108-plan v3",
+    "status": "pending"
+  },
+  {
+    "id": "approval-a3422782-30f5-4fc9-a7bf-3971193373c5",
+    "projectId": "supervisor-todo-acceptance-20261108",
+    "subject": "Approve plan supervisor-todo-acceptance-20261108-plan v4",
+    "status": "pending"
+  },
+  {
+    "id": "approval-4a657cbe-a4e0-4467-9da6-305cf5e7387e",
+    "projectId": "supervisor-todo-acceptance-20261108",
+    "subject": "Approve plan supervisor-todo-acceptance-20261108-plan v1",
+    "status": "pending"
+  },
+  {
+    "id": "approval-36e20af8-210a-4f7b-a4bc-57bf96673f03",
+    "projectId": "supervisor-todo-acceptance-20261108",
+    "subject": "Scope Contract scope-v6 v6",
+    "status": "approved",
+    "decidedAt": "2026-11-08T13:51:55.054Z",
+    "rationale": "사용자가 Scope v6 제안과 상세 기획 점검 항목을 확인한 뒤 '응 그렇게 진행해줘'라고 승인했다. 상세 기획은 별도 최종 승인하며 제품 구현·팀원 실행은 보류한다."
+  }
+]

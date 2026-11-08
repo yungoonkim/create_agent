@@ -1,0 +1,8 @@
+{
+  "id": "approval-36e20af8-210a-4f7b-a4bc-57bf96673f03",
+  "projectId": "supervisor-todo-acceptance-20261108",
+  "subject": "Scope Contract scope-v6 v6",
+  "status": "approved",
+  "decidedAt": "2026-11-08T13:51:55.054Z",
+  "rationale": "사용자가 Scope v6 제안과 상세 기획 점검 항목을 확인한 뒤 '응 그렇게 진행해줘'라고 승인했다. 상세 기획은 별도 최종 승인하며 제품 구현·팀원 실행은 보류한다."
+}

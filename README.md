@@ -83,4 +83,4 @@ npm run development -- list --config examples/planning-gemini/config.json
 
 실제 Gemini로 질문·Scope·기획·수정·작업 지시와 격리 정책·Scope 변경 두 분기를 시험하고 [지휘자 단독 인수 최종 보고서](docs/supervisor-final-acceptance-20261108.md)에 정리했다. [Reviewer 이력](docs/acceptance/2026-11-08/reviewer-history.md)에 수정 사유와 원문을 보존했다. typecheck 및 전체 119개 테스트 통과. 사람의 Scope·기획 승인 절차를 유지하며, 실제 제품 구현·팀원 실행은 보류한다.
 
-두 번째 주제인 [내 할 일 목록 관리 시험](docs/supervisor-todo-acceptance-20261108.md)은 쉬운 설명·사용 예시 중심으로 진행하며 실제 질문 7개의 사용자 답변을 반영한 Scope v6의 승인을 기다린다.
+두 번째 주제인 [내 할 일 목록 관리 시험](docs/supervisor-todo-acceptance-20261108.md)은 쉬운 설명·사용 예시 중심으로 진행하며 Scope v6 승인과 실제 답변을 반영해 기획안 v4까지 검토했으며, 현재 최종 기획 승인을 기다린다.

@@ -1,6 +1,8 @@
 # Scope v6 — 내 할 일 목록 관리
 
-**미승인 제안** · projectId: `supervisor-todo-acceptance-20261108` · Scope ID: `scope-v6` · version: 6
+최초 제안 당시 원문이다. 이후 [사용자가 Scope를 승인](scope-approval.json)했으며, 기획 최종 승인은 별도다.
+
+**Scope 스냅샷** · projectId: `supervisor-todo-acceptance-20261108` · Scope ID: `scope-v6` · version: 6
 
 ## 목표
 

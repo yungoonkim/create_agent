@@ -2,41 +2,41 @@
 
 ## 현재 상태
 
-실제 Gemini 질문 7개에 대한 사용자 답변을 저장하고 첫 Scope를 생성했다. **Scope v6 사용자 승인 대기**다. 기획안·작업 지시는 아직 생성하거나 승인하지 않았다. 제품 구현과 팀원 실행은 하지 않는다. 기존 재고 시험과 별도 프로젝트로 진행한다.
+**Scope v6 사용자 승인 완료, 기획안 v4 최종 사용자 승인 대기**다. [쉬운 기획 요약](acceptance/todo-20261108/plan-v4-user-summary.md), [기획 원문](acceptance/todo-20261108/plan-v4.md), [최종 Review](acceptance/todo-20261108/review-v4.json), [진행자 점검](acceptance/todo-20261108/assessment-v4.md)을 함께 검토한다. 작업 지시 생성·제품 구현·제품 테스트·팀원 실행은 아직 없다.
 
-- projectId: `supervisor-todo-acceptance-20261108`
-- [동의한 요청 및 표현/실행 경계](../examples/supervisor-todo-gemini/request.md), [설정](../examples/supervisor-todo-gemini/config.json)
-- GCP iceu-songpa11/global, Writer/Reviewer gemini-3.8-flash, ADC
-- Cloud 설정 observations_current=true / revision 1 / network enforced / 프로젝트·위치 변수 ready 확인. SDK 실제 호출 성공으로 기존 인증 사용도 확인했다.
-- 현재 상태: revision 6 / scope_proposed / 질문 7개 모두 답변 / 다음 행동 approve-scope 또는 reject-scope
-- [질문 원문](acceptance/todo-20261108/questions.md), [원문 JSON](acceptance/todo-20261108/questions.json), [report](acceptance/todo-20261108/report.json), [체크포인트](acceptance/todo-20261108/runtime-checkpoint.json)
+- projectId: `supervisor-todo-acceptance-20261108`, 별도 프로젝트 데이터로 기존 재고 시험 보존
+- [입력 요청](../examples/supervisor-todo-gemini/request.md), [설정](../examples/supervisor-todo-gemini/config.json)
+- GCP iceu-songpa11/global, Writer/Reviewer gemini-3.8-flash, ADC (본문·토큰 기록 없음)
+- Supervisor revision 17 / scope_approved, Planning awaiting_approval / 반복 4/5 / currentPlanVersion 4
+- [현재 report](acceptance/todo-20261108/report.json), [실행 체크포인트](acceptance/todo-20261108/runtime-checkpoint.json)
 
-## 질문 내용과 전달
+## 실제 사용자 결정
 
-이용 화면, 제목 외 정보, 수정·삭제, 완료 취소, 목록 표시, 동일 제목 중복, 저장 방식이다. ‘장보기’, ‘물 마시기’, 실수로 완료 누르기 등의 예시가 있어 이전 재고 주제보다 직접 판단하기 쉽다. 채팅에서는 각 질문을 짧은 문장과 선택지로 전달했다. 질문 원문은 수정하지 않았고 실제 사용자가 제출한 답변만 Q-1~Q-7에 저장했다. 부분 답변 3회는 append-only 이벤트로 남았다. [사용자 답변](acceptance/todo-20261108/answers.json)을 보존했다.
+Gemini 질문 7개에 대한 답변은 [원문](acceptance/todo-20261108/answers.json)에 저장했다. 웹 브라우저 버튼 조작, 제목·메모·마감일, 수정·삭제, 완료 취소, 미완료/완료 분리·각 등록순, 동일 제목의 별개 등록 허용, 내 컴퓨터 저장·기술 방식 위임이다.
 
-저장 방식은 화면 형태에 따라 달라지므로 ‘세부 방식은 맡김’을 선택한 경우 사용자 조건에 맞는 제안을 Scope에 명시하고 검토받는다. Node.js CLI는 지휘자 시험 도구이며, 제품을 명령창 방식으로 정했다는 뜻은 아니다.
+사용자가 Scope 원문과 설명을 본 뒤 ‘응 그렇게 진행해줘.’라고 답한 것을 [Scope v6 승인](acceptance/todo-20261108/scope-approval.json)으로 기록했다. 추가 질문 3개에 대해 **제목·마감일시 필수/메모 선택, 날짜+시간, 삭제 확인 후 수행**을 선택했다. [상세 답변](acceptance/todo-20261108/detail-answers.json), [결정 출처](acceptance/todo-20261108/user-decisions.md)를 보존했다. 아직 최종 기획을 승인한 적은 없다.
 
-질문 prompt에 업무 핵심 선택을 확인하도록 하는 기존 공통 지침을 사용했다. 쉬운 표현과 예시, 기술 절 분리 요구는 이번 프로젝트 입력으로 전달했으며 프레임워크 코드에 특정 주제 규칙을 추가하지 않았다.
+## 기획·검토·수정 과정
 
-## 다음 순서
+| 기획 | Gemini Reviewer | 이후 내용 점검 및 처리 |
+| --- | --- | --- |
+| [v1](acceptance/todo-20261108/plan-v1.md) | pass / issues 0 | 입력/삭제 규칙 미정·저장 실패/보관 한계 누락. 사용자 추가 답변 후 [수정 요청](acceptance/todo-20261108/revision-v1-request.md) |
+| [v2](acceptance/todo-20261108/plan-v2.md) | pass / issues 0 | 시계 역행 시 등록순·손상/첫 실행 구분·commit 이후 실패·범위 밖 경과 표시 제안 등을 [보완 요청](acceptance/todo-20261108/revision-v2-request.md) |
+| [v3](acceptance/todo-20261108/plan-v3.md) | pass / issues 0 | 진행자 제안을 사용자 확정으로 표시한 출처 오류와 검증·카운터 조건을 [정정 요청](acceptance/todo-20261108/revision-v3-request.md) |
+| [v4](acceptance/todo-20261108/plan-v4.md) | pass / issues 0 | [사람 점검](acceptance/todo-20261108/assessment-v4.md) 후 최종 사용자 검토 대상으로 제시 |
 
-1. 실제 사용자 답변 7개를 Q-1~Q-7과 연결해 저장했다.
-2. [Scope v6](acceptance/todo-20261108/scope-v6.md)를 제안했다. 사용자 검토·승인 또는 수정 결정을 기다린다.
-3. Scope 승인 후 메모/마감일의 필수 여부·날짜/시간, 삭제 확인과 저장 실패 동작 등 구체화할 중요 선택을 확인하고 Writer/Reviewer를 실행한다. 리뷰 이유와 수정본을 보존한다.
-4. 기획안은 사용자 동작 설명과 기술 절을 나누어 제시하고 최종 승인을 받는다.
-5. 승인 후 작업 지시 품질을 점검한다. 실제 제품 구현·팀원 연결은 하지 않는다.
+**Reviewer 검토 4회, 자체 수정 요청 0회다.** 3회 수정은 사용자 추가 답변 및 진행자의 점검 요청이다. [검토 이력](acceptance/todo-20261108/reviewer-history.md)에 원문·제안·시각과 구분을 기록했다. pass만으로 누락이 모두 발견됐다고 보지 않으며, 이전 기획·Review는 변경하지 않는다.
 
-## 검증 및 사용량
+## 다음 순서와 경계
 
-타입 검사와 전체 테스트 119개 통과. 기존 재고 프로젝트의 모든 파일 SHA-256을 전후 비교해 동일함을 확인했다. [manifest](acceptance/todo-20261108/manifest.json)에 비교 기준을 저장했다. 인증 코드·토큰·ADC 본문은 기록하지 않는다.
+사용자가 쉬운 요약과 원문을 검토해 v4를 승인하거나 수정을 요청한다. 승인 시에만 approve-plan으로 실제 결정을 기록한 뒤 작업 지시를 제안·점검한다. 과거 마감일 허용, 단일 탭·동일 브라우저 주소 사용, 로컬 저장 기술 절은 최종 승인할 설계 제안으로 구분한다. 저장 키 이름 등 위임된 구현 선택을 별도 사용자 결정인 것처럼 기록하지 않는다.
 
-[사용량](acceptance/todo-20261108/usage.jsonl): 실제 모델 어댑터 호출 2회 성공(질문·Scope), 입력 2,000 / 출력 1,290 / reasoning 2,083 토큰, 29,413ms. 공급자가 제공한 지표만 기록하며 비용을 추정하지 않는다. 아직 Reviewer 호출은 없다.
+현재 목표는 다른 주제에서의 기획·검토·작업 지시 품질 시험이다. 실제 제품이나 팀원 Agent를 구현·실행하는 작업으로 자동 확장하지 않는다. 반복 예산 4/5를 유지하며 새 모델 호출이 필요하면 남은 한도와 상태를 먼저 확인한다. start/plan/resume-plan을 단순 재실행하지 않는다.
 
-## Scope v6 내용 점검
+## 검증·환경·사용량
 
-답변 7개가 모두 반영됐다. 등록·분리 목록·완료/취소·수정·삭제·로컬 유지·웹 화면이 REQ-01~07이다. 로그인·원격 동기화/공유·고급 검색/정렬과 이번 세션의 코드/팀원 실행은 제외 제안이다. 원문과 기획 표현 방식도 기술 조건에 포함했다. 사용자 답변에 없는 제외 조건은 아직 승인된 사실이 아니라 검토할 제안이다.
+Cloud 설정 observations_current=true / revision 1 / network enforced / 프로젝트·위치 변수 ready를 확인했고 기존 ADC로 실제 모델 호출에 성공했다. Node 24.22.1의 inherited proxy/CA와 --use-env-proxy를 유지했다.
 
-마감일·메모의 필수 여부, 마감일의 시각 포함 여부, 제목 공백 처리, 삭제 확인과 저장 오류 동작은 이번 Scope에 세부 규칙이 없다. 사용자의 답변을 임의 확장하지 않고 기획 전에 구체화할 항목으로 표시했다. 브라우저 저장 방식은 예시로 제안됐으며, 실제 선택 후 같은 브라우저/주소에서의 유지 범위와 사용자가 저장 데이터를 직접 지우는 경우의 한계를 쉬운 말로 설명해야 한다. 삭제 확인이나 미정 규칙을 이미 구현·검증한 것처럼 기록하지 않는다.
+이번 세션에서 typecheck 및 전체 119개 테스트 통과. 프레임워크 코드 변경 없이 입력·승인·수정 요청과 버전 데이터로 시험했다. 재고 프로젝트의 모든 파일 SHA-256 전후 비교가 동일하며 데이터와 기존 승인 상태를 보존했다. [manifest](acceptance/todo-20261108/manifest.json)에 비교 기준이 있다.
 
-[Scope JSON](acceptance/todo-20261108/scope-v6.json)의 승인 레코드는 pending이다. 사용자 답변은 Scope 승인이나 기획 승인으로 처리하지 않았다.
+[사용량 요약](acceptance/todo-20261108/usage-summary.json): 실제 모델 어댑터 호출 10회 성공(질문·Scope 각 1회, Writer/Reviewer 각 4회), 실패 0. 제공 입력 60,107 / 출력 21,496 / reasoning 10,708 토큰, 호출 시간 합계 228,051ms. 공급자 지표만 합산하며 비용·하위 HTTP 재시도 횟수를 추정하지 않는다. [제안 ledger](acceptance/todo-20261108/usage.jsonl), [기획 ledger](acceptance/todo-20261108/planning-usage.jsonl)를 보존했다.

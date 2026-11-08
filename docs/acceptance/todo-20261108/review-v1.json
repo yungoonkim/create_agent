@@ -1,0 +1,16 @@
+{
+  "id": "review-1",
+  "projectId": "supervisor-todo-acceptance-20261108",
+  "planId": "supervisor-todo-acceptance-20261108-plan",
+  "planVersion": 1,
+  "scopeContractId": "scope-v6",
+  "scopeVersion": 6,
+  "outcome": "pass",
+  "issues": [],
+  "suggestions": [
+    "미확정 결정 사항(추가 메모/마감일의 선택 입력 허용 여부, 삭제 시 확인 팝업 제공 여부)은 기획안에 제시된 기본 가정을 바탕으로 세부 작업 지시서 작성 시 명확히 반영하여 구체화하는 것을 권장합니다."
+  ],
+  "scopeViolation": false,
+  "userJudgmentRequired": false,
+  "reviewedAt": "2026-11-08T13:52:53.635Z"
+}
