@@ -1,0 +1,15 @@
+{
+  "approval": {
+    "id": "demo-scope-approved",
+    "projectId": "planning-demo",
+    "subject": "Scope Contract planning-demo-scope v1",
+    "status": "approved",
+    "decidedAt": "2026-01-01T00:00:00.000Z",
+    "rationale": "DEMO FIXTURE: offline sample approval only; this is not an actual user decision."
+  },
+  "scopeApproval": {
+    "projectId": "planning-demo",
+    "scopeContractId": "planning-demo-scope",
+    "approvalId": "demo-scope-approved"
+  }
+}

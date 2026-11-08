@@ -1,0 +1,31 @@
+{
+  "id": "planning-demo-scope",
+  "projectId": "planning-demo",
+  "version": 1,
+  "goal": "Demonstrate a bounded offline PM Planning Loop.",
+  "requiredFeatures": [
+    {
+      "id": "REQ-PLAN-001",
+      "statement": "Create a versioned planning draft from the supplied requirements."
+    },
+    {
+      "id": "REQ-PLAN-002",
+      "statement": "Record a reviewer result and stop for human approval after a passing review."
+    }
+  ],
+  "excludedFeatures": [
+    {
+      "id": "EX-PLAN-001",
+      "statement": "No external LLM API calls."
+    },
+    {
+      "id": "EX-PLAN-002",
+      "statement": "No automatic final user approval."
+    }
+  ],
+  "technicalConstraints": [
+    "TypeScript strict mode",
+    "Local JSON files only"
+  ],
+  "createdAt": "2026-01-01T00:00:00.000Z"
+}
