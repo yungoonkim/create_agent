@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "kind": "preflight only; not empirical planning quality evidence",
+  "recordedAtUtc": "2026-11-09T07:03:23.158926+00:00",
+  "status": "ready_for_generation_on_authenticated_PC; Cloud authentication blocked",
+  "baseCommit": "e97d44ce06f8401dfcef92c02cfb4d5c1490ca8b",
+  "actualComparisonModelCalls": 0,
+  "actualComparisonPairs": 0,
+  "qualityConclusion": null,
+  "design": {
+    "cases": 3,
+    "repetitions": 2,
+    "pairs": 6,
+    "criteriaPerCase": 9,
+    "sharedExactFirstDraft": true,
+    "maxPlanningIterations": 3,
+    "maxGenerationSdkCalls": 54,
+    "optionalJudgeAndAuditSdkCalls": 12,
+    "maxTotalSdkCalls": 66
+  },
+  "validation": {
+    "typecheck": "passed",
+    "testCommand": "npm test",
+    "tests": 142,
+    "passed": 142,
+    "failed": 0,
+    "skipped": 0,
+    "newComparisonTests": 5,
+    "platform": "Linux",
+    "nodeVersion": "v24.22.1",
+    "dependenciesAdded": false,
+    "windowsLiveRunVerified": false,
+    "productionSourceUnchanged": true,
+    "frozenHashesVerified": true
+  },
+  "protectedPrimaryCheckpoints": [
+    {
+      "checkpoint": "docs/acceptance/todo-final-20261109/runtime-checkpoint.json",
+      "checkpointSha256": "ccad8f3be51122e2ff8823ab930b8e80c73bfe056e5ae4d7fefff448f65715dc",
+      "filesVerified": 20,
+      "allMatch": true
+    },
+    {
+      "checkpoint": "docs/acceptance/2026-11-08/primary-runtime-checkpoint.json",
+      "checkpointSha256": "06d3ef1b821fa27cca3ef17d1519ea86bef85b29a4469ec7e6a8375e547997fb",
+      "filesVerified": 17,
+      "allMatch": true
+    }
+  ],
+  "fileHashes": {
+    "examples/planning-comparison/cases.json": "9d519244cb0f082e50ba70e58c06ae43ce1fdf40be3d5c3cbefecb73c30269ff",
+    "examples/planning-comparison/freeze.json": "d431800fb2b7a1bd88bf9722a2bb5f3b1917e76a2124effeb44379e0f77b8602",
+    "examples/planning-comparison/pricing.json": "de383406485576c124b6794e0813d3f333decf1e616f36e4341649a0673fccfc",
+    "examples/planning-comparison/run.mjs": "ee226bee934a19ca62dc2bc85ba461553611f8bb11df9faeec04f9ce42fd77d8",
+    "examples/planning-comparison/lib.mjs": "03896edb39cef6e7c752117b6d25b6fcec95ce5eccacf93a692a432b2b6b9732",
+    "test/planning-comparison.test.mjs": "f7e5bbb1ce3888f3c38e34d344848ddbeacf7e772738fea4b8ec94ead04e6342",
+    "package-lock.json": "8c3c4d7041bb3f58308a5b3d0ac7d747603930c1660e61869799d1387a5d6e18"
+  },
+  "authentication": {
+    "adcStatus": "ADC_REAUTH_REQUIRED",
+    "adcRefreshPrintedTokens": false,
+    "comparisonGenerationAttempted": false,
+    "browserPreparation": [
+      {
+        "attempt": "private local login-link file",
+        "result": "file protocol rejected by browser URL policy; no bypass"
+      },
+      {
+        "attempt": "official Google HTTPS login",
+        "result": "Browser Use could not read requirements"
+      }
+    ],
+    "pendingGcloudLoginStopped": true,
+    "userLoginObserved": false,
+    "tokensOrCodesRequestedInChat": false,
+    "credentialsCopiedToRepository": false,
+    "tlsOrNetworkPolicyBypassed": false
+  },
+  "preservation": {
+    "completedProjectsReplayed": false,
+    "testRuns": "Offline TEST/STUB runs only; temporary fake results cleaned",
+    "rawActualResults": "Not generated yet; future run stores all starts/failures/requests/model responses/versions/usage",
+    "gradingOrder": "blind packets -> sealed primary scores -> criticism/repair audit -> seal audit -> unblind -> report",
+    "archive": "one tar.gz plus SHA-256 sidecar, originals retained",
+    "git": "commit preregistered inputs now; commit actual results after sealed grading",
+    "pricing": "official list-rate snapshot; provided-token subtotal only, not GCP invoice"
+  },
+  "next": "Authenticated user PC executes generate --run-live --bundle once with a new run ID; receive one archive, inspect members, evaluate blind before provenance."
+}

@@ -51,6 +51,8 @@
 
 합격 판정은 [현재 Agent 완료 기준](supervisor-acceptance.md)에 따른다. 자동 테스트와 실제 Gemini 내용 품질을 각각 확인하고 부족한 부분은 현재 Agent에서 수정한 뒤 다시 시험한다.
 
+현재 추가 품질 작업은 [같은 최초 초안을 공유한 단일 작성/ADTF 비교](planning-comparison-protocol-20261109.md)다. 새 일상 주제3종×2회, 익명 평가·지적 타당성·수정 효과·비용·실패 원자료를 보존하는 도구를 준비했고 typecheck/142테스트를 통과했다. 실제 생성은 Cloud 인증 문제로 대기 중이며 비교 결과나 품질 향상으로 보고하지 않는다. [PC 일괄 실행](../examples/planning-comparison/README.md) 결과를 받은 뒤 주 평가 점수 봉인→지적 감사→공개·집계를 마무리한다. 제품/팀원 실행은 계속 보류한다.
+
 전체 역할과 완료 기준은 [슈퍼바이저 안내서](supervisor-guide.md), 첫 주제와 정상·실패 시나리오는 [지휘자 테스트 계획](supervisor-test-plan.md)에 정리한다. 테스트 계획은 실행 결과나 사용자 승인 기록이 아니다.
 
 ## 완료: STEP 5A — 지휘자 기본 통합
