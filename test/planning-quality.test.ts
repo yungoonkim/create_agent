@@ -183,6 +183,36 @@ test("challenge failure cannot return the earlier pass and retains provider-repo
   } finally { await rm(root, { recursive: true, force: true }); }
 });
 
+test("long Plan schemas stay bounded in both review stages and preserve original nonblank line numbers", async (t) => {
+  const root = await mkdtemp(join(tmpdir(), "adtf-long-schema-"));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const memory = new FilePlanningMemoryStore(root);
+  const longPlan = { ...plan, content: Array.from({ length: 600 }, (_, i) => i % 3 === 1 ? "" : `Original line ${i + 1}: save a record.`).join("\n") };
+  const requests: { config: { responseJsonSchema: unknown }; contents: string }[] = [];
+  const located = { ...quality(), requirements: quality().requirements.map((row) => ({ ...row, evidenceLines: [600] })),
+    checks: quality().checks.map((row) => ({ ...row, evidenceLines: [600] })) };
+  const client = { models: { generateContent: async (input: typeof requests[number]) => {
+    requests.push(input);
+    return { text: JSON.stringify(requests.length === 1 ? review(located) : { issues: [], questions: [], storageAudit: noStorageAudit }) };
+  } } } as unknown as GoogleGenAI;
+  const result = await new GeminiPlanningReviewer(client, memory).review({ projectId: scope.projectId, currentPlan: longPlan,
+    approvedScope: scope, originalRequirements: "Save records", settledDecisions: [] },
+    { model: { providerId: "vertex-ai", modelId: "gemini-3.8-flash" }, personaId: "reviewer" });
+  assert.equal(requests.length, 2);
+  for (const request of requests) {
+    const schema = JSON.stringify(request.config.responseJsonSchema);
+    assert.ok(schema.length < 6000, `Schema unexpectedly grows with Plan length: ${schema.length}`);
+    assert.ok(schema.includes('"minimum":1,"maximum":600'));
+    assert.ok(!schema.includes('"enum":[1,3,4'));
+  }
+  const challenge = JSON.parse(requests[1]!.contents) as { currentPlanLines: { line: number; text: string }[] };
+  assert.equal(challenge.currentPlanLines.length, 400);
+  assert.deepEqual(challenge.currentPlanLines.at(-1), { line: 600, text: "Original line 600: save a record." });
+  assert.equal(result.qualityAssessment!.requirements[0]!.evidence[0], "Original line 600: save a record.");
+  for (const invalid of [[2], [601], [600, 600]]) assert.throws(() => bindReviewEvidence({ ...located,
+    requirements: located.requirements.map((row) => ({ ...row, evidenceLines: invalid })) }, longPlan));
+});
+
 test("evidence locations bind excerpts in code and cannot point outside or at unrelated lines", () => {
   const q = quality();
   const located = { ...q, requirements: q.requirements.map((row) => ({ ...row, evidenceLines: [1] })),

@@ -175,6 +175,14 @@ interface PlanningLoopBase {
   readonly maxIterations: number;
   /** Binds a resumed run to its durable supervisor authorization. */
   readonly continuationId?: string;
+  /** One explicit review retry per project, durably reserved before any model call. */
+  readonly reviewRetry?: {
+    readonly planId: string;
+    readonly planVersion: number;
+    readonly sourceHash: string;
+    readonly reason: string;
+    readonly startedAt: string;
+  };
 }
 
 export type PlanningLoopState =

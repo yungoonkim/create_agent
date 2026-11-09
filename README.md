@@ -90,3 +90,5 @@ npm run development -- list --config examples/planning-gemini/config.json
 Writer·Reviewer의 [품질 절차 보완과 실제 비교](docs/planning-quality-hardening-20261108.md)를 추가했다. 새 Gemini 리뷰는 요구별 근거·고정 점검표와 통과 전 반례 검토를 사용한다. 전체 128개 테스트 통과. 고정 개발 사례에서 개선됐지만 미검출이 남아 사람의 최종 승인을 유지한다.
 
 저장 복구 검토와 새 사례 반복 검증을 [추가 보고서](docs/reviewer-reliability-20261109.md)에 기록했다. 최종 typecheck/132개 테스트 및 깨끗한 소스 설치·오프라인 실행을 통과했다. 새 사례는 전후 모두 결함6/6 차단·정상6/6 승인 단계 도달로, 이번 표본에서 성능 향상을 주장하지 않는다. 사람 승인과 팀원 실행 보류를 유지한다.
+
+Windows 실제 기획의 Reviewer challenge HTTP400에 대해 [긴 응답 형식 보완·저장 기획 재검토](docs/reviewer-request-recovery-20261109.md)를 추가했다. typecheck/137테스트 통과이며 수정본의 사용자 PC 실호출 재검증은 대기다. 기존 실행 데이터는 보존하고 `plan`을 다시 실행하지 않는다.
