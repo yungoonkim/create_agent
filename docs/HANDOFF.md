@@ -3,6 +3,17 @@
 마지막 정리: 2026-11-09 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 완료 — 수정 전후 보존·근거 역할 보완, 실제 시험은 PC 복귀 후
+
+사용자가 다음 보완을 지시했고 이후 오늘은 모바일로만 작업한다고 알렸다. **오늘 로컬 실행은 필요 없다.** [보완 보고서](review-evidence-preservation-20261109.md), [검증/TEST-STUB 예시](acceptance/review-evidence-20261109/README.md), [새 시험 계획](review-evidence-live-protocol-20261109.md)를 우선한다.
+
+- 생산 코드 `2b8a365`: 직전 Plan을 Reviewer에 전달한다. revisionAudit에 기준 버전/본문 해시, 같은 Scope의 모든 요구/제약 비교, 이전 실제 지적 및 생성된 품질/저장/보존 피드백 해결표를 기록한다. 저장/읽기에서 실제 이전 기록과 대조한다. 미해결/불명은 headline pass여도 수정/기존 한도로 분기하고 바뀐 Scope는 옛 조건의 보존 합격으로 표시하지 않는다.
+- JSON 반례에 공통 검증의 로드·전체 후보·확인 사례 근거를 추가하고 valid 조건과 연결했다. 빈/제목 근거와 선언된 미해결 상태를 차단하지만 의미상 올바름이나 모든 규칙의 발견은 보증하지 않는다. 첫 기획의 revision_resolution은 코드 문맥에서 해당 없음이며 그 항목에 중대한 누락/질문이 있으면 버리지 않고 실패로 보존한다. 구형 불변 Review/승인에는 소급 적용하지 않는다.
+- 타입 검사/전체171개 오프라인 검사(기존158+생산 회귀10+새 시험도구3) 통과. 빌려준 물건의 v2 로드 조건을 실제로 약화시킨 고정 응답 통합 검사와 택배의 모의4회/실제0회 흐름을 확인했다. LLM이 스스로 탐지했다는 주장이 아니다. 기존 자료 해시는 검증 기록에 남긴다.
+- `examples/review-evidence-live`는 택배 고정 초안의 received 타입 검증 우회를 실제 Reviewer/Writer가 고치는 시험이다. 최초 초안은 모델 생성이 아니다. 각2라운드·최대5 SDK요청(검토최대4+수정Writer1), 입력/소스/실행기/요금 고정·단일 시작 예약·실패/원문/토큰/표/압축 보존이다. 오늘 Gemini/OAuth 호출0회다. PC 복귀 후 최신 PR 병합 소스의 새 폴더에서 명시적 --run-live로 실행한다. [PC 안내](../examples/review-evidence-live/README.md)에 명령이 있으며 지금 실행을 요구하지 않는다.
+- 브랜치는 main 기반 `feature/review-evidence-preservation`이며 PR #12는 병합됐다. 이전6쌍·식물/운동 원자료·승인 프로젝트를 재생하거나 덮어쓰지 않는다. 제품/팀원/웹 UI는 보류한다. 실제 품질·비용 개선은 아직 미검증이다.
+- 사용자 선호: 착수 전 권장 Codex 모델/생각 수준을 먼저 안내한다. 일반 구현/검증은 GPT-6.1 Sol·medium, 단순 문서는 low, 복잡한 원인 분석은 필요할 때 high. 실제 설정은 사용자 UI에서 바꾸며 Gemini API와 구분한다. 이번 API thinking/출력/반복 한도는 유지했다.
+
 ## 최신 완료 — 새 실제 Gemini 결과 수신·원문 감사·인증 실패 보존
 
 [최종 보고서](planning-review-live-results-20261109.md), [원자료 인덱스](acceptance/planning-review-live-20261109/README.md), [진행자 감사](acceptance/planning-review-live-20261109/analysis-20261109/manual-audit.json)를 우선한다. 아래 준비 시점의 실제 호출0회/생성 대기 기록은 과거 이력이다.
