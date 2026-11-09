@@ -7,6 +7,8 @@
 
 [최종 보고서](planning-review-live-results-20261109.md), [원자료 인덱스](acceptance/planning-review-live-20261109/README.md), [진행자 감사](acceptance/planning-review-live-20261109/analysis-20261109/manual-audit.json)를 우선한다. 아래 준비 시점의 실제 호출0회/생성 대기 기록은 과거 이력이다.
 
+결과 보존 커밋 `b749d98`을 [PR #12](https://github.com/yungoonkim/create_agent/pull/12)에 제출했다. 브랜치는 `docs/planning-review-live-results`이며 PR #11이 병합된 main을 기반으로 한다. 다음 재개에는 PR 병합 상태와 작업 트리를 먼저 확인한다.
+
 - 사용자가 데스크톱 실행 압축2개를 전달했다. 첫 `local-1794227914170-5fd21835`는 인증/권한 요청 실패1회·응답0·운동 건너뜀이다. 누락 ADC 등 상세 원인은 일반화된 원자료로 확정할 수 없다. PowerShell의 gcloud.ps1 차단은 gcloud.cmd로 해결하도록 안내했고, 사용자가 ADC 로그인 완료를 알렸다. 기존 폴더 보관 후 새 ZIP 체크아웃에서 별도 후속 실행하도록 명시적으로 안내했다. 원래 예약 삭제나 성공 결과 교체로 기록하지 않는다.
 - 후속 `local-1794228751746-1ceb6788`: 실제 Gemini7회(Writer2/일반3/반례2), 모두STOP, 식물v1·운동v2가 awaiting_approval이다. 운동 고정 초안의 공개 서버 전송을 critical/revise_plan으로1회 지적했고 실제 Writer가 제거했다. Scope변경/최종 실제 승인/제품/팀원 실행 없음. 두 실행 합계SDK시도8회·성공응답7이며 분석 추가 API0회다.
 - 원압축2개·원자료78파일·고정 설정/실행기/요금표 스냅샷을 Git에 보존한다. 안전한 압축 검사와 원자료76개 manifest 해시, 인용304개(반복 포함)/근거객체79개, 생산 검토표 재구성·번들 해시 일치를 확인했다. 업로드된 스크립트를 실행하지 않았다. 받은 Windows manifest의 기존 .adtf는 각각0파일이며 다른 PC 폴더 보호까지 확인한 것은 아니다. Cloud 기존자료는 별도 전후 해시 검사한다.
