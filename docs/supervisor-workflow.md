@@ -141,3 +141,9 @@ npm run supervisor -- initialize-tasks --config examples/supervisor-demo/config.
 Reviewer는 각 요구와 점검 항목의 상태·판단 이유·기획 원문 근거를 제출한다. 모델이 pass라고 해도 미해결 사항은 수정 또는 사용자 질문으로 전환한다. 기획 원문에 없는 근거나 빠진 점검표는 검증 실패로 중단하며 자동 재호출하지 않는다. 과거 리뷰 이력과 별도 최종 사용자 승인은 유지한다. [검토 절차와 비교 평가](planning-quality-hardening-20261108.md)를 따른다.
 
 새 검토의 통과 후보에는 독립 반례 점검이 최대1회 추가된다. 단계별 `reviewStage=assessment/challenge`를 기록하며 기획 iterationCount와 실제 모델 요청 수를 혼동하지 않는다. 해당 추가 요청이 실패하면 이전 pass로 진행하지 않는다. 같은 모델의 사각지대는 남을 수 있으므로 사용자 검토·최종 승인은 유지한다.
+
+## Reviewer 요청 실패 뒤 명시적 재시도
+
+일반 `plan`/`resume-plan`은 중단된 호출을 자동 재생하지 않는다. 승인 Scope 아래 reviewing 상태이며 현재 버전 Review가 저장되지 않았고 작업/continuation이 시작되지 않은 경우에만 `retry-review --reason "이유"`로 저장 초안의 Reviewer 절차를 명시적으로 한 번 재호출할 수 있다. 유료 명령은 CALL 확인을 유지한다. 초안을 다시 쓰지 않으며, 검토의 revise 이후에는 기존 총 예산 안에서 정상 수정 루프가 진행된다. pass도 최종 사용자 승인과 별개다.
+
+호출 전에 Planning reviewRetry에 출처 해시·사유·시각을 저장하고 삭제/변경을 거부한다. 다시 실패하거나 중단된 예약은 자동 재실행하지 않는다. [Windows 실호출 오류·검증·적용 안내](reviewer-request-recovery-20261109.md)를 따른다.

@@ -17,7 +17,7 @@ import type { SupervisorProposer } from "../supervisor/contracts.js";
 async function main(): Promise<void> {
   const commands: Readonly<Record<string, readonly string[]>> = {
     start: ["file"], questions: [], answer: ["file"], "propose-scope": [], "approve-scope": ["reason"], "reject-scope": ["reason"],
-    plan: [], "approve-plan": ["reason"], "propose-tasks": [], "configure-verification": ["file"], "initialize-tasks": [], report: [],
+    plan: [], "retry-review": ["reason"], "approve-plan": ["reason"], "propose-tasks": [], "configure-verification": ["file"], "initialize-tasks": [], report: [],
     "collect-feedback": [], "request-scope-change": ["reason"], "propose-scope-change": [],
     "request-plan-revision": ["reason"],
     "revise-tasks": ["reason"],
@@ -45,7 +45,7 @@ async function main(): Promise<void> {
   if (!fake && args.has("fixture")) throw new Error("Fixtures are allowed only with fake models.");
   const memory = new FilePlanningMemoryStore(config.memory.directory);
   const store = new FileSupervisorStore(config.memory.directory);
-  const modelCommands = ["questions", "propose-scope", "plan", "propose-tasks", "revise-tasks", "propose-scope-change", "resume-plan"];
+  const modelCommands = ["questions", "propose-scope", "plan", "retry-review", "propose-tasks", "revise-tasks", "propose-scope-change", "resume-plan"];
   // Report/approval/intake never require credentials or construct a provider client.
   const live = !fake && modelCommands.includes(command);
   const confirm = async (phrase: string, label: string): Promise<string> => {
@@ -89,6 +89,7 @@ async function main(): Promise<void> {
       result = await controller.decideScope(command === "approve-scope", await confirm(phrase, "Review the exact Scope above."), arg("reason")); break;
     }
     case "plan": result = await controller.plan(); break;
+    case "retry-review": result = await controller.retryReview(arg("reason")); break;
     case "approve-plan": {
       const planning = await memory.getPlanningLoopState(config.projectId);
       if (planning?.currentPlanVersion === undefined) throw new Error("No plan to approve.");

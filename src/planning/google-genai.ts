@@ -163,7 +163,7 @@ export class GeminiPlanningReviewer implements PlanningReviewer {
         originalRequirements: context.originalRequirements,
         approvedScope: context.approvedScope,
         currentPlan: { ...context.currentPlan, content: undefined },
-        currentPlanLines: context.currentPlan.content.split("\n").map((text, index) => ({ line: index + 1, text })),
+        currentPlanLines: sourceLinesFor(context.currentPlan),
         settledDecisions: context.settledDecisions,
         previousReviews: context.previousReviews ?? [],
       }),
@@ -209,7 +209,7 @@ export class GeminiPlanningReviewer implements PlanningReviewer {
         contents: JSON.stringify({ projectId: context.projectId, originalRequirements: context.originalRequirements,
           approvedScope: context.approvedScope, settledDecisions: context.settledDecisions,
           approvedScopeSources: scopeAuthorizationSources(context.approvedScope),
-          currentPlanLines: context.currentPlan.content.split("\n").map((text, index) => ({ line: index + 1, text })) }),
+          currentPlanLines: sourceLinesFor(context.currentPlan) }),
         config: { systemInstruction: REVIEW_CHALLENGE_SYSTEM_INSTRUCTION, responseMimeType: "application/json",
           responseJsonSchema: challengeSchemaFor(context.currentPlan, context.approvedScope), maxOutputTokens: 8_000, thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM } },
       });
@@ -232,7 +232,7 @@ export class GeminiPlanningReviewer implements PlanningReviewer {
       return combined;
     } catch (error) {
       await log("failure", error);
-      throw new Error(safeErrorMessage(error), { cause: error });
+      throw new Error(`Reviewer ${stage} failed: ${safeErrorMessage(error)}`, { cause: error });
     }
   }
 }
@@ -278,10 +278,17 @@ const REVIEW_SCHEMA = {
   required: ["outcome", "issues", "suggestions", "scopeViolation", "userJudgmentRequired", "qualityAssessment"],
 } as const;
 
+function sourceLinesFor(plan: PlanDraft): readonly { line: number; text: string }[] {
+  return plan.content.split("\n").flatMap((text, index) => text.trim().length > 0 ? [{ line: index + 1, text }] : []);
+}
 function sourceLineRefsFor(plan: PlanDraft): object {
-  const validLines = plan.content.split("\n").flatMap((text, index) => text.trim().length > 0 ? [index + 1] : []);
+  const validLines = sourceLinesFor(plan).map(({ line }) => line);
   if (validLines.length === 0) throw new Error("Cannot review a Plan without nonblank content.");
-  return { ...QUALITY_ITEM_PROPERTIES.evidenceLines, items: { type: "integer", enum: validLines } };
+  // Large repeated enums inside nested arrays can exceed Vertex structured-output complexity.
+  // Keep small proven enums; bound long Plans numerically and validate every reference in code.
+  const items = validLines.length <= 32 ? { type: "integer", enum: validLines }
+    : { type: "integer", minimum: validLines[0], maximum: validLines.at(-1) };
+  return { ...QUALITY_ITEM_PROPERTIES.evidenceLines, items };
 }
 function issueSchemaFor(scope: ScopeContract): object {
   const properties = { ...REVIEW_SCHEMA.properties.issues.items.properties };
@@ -306,7 +313,7 @@ function challengeSchemaFor(plan: PlanDraft, scope: ScopeContract): object {
   }, required: ["issues", "questions", "storageAudit"] };
 }
 
-/** Constrained decoding can choose only actual nonblank source lines; validation still checks the response. */
+/** Small Plans constrain exact lines; long Plans bound the range and rely on exact source validation. */
 function reviewSchemaFor(plan: PlanDraft, scope: ScopeContract): object {
   const evidenceLines = sourceLineRefsFor(plan);
   const quality = REVIEW_SCHEMA.properties.qualityAssessment;

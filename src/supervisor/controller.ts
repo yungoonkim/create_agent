@@ -128,6 +128,24 @@ export class SupervisorController {
     });
   }
 
+  async retryReview(reason: string): Promise<SupervisorState> {
+    text(reason);
+    return this.change("retry-review", reason, async (state) => {
+      this.phase(state, "scope_approved");
+      assertNoPendingContinuation(state);
+      if (state.taskProposal !== undefined || await this.options.developmentStore.get(this.projectId) !== undefined) throw new Error("Review retry is unavailable after task proposal/initialization.");
+      await this.ensureScope(state);
+      const planning = await this.options.memory.getPlanningLoopState(this.projectId);
+      if (planning === undefined) throw new Error("No Planning state to retry.");
+      await new PlanningLoopController({ config: this.options.config, memory: this.options.memory,
+        writer: this.options.writer, reviewer: this.options.reviewer, now: this.now }).retryReview({
+          requirements: state.originalRequest, scopeContract: this.scope(state),
+          clarificationDecisions: state.clarifications.map((item) => `${item.id}: ${item.question}\nUser answer: ${item.answer!}`),
+        }, this.planId(), planning, reason);
+      return state;
+    });
+  }
+
   async proposeTasks(): Promise<SupervisorState> {
     return this.change("propose-tasks", "Work orders proposed; no workers have been run.", async (state) => {
       this.phase(state, "scope_approved");

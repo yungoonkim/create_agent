@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, rm, writeFile, mkdir } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile, mkdir, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
@@ -17,6 +17,12 @@ import { FakePlanningReviewer } from "../src/planning/fake-reviewer.js";
 import { FileDevelopmentStore } from "../src/development/memory-store.js";
 import { LocalVerificationEngine } from "../src/verification/engine.js";
 import { record } from "../src/development/validation.js";
+import type { PlanningReviewer } from "../src/planning/contracts.js";
+
+const passingReviewer: PlanningReviewer = { review: async (context) => ({ id: `review-${context.currentPlan.version}`,
+  projectId: context.projectId, planId: context.currentPlan.id, planVersion: context.currentPlan.version,
+  scopeContractId: context.approvedScope.id, scopeVersion: context.approvedScope.version, outcome: "pass", issues: [],
+  suggestions: [], scopeViolation: false, userJudgmentRequired: false, reviewedAt: "2026-11-09T00:00:00Z" }) };
 
 const request = "  작은 매장의 재고와 유통기한을 관리하고 싶어.\n";
 const scopeBody = { goal: "TEST/STUB inventory CLI", requiredFeatures: [{ id: "REQ-1", statement: "Local inventory records" }, { id: "REQ-2", statement: "Expiry list" }], excludedFeatures: [{ id: "EX-1", statement: "Web UI and payments" }], technicalConstraints: ["Local JSON, no network"] };
@@ -378,4 +384,82 @@ test("CLI confirmation EOF fails explicitly without creating usage or workflow s
   });
   assert.equal(await h.store.get(live.projectId), undefined);
   await assert.rejects(readFile(join(h.config.memory.directory, "projects", live.projectId, "supervisor", "usage.jsonl")), { code: "ENOENT" });
+});
+
+test("explicit review retry reuses the saved draft, preserves approval gates and cannot be replayed", async (t) => {
+  const h = await harness(t); await h.approvedScope();
+  let writes = 0;
+  const writer = { write: async (...args: Parameters<typeof h.options.writer.write>) => { writes++; return h.options.writer.write(...args); } };
+  const broken = new SupervisorController({ ...h.options, writer, reviewer: { review: async () => { throw new Error("TEST challenge INVALID_ARGUMENT"); } } });
+  await assert.rejects(broken.plan(), /call Reviewer/);
+  const before = await h.memory.getPlanningLoopState(h.config.projectId);
+  assert.equal(before!.status, "reviewing"); assert.equal(before!.iterationCount, 0);
+  const draft = await h.memory.getPlanDraft(h.config.projectId, `${h.config.projectId}-plan`, 1);
+  const controller = new SupervisorController({ ...h.options, writer, reviewer: passingReviewer });
+  await assert.rejects(controller.plan(), /already exists/);
+  await controller.retryReview("TEST schema corrected; explicitly retry saved draft");
+  const after = await h.memory.getPlanningLoopState(h.config.projectId);
+  assert.equal(writes, 1);
+  assert.deepEqual(await h.memory.getPlanDraft(h.config.projectId, `${h.config.projectId}-plan`, 1), draft);
+  assert.equal(after!.status, "awaiting_approval"); assert.equal(after!.iterationCount, 1); assert.equal(after!.maxIterations, before!.maxIterations);
+  assert.equal(after!.reviewRetry!.planVersion, 1);
+  assert.equal((await h.memory.get((after as { approvalId: string }).approvalId))!.status, "pending");
+  await assert.rejects(controller.retryReview("TEST do not replay"), /retry needs/);
+  const { reviewRetry: _retry, ...reset } = after!;
+  await assert.rejects(h.memory.savePlanningLoopState(reset), /receipt is immutable/);
+  const errorDir = join(h.config.memory.directory, "projects", h.config.projectId, "planning", "errors");
+  const errors = await Promise.all((await readdir(errorDir)).map((name) => readFile(join(errorDir, name), "utf8")));
+  assert.ok(errors.some((e) => e.includes("TEST challenge INVALID_ARGUMENT")));
+  await controller.approvePlan(`APPROVE ${h.config.projectId}-plan v1`, "TEST explicit final approval after recovered review");
+  assert.equal((await h.memory.getPlanningLoopState(h.config.projectId))!.status, "user_approved");
+  assert.deepEqual((await h.memory.getPlanningLoopState(h.config.projectId))!.reviewRetry, after!.reviewRetry);
+});
+
+test("failed retry reserves its one-shot receipt before calling Reviewer and keeps the original draft", async (t) => {
+  const h = await harness(t); await h.approvedScope();
+  let calls = 0;
+  const reviewer: PlanningReviewer = { review: async () => { calls++; throw new Error("TEST transport failure"); } };
+  const controller = new SupervisorController({ ...h.options, reviewer });
+  await assert.rejects(controller.plan());
+  await assert.rejects(controller.retryReview("TEST explicit retry"));
+  assert.equal(calls, 2);
+  assert.equal((await h.memory.getPlanningLoopState(h.config.projectId))!.iterationCount, 0);
+  await assert.rejects(controller.retryReview("TEST no third call"));
+  assert.equal(calls, 2);
+  assert.equal(await h.memory.getPlanDraft(h.config.projectId, `${h.config.projectId}-plan`, 2), undefined);
+});
+
+test("retry revision continues normally within the old budget and rejects configuration resets", async (t) => {
+  const h = await harness(t); await h.approvedScope();
+  await assert.rejects(new SupervisorController({ ...h.options, reviewer: { review: async () => { throw new Error("TEST failed review"); } } }).plan());
+  const config = { ...h.config, planning: { ...h.config.planning, maxIterations: 99 } };
+  await assert.rejects(new SupervisorController({ ...h.options, config }).retryReview("TEST reset forbidden"));
+  await assert.rejects(h.controller.retryReview("  "));
+  await h.controller.retryReview("TEST normal revise v1 then pass v2");
+  const state = await h.memory.getPlanningLoopState(h.config.projectId);
+  assert.equal(state!.status, "awaiting_approval"); assert.equal(state!.iterationCount, 2);
+  assert.equal(state!.currentPlanVersion, 2); assert.equal(state!.reviewRetry!.planVersion, 1);
+  assert.equal(state!.maxIterations, 3);
+});
+
+test("concurrent retry is locked and the CLI can review a stored draft without rewriting it", async (t) => {
+  const h = await harness(t); await h.approvedScope();
+  await assert.rejects(new SupervisorController({ ...h.options, reviewer: { review: async () => { throw new Error("TEST fail"); } } }).plan());
+  let release!: () => void; let entered!: () => void;
+  const gate = new Promise<void>((r) => { release = r; });
+  const started = new Promise<void>((r) => { entered = r; });
+  const controller = new SupervisorController({ ...h.options, reviewer: { review: async (...args) => { entered(); await gate; return passingReviewer.review(...args); } } });
+  const first = controller.retryReview("TEST serialized retry"); await started;
+  try { await assert.rejects(controller.retryReview("TEST concurrent"), /locked/); }
+  finally { release(); }
+  await first;
+  const report = record(await controller.report()); assert.equal(report.nextAction, "approve-plan");
+
+  const cli = await harness(t); await cli.approvedScope();
+  await assert.rejects(new SupervisorController({ ...cli.options, reviewer: { review: async () => { throw new Error("TEST fail"); } } }).plan());
+  await writeFile(join(cli.root, "config.json"), JSON.stringify(rawConfig));
+  const output = execFileSync(process.execPath, [resolve("dist/src/cli/supervisor.js"), "retry-review", "--config", "config.json", "--reason", "TEST CLI recovery"], { cwd: cli.root, encoding: "utf8" });
+  assert.ok(output.includes('"action": "retry-review"'));
+  assert.equal((await cli.memory.getPlanningLoopState(cli.config.projectId))!.reviewRetry!.planVersion, 1);
+  assert.equal((await cli.memory.getPlanningLoopState(cli.config.projectId))!.status, "awaiting_approval");
 });

@@ -21,11 +21,11 @@
 Git 방식:
 
 ```powershell
-git clone --branch docs/supervisor-only-acceptance --single-branch https://github.com/yungoonkim/create_agent.git
+git clone --branch main --single-branch https://github.com/yungoonkim/create_agent.git
 cd create_agent
 ```
 
-ZIP 방식: [작업 브랜치](https://github.com/yungoonkim/create_agent/tree/docs/supervisor-only-acceptance)에서 **Code → Download ZIP**을 선택하고 압축을 푼다. 저장소가 비공개이면 권한이 있는 GitHub 계정으로 접속한다. PowerShell에서 압축 해제 폴더로 이동한다.
+ZIP 방식: [main 브랜치](https://github.com/yungoonkim/create_agent/tree/main)에서 **Code → Download ZIP**을 선택하고 압축을 푼다. 저장소가 비공개이면 권한이 있는 GitHub 계정으로 접속한다. PowerShell에서 압축 해제 폴더로 이동한다.
 
 ```powershell
 cd "C:\압축을 푼 위치\create_agent-폴더"
@@ -173,6 +173,8 @@ npm.cmd run supervisor -- report --config $localConfigPath
 명령이 보여주는 기획 ID/버전에 맞는 승인 문구를 입력한다. 작업 제안은 **향후 개발 지시 데이터**다. 현재 범위에서는 여기서 멈추며 `initialize-tasks`, 담당자 지정, 팀원 실행으로 자동 진행하지 않는다. 제안된 미래 제품의 `npm run dev` 등을 ADTF 루트 명령으로 혼동하지 않는다.
 
 ## 9. 수정하거나 중단 후 이어가기
+
+Reviewer API 실패로 reviewing에 남은 저장 기획은 [진단·수정본 적용·명시적 재시도](reviewer-request-recovery-20261109.md)를 따른다. 수정 PR이 main에 머지됐는지 먼저 확인한다. `retry-review --reason "이유"`는 프로젝트당 한 번 예약하며 현재 초안을 재사용한다. 재실패·중단 시 예약을 지우거나 자동 반복하지 않는다.
 
 먼저 같은 설정으로 현재 상태를 읽는다.
 

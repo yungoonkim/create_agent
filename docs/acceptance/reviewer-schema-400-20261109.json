@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-09",
+  "userObserved": {
+    "source": "User supplied Windows screenshots and reported line count; original local files not available in Cloud.",
+    "projectId": "my-supervisor-20261109-112551",
+    "writer": "success",
+    "reviewerAssessment": "success",
+    "reviewerChallenge": "HTTP 400 INVALID_ARGUMENT",
+    "planNonblankLines": 150,
+    "windowsBaselineTests": {
+      "total": 132,
+      "passed": 130,
+      "skipped": 2,
+      "failed": 0
+    }
+  },
+  "diagnosis": "Large repeated source-line enums in nested challenge schema are a plausible complexity cause; exact local service request not reproduced.",
+  "change": "Use exact enums only for <=32 nonblank lines; numeric source bounds for longer plans with exact code validation. Add one explicit reserved retry of the saved draft.",
+  "cloudLiveProbe": {
+    "attempted": true,
+    "generationReached": false,
+    "status": "blocked",
+    "reason": "Existing ADC requires reauthentication: invalid_grant/invalid_rapt",
+    "liveFixValidated": false
+  },
+  "automatedVerification": {
+    "typecheck": "passed",
+    "total": 137,
+    "passed": 137,
+    "failed": 0,
+    "platform": "Linux",
+    "model": "stubbed",
+    "includes": [
+      "long schema in both reviewer stages",
+      "blank, duplicate and out-of-range evidence rejected",
+      "stored Plan reused; human approval still required",
+      "retry reservation before failure and replay blocked",
+      "iteration budget/config reset blocked",
+      "normal revision loop after retry",
+      "concurrent project lock",
+      "CLI retry",
+      "receipt retained after final approval"
+    ]
+  },
+  "protectedProjectCheckpoints": [
+    {
+      "checkpoint": "docs/acceptance/todo-final-20261109/runtime-checkpoint.json",
+      "matchingFiles": 20
+    },
+    {
+      "checkpoint": "docs/acceptance/2026-11-08/primary-runtime-checkpoint.json",
+      "matchingFiles": 17
+    }
+  ],
+  "sourceSha256": {
+    "src/planning/google-genai.ts": "663005e9c6010d5c32add441af261bd929b529723a245444ba526b19b672c756",
+    "src/planning/controller.ts": "8fbfd97213d186d41be97de314341a40f32a98ae26772d49cbc4768b9322c801",
+    "src/planning/memory-store.ts": "7bc3e7d9aa001f8a9ae2ff058919501a3f568adc5c16763782380b98704b2bb4",
+    "src/planning/contracts.ts": "cd0e9e6c07df6bfe851cf812034700bdfcc389b71f7f775b60d13cc43772f51f",
+    "src/supervisor/controller.ts": "c8c5ad34d868dbd0536c3462c05668151d648aa34834b222cc445330c0bcd6b9",
+    "src/cli/supervisor.ts": "21a6519997e1cb00adfe74329ef1d1ec50c85d8ca0387dcfa5f7e9d1157a2984",
+    "src/development/plan-approval.ts": "2e41b819f9bec6a0953aa6b6650e8b308f2ad409c127df275ca624245076896b"
+  },
+  "pending": [
+    "User PC must install fix and validate live Reviewer request.",
+    "Do not delete local run or replay start/plan."
+  ]
+}

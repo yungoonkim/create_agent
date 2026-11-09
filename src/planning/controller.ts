@@ -17,6 +17,7 @@ import { canTransitionPlanningState, decideAfterReview, validatePlanReview } fro
 import type { LivePlanningConfig, OfflinePlanningConfig } from "./config.js";
 import { assertSafeStorageId } from "./config.js";
 import { isDeepStrictEqual } from "node:util";
+import { createHash } from "node:crypto";
 
 export interface PlanningResumeAuthorization {
   readonly id: string;
@@ -65,19 +66,41 @@ export class PlanningLoopController {
     return this.execute(input, authorization);
   }
 
-  private async execute(input: PlanningRunInput, authorization?: PlanningResumeAuthorization): Promise<PlanningRunResult> {
+  /** Caller must serialize project commands; this is an explicit retry, never automatic replay. */
+  async retryReview(input: PlanningRunInput, planId: string, expectedState: PlanningLoopState, reason: string): Promise<PlanningRunResult> {
+    return this.execute(input, undefined, { planId, expectedState, reason });
+  }
+
+  private async execute(input: PlanningRunInput, authorization?: PlanningResumeAuthorization,
+    retry?: { readonly planId: string; readonly expectedState: PlanningLoopState; readonly reason: string }): Promise<PlanningRunResult> {
     const { config, memory } = this.options;
     const projectId = config.projectId;
     let lastState: PlanningLoopState | undefined;
     let operation = "validate";
     try {
       const state = await memory.getPlanningLoopState(projectId);
-      if (state !== undefined && authorization === undefined) {
+      if (state !== undefined && authorization === undefined && retry === undefined) {
         throw new Error(`A previous run is ${state.status}; automatic resume is not supported. State was preserved.`);
       }
       let currentPlan: PlanDraft | undefined;
       let previousReview: PlanReview | undefined;
       let iterationCount = 0;
+      if (retry !== undefined) {
+        assertSafeStorageId(retry.planId, "Retry Plan ID");
+        if (state?.status !== "reviewing" || !isDeepStrictEqual(state, retry.expectedState) || state.reviewRetry !== undefined ||
+          state.projectId !== projectId || state.maxIterations !== config.planning.maxIterations || state.iterationCount >= state.maxIterations ||
+          typeof retry.reason !== "string" || retry.reason.trim().length === 0 || state.scopeContractId !== input.scopeContract.id || state.scopeVersion !== input.scopeContract.version) {
+          throw new Error("Review retry needs an unchanged reviewing state, reason, unused retry and remaining original budget.");
+        }
+        currentPlan = await memory.getPlanDraft(projectId, retry.planId, state.currentPlanVersion);
+        if (currentPlan === undefined || currentPlan.projectId !== projectId || currentPlan.scopeContractId !== state.scopeContractId || currentPlan.scopeVersion !== state.scopeVersion ||
+          await memory.getPlanReview(projectId, retry.planId, state.currentPlanVersion) !== undefined) throw new Error("Review retry source is missing, mismatched or already reviewed.");
+        iterationCount = state.iterationCount;
+        if (iterationCount > 0) {
+          previousReview = await memory.getPlanReview(projectId, retry.planId, currentPlan.version - 1);
+          if (previousReview === undefined) throw new Error("Previous review is missing; retry cannot discard revision feedback.");
+        }
+      }
       if (authorization !== undefined) {
         if (state === undefined) throw new Error("No Planning state to resume.");
         ({ plan: currentPlan, review: previousReview } = await this.validateResume(input, authorization, state));
@@ -120,7 +143,7 @@ export class PlanningLoopController {
       }
 
       operation = "start Planning Loop";
-      const initialState: PlanningLoopState = {
+      let initialState: PlanningLoopState = {
         projectId,
         scopeContractId: scope.id,
         scopeVersion: scope.version,
@@ -129,35 +152,44 @@ export class PlanningLoopController {
         status: "drafting",
         ...(authorization === undefined ? {} : { continuationId: authorization.id, currentPlanVersion: currentPlan!.version }),
       };
-      if (authorization !== undefined) this.stateFor(state, initialState);
+      if (authorization !== undefined) initialState = this.stateFor(state, initialState);
+      if (retry !== undefined) initialState = { ...state!, reviewRetry: { planId: retry.planId, planVersion: currentPlan!.version,
+        sourceHash: createHash("sha256").update(JSON.stringify({ scope, plan: currentPlan, requirements: input.requirements,
+          settledDecisions })).digest("hex"), reason: retry.reason.trim(), startedAt: this.now() } };
       await memory.savePlanningLoopState(initialState);
       lastState = initialState;
 
+      let retrySavedPlan = retry !== undefined;
       while (true) {
-        operation = "call Writer";
-        this.log(`[Writer] ${currentPlan === undefined ? "Plan v1" : `Plan v${currentPlan.version + 1}`} 생성 요청`);
-        const writerContext: PlanningWriterContext = {
-          projectId,
-          originalRequirements: input.requirements,
-          approvedScope: scope,
-          settledDecisions,
-          ...(currentPlan === undefined ? {} : { currentDraft: currentPlan }),
-          ...(previousReview === undefined ? {} : { reviewFeedback: previousReview }),
-        };
-        const nextPlan = await this.options.writer.write(writerContext, config.planning.writer);
-        this.validateWriterResult(nextPlan, currentPlan, scope, projectId);
+        if (!retrySavedPlan) {
+          operation = "call Writer";
+          this.log(`[Writer] ${currentPlan === undefined ? "Plan v1" : `Plan v${currentPlan.version + 1}`} 생성 요청`);
+          const writerContext: PlanningWriterContext = {
+            projectId,
+            originalRequirements: input.requirements,
+            approvedScope: scope,
+            settledDecisions,
+            ...(currentPlan === undefined ? {} : { currentDraft: currentPlan }),
+            ...(previousReview === undefined ? {} : { reviewFeedback: previousReview }),
+          };
+          const nextPlan = await this.options.writer.write(writerContext, config.planning.writer);
+          this.validateWriterResult(nextPlan, currentPlan, scope, projectId);
 
-        operation = "save Plan Draft";
-        await memory.createPlanDraft(nextPlan);
-        currentPlan = nextPlan;
-        this.log(`[Memory] Plan v${currentPlan.version} 저장`);
-        const reviewingState = this.stateFor(lastState, {
-          ...this.stateBase(scope, iterationCount, lastState.continuationId),
-          status: "reviewing",
-          currentPlanVersion: currentPlan.version,
-        });
-        await memory.savePlanningLoopState(reviewingState);
-        lastState = reviewingState;
+          operation = "save Plan Draft";
+          await memory.createPlanDraft(nextPlan);
+          currentPlan = nextPlan;
+          this.log(`[Memory] Plan v${currentPlan.version} 저장`);
+          const reviewingState = this.stateFor(lastState, {
+            ...this.stateBase(scope, iterationCount, lastState.continuationId),
+            status: "reviewing",
+            currentPlanVersion: currentPlan.version,
+          });
+          await memory.savePlanningLoopState(reviewingState);
+          lastState = reviewingState;
+        }
+        retrySavedPlan = false;
+        if (currentPlan === undefined) throw new Error("Current Plan is missing.");
+        const reviewingState = lastState;
 
         operation = "call Reviewer";
         this.log(`[Reviewer] Plan v${currentPlan.version} 검토 요청`);
@@ -402,7 +434,7 @@ export class PlanningLoopController {
     if (previous !== undefined && !canTransitionPlanningState(previous.status, next.status)) {
       throw new Error(`Invalid Planning Loop state transition: ${previous.status} → ${next.status}.`);
     }
-    return next;
+    return { ...(previous?.reviewRetry === undefined ? {} : { reviewRetry: previous.reviewRetry }), ...next };
   }
 
   private log(message: string): void {

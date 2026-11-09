@@ -3,6 +3,17 @@
 마지막 정리: 2026-11-09 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 수정 — Windows Reviewer challenge 400, 로컬 재검증 대기
+
+사용자 Windows main ZIP 실호출에서 Writer/assessment success 후 challenge HTTP400 INVALID_ARGUMENT가 발생했다. 기획 v1은 비공백150줄이다. [진단·적용·복구 안내](reviewer-request-recovery-20261109.md), [검증 기록](acceptance/reviewer-schema-400-20261109.json)을 먼저 읽는다. 아래 완료 보고는 이전 Cloud/소규모 평가 범위이며 이번 로컬 기획의 실제 검토 완료를 뜻하지 않는다.
+
+- 큰 줄 번호 enum을 긴 기획에서 정수 범위로 줄이고 모델에는 비공백 원문 줄만 전달한다. 줄 번호/원문 검증은 유지한다. 요청 복잡도가 원인 후보이며 실제 사용자 요청의 서비스 재현은 미완료다.
+- `supervisor retry-review --reason ...`로 reviewing 상태의 저장 기획을 명시적으로 한 번 재검토할 수 있다. 현재 초안 재작성 없이 Reviewer부터 시작하고 revise면 원래 예산 내 정상 수정한다. 최초 assessment는 별도 저장되지 않아 Reviewer 절차는 처음부터 다시 호출한다.
+- 재시도 예약·사유·출처 해시·시각을 모델 호출 전에 Planning reviewRetry에 저장하고 변경/삭제를 막는다. 실패/중단 뒤 자동 재호출 금지, 동시 잠금·현재 Scope/기획·예산·최종 사람 승인 유지. 진행 중 continuation/작업 제안 뒤에는 재시도 불가다.
+- typecheck/전체137개 테스트 통과(Linux). Windows 기준 예상135통과/2제외/실패0이며 아직 수정본 Windows 결과를 받지 않았다. 기존 실제 todo20파일·재고17파일 체크포인트 해시 일치.
+- **Cloud ADC는 현재 invalid_grant/invalid_rapt로 재인증 필요**. Cloud에서 수정 전후 Gemini 성공을 주장하지 않는다. 사용자 PC는 이미 모델 연결이 됐으며 인증 코드를 요구하거나 자격 증명을 복사하지 않는다.
+- 사용자 PC 실제 프로젝트 `my-supervisor-20261109-112551`: 질문6/답변/Scope v4 제안 후 기획 v1 저장·검토 중. Scope 승인 전체/report는 로컬에서 재확인. 기존 `.adtf`와 해당 examples 설정/요청/답변을 백업·보존한 뒤 수정 소스만 적용한다. start/plan/Scope 승인 중복 실행 금지. 로컬 실제 재시도 결과를 받아야 시험을 마칠 수 있다.
+
 ## 최신 완료 — 저장 복구 검토·새 사례 평가·사용자 문서
 
 사용자가 요청한 지휘자 품질 보완·단독 검증과 문서를 완료했다. [최신 품질 보고서](reviewer-reliability-20261109.md), [계획 대비 구현 현황](plan-vs-implementation-20261109.md), [소스 다운로드/실행 가이드](local-run-guide.md)를 먼저 읽는다. 아래 단계별 승인 대기 문구는 과거 이력이다.

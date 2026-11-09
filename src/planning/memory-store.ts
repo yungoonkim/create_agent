@@ -250,6 +250,10 @@ export class FilePlanningMemoryStore implements PlanningMemoryStore, ApprovalMan
     assertSafeProjectId(state.projectId);
     assertSafeStorageId(state.scopeContractId, "scope contract id");
     this.assertVersion(state.scopeVersion, "State Scope version");
+    const previous = await this.getPlanningLoopState(state.projectId);
+    if (previous?.reviewRetry !== undefined && JSON.stringify(previous.reviewRetry) !== JSON.stringify(state.reviewRetry)) {
+      throw new Error("Review retry receipt is immutable and cannot be reset.");
+    }
     await this.writeProjectJson(state.projectId, ["planning", "state.json"], state, false);
   }
 
@@ -410,6 +414,7 @@ export function parsePlanningLoopState(raw: unknown): PlanningLoopState {
     iterationCount: nonNegativeInteger(value.iterationCount, "State iterationCount"),
     maxIterations: positiveInteger(value.maxIterations, "State maxIterations"),
     ...(value.continuationId === undefined ? {} : { continuationId: requiredString(value.continuationId, "State continuationId") }),
+    ...(value.reviewRetry === undefined ? {} : { reviewRetry: parseReviewRetry(value.reviewRetry) }),
   };
   assertSafeProjectId(base.projectId);
   assertSafeStorageId(base.scopeContractId, "State scopeContractId");
@@ -480,6 +485,17 @@ export function parsePlanningLoopState(raw: unknown): PlanningLoopState {
     default:
       throw new Error("Stored Planning Loop state has an unknown status.");
   }
+}
+
+function parseReviewRetry(raw: unknown): NonNullable<PlanningLoopState["reviewRetry"]> {
+  const value = asRecord(raw, "Review retry");
+  const planId = requiredString(value.planId, "Retry planId");
+  assertSafeStorageId(planId, "Retry planId");
+  const sourceHash = requiredString(value.sourceHash, "Retry sourceHash");
+  const startedAt = requiredString(value.startedAt, "Retry startedAt");
+  if (!/^[a-f0-9]{64}$/.test(sourceHash) || !Number.isFinite(Date.parse(startedAt))) throw new Error("Invalid review retry receipt.");
+  return { planId, planVersion: positiveInteger(value.planVersion, "Retry planVersion"), sourceHash,
+    reason: requiredString(value.reason, "Retry reason"), startedAt };
 }
 
 function parseApprovalRecord(raw: unknown): ApprovalRecord {

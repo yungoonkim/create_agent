@@ -50,6 +50,7 @@ export async function approvePlan(memory: PlanningApprovalStore, projectId: stri
       iterationCount: state.iterationCount, maxIterations: state.maxIterations,
       currentPlanVersion: plan.version, status: "user_approved", approvalId: state.approvalId,
       ...(state.continuationId === undefined ? {} : { continuationId: state.continuationId }),
+      ...(state.reviewRetry === undefined ? {} : { reviewRetry: state.reviewRetry }),
     });
   }
   return requireApprovedPlan(memory, projectId, planId);
