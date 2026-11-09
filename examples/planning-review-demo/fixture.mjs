@@ -27,6 +27,7 @@ export const content = [
   '확인 사례: 세 권 등록 뒤 다시 열면 세 권이 보인다. getItem에 SecurityError를 주입하면 저장 시도 없이 변경이 차단된다. setItem 실패를 주입하면 작성한 제목·기존 목록이 유지된다.',
   '동시에 한 탭만 Web Locks 배타 잠금을 편집 수명 동안 유지한다. 획득 후 최신 로드, 비소유/미지원 차단, 소유 탭 종료 후 새로고침한다.',
   '로그인·공유·추천 기능은 제외한다. 이 문서는 구현이나 실제 사용자 승인을 주장하지 않는다.',
+  '공통 검증 확인 사례: 저장 JSON의 제목을 공백으로 바꾸거나 읽음 값을 문자열로 바꾸고 로드하면 원본을 유지하고 변경을 차단한다. 같은 잘못된 후보도 쓰기 전에 거부한다.',
 ].join('\n');
 const at = n => ({evidenceLines: [n]});
 export const assessment = {
@@ -43,6 +44,9 @@ export const assessment = {
 };
 export const challenge = {issues: [],questions: [],storageAudit: {
   format: 'json',evidenceLines:[8,9],rationale:'TEST/STUB: 로컬 JSON 저장.',
+  validation: {rationale:'TEST/STUB: 공통 로드/후보 검증 선언과 확인 사례.',rules:[{
+    rule:'루트/필드 타입·제목·읽음 값·ID',status:'supported',load:at(9),candidate:at(9),acceptance:at(16),rationale:'TEST/STUB: 의미상 품질 인증 아님.',
+  }]},
   cases: ['absent','present_empty','invalid','valid','read_error'].map(state => ({
     state,action: state==='absent'?'initialize':state==='valid'?'load':'preserve_and_block',verdict:'consistent',
     trigger: at(state==='read_error'?10:9),evidenceLines:[state==='read_error'?10:9],authorizationScopeIds:[],rationale:'TEST/STUB: 지정 원문에 선언된 동작.',

@@ -20,6 +20,8 @@ export type {
   ReviewIssue,
   ReviewIssueKind,
   ReviewSeverity,
+  RevisionAudit,
+  StorageValidation,
   ScopeChangeRequest,
   ScopeChangeRequestId,
   ScopeContract,

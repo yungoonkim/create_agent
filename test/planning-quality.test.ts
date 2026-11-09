@@ -89,7 +89,8 @@ test("new Gemini reviews require the quality protocol; legacy review data still 
     response = review(withLines);
     assert.deepEqual((await adapter.review(context, role)).qualityAssessment, {
       ...withLines, requirements: withLines.requirements.map((row) => ({ ...row, evidence: [plan.content] })),
-      checks: withLines.checks.map((row) => ({ ...row, evidence: [plan.content] })),
+      checks: withLines.checks.map((row) => row.id !== "revision_resolution" ? { ...row, evidence: [plan.content] }
+        : { ...row, status: "not_applicable", evidence: [], evidenceLines: [], rationale: "코드가 확인한 최초 기획 문맥: 이전 기획/검토 지적이 없어 수정 해결 검사는 해당 없습니다. 사용자 요구 반영은 다른 항목에서 검토합니다." }),
     });
     response = review({ ...withLines, checks: [] });
     await assert.rejects(adapter.review(context, role), /qualityAssessment/);

@@ -19,6 +19,7 @@ import { assertSafeStorageId } from "./config.js";
 import { isDeepStrictEqual } from "node:util";
 import { createHash } from "node:crypto";
 import { modelOutputFailure } from "./model-output.js";
+import { validateRevisionSource } from "./revision-audit.js";
 
 export interface PlanningResumeAuthorization {
   readonly id: string;
@@ -194,6 +195,8 @@ export class PlanningLoopController {
 
         operation = "call Reviewer";
         this.log(`[Reviewer] Plan v${currentPlan.version} 검토 요청`);
+        const previousPlan = currentPlan.version > 1 ? await memory.getPlanDraft(projectId, currentPlan.id, currentPlan.version - 1) : undefined;
+        if (currentPlan.version > 1 && previousPlan === undefined) throw new Error("Previous Plan snapshot is missing; cannot certify revision preservation.");
         const reviewerContext: PlanningReviewerContext = {
           projectId,
           originalRequirements: input.requirements,
@@ -201,6 +204,7 @@ export class PlanningLoopController {
           currentPlan,
           settledDecisions,
           ...(previousReview === undefined ? {} : { previousReviews: [previousReview] }),
+          ...(previousPlan === undefined ? {} : { previousPlan }),
         };
         const response = await this.options.reviewer.review(reviewerContext, config.planning.reviewer);
         iterationCount += 1;
@@ -209,6 +213,7 @@ export class PlanningLoopController {
         let review: PlanReview;
         try {
           review = validatePlanReview(response, currentPlan, scope);
+          if (review.revisionAudit !== undefined) validateRevisionSource(review.revisionAudit, previousPlan, previousReview);
           await memory.createPlanReview(review);
         } catch (error) {
           const reason = errorMessage(error);
