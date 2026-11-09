@@ -1,0 +1,274 @@
+{
+  "id": "review-1",
+  "projectId": "trial-exercise-local-1794228751746-1ceb6788",
+  "planId": "trial-exercise-local-1794228751746-1ceb6788-plan",
+  "planVersion": 1,
+  "scopeContractId": "exercise-scope",
+  "scopeVersion": 1,
+  "outcome": "revise",
+  "issues": [
+    {
+      "id": "issue-1860e323a49b18bd",
+      "kind": "scope_violation",
+      "severity": "critical",
+      "description": "20번 줄에서 운동 기록을 공개 순위 서버로 자동 전송하도록 정의하여, 제외 사항 EX-MOVE(외부 서버·공개 순위 등 제외)를 직접 위반하고 19번 줄의 제외 명시와도 모순됩니다.",
+      "suggestedDirection": "20번 줄의 공개 순위 서버 전송 항목을 완전히 삭제하고, EX-MOVE 제약에 맞추어 로컬 브라우저 저장소만 사용하도록 계획을 수정해야 합니다.",
+      "scopeDisposition": "revise_plan",
+      "dispositionReason": "승인된 Scope 변경 없이 초안에서 부적절하게 추가된 20번 줄 내용을 삭제하면 승인된 범위를 온전히 충족합니다."
+    }
+  ],
+  "suggestions": [
+    "20번 줄의 외부 서버 전송 내용을 제거하여 EX-MOVE 범위 준수를 유지하십시오."
+  ],
+  "scopeViolation": true,
+  "userJudgmentRequired": false,
+  "reviewedAt": "2026-11-09T12:54:11.687Z",
+  "qualityAssessment": {
+    "version": 1,
+    "requirements": [
+      {
+        "status": "satisfied",
+        "evidence": [
+          "MOVE-1 정상: 비공백 운동 이름, 실제 YYYY-MM-DD 날짜, 1~180 정수 분량, 선택 메모를 독립 ID/seq로 등록한다. 동명/동일 내용도 병합하지 않는다. 날짜는 과거·오늘·미래 모두 허용한다.",
+          "MOVE-1 실패: 이름 공백·유효하지 않은 날짜·0/음수/소수/181분은 거부하며 입력·목록·저장값을 유지한다.",
+          "MOVE-1 확인: 걷기 30분을 두 번 넣으면 두 건이다. 0분/1.5분/181분 및 2026-02-30은 추가되지 않고 입력은 남는다."
+        ],
+        "rationale": "운동 이름, 날짜, 정수 분량, 선택 메모 등록 및 동일 내용 독립 보존과 순서 규칙을 정상·실패·확인 사례로 구체적으로 정의했습니다.",
+        "evidenceLines": [
+          2,
+          3,
+          4
+        ],
+        "requirementId": "MOVE-1",
+        "behaviorEvidence": {
+          "normal": {
+            "evidenceLines": [
+              2
+            ],
+            "evidence": [
+              "MOVE-1 정상: 비공백 운동 이름, 실제 YYYY-MM-DD 날짜, 1~180 정수 분량, 선택 메모를 독립 ID/seq로 등록한다. 동명/동일 내용도 병합하지 않는다. 날짜는 과거·오늘·미래 모두 허용한다."
+            ]
+          },
+          "failure": {
+            "evidenceLines": [
+              3
+            ],
+            "evidence": [
+              "MOVE-1 실패: 이름 공백·유효하지 않은 날짜·0/음수/소수/181분은 거부하며 입력·목록·저장값을 유지한다."
+            ]
+          },
+          "acceptance": {
+            "evidenceLines": [
+              4
+            ],
+            "evidence": [
+              "MOVE-1 확인: 걷기 30분을 두 번 넣으면 두 건이다. 0분/1.5분/181분 및 2026-02-30은 추가되지 않고 입력은 남는다."
+            ]
+          },
+          "failureNotApplicableReason": ""
+        }
+      },
+      {
+        "status": "satisfied",
+        "evidence": [
+          "MOVE-2 정상: 선택 ID 한 건의 이름/날짜/분량/메모만 수정한다. ID/seq 불변이며 확인 후 한 건만 삭제한다.",
+          "MOVE-2 실패: 잘못된 수정 또는 삭제 확인 취소는 데이터·입력을 유지하고 저장하지 않는다.",
+          "MOVE-2 확인: 같은 걷기 두 건 중 첫 건만 45분으로 수정한다. 둘째 삭제를 취소하면 둘째와 저장값은 그대로다."
+        ],
+        "rationale": "선택 한 건 수정/삭제, ID/seq 불변, 삭제 취소 시 저장 및 목록 무변경 규칙을 정상·실패·확인 사례로 정의했습니다.",
+        "evidenceLines": [
+          5,
+          6,
+          7
+        ],
+        "requirementId": "MOVE-2",
+        "behaviorEvidence": {
+          "normal": {
+            "evidenceLines": [
+              5
+            ],
+            "evidence": [
+              "MOVE-2 정상: 선택 ID 한 건의 이름/날짜/분량/메모만 수정한다. ID/seq 불변이며 확인 후 한 건만 삭제한다."
+            ]
+          },
+          "failure": {
+            "evidenceLines": [
+              6
+            ],
+            "evidence": [
+              "MOVE-2 실패: 잘못된 수정 또는 삭제 확인 취소는 데이터·입력을 유지하고 저장하지 않는다."
+            ]
+          },
+          "acceptance": {
+            "evidenceLines": [
+              7
+            ],
+            "evidence": [
+              "MOVE-2 확인: 같은 걷기 두 건 중 첫 건만 45분으로 수정한다. 둘째 삭제를 취소하면 둘째와 저장값은 그대로다."
+            ]
+          },
+          "failureNotApplicableReason": ""
+        }
+      },
+      {
+        "status": "satisfied",
+        "evidence": [
+          "MOVE-3 정상: 같은 origin/프로필 재접속 후 모든 정상 기록과 seq 순서를 유지한다.",
+          "MOVE-3 실패: 읽기 작업 자체 예외는 안내·무쓰기·변경 차단이고, 쓰기 실패는 입력·저장값·목록 보존이다.",
+          "MOVE-3 확인: 두 건 등록 후 재접속해 그대로 복원된다. getItem SecurityError면 저장 없이 차단, setItem 실패면 새 입력과 기존 목록을 유지한다.",
+          "단일 키 exercise_data에 schemaVersion:1,nextSeq,items[{id,seq,name,date,minutes,memo}]를 저장한다. 로드/후보에서 필드 타입·실제 날짜·비공백 이름·정수 minutes1~180·메모 문자열·ID/seq 고유성·양의 안전 정수 seq 및 nextSeq > max(seq)를 검증한다.",
+          "후보 검증·JSON 직렬화→setItem 성공→메모리/화면 확정. 실패는 기존 저장값·입력·목록을 보존한다."
+        ],
+        "rationale": "재접속 유지, 읽기/쓰기 예외 시 데이터 보존, 단일 JSON 스키마 무결성 및 Web Locks 동시성 제약을 구체적으로 다루었습니다.",
+        "evidenceLines": [
+          8,
+          9,
+          10,
+          11,
+          16
+        ],
+        "requirementId": "MOVE-3",
+        "behaviorEvidence": {
+          "normal": {
+            "evidenceLines": [
+              8
+            ],
+            "evidence": [
+              "MOVE-3 정상: 같은 origin/프로필 재접속 후 모든 정상 기록과 seq 순서를 유지한다."
+            ]
+          },
+          "failure": {
+            "evidenceLines": [
+              9
+            ],
+            "evidence": [
+              "MOVE-3 실패: 읽기 작업 자체 예외는 안내·무쓰기·변경 차단이고, 쓰기 실패는 입력·저장값·목록 보존이다."
+            ]
+          },
+          "acceptance": {
+            "evidenceLines": [
+              10
+            ],
+            "evidence": [
+              "MOVE-3 확인: 두 건 등록 후 재접속해 그대로 복원된다. getItem SecurityError면 저장 없이 차단, setItem 실패면 새 입력과 기존 목록을 유지한다."
+            ]
+          },
+          "failureNotApplicableReason": ""
+        }
+      }
+    ],
+    "checks": [
+      {
+        "status": "satisfied",
+        "evidence": [
+          "MOVE-1 정상: 비공백 운동 이름, 실제 YYYY-MM-DD 날짜, 1~180 정수 분량, 선택 메모를 독립 ID/seq로 등록한다. 동명/동일 내용도 병합하지 않는다. 날짜는 과거·오늘·미래 모두 허용한다.",
+          "MOVE-2 정상: 선택 ID 한 건의 이름/날짜/분량/메모만 수정한다. ID/seq 불변이며 확인 후 한 건만 삭제한다.",
+          "단일 키 exercise_data에 schemaVersion:1,nextSeq,items[{id,seq,name,date,minutes,memo}]를 저장한다. 로드/후보에서 필드 타입·실제 날짜·비공백 이름·정수 minutes1~180·메모 문자열·ID/seq 고유성·양의 안전 정수 seq 및 nextSeq > max(seq)를 검증한다."
+        ],
+        "rationale": "확정된 결정 사항과 기술 제약에 명시된 내용에 부합하게 기획되었습니다.",
+        "evidenceLines": [
+          2,
+          5,
+          11
+        ],
+        "id": "decision_provenance"
+      },
+      {
+        "status": "missing",
+        "evidence": [
+          "로그인·외부 서버·공유·공개 순위·자동 코칭·알림·실제 제품/팀원 실행은 제외한다.",
+          "추가 동작: 저장이 성공할 때마다 모든 운동 기록을 공개 순위 서버로 자동 전송한다."
+        ],
+        "rationale": "20번 줄에서 제외 대상인 외부 공개 순위 서버 전송 기능을 추가하여 EX-MOVE 제외 사항을 위반했습니다.",
+        "evidenceLines": [
+          19,
+          20
+        ],
+        "id": "scope_compliance"
+      },
+      {
+        "status": "satisfied",
+        "evidence": [
+          "MOVE-1 실패: 이름 공백·유효하지 않은 날짜·0/음수/소수/181분은 거부하며 입력·목록·저장값을 유지한다.",
+          "MOVE-2 실패: 잘못된 수정 또는 삭제 확인 취소는 데이터·입력을 유지하고 저장하지 않는다.",
+          "MOVE-3 실패: 읽기 작업 자체 예외는 안내·무쓰기·변경 차단이고, 쓰기 실패는 입력·저장값·목록 보존이다.",
+          "기존 빈/공백 문자열·깨진 JSON·스키마/값/버전 위반은 원본 그대로 보존·무쓰기·변경 차단이며 자동 초기화·백업 이동은 하지 않는다.",
+          "getItem 자체가 SecurityError 예외를 던지면 원본을 보존하고 쓰기 없이 오류를 안내하며 모든 변경을 차단한다.",
+          "후보 검증·JSON 직렬화→setItem 성공→메모리/화면 확정. 실패는 기존 저장값·입력·목록을 보존한다."
+        ],
+        "rationale": "입력 오류, 읽기/쓰기 실패, 손상 데이터 로드 시의 보존 및 변경 차단 동작이 명확합니다.",
+        "evidenceLines": [
+          3,
+          6,
+          9,
+          13,
+          15,
+          16
+        ],
+        "id": "behavior_and_errors"
+      },
+      {
+        "status": "satisfied",
+        "evidence": [
+          "단일 키 exercise_data에 schemaVersion:1,nextSeq,items[{id,seq,name,date,minutes,memo}]를 저장한다. 로드/후보에서 필드 타입·실제 날짜·비공백 이름·정수 minutes1~180·메모 문자열·ID/seq 고유성·양의 안전 정수 seq 및 nextSeq > max(seq)를 검증한다.",
+          "getItem 결과 null만 최초 실행으로 빈 목록을 만들며 첫 변경 전 빈 쓰기는 하지 않는다.",
+          "기존 빈/공백 문자열·깨진 JSON·스키마/값/버전 위반은 원본 그대로 보존·무쓰기·변경 차단이며 자동 초기화·백업 이동은 하지 않는다.",
+          "getItem 자체가 SecurityError 예외를 던지면 원본을 보존하고 쓰기 없이 오류를 안내하며 모든 변경을 차단한다.",
+          "후보 검증·JSON 직렬화→setItem 성공→메모리/화면 확정. 실패는 기존 저장값·입력·목록을 보존한다.",
+          "저장 후 UI 실패는 저장 취소라고 하지 않고 새로고침을 안내한다. 전원 장애까지 영구 보장하지 않는다."
+        ],
+        "rationale": "schemaVersion, seq 고유성, 커밋 전후 실패 경계, 영구 내구성 한계가 구체적으로 명시되었습니다.",
+        "evidenceLines": [
+          11,
+          12,
+          13,
+          15,
+          16,
+          17
+        ],
+        "id": "data_integrity"
+      },
+      {
+        "status": "satisfied",
+        "evidence": [
+          "MOVE-1 확인: 걷기 30분을 두 번 넣으면 두 건이다. 0분/1.5분/181분 및 2026-02-30은 추가되지 않고 입력은 남는다.",
+          "MOVE-2 확인: 같은 걷기 두 건 중 첫 건만 45분으로 수정한다. 둘째 삭제를 취소하면 둘째와 저장값은 그대로다.",
+          "MOVE-3 확인: 두 건 등록 후 재접속해 그대로 복원된다. getItem SecurityError면 저장 없이 차단, setItem 실패면 새 입력과 기존 목록을 유지한다."
+        ],
+        "rationale": "각 요구사항별 구체적 입력값과 관찰 가능한 예상 결과가 기재되었습니다.",
+        "evidenceLines": [
+          4,
+          7,
+          10
+        ],
+        "id": "acceptance_criteria"
+      },
+      {
+        "status": "not_applicable",
+        "evidence": [],
+        "rationale": "이전 검토 이력이나 미해결 수정 요청이 없습니다.",
+        "evidenceLines": [],
+        "id": "revision_resolution"
+      },
+      {
+        "status": "satisfied",
+        "evidence": [
+          "# 개인 운동 기록 기획",
+          "MOVE-1 정상: 비공백 운동 이름, 실제 YYYY-MM-DD 날짜, 1~180 정수 분량, 선택 메모를 독립 ID/seq로 등록한다. 동명/동일 내용도 병합하지 않는다. 날짜는 과거·오늘·미래 모두 허용한다.",
+          "MOVE-2 정상: 선택 ID 한 건의 이름/날짜/분량/메모만 수정한다. ID/seq 불변이며 확인 후 한 건만 삭제한다.",
+          "MOVE-3 정상: 같은 origin/프로필 재접속 후 모든 정상 기록과 seq 순서를 유지한다.",
+          "단일 키 exercise_data에 schemaVersion:1,nextSeq,items[{id,seq,name,date,minutes,memo}]를 저장한다. 로드/후보에서 필드 타입·실제 날짜·비공백 이름·정수 minutes1~180·메모 문자열·ID/seq 고유성·양의 안전 정수 seq 및 nextSeq > max(seq)를 검증한다."
+        ],
+        "rationale": "사용 흐름과 확인 사례가 쉬운 한국어로 먼저 제시되고 기술 제약이 분리되어 명확합니다.",
+        "evidenceLines": [
+          1,
+          2,
+          5,
+          8,
+          11
+        ],
+        "id": "clarity"
+      }
+    ]
+  }
+}

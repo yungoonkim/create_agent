@@ -1,0 +1,378 @@
+{
+  "schemaVersion": 1,
+  "method": "Read-only audit against preregistered source/config and received artifacts; production validators/projection run without provider/API calls",
+  "auditedAtUtc": "2026-11-09T13:02:23.926Z",
+  "configAndSourceHashesMatch": true,
+  "artifactHashesMatch": true,
+  "exportHashesAndReconstructionMatch": true,
+  "originalReviewLineBindingsMatch": true,
+  "evidenceObjects": 79,
+  "literalQuotes": 304,
+  "runRecords": [
+    {
+      "runId": "local-1794227914170-5fd21835",
+      "mode": "live",
+      "node": "v26.13.0",
+      "platform": "win32",
+      "archiveSha256": "81ac681f7048dfde0b8f6192c9f77f5edabf529bdb142fa5b692ee159984010e",
+      "verifiedArtifactFiles": 18,
+      "recordedPrimaryFileCount": 0,
+      "primaryBeforeAfterClaim": true,
+      "primaryObservationLimit": "Only this recorded checkout, not other PC folders",
+      "sdkAttempts": 1,
+      "successfulResponses": 0,
+      "transportFailures": 1,
+      "counts": {
+        "promptTokenCount": {
+          "providedSum": 0,
+          "providedCalls": 0,
+          "missingCalls": 1
+        },
+        "candidatesTokenCount": {
+          "providedSum": 0,
+          "providedCalls": 0,
+          "missingCalls": 1
+        },
+        "thoughtsTokenCount": {
+          "providedSum": 0,
+          "providedCalls": 0,
+          "missingCalls": 1
+        }
+      },
+      "knownProvidedTokenTariffSubtotalUsd": 0,
+      "actualInvoiceKnown": false,
+      "calls": [
+        {
+          "callId": "call-001",
+          "caseId": "plants",
+          "stage": "writer",
+          "status": "request_failed",
+          "finishReasons": null,
+          "usage": null,
+          "durationMs": 9360,
+          "tariff": null
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "runId": "local-1794228751746-1ceb6788",
+      "mode": "live",
+      "node": "v26.13.0",
+      "platform": "win32",
+      "archiveSha256": "7dec88090afcb56802c89cdd88fa79354546f565ee7cb704becec0bad2d30bff",
+      "verifiedArtifactFiles": 58,
+      "recordedPrimaryFileCount": 0,
+      "primaryBeforeAfterClaim": true,
+      "primaryObservationLimit": "Only this recorded checkout, not other PC folders",
+      "sdkAttempts": 7,
+      "successfulResponses": 7,
+      "transportFailures": 0,
+      "counts": {
+        "promptTokenCount": {
+          "providedSum": 44892,
+          "providedCalls": 7,
+          "missingCalls": 0
+        },
+        "candidatesTokenCount": {
+          "providedSum": 12608,
+          "providedCalls": 7,
+          "missingCalls": 0
+        },
+        "thoughtsTokenCount": {
+          "providedSum": 7779,
+          "providedCalls": 6,
+          "missingCalls": 1
+        }
+      },
+      "knownProvidedTokenTariffSubtotalUsd": 0.11012025,
+      "actualInvoiceKnown": false,
+      "calls": [
+        {
+          "callId": "call-001",
+          "caseId": "plants",
+          "stage": "writer",
+          "status": "response_received",
+          "finishReasons": [
+            "STOP"
+          ],
+          "usage": {
+            "promptTokenCount": 1418,
+            "candidatesTokenCount": 4536,
+            "totalTokenCount": 7319,
+            "trafficType": "ON_DEMAND",
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 1418
+              }
+            ],
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4536
+              }
+            ],
+            "thoughtsTokenCount": 1365
+          },
+          "durationMs": 48519,
+          "tariff": {
+            "knownTokenTariffSubtotalUsd": 0.02319225,
+            "missingMetrics": [],
+            "cacheAssumption": "cache metric absent; provided input priced at uncached list rate",
+            "actualInvoice": false
+          }
+        },
+        {
+          "callId": "call-002",
+          "caseId": "plants",
+          "stage": "assessment",
+          "status": "response_received",
+          "finishReasons": [
+            "STOP"
+          ],
+          "usage": {
+            "promptTokenCount": 9219,
+            "candidatesTokenCount": 1620,
+            "totalTokenCount": 11862,
+            "trafficType": "ON_DEMAND",
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 9219
+              }
+            ],
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 1620
+              }
+            ],
+            "thoughtsTokenCount": 1023
+          },
+          "durationMs": 22621,
+          "tariff": {
+            "knownTokenTariffSubtotalUsd": 0.0168255,
+            "missingMetrics": [],
+            "cacheAssumption": "cache metric absent; provided input priced at uncached list rate",
+            "actualInvoice": false
+          }
+        },
+        {
+          "callId": "call-003",
+          "caseId": "plants",
+          "stage": "challenge",
+          "status": "response_received",
+          "finishReasons": [
+            "STOP"
+          ],
+          "usage": {
+            "promptTokenCount": 9126,
+            "candidatesTokenCount": 811,
+            "totalTokenCount": 10286,
+            "trafficType": "ON_DEMAND",
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 9126
+              }
+            ],
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 811
+              }
+            ],
+            "thoughtsTokenCount": 349
+          },
+          "durationMs": 10657,
+          "tariff": {
+            "knownTokenTariffSubtotalUsd": 0.0111945,
+            "missingMetrics": [],
+            "cacheAssumption": "cache metric absent; provided input priced at uncached list rate",
+            "actualInvoice": false
+          }
+        },
+        {
+          "callId": "call-004",
+          "caseId": "exercise",
+          "stage": "assessment",
+          "status": "response_received",
+          "finishReasons": [
+            "STOP"
+          ],
+          "usage": {
+            "promptTokenCount": 4546,
+            "candidatesTokenCount": 1310,
+            "totalTokenCount": 7092,
+            "trafficType": "ON_DEMAND",
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 4546
+              }
+            ],
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 1310
+              }
+            ],
+            "thoughtsTokenCount": 1236
+          },
+          "durationMs": 17997,
+          "tariff": {
+            "knownTokenTariffSubtotalUsd": 0.012957,
+            "missingMetrics": [],
+            "cacheAssumption": "cache metric absent; provided input priced at uncached list rate",
+            "actualInvoice": false
+          }
+        },
+        {
+          "callId": "call-005",
+          "caseId": "exercise",
+          "stage": "writer",
+          "status": "response_received",
+          "finishReasons": [
+            "STOP"
+          ],
+          "usage": {
+            "promptTokenCount": 5406,
+            "candidatesTokenCount": 2181,
+            "totalTokenCount": 7587,
+            "trafficType": "ON_DEMAND",
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 5406
+              }
+            ],
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 2181
+              }
+            ]
+          },
+          "durationMs": 17118,
+          "tariff": {
+            "knownTokenTariffSubtotalUsd": 0.01223325,
+            "missingMetrics": [
+              "thoughtsTokenCount"
+            ],
+            "cacheAssumption": "cache metric absent; provided input priced at uncached list rate",
+            "actualInvoice": false
+          }
+        },
+        {
+          "callId": "call-006",
+          "caseId": "exercise",
+          "stage": "assessment",
+          "status": "response_received",
+          "finishReasons": [
+            "STOP"
+          ],
+          "usage": {
+            "promptTokenCount": 9169,
+            "candidatesTokenCount": 1452,
+            "totalTokenCount": 12205,
+            "trafficType": "ON_DEMAND",
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 9169
+              }
+            ],
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 1452
+              }
+            ],
+            "thoughtsTokenCount": 1584
+          },
+          "durationMs": 20200,
+          "tariff": {
+            "knownTokenTariffSubtotalUsd": 0.01826175,
+            "missingMetrics": [],
+            "cacheAssumption": "cache metric absent; provided input priced at uncached list rate",
+            "actualInvoice": false
+          }
+        },
+        {
+          "callId": "call-007",
+          "caseId": "exercise",
+          "stage": "challenge",
+          "status": "response_received",
+          "finishReasons": [
+            "STOP"
+          ],
+          "usage": {
+            "promptTokenCount": 6008,
+            "candidatesTokenCount": 698,
+            "totalTokenCount": 8928,
+            "trafficType": "ON_DEMAND",
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 6008
+              }
+            ],
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 698
+              }
+            ],
+            "thoughtsTokenCount": 2222
+          },
+          "durationMs": 25089,
+          "tariff": {
+            "knownTokenTariffSubtotalUsd": 0.015456,
+            "missingMetrics": [],
+            "cacheAssumption": "cache metric absent; provided input priced at uncached list rate",
+            "actualInvoice": false
+          }
+        }
+      ],
+      "reviews": [
+        {
+          "caseId": "plants",
+          "planVersion": 1,
+          "outcome": "pass",
+          "challengeCompleted": true,
+          "issues": []
+        },
+        {
+          "caseId": "exercise",
+          "planVersion": 1,
+          "outcome": "revise",
+          "challengeCompleted": false,
+          "issues": [
+            {
+              "id": "issue-1860e323a49b18bd",
+              "kind": "scope_violation",
+              "severity": "critical",
+              "description": "20번 줄에서 운동 기록을 공개 순위 서버로 자동 전송하도록 정의하여, 제외 사항 EX-MOVE(외부 서버·공개 순위 등 제외)를 직접 위반하고 19번 줄의 제외 명시와도 모순됩니다.",
+              "suggestedDirection": "20번 줄의 공개 순위 서버 전송 항목을 완전히 삭제하고, EX-MOVE 제약에 맞추어 로컬 브라우저 저장소만 사용하도록 계획을 수정해야 합니다.",
+              "scopeDisposition": "revise_plan",
+              "dispositionReason": "승인된 Scope 변경 없이 초안에서 부적절하게 추가된 20번 줄 내용을 삭제하면 승인된 범위를 온전히 충족합니다."
+            }
+          ]
+        },
+        {
+          "caseId": "exercise",
+          "planVersion": 2,
+          "outcome": "pass",
+          "challengeCompleted": true,
+          "issues": []
+        }
+      ]
+    }
+  ],
+  "combinedSdkAttempts": 8,
+  "combinedSuccessfulModelResponses": 7,
+  "unknownBilledRequests": 1,
+  "additionalModelCalls": 0,
+  "semanticAcceptance": "See separate manual-audit.json; these checks do not establish semantic quality"
+}

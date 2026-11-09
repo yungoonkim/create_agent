@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "kind": "planning_document_review",
+  "source": {
+    "projectId": "trial-exercise-local-1794228751746-1ceb6788",
+    "scopeId": "exercise-scope",
+    "scopeVersion": 1,
+    "scopeSha256": "eca68749ebbe447720d5ecf3881f24b9bb3a45e24b40544143e9a45151c8cbae",
+    "planId": "trial-exercise-local-1794228751746-1ceb6788-plan",
+    "planVersion": 2,
+    "planSha256": "89c1179d532dacf470874f3c9a8530e84c6888144c817ee76cc74529c3f08933",
+    "reviewSha256": "917b5f87100ff8a77dd655d5f3dca93519c5f23e131cf5a0bd26cd69bee36cae"
+  },
+  "planningStatus": "awaiting_approval",
+  "scopeApproval": "fixture",
+  "finalPlanApproval": "unconfirmed",
+  "implementationVerification": "not_performed",
+  "evidenceAuthority": "model_reported_source_references",
+  "rows": [
+    {
+      "requirementId": "MOVE-1",
+      "approvedCondition": "운동 이름(앞뒤 공백 제외 필수), 실제 YYYY-MM-DD 날짜(필수), 정수1~180분(필수), 선택 메모를 등록한다. 같은 내용도 독립 기록이며 최초 등록 순서로 표시한다.",
+      "status": "reflected",
+      "normal": {
+        "evidenceLines": [
+          13
+        ],
+        "evidence": [
+          "- **정상 동작**: 앞뒤 공백을 제거한 운동 이름(필수), 유효한 달력 날짜(YYYY-MM-DD, 과거·오늘·미래 모두 허용), 운동 분량(1~180 범위의 정수 분량), 선택 메모(문자열, 빈 값 가능)를 입력하여 등록합니다. 동일한 이름이나 날짜를 갖더라도 병합하지 않고 독립된 고유 기록으로 등록되며, 화면에는 최초 등록 순서(`seq` 순)대로 표시됩니다."
+        ]
+      },
+      "failure": {
+        "evidenceLines": [
+          14
+        ],
+        "evidence": [
+          "- **검증 및 실패 동작**: 운동 이름이 공백뿐이거나 누락된 경우, 존재하지 않는 날짜(예: 2026-02-30)인 경우, 운동 시간이 0 이하·181 이상·소수점 값인 경우에는 등록을 거부합니다. 이때 기존 입력 내용, 화면 목록, 저장소의 기존 데이터는 그대로 유지됩니다."
+        ]
+      },
+      "acceptance": {
+        "evidenceLines": [
+          15,
+          16,
+          17
+        ],
+        "evidence": [
+          "- **관찰 가능한 확인 사례**:",
+          "  - '걷기', '2026-11-10', '30'분을 두 번 연속 등록하면 목록에 동일 내용의 독립 기록 2건이 등록 순서대로 나타납니다.",
+          "  - 운동 분량에 '0', '1.5', '181'을 입력하거나 날짜에 '2026-02-30'을 입력하고 등록을 시도하면 목록에 추가되지 않고 입력 폼의 입력값이 유지됩니다."
+        ]
+      },
+      "failureNotApplicableReason": "",
+      "reason": "앞뒤 공백 제거 운동 이름, 유효한 날짜, 1~180 정수 분량, 선택 메모의 등록 및 동일 내용 독립 기록 보존, 등록 순서 표시 규칙과 실패 시 보존 동작이 구체적으로 명시되었습니다.",
+      "issues": []
+    },
+    {
+      "requirementId": "MOVE-2",
+      "approvedCondition": "선택한 한 기록의 이름·날짜·분량·메모를 같은 규칙으로 수정하고 ID/seq를 유지한다. 삭제는 확인 후 한 건이며 취소는 저장·목록 무변경이다.",
+      "status": "reflected",
+      "normal": {
+        "evidenceLines": [
+          20
+        ],
+        "evidence": [
+          "- **정상 동작**: 목록에서 특정 한 건을 선택해 이름, 날짜, 분량, 메모를 수정합니다. 수정 시에도 MOVE-1의 유효성 검증 규칙이 동일하게 적용되며, 고유 식별자(ID)와 등록 순서 번호(`seq`)는 변경되지 않습니다. 삭제 시에는 확인 대화창을 거쳐 선택한 1건만 영구 제거합니다."
+        ]
+      },
+      "failure": {
+        "evidenceLines": [
+          21
+        ],
+        "evidence": [
+          "- **검증 및 실패 동작**: 수정 입력값이 유효하지 않으면 수정을 거부하고 기존 데이터와 수정 중인 입력을 유지합니다. 삭제 확인 대화창에서 '취소'를 선택하면 저장소 및 화면 목록에 아무런 변경이 발생하지 않습니다."
+        ]
+      },
+      "acceptance": {
+        "evidenceLines": [
+          22,
+          23,
+          24
+        ],
+        "evidence": [
+          "- **관찰 가능한 확인 사례**:",
+          "  - 동일한 '걷기' 기록 2건 중 첫 번째 기록만 선택해 45분으로 수정하면 첫 번째 기록만 45분으로 갱신되고 등록 순서와 두 번째 기록은 그대로 유지됩니다.",
+          "  - 두 번째 기록의 삭제 버튼을 누른 뒤 확인 창에서 '취소'를 선택하면 두 번째 기록이 목록과 저장소에 그대로 유지됩니다."
+        ]
+      },
+      "failureNotApplicableReason": "",
+      "reason": "선택한 한 건의 수정 및 삭제, 식별자(ID)와 등록 순서 번호(seq) 불변, 유효하지 않은 수정 거부 및 삭제 취소 시 저장소/화면 무변경 규칙이 구체적으로 기술되었습니다.",
+      "issues": []
+    },
+    {
+      "requirementId": "MOVE-3",
+      "approvedCondition": "정상 데이터 재접속 유지, 저장/읽기 예외·무결성·커밋/동시 탭 처리는 기술 제약을 따른다.",
+      "status": "reflected",
+      "normal": {
+        "evidenceLines": [
+          27
+        ],
+        "evidence": [
+          "- **정상 동작**: 동일한 origin(예: `http://localhost:4173`) 및 브라우저 프로필 환경에서 페이지를 새로고침하거나 브라우저를 재시작해도 이전에 저장된 모든 유효한 운동 기록과 고유 등록 순서(`seq`)가 그대로 복원됩니다."
+        ]
+      },
+      "failure": {
+        "evidenceLines": [
+          28,
+          29,
+          30,
+          31
+        ],
+        "evidence": [
+          "- **검증 및 실패 동작**:",
+          "  - 읽기 작업 자체 예외(예: `SecurityError`) 발생 시, 저장소에 쓰기를 시도하지 않고 사용자에게 읽기 차단 안내를 표시하며 모든 추가/수정/삭제 변경을 차단합니다.",
+          "  - 쓰기 실패(예: 저장소 용량 초과) 시, 현재 작성 중인 입력 폼과 기존 저장 데이터, 화면 목록을 변경 없이 보존합니다.",
+          "  - 저장 완료 직후 화면 갱신(UI) 단계에서만 오류가 발생하면 \"저장 취소\"로 안내하지 않고 \"저장 완료되었으나 화면 갱신에 실패했으니 새로고침하십시오\"라고 안내합니다."
+        ]
+      },
+      "acceptance": {
+        "evidenceLines": [
+          32,
+          33,
+          34,
+          35
+        ],
+        "evidence": [
+          "- **관찰 가능한 확인 사례**:",
+          "  - 운동 2건을 등록한 후 브라우저 탭을 새로고침하면 2건이 등록 순서 그대로 다시 표시됩니다.",
+          "  - `getItem` 실행 시 브라우저 권한 제한(`SecurityError`)이 발생하면 저장소를 건드리지 않고 오류 화면을 표시하며 입력 등록이 비활성화됩니다.",
+          "  - 저장 쓰기(`setItem`)가 실패하면 입력창의 텍스트가 사라지지 않고 화면 목록도 이전 상태를 보존합니다."
+        ]
+      },
+      "failureNotApplicableReason": "",
+      "reason": "동일 origin/프로필 재접속 복원, 읽기/쓰기 실패 시 보존 및 변경 차단, UI 갱신 실패 시 새로고침 안내, 단일 JSON 무결성 및 Web Locks 동시성 제약이 누락 없이 규정되었습니다.",
+      "issues": []
+    }
+  ],
+  "warnings": [
+    "이 표는 기획 문서의 모델 판단과 원문 근거입니다. 실제 구현·실행 검증은 하지 않았으며 정확성을 보증하지 않습니다.",
+    "TEST/STUB: 이 Scope 승인은 시험 fixture이며 실제 사용자 승인이 아닙니다."
+  ],
+  "questions": [],
+  "suggestions": [],
+  "failures": []
+}

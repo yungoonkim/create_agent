@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "complete": true,
+  "kind": "planning_document_review",
+  "source": {
+    "projectId": "trial-plants-local-1794228751746-1ceb6788",
+    "scopeId": "plants-scope",
+    "scopeVersion": 1,
+    "scopeSha256": "25f4fd17fb2b282b454ac0c0dd7ff18359ee092720fd539598685a341d822e95",
+    "planId": "trial-plants-local-1794228751746-1ceb6788-plan",
+    "planVersion": 1,
+    "planSha256": "3c6e71cc66e8e5966f1cc90dfc9be88e47da01ccd386d8e5fd6c8951889b27f2",
+    "reviewSha256": "d6766d28a8d9767080ce2170b9ac3abca54286809d2bad5f94659eb9aae55c3c"
+  },
+  "implementationVerification": "not_performed",
+  "hashes": {
+    "plan.md": "acd70fffb71e71051332dd00ef0efd7453043e76229f65253ed4a96717629096",
+    "review.json": "776ab6ae7ecedde4bd20e0d7f4535da9c8d71abe8addb911c364c88536fd4b0e",
+    "review.md": "eba5682d17040dfe5dd5e034223a16909b9797cad6e162a3b5fc05a6ebda2eea"
+  }
+}

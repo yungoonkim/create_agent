@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "runId": "local-1794228751746-1ceb6788",
+  "auditedAtUtc": "2026-11-09T13:04:36.620672+00:00",
+  "evaluator": "Codex implementer, non-blind manual source audit; no separate paid judge",
+  "protocol": "docs/planning-review-live-protocol-20261109.md",
+  "overall": "functional_flow_confirmed_with_semantic_findings",
+  "notClaimed": [
+    "general planning-quality improvement",
+    "chatbot superiority",
+    "final human approval",
+    "implemented product tests",
+    "new real MAX_TOKENS recovery success"
+  ],
+  "criteria": [
+    {
+      "id": "C1",
+      "status": "observed_success_with_limit",
+      "result": "Seven responses parsed and validated; STOP in all seven, new evidence schema accepted. No real MAX_TOKENS response occurred, so interruption handling remains covered by offline regression rather than this live run."
+    },
+    {
+      "id": "C2",
+      "status": "partial",
+      "result": "All literal line bindings match. Requirement behavior roles and actual getItem exception trigger/action are source-backed in final reviews. Valid-state triggers weakly support the stronger validation rationale; plant first-draft revision_resolution evidence has the wrong role. See findings."
+    },
+    {
+      "id": "C3",
+      "status": "core_success_preservation_needs_clarification",
+      "result": "Actual Reviewer flagged the seeded public upload as critical revise_plan. Actual Writer removed it and Reviewer passed v2 without Scope change or human Scope decision. Basic features remain; explicit common load/candidate value rules are less clear than v1, so complete preservation is not certified."
+    },
+    {
+      "id": "C4",
+      "status": "observed_success",
+      "result": "Two exports reproduce exactly under trusted frozen production projection; plan/review/Scope hashes, rendered Markdown and bundle files match. Fixture approval, awaiting_approval and not_performed implementation status are kept distinct."
+    },
+    {
+      "id": "C5",
+      "status": "observed_success_with_observation_limit",
+      "result": "Both original archives and all 76 manifest entries preserved; frozen input/source/runner hashes match. Received Windows manifests each cover zero existing .adtf files; they do not prove preservation of other PC folders. Cloud protected-file comparison is separate."
+    }
+  ],
+  "reviewHistory": {
+    "logicalReviewRounds": 3,
+    "reviewerSdkRequests": 5,
+    "writerSdkRequests": 2,
+    "reviseRounds": 1,
+    "reviseIssueCount": 1,
+    "confirmedTruePositiveScopeIssues": 1,
+    "confirmedFalsePositiveIssuesObserved": 0,
+    "warning": "One deliberately obvious seeded issue, not a false-positive/recall benchmark."
+  },
+  "seededCorrection": {
+    "initialDraftSource": "fixed intentionally faulty draft, not live Writer",
+    "scopeDisposition": "revise_plan",
+    "severity": "critical",
+    "unchangedScope": true,
+    "source": {
+      "caseId": "exercise",
+      "planVersion": 1,
+      "lineNumbers": [
+        19,
+        20
+      ],
+      "quotes": [
+        "로그인·외부 서버·공유·공개 순위·자동 코칭·알림·실제 제품/팀원 실행은 제외한다.",
+        "추가 동작: 저장이 성공할 때마다 모든 운동 기록을 공개 순위 서버로 자동 전송한다."
+      ]
+    },
+    "revisedSource": {
+      "caseId": "exercise",
+      "planVersion": 2,
+      "lineNumbers": [
+        4,
+        5,
+        40
+      ],
+      "quotes": [
+        "- **검토 의견 반영**: 초안 20번 줄에 포함되었던 '공개 순위 서버 자동 전송' 항목을 전면 삭제했습니다.",
+        "- **제외 범위 준수 확인**: EX-MOVE 제약(외부 서버·공개 순위·공유·알림 제외)을 복원하여 모든 데이터 처리를 로컬 브라우저 저장소로 한정했습니다.",
+        "- **EX-MOVE**: 사용자 로그인, 회원가입, 외부 백엔드 서버 연동, 타인과의 기록 공유, 공개 순위판, 자동 운동 추천/코칭 알고리즘, 푸시 알림 기능은 기획 및 시스템 범위에서 완전히 제외합니다."
+      ]
+    },
+    "judgment": "The request to remove public upload is valid; v2 references its removal historically but no longer directs upload."
+  },
+  "findings": [
+    {
+      "id": "A-01",
+      "kind": "needs_clarification",
+      "priority": "medium",
+      "caseId": "exercise",
+      "summary": "Common validation of persisted values and change candidates is less explicit in v2.",
+      "evidence": [
+        {
+          "caseId": "exercise",
+          "planVersion": 1,
+          "lineNumbers": [
+            11
+          ],
+          "quotes": [
+            "단일 키 exercise_data에 schemaVersion:1,nextSeq,items[{id,seq,name,date,minutes,memo}]를 저장한다. 로드/후보에서 필드 타입·실제 날짜·비공백 이름·정수 minutes1~180·메모 문자열·ID/seq 고유성·양의 안전 정수 seq 및 nextSeq > max(seq)를 검증한다."
+          ]
+        },
+        {
+          "caseId": "exercise",
+          "planVersion": 2,
+          "lineNumbers": [
+            13,
+            14,
+            76,
+            77,
+            82,
+            85
+          ],
+          "quotes": [
+            "- **정상 동작**: 앞뒤 공백을 제거한 운동 이름(필수), 유효한 달력 날짜(YYYY-MM-DD, 과거·오늘·미래 모두 허용), 운동 분량(1~180 범위의 정수 분량), 선택 메모(문자열, 빈 값 가능)를 입력하여 등록합니다. 동일한 이름이나 날짜를 갖더라도 병합하지 않고 독립된 고유 기록으로 등록되며, 화면에는 최초 등록 순서(`seq` 순)대로 표시됩니다.",
+            "- **검증 및 실패 동작**: 운동 이름이 공백뿐이거나 누락된 경우, 존재하지 않는 날짜(예: 2026-02-30)인 경우, 운동 시간이 0 이하·181 이상·소수점 값인 경우에는 등록을 거부합니다. 이때 기존 입력 내용, 화면 목록, 저장소의 기존 데이터는 그대로 유지됩니다.",
+            "  - `seq`: 최초 등록 시점의 `nextSeq`를 부여받는 양의 안전 정수(1, 2, ...). 목록 정렬은 기기 시계나 타임스탬프에 의존하지 않고 오직 `seq`의 오름차순으로 결정됩니다.",
+            "  - `nextSeq`: 신규 발급용 정수로, 항상 `items` 내 존재하는 모든 `seq`의 최댓값보다 커야 합니다(`nextSeq > max(seq)`).",
+            "  - 저장된 값이 빈 문자열, 공백 문자열, 파싱 불가능한 깨진 JSON, `schemaVersion` 불일치, 필드 누락/타입 불일치, 유효하지 않은 날짜/시간, 중복된 ID/seq, `nextSeq <= max(seq)` 조건 위반인 경우, 기존 저장값을 절대로 덮어쓰거나 자동 초기화하지 않고 원본 그대로 보존합니다.",
+            "  1. 신규/수정 데이터 검증 및 JSON 직렬화"
+          ]
+        }
+      ],
+      "reason": "v1 explicitly applies name/date/minutes1..180/memo types and identity/seq checks to both load and candidates. v2 has input limits and generic field/type or invalid date/time rejection, but does not explicitly bind the full same value rules to both stages. This is ambiguity, not proof an implemented validator accepts bad values.",
+      "consequence": "Reviewer claim that no requirement regressed is stronger than what this text alone certifies.",
+      "recommendation": "State one common load/candidate validation table and examples for persisted minutes=181 and blank name; reject without overwrite. Keep original artifacts unchanged."
+    },
+    {
+      "id": "A-02",
+      "kind": "partially_supported_evidence",
+      "priority": "medium",
+      "caseId": "both",
+      "summary": "Valid-state trigger citations support restoration/locking but do not show the complete validation-to-load condition.",
+      "evidence": [
+        {
+          "caseId": "plants",
+          "planVersion": 1,
+          "lineNumbers": [
+            76,
+            96
+          ],
+          "quotes": [
+            "    *   등록/수정/삭제된 데이터는 고정 origin(예: `http://localhost:4173`)의 로컬 저장소에 JSON 형태로 보존되어 페이지 새로고침이나 브라우저 재접속 후에도 동일하게 조회됩니다.",
+            "    *   잠금을 정상 획득한 탭만 최신 데이터를 읽고 편집(추가/수정/삭제)을 수행할 수 있습니다."
+          ]
+        },
+        {
+          "caseId": "exercise",
+          "planVersion": 2,
+          "lineNumbers": [
+            27,
+            93
+          ],
+          "quotes": [
+            "- **정상 동작**: 동일한 origin(예: `http://localhost:4173`) 및 브라우저 프로필 환경에서 페이지를 새로고침하거나 브라우저를 재시작해도 이전에 저장된 모든 유효한 운동 기록과 고유 등록 순서(`seq`)가 그대로 복원됩니다.",
+            "- **잠금 획득 후 동작**: 잠금을 정상 획득한 시점에 최신 저장소 데이터를 로드합니다."
+          ]
+        }
+      ],
+      "reason": "The storageAudit valid rationale refers to fully validated JSON; cited trigger lines describe persistence and loading after lock acquisition. Schema and invalid-state rules elsewhere provide context, so this is incomplete conditional support rather than fabricated quotes or a certain plan omission.",
+      "recommendation": "Cite the valid-data validation condition and the load action together, including required field/value validation. Do not treat literal quote validity as semantic completeness."
+    },
+    {
+      "id": "A-03",
+      "kind": "evidence_role_mismatch",
+      "priority": "low",
+      "caseId": "plants",
+      "summary": "Initial-draft revision_resolution is marked satisfied using original settled decisions.",
+      "evidence": [
+        {
+          "caseId": "plants",
+          "planVersion": 1,
+          "lineNumbers": [
+            13,
+            14,
+            15,
+            16,
+            17,
+            18
+          ],
+          "quotes": [
+            "*   **확정된 사용자 결정사항 (`settledDecisions`)**:",
+            "    *   단일 사용자 브라우저 전용 도구로 동작합니다.",
+            "    *   식물 이름이나 날짜가 동일해도 각각 독립된 별도 기록으로 저장됩니다.",
+            "    *   수정 및 삭제는 사용자가 선택한 단 '한 건'에 대해서만 적용됩니다.",
+            "    *   날짜는 실제 달력 기준 유효한 `YYYY-MM-DD` 형식이며, 과거·오늘·미래 날짜를 모두 허용합니다.",
+            "    *   삭제 확인 대화창에서 '취소'를 선택하면 저장소 및 화면 목록에 어떠한 변경도 발생하지 않습니다."
+          ]
+        }
+      ],
+      "reason": "Those lines support decision_provenance, not resolution of a previous review. No previous review exists for plants v1; not_applicable would be the clearer classification. This does not invalidate the correct requirements or seeded correction.",
+      "recommendation": "Distinguish no previous review from an actually resolved previous issue."
+    }
+  ],
+  "nextStep": "No automatic model rerun or approval. Separate follow-up improvement may strengthen common validation and semantic evidence-role checks, with new cases. This completed run remains unchanged."
+}

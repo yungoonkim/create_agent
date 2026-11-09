@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-11-09T12:38:43.650Z",
+  "hashes": {
+    "cases/exercise/result.json": "52632d3fd292cc26f8907ff0e2d8f099f652a2cacef9219aa28b32350994c147",
+    "cases/plants/input.json": "029fbccd43b9d71d12f5dd8b678cc182e0d269599356852e9ef89e0bd645a456",
+    "cases/plants/result.json": "c1411e84ca040f03f66000566071a4dafbce8b1f2652b11856d2002f7abeb006",
+    "generation.completed.json": "3a826cd5d42b469fed80a81cd5513959aad41b82ab5f994b352ed7e813b5f7d1",
+    "generation.started.json": "8c9ad30b79417ff2ff50c0eaceb79e38d635911fbbd29c30a77fc041d86671d5",
+    "manifest.json": "e26d1459fbd3af518157f22f8d1711393457525b8efb89b83a1c93014ca30c99",
+    "provider/call-001.failure.json": "773fc1866124295cfd5b03a11b91939a35a566c888436a6592ff8f8624b607d8",
+    "provider/call-001.request.json": "a2505e7cea30f93d241ebe1fde127cf255e0d7c3f9fbffa9ac79ac52f4a8efc5",
+    "provider/call-001.started.json": "a5598aab5f520a831eb389c4db92fe165649f401b81c1d758c71d0404d8197ba",
+    "runtime/plants/approvals/plants-fixture-approval.json": "f5a9c881d9a7f0104fc87c345cb082198369bde04d0664ec456fd9ef8d052660",
+    "runtime/plants/projects/trial-plants-local-1794227914170-5fd21835/planning/errors/9b33924b-ed15-4f28-af76-a13ef66640be.json": "a88e503aa387b2d2fb359b739e2af03329049bec1254eaa4463b0d2f928ac68e",
+    "runtime/plants/projects/trial-plants-local-1794227914170-5fd21835/planning/state.json": "a6de2cae6e18f29eaf674e60f131e1511322a4c9060fe5bbf5fb7ecec16db664",
+    "runtime/plants/projects/trial-plants-local-1794227914170-5fd21835/planning/usage.jsonl": "3c54a00d700a73af92a21d79052fbb08668611e8493fcc6650ee1735e8e6ae6a",
+    "runtime/plants/projects/trial-plants-local-1794227914170-5fd21835/requirements.md": "a6dc927cdeb7710d722559b3944a8f25614629a14d39eb6f07916012ede54763",
+    "runtime/plants/projects/trial-plants-local-1794227914170-5fd21835/scope/approval-links/plants-scope.json": "c28cd8231532854f30aeac72f4416db602561eb2abeae357923fc0c9da4f1227",
+    "runtime/plants/projects/trial-plants-local-1794227914170-5fd21835/scope/v1.json": "8edef9ba0cc087a7f780d7702807b8fbb0f9f0418de922da30d762c4ab407f7f",
+    "summary.json": "e068377d0baa2cadd431de2115eb2f2a8eae3f8692ae74d732432c11859a98d8",
+    "usage.jsonl": "8f9bf96cc004f5a522a2a5ed9720c63cf96e4cc20b81ddef25877082ed11ca77"
+  }
+}

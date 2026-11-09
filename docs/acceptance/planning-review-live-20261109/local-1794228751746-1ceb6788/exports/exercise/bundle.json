@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "complete": true,
+  "kind": "planning_document_review",
+  "source": {
+    "projectId": "trial-exercise-local-1794228751746-1ceb6788",
+    "scopeId": "exercise-scope",
+    "scopeVersion": 1,
+    "scopeSha256": "eca68749ebbe447720d5ecf3881f24b9bb3a45e24b40544143e9a45151c8cbae",
+    "planId": "trial-exercise-local-1794228751746-1ceb6788-plan",
+    "planVersion": 2,
+    "planSha256": "89c1179d532dacf470874f3c9a8530e84c6888144c817ee76cc74529c3f08933",
+    "reviewSha256": "917b5f87100ff8a77dd655d5f3dca93519c5f23e131cf5a0bd26cd69bee36cae"
+  },
+  "implementationVerification": "not_performed",
+  "hashes": {
+    "plan.md": "edad0e62abe9e27d0db1168b675441738469760da79d13287921f88e1f00c9d8",
+    "review.json": "0a039c9fe6737575aa951533410a74f1917ab4ebb39b20bb2843dd115501fb29",
+    "review.md": "f328476c642420e09050dcbcd4b073cf8c1c4099481e1965b97395606aa77659"
+  }
+}

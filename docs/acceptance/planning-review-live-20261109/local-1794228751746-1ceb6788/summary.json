@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "mode": "live",
+  "runId": "local-1794228751746-1ceb6788",
+  "label": "Functional acceptance candidates, manual source/semantic audit still required",
+  "results": [
+    {
+      "caseId": "plants",
+      "title": "반려식물 물주기 기록",
+      "status": "awaiting_approval",
+      "failure": null,
+      "decision": "REQUEST_USER_APPROVAL",
+      "currentPlanVersion": 1,
+      "iterationCount": 1,
+      "scopeVersionUnchanged": true,
+      "exportCreated": true,
+      "rowStatuses": [
+        {
+          "requirementId": "WATER-1",
+          "status": "reflected"
+        },
+        {
+          "requirementId": "WATER-2",
+          "status": "reflected"
+        },
+        {
+          "requirementId": "WATER-3",
+          "status": "reflected"
+        }
+      ],
+      "actualUserApprovalCreated": false,
+      "implementationVerified": false,
+      "factsOnlyNotQualityPass": true,
+      "manualChecks": [
+        "새 응답 형식이 파싱/검증되고 MAX_TOKENS 중단을 성공으로 취급하지 않는다.",
+        "요구별 정상/실패/확인 사례 원문 근거와 저장 상태 trigger 근거를 검사한다.",
+        "원본 Scope와 기존 프로젝트를 유지하고 실제 사용자 승인을 생성하지 않는다.",
+        "내보낸 사용자 검토표와 원문/파일 해시를 대조한다."
+      ]
+    },
+    {
+      "caseId": "exercise",
+      "title": "개인 운동 기록",
+      "status": "awaiting_approval",
+      "failure": null,
+      "decision": "REQUEST_USER_APPROVAL",
+      "currentPlanVersion": 2,
+      "iterationCount": 2,
+      "scopeVersionUnchanged": true,
+      "exportCreated": true,
+      "rowStatuses": [
+        {
+          "requirementId": "MOVE-1",
+          "status": "reflected"
+        },
+        {
+          "requirementId": "MOVE-2",
+          "status": "reflected"
+        },
+        {
+          "requirementId": "MOVE-3",
+          "status": "reflected"
+        }
+      ],
+      "actualUserApprovalCreated": false,
+      "implementationVerified": false,
+      "factsOnlyNotQualityPass": true,
+      "manualChecks": [
+        "새 응답 형식이 파싱/검증되고 MAX_TOKENS 중단을 성공으로 취급하지 않는다.",
+        "요구별 정상/실패/확인 사례 원문 근거와 저장 상태 trigger 근거를 검사한다.",
+        "원본 Scope와 기존 프로젝트를 유지하고 실제 사용자 승인을 생성하지 않는다.",
+        "내보낸 사용자 검토표와 원문/파일 해시를 대조한다.",
+        "고의로 추가한 제외 기능을 승인 Scope 변경 없이 기획 교정으로 처리한다. Scope 승인 대기/유료 재생으로 우회하지 않는다.",
+        "수정본의 추가 기능 제거와 기존 요구 보존은 진행자가 원문으로 최종 감사한다."
+      ]
+    }
+  ],
+  "adapterInvocations": 7,
+  "liveSdkInvocations": 7,
+  "maxModelCalls": 11,
+  "incompleteCases": 0,
+  "maxTokensResponses": 0,
+  "knownProvidedTokenTariffSubtotalUsd": 0.11012025,
+  "responsesWithUsage": 7,
+  "requestsWithoutUsage": 0,
+  "transportFailures": 0,
+  "invoiceClaim": false,
+  "additionalJudgeCalls": 0,
+  "primaryFilesUnchanged": true,
+  "manualAcceptance": "pending",
+  "completedAt": "2026-11-09T12:55:14.126Z"
+}
