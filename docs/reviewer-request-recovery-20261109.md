@@ -57,3 +57,22 @@ npm.cmd run supervisor -- retry-review --config $localConfigPath --reason "Revie
 ```
 
 `CALL`을 입력하면 실제 비용이 발생한다. 최종 기획 승인은 포함하지 않는다. 다시 실패하면 예약/이력을 지우지 말고 report와 usage 마지막 행으로 조사한다. 성공하면 report의 다음 동작을 따라 내용 검토·사용자 승인을 진행한다. 이번 재검증은 사용자 PC에서 결과를 받아야 완료된다.
+
+## 후속 Windows 관찰: API 복구 확인, 기획 수정은 계속
+
+사용자가 재시도 후 [report 원문](acceptance/windows-review-retry-20261109/report.json)을 제공했다. Scope v4 approved, Plan v2 / iteration2/5 / awaiting_user_input이며 Review v2의 challengeCompleted=true로 실제 추가 검토 요청 완료를 확인했다. 이전400은 이 실행 결과에서 재발하지 않았다. 실제 모델 요청 성공은 이 로컬 사례에 대한 관찰이며 일반 안정성 보장은 아니다.
+
+Reviewer headline은 pass지만, 저장 상태 감사에서 기존 빈 값의 initialize에 허용 근거가 없고 읽기 예외는 unspecified로 남았다. 코드가 미해결을 차단했고, state는 같은 issue-storage-present_empty 반복 때문에 collect-feedback을 안내한다. [현재 Review의 코드 검증](acceptance/windows-review-retry-20261109/policy-check.json)도 두 항목을 재현했다. 이전 v1 Review·전체 usage는 제공되지 않아 반복 비교나 총 모델 비용은 추정하지 않는다.
+
+현재는 승인 대기가 아니다. collect-feedback → 실제 보완 답변 → resume-plan 순서로 같은 Scope의 남은3회 안에서 수정한다. 기획/Scope/예약 파일을 수동 수정하거나 retry-review를 또 실행하지 않는다. 현재 [기획 v2](acceptance/windows-review-retry-20261109/plan-v2.md)와 [진행 요약](acceptance/windows-review-retry-20261109/assessment.json)을 보존했다.
+
+## 후속 Windows 관찰: v3 검토 완료 뒤 요약 표시 오류
+
+사용자가 Q-7 보완 답변과 resume-plan 결과를 제공했다. 출력에서 종료코드0·continuation completed, 기획 v3/반복3/5/awaiting_approval, review-3 pass/issues[]/challengeCompleted=true, 최종 승인 pending/nextAction approve-plan이 확인된다. 이후 진행자가 안내한 PowerShell 요약의 ConvertFrom-Json에서 한글 깨짐을 동반한 파싱 오류가 발생했다. [관찰 기록](acceptance/windows-review-retry-20261109/resume-v3-observation.json)에 구분했다. 사용자 입력 잘못이나 모델 재개 실패로 설명하지 않는다.
+
+원본 v3.json은 아직 받지 않았으므로 저장 기획 자체의 인코딩/내용은 확인 전이다. 깨진 콘솔 문자열을 역변환해 원문으로 대체하지 않는다. 모델 재실행 없이 원본 JSON 파일을 받아 기획을 검토하고 사용자 최종 승인을 따로 진행한다. 네이티브 stdout 캡처 대신 아래처럼 저장 상태를 UTF-8로 직접 읽으면 요약 때문에 모델을 다시 호출할 필요가 없다.
+
+```powershell
+$state = Get-Content ".adtf/projects/my-supervisor-20261109-112551/planning/state.json" -Raw -Encoding UTF8 | ConvertFrom-Json -ErrorAction Stop
+$state | Select-Object status, currentPlanVersion, iterationCount, maxIterations | Format-List
+```

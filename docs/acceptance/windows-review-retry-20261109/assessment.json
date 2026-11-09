@@ -1,0 +1,42 @@
+{
+  "kind": "User-supplied Windows report after explicit retry, not Cloud model execution or user approval",
+  "sourceFileSha256": "ab60d62a26f5b1d2952fbdc89478c703b15d8b410fe35b3c9874a5cfb9a36beb",
+  "projectId": "my-supervisor-20261109-112551",
+  "scope": {
+    "id": "scope-v4",
+    "version": 4,
+    "approval": "approved"
+  },
+  "planning": {
+    "projectId": "my-supervisor-20261109-112551",
+    "scopeContractId": "scope-v4",
+    "scopeVersion": 4,
+    "iterationCount": 2,
+    "maxIterations": 5,
+    "reviewRetry": {
+      "planId": "my-supervisor-20261109-112551-plan",
+      "planVersion": 1,
+      "sourceHash": "f608789c7fc4ca511add1bab6d7cbec9a83770d78a52d7c6481913376fb5348f",
+      "reason": "^Reviewer^ 요청^ 형식^ 보완^ 후^ 저장^ 기획을^ 재검토함^",
+      "startedAt": "2026-11-09T04:36:09.044Z"
+    },
+    "status": "awaiting_user_input",
+    "currentPlanVersion": 2,
+    "reviewId": "review-2",
+    "reason": "The same issue remains at the same or higher severity: issue-storage-present_empty."
+  },
+  "nextAction": "collect-feedback",
+  "challengeCompleted": true,
+  "reviewerHeadlineOutcome": "pass",
+  "finalPlanApproved": false,
+  "observed": "Review protocol completed for v2; original HTTP400 did not recur in this supplied result. Planning paused for unresolved recurring storage policy.",
+  "knownUnresolved": [
+    "present_empty: initialize without authorizationScopeIds",
+    "read_error: action unspecified"
+  ],
+  "limits": [
+    "No Windows local runtime files were modified in Cloud.",
+    "Original v1 Review and new usage ledger were not supplied; do not infer total request/token counts.",
+    "Code/API recovery confirmed for this run, not all long plans."
+  ]
+}

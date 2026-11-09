@@ -1,0 +1,33 @@
+{
+  "kind": "Observation from user-pasted Windows output; not a reconstructed valid report",
+  "sourceSha256": "b7ba280855bf39b20695e46fa3322022bbf40f9da46d57cb960b4c4389a9b2c4",
+  "projectId": "my-supervisor-20261109-112551",
+  "observed": {
+    "resumeExitCode": 0,
+    "planVersion": 3,
+    "planningStatus": "awaiting_approval",
+    "iterationCount": 3,
+    "maxIterations": 5,
+    "reviewId": "review-3",
+    "reviewOutcome": "pass",
+    "reviewIssues": [],
+    "challengeCompleted": true,
+    "planApprovalId": "approval-b00d7ead-ca59-45ae-ba58-47aef133a2b8",
+    "planApprovalStatus": "pending",
+    "nextAction": "approve-plan",
+    "continuationStatus": "completed"
+  },
+  "displayFailure": {
+    "stage": "PowerShell native-output capture -> ConvertFrom-Json",
+    "message": "Invalid object passed; ':' or '}' expected at position 21429",
+    "observedMojibake": true,
+    "interpretation": "Likely Windows PowerShell native UTF-8 decoding mismatch; summary failure after successful model workflow.",
+    "originalPlanFileChecked": false
+  },
+  "next": "Do not replay answer/resume-plan/retry-review. Read original v3.json as UTF-8 and review contents before any final approval.",
+  "limits": [
+    "Original local v3.json and full usage ledger have not been provided.",
+    "Do not repair or treat mojibake terminal output as the original plan.",
+    "No user final plan approval has been given."
+  ]
+}
