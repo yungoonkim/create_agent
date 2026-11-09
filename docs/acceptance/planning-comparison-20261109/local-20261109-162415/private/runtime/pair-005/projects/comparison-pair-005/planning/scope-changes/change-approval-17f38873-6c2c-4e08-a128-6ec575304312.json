@@ -1,0 +1,11 @@
+{
+  "id": "change-approval-17f38873-6c2c-4e08-a128-6ec575304312",
+  "projectId": "comparison-pair-005",
+  "baseScopeContractId": "scope-1",
+  "baseScopeVersion": 1,
+  "rationale": "Reviewer identified a scope violation that requires a separate approved change.",
+  "proposedChanges": [
+    "기술 제약사항에는 '비소유/미지원은 변경을 차단한다'고 규정되어 있으나, 168행에서는 잠금 미지원 브라우저 환경에서 임의로 타임스탬프 기반 세마포어로 대체하도록 설계되어 제약을 벗어납니다. Suggested: 잠금 미지원 브라우저 환경에서는 대체 세마포어를 도입하지 말고, 기술 제약 원칙대로 변경을 차단(Read-Only 안내)하도록 사양을 정정하십시오."
+  ],
+  "approvalId": "approval-17f38873-6c2c-4e08-a128-6ec575304312"
+}

@@ -1,0 +1,240 @@
+[
+  {
+    "pairId": "pair-001",
+    "evaluator": "Codex root after primary blind scores sealed; evidence audit, not certified external ground truth",
+    "claims": []
+  },
+  {
+    "pairId": "pair-002",
+    "evaluator": "Codex root after primary blind scores sealed; evidence audit, not certified external ground truth",
+    "claims": [
+      {
+        "id": "pair-002-1-m0",
+        "validity": "supported",
+        "repair": "resolved",
+        "beforeLines": [
+          128,
+          130,
+          131,
+          133,
+          140,
+          141
+        ],
+        "afterLines": [
+          130,
+          131,
+          132,
+          187
+        ],
+        "reason": "읽기 이전/이후의 데이터 상태만 정의해 getItem 자체 예외 경로가 빠졌다는 지적은 기술 제약3과 원문에 부합한다. 수정본은 SecurityError 등 읽기 예외에 무쓰기·안내·모든 변경 차단을 추가하고 검증 예시도 추가했다.",
+        "beforeEvidence": [
+          "애플리케이션 구동 시 로컬 저장소 값을 읽어 엄격히 검증한다.",
+          "* **최초 실행 (Normal Init)**:",
+          "  * 저장소 키의 조회 결과가 정확히 `null`인 경우에만 정상 최초 실행으로 간주한다.",
+          "* **손상 및 위반 데이터 처리 (Corrupt / Invalid State)**:",
+          "  * **보존 정책**: 기존 저장소 값을 절대 빈 값으로 덮어쓰거나, 파싱 가능한 일부만 잘라내어 저장하거나, 자동 리셋(`localStorage.clear()`)하지 않는다. 원본 텍스트를 그대로 유지한다.",
+          "  * **화면 및 동작**: 화면에 \"저장 데이터 손상 또는 지원되지 않는 버전입니다. 원본 보존을 위해 수정이 제한됩니다.\" 경고를 표시하고, 모든 입력 폼과 변경 버튼을 비활성화(Read-Only Lock)한다."
+        ],
+        "afterEvidence": [
+          "* **읽기 예외 처리 (Read Exception)**:",
+          "  * 브라우저 개인정보 보호 모드, 저장소 권한 차단 등으로 인해 `localStorage.getItem` 호출 자체에서 예외(`SecurityError` 등)가 발생하는 경우를 포괄한다.",
+          "  * **동작**: 저장소에 어떠한 쓰기 작업도 시도하지 않는다. 화면에 \"저장소 접근 권한 오류로 데이터를 읽을 수 없습니다. 원본 보호를 위해 수정이 제한됩니다.\" 안내 메시지를 노출하고 모든 입력 폼과 변경 버튼을 비활성화(Read-Only Lock)한다.",
+          "| **AC-11** | 저장소 읽기 예외 차단 (R-6) | `localStorage.getItem` 실행 시 예외를 던지는 브라우저 제한 환경에서 접속 | 저장소 쓰기 없이 \"저장소 접근 권한 오류로 데이터를 읽을 수 없습니다...\" 경고 표시, 모든 변경 차단 |"
+        ],
+        "origin": "model_issue"
+      },
+      {
+        "id": "pair-002-1-s0",
+        "validity": "supported",
+        "repair": "resolved",
+        "beforeLines": [
+          128,
+          130,
+          131,
+          133,
+          140,
+          141
+        ],
+        "afterLines": [
+          130,
+          131,
+          132,
+          187
+        ],
+        "reason": "같은 read_error 누락을 저장 정책에서 별도 행으로 기록한 것이다. 수정본의 무쓰기·입력 비활성화와 읽기 예외 검증 예시로 해결됐다. m0과 동일한 근본 결함이므로 고유 수정2건으로 세지 않는다.",
+        "beforeEvidence": [
+          "애플리케이션 구동 시 로컬 저장소 값을 읽어 엄격히 검증한다.",
+          "* **최초 실행 (Normal Init)**:",
+          "  * 저장소 키의 조회 결과가 정확히 `null`인 경우에만 정상 최초 실행으로 간주한다.",
+          "* **손상 및 위반 데이터 처리 (Corrupt / Invalid State)**:",
+          "  * **보존 정책**: 기존 저장소 값을 절대 빈 값으로 덮어쓰거나, 파싱 가능한 일부만 잘라내어 저장하거나, 자동 리셋(`localStorage.clear()`)하지 않는다. 원본 텍스트를 그대로 유지한다.",
+          "  * **화면 및 동작**: 화면에 \"저장 데이터 손상 또는 지원되지 않는 버전입니다. 원본 보존을 위해 수정이 제한됩니다.\" 경고를 표시하고, 모든 입력 폼과 변경 버튼을 비활성화(Read-Only Lock)한다."
+        ],
+        "afterEvidence": [
+          "* **읽기 예외 처리 (Read Exception)**:",
+          "  * 브라우저 개인정보 보호 모드, 저장소 권한 차단 등으로 인해 `localStorage.getItem` 호출 자체에서 예외(`SecurityError` 등)가 발생하는 경우를 포괄한다.",
+          "  * **동작**: 저장소에 어떠한 쓰기 작업도 시도하지 않는다. 화면에 \"저장소 접근 권한 오류로 데이터를 읽을 수 없습니다. 원본 보호를 위해 수정이 제한됩니다.\" 안내 메시지를 노출하고 모든 입력 폼과 변경 버튼을 비활성화(Read-Only Lock)한다.",
+          "| **AC-11** | 저장소 읽기 예외 차단 (R-6) | `localStorage.getItem` 실행 시 예외를 던지는 브라우저 제한 환경에서 접속 | 저장소 쓰기 없이 \"저장소 접근 권한 오류로 데이터를 읽을 수 없습니다...\" 경고 표시, 모든 변경 차단 |"
+        ],
+        "origin": "storage_policy"
+      }
+    ]
+  },
+  {
+    "pairId": "pair-003",
+    "evaluator": "Codex root after primary blind scores sealed; evidence audit, not certified external ground truth",
+    "claims": []
+  },
+  {
+    "pairId": "pair-004",
+    "evaluator": "Codex root after primary blind scores sealed; evidence audit, not certified external ground truth",
+    "claims": []
+  },
+  {
+    "pairId": "pair-005",
+    "evaluator": "Codex root after primary blind scores sealed; evidence audit, not certified external ground truth",
+    "claims": [
+      {
+        "id": "pair-005-1-m0",
+        "validity": "unclear",
+        "repair": "not_attempted",
+        "beforeLines": [
+          25,
+          56,
+          58,
+          60,
+          66,
+          67,
+          70
+        ],
+        "afterLines": [],
+        "reason": "Scope R-4의 “메뉴·메모를 수정하고 지울 때 확인을 받는다”는 수정/삭제 모두 확인인지 삭제에만 확인인지 문장이 모호하다. R-3는 새 메뉴 교체 확인을 따로 요구하고 원문도 이를 지킨다. 25행은 메모 수정에만 즉시 반영을 선언했다. 따라서 수정 확인을 확정 위반이라고 단정할 근거는 부족하되 반대 해석도 가능하여 false positive로 확정하지 않고 unclear로 남긴다. 이후 수정본은 없다.",
+        "beforeEvidence": [
+          "1. 사용자가 `수요일 점심` 칸의 식단 수정 메뉴를 열고 메모를 \"계란후라이 추가\"로 바꾼 후 저장한다. 확인 창 없이 즉시 반영된다.",
+          "- **정상 동작**: 이미 식단(메뉴명)이 존재하는 칸에 새로운 메뉴 등록을 시도할 경우, 브라우저 확인 대화창(Confirm) 또는 모달을 통해 사용자 확인을 요구한다.",
+          "  - 사용자가 승인([확인])한 경우에만 새 메뉴명과 새 메모로 기존 데이터를 덮어쓴다.",
+          "  - 사용자가 거절([취소])하거나 대화창을 닫으면 기존 등록된 메뉴명과 메모가 그대로 유지되며 입력창의 변경 사항은 폐기된다.",
+          "  - 등록된 칸의 메뉴명 또는 메모를 수정한다.",
+          "  - 등록된 칸의 [삭제] 버튼을 누르면 확인 대화창을 띄우고, 승인 시 해당 칸을 빈 칸으로 만든다.",
+          "  - 삭제는 사용자 확인([확인])을 거쳐야만 수행된다."
+        ],
+        "afterEvidence": [],
+        "origin": "model_issue"
+      },
+      {
+        "id": "pair-005-1-m1",
+        "validity": "supported",
+        "repair": "not_attempted",
+        "beforeLines": [
+          168,
+          170,
+          172
+        ],
+        "afterLines": [],
+        "reason": "기술 제약의 미지원 변경 차단과 달리 168행은 localStorage 타임스탬프 세마포어 대체안을 허용한다. 잠금 미지원 시 변경을 차단하도록 정정하라는 지적은 타당하다. 이후 수정본이 없어 실제 해결은 검증할 수 없다.",
+        "beforeEvidence": [
+          "- 동일 브라우저 프로필 및 Origin 내에서 데이터 덮어쓰기 경쟁(Race Condition)을 방지하기 위해 `Web Locks API`(`navigator.locks.request`)를 사용한다. (브라우저 미지원 환경의 경우 `localStorage` 타임스탬프 기반 세마포어를 사용한다.)",
+          "  1. 쓰기 동작 시 배타적 잠금(Exclusive Lock)을 요청한다.",
+          "  3. 검증 통과 시 쓰기를 완료하고 잠금을 해제한다."
+        ],
+        "afterEvidence": [],
+        "origin": "model_issue"
+      },
+      {
+        "id": "pair-005-1-q0",
+        "validity": "unclear",
+        "repair": "not_attempted",
+        "beforeLines": [
+          25,
+          66,
+          67,
+          70
+        ],
+        "afterLines": [],
+        "reason": "m0과 같은 R-4 확인 범위의 해석 문제를 다시 기록한다. 확정 Scope 문장의 모호함을 풀 사용자 결정이 없고 수정 확인의 누락이 곧 위반인지는 단정할 수 없다. 독립 결함 하나가 추가로 확인된 것은 아니다.",
+        "beforeEvidence": [
+          "1. 사용자가 `수요일 점심` 칸의 식단 수정 메뉴를 열고 메모를 \"계란후라이 추가\"로 바꾼 후 저장한다. 확인 창 없이 즉시 반영된다.",
+          "  - 등록된 칸의 메뉴명 또는 메모를 수정한다.",
+          "  - 등록된 칸의 [삭제] 버튼을 누르면 확인 대화창을 띄우고, 승인 시 해당 칸을 빈 칸으로 만든다.",
+          "  - 삭제는 사용자 확인([확인])을 거쳐야만 수행된다."
+        ],
+        "afterEvidence": [],
+        "origin": "quality_protocol"
+      },
+      {
+        "id": "pair-005-1-q1",
+        "validity": "unclear",
+        "repair": "not_attempted",
+        "beforeLines": [
+          25,
+          66,
+          67,
+          70,
+          168
+        ],
+        "afterLines": [],
+        "reason": "한 행에 R-4 수정 확인 문제와 미지원 세마포어 문제를 묶었다. 미지원 대체안의 제약 위반은 확인되지만 R-4 해석은 모호하므로 결합 지적 전체를 fully supported 또는 false positive로 확정하지 않는다. 후속 수정본도 없다.",
+        "beforeEvidence": [
+          "1. 사용자가 `수요일 점심` 칸의 식단 수정 메뉴를 열고 메모를 \"계란후라이 추가\"로 바꾼 후 저장한다. 확인 창 없이 즉시 반영된다.",
+          "  - 등록된 칸의 메뉴명 또는 메모를 수정한다.",
+          "  - 등록된 칸의 [삭제] 버튼을 누르면 확인 대화창을 띄우고, 승인 시 해당 칸을 빈 칸으로 만든다.",
+          "  - 삭제는 사용자 확인([확인])을 거쳐야만 수행된다.",
+          "- 동일 브라우저 프로필 및 Origin 내에서 데이터 덮어쓰기 경쟁(Race Condition)을 방지하기 위해 `Web Locks API`(`navigator.locks.request`)를 사용한다. (브라우저 미지원 환경의 경우 `localStorage` 타임스탬프 기반 세마포어를 사용한다.)"
+        ],
+        "afterEvidence": [],
+        "origin": "quality_protocol"
+      },
+      {
+        "id": "pair-005-1-q2",
+        "validity": "unclear",
+        "repair": "not_attempted",
+        "beforeLines": [
+          25,
+          66,
+          67,
+          70,
+          73
+        ],
+        "afterLines": [],
+        "reason": "메모 수정에 확인이 필요한지는 R-4의 모호한 문장에 달려 있다. 삭제 확인/취소와 새 메뉴 교체 확인은 원문에 명시돼 있다. 수정 취소 흐름 보완은 가능하지만 확정 위반이라고 판단하기 어렵다.",
+        "beforeEvidence": [
+          "1. 사용자가 `수요일 점심` 칸의 식단 수정 메뉴를 열고 메모를 \"계란후라이 추가\"로 바꾼 후 저장한다. 확인 창 없이 즉시 반영된다.",
+          "  - 등록된 칸의 메뉴명 또는 메모를 수정한다.",
+          "  - 등록된 칸의 [삭제] 버튼을 누르면 확인 대화창을 띄우고, 승인 시 해당 칸을 빈 칸으로 만든다.",
+          "  - 삭제는 사용자 확인([확인])을 거쳐야만 수행된다.",
+          "  - 삭제 확인 창에서 [취소]를 누르면 데이터가 유지된다."
+        ],
+        "afterEvidence": [],
+        "origin": "quality_protocol"
+      },
+      {
+        "id": "pair-005-1-a0",
+        "validity": "unclear",
+        "repair": "not_attempted",
+        "beforeLines": [
+          25,
+          60,
+          66,
+          73,
+          74
+        ],
+        "afterLines": [],
+        "reason": "수정 확인을 채택한다면 폼 취소 정책을 정하는 것은 검증성을 높이는 제안이다. 현재 Scope가 메모 수정 확인을 명확히 확정하지 않았으므로 필수 결함 지적과 구분한다. 제안/질문 행이며 핵심 false-positive 분모에 포함하지 않는다.",
+        "beforeEvidence": [
+          "1. 사용자가 `수요일 점심` 칸의 식단 수정 메뉴를 열고 메모를 \"계란후라이 추가\"로 바꾼 후 저장한다. 확인 창 없이 즉시 반영된다.",
+          "  - 사용자가 거절([취소])하거나 대화창을 닫으면 기존 등록된 메뉴명과 메모가 그대로 유지되며 입력창의 변경 사항은 폐기된다.",
+          "  - 등록된 칸의 메뉴명 또는 메모를 수정한다.",
+          "  - 삭제 확인 창에서 [취소]를 누르면 데이터가 유지된다.",
+          "  - 수정 중 빈 메뉴명을 입력하면 저장되지 않고 기존 데이터가 보존된다."
+        ],
+        "afterEvidence": [],
+        "origin": "suggestion_or_question"
+      }
+    ]
+  },
+  {
+    "pairId": "pair-006",
+    "evaluator": "Codex root after primary blind scores sealed; evidence audit, not certified external ground truth",
+    "claims": []
+  }
+]

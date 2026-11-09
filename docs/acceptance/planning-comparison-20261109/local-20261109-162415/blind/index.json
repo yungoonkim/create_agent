@@ -1,0 +1,12 @@
+{
+  "mode": "live",
+  "packets": [
+    "blind-031b1889",
+    "blind-4fbc06bd",
+    "blind-d5886bda",
+    "blind-d1bdf329",
+    "blind-19bd2c5c",
+    "blind-e38acdd3"
+  ],
+  "evaluatorInstructions": "Score every candidate independently using frozen rubric before opening private mapping or results. Do not inspect provider/runtime artifacts until scoring is sealed."
+}

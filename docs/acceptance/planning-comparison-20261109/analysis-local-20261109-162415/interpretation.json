@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "scoredPairs": 6,
+  "scoreMaximumEach": 18,
+  "singleScoreTotal": 83,
+  "adtfScoreTotal": 84,
+  "qualityWins": 1,
+  "identicalEndpointPairs": 5,
+  "approvalReadyPairs": 3,
+  "scopeDecisionWaitingPairs": 1,
+  "reviewFailurePairs": 2,
+  "claimRowAudit": {
+    "materialClaims": 7,
+    "supported": 3,
+    "unsupported": 0,
+    "unclear": 4,
+    "suggestionsOrQuestions": 1,
+    "supportedRepairsAttempted": 2,
+    "supportedRepairsResolved": 2,
+    "supportedRepairsUnresolved": 0,
+    "supportedRepairsRegressed": 0,
+    "note": "Supported/unsupported are evaluator judgments with citations, not independently certified ground truth. Unclear cases are separate. Counts are claim rows; the same underlying defect may occur in multiple review rows/stages."
+  },
+  "distinctConfirmedProblemsAmongCriticisms": [
+    "pair-002 getItem exception missing; one underlying omission represented by model and storage-policy rows; fixed in v2",
+    "pair-005 unsupported lock fallback violates explicit no-write policy; not revised because controller stopped for Scope decision"
+  ],
+  "scopeAmbiguity": "meal R-4 wording can attach confirmation to both edit/delete or to deletion. Root blind rubric C-02 checks replacement/delete confirmation. Do not mark the four edit-confirmation/mixed critique rows as definitive false positives or truths. Clarify wording in a future dataset, preserve this dataset and scores.",
+  "scopeDecisionAnalysis": "Reviewer tagged a within-plan violation as scopeViolation; existing policy requested Scope change approval. Correcting the unsupported fallback would satisfy the same Scope without changing it. Preserve observed waiting state; policy refinement needs separate work.",
+  "readinessVsQuality": "All three approval-ready endpoints still have at least one major omission in primary evaluator findings. Reviewer pass is not final user approval or a quality guarantee.",
+  "conclusion": "One observable repair, little aggregate score gain and substantially more quoted-rate cost; two review truncations and one Scope decision stop prevent claiming stable quality improvement.",
+  "limits": [
+    "three topics, two repeats each",
+    "same strong Writer prompt and shared initial draft; no test of intake/approval-management advantage",
+    "one model evaluator created the synthetic cases; no human panel or independent certified ground truth",
+    "coarse rubric and subjective severities; duplicated claim rows/findings not unique defect counts",
+    "technical constraints intentionally similar across everyday topics; not broad domain coverage",
+    "maximum three planning iterations; failures/stops retained",
+    "no actual app implementation or browser behavior validation",
+    "failed or waiting endpoints scored as saved candidates only; do not infer successful ADTF completion from equal scores"
+  ]
+}

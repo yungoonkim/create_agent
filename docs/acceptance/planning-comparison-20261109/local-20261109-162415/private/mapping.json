@@ -1,0 +1,134 @@
+[
+  {
+    "pairId": "pair-001",
+    "candidates": [
+      {
+        "candidateId": "sample-6e78e0a9",
+        "arm": "adtf",
+        "version": 1,
+        "sourceSha256": "0fea7a0fb16194d89fa130a7523baebfb79eb77c6af67d960a81f74257a5f2e0",
+        "maskedSha256": "0fea7a0fb16194d89fa130a7523baebfb79eb77c6af67d960a81f74257a5f2e0",
+        "removedLines": 0
+      },
+      {
+        "candidateId": "sample-37bdce43",
+        "arm": "single",
+        "version": 1,
+        "sourceSha256": "0fea7a0fb16194d89fa130a7523baebfb79eb77c6af67d960a81f74257a5f2e0",
+        "maskedSha256": "0fea7a0fb16194d89fa130a7523baebfb79eb77c6af67d960a81f74257a5f2e0",
+        "removedLines": 0
+      }
+    ],
+    "packetId": "blind-031b1889"
+  },
+  {
+    "pairId": "pair-002",
+    "candidates": [
+      {
+        "candidateId": "sample-fa90dbb0",
+        "arm": "adtf",
+        "version": 2,
+        "sourceSha256": "6acfb3f73a3af98d905e57951012d8723e27a2655e049bfe2addc838bca1cd99",
+        "maskedSha256": "6acfb3f73a3af98d905e57951012d8723e27a2655e049bfe2addc838bca1cd99",
+        "removedLines": 0
+      },
+      {
+        "candidateId": "sample-62984d1e",
+        "arm": "single",
+        "version": 1,
+        "sourceSha256": "946739e789ccca2cbd18fda91c2660580599ac3c40393ab9fc6ef42fe7dae498",
+        "maskedSha256": "946739e789ccca2cbd18fda91c2660580599ac3c40393ab9fc6ef42fe7dae498",
+        "removedLines": 0
+      }
+    ],
+    "packetId": "blind-4fbc06bd"
+  },
+  {
+    "pairId": "pair-003",
+    "candidates": [
+      {
+        "candidateId": "sample-1690d18f",
+        "arm": "adtf",
+        "version": 1,
+        "sourceSha256": "d68372058d0a12a566d3084c5b3c903e4610edb14ba8d85a325cfc6f1292081c",
+        "maskedSha256": "d68372058d0a12a566d3084c5b3c903e4610edb14ba8d85a325cfc6f1292081c",
+        "removedLines": 0
+      },
+      {
+        "candidateId": "sample-94d4bdf7",
+        "arm": "single",
+        "version": 1,
+        "sourceSha256": "d68372058d0a12a566d3084c5b3c903e4610edb14ba8d85a325cfc6f1292081c",
+        "maskedSha256": "d68372058d0a12a566d3084c5b3c903e4610edb14ba8d85a325cfc6f1292081c",
+        "removedLines": 0
+      }
+    ],
+    "packetId": "blind-d5886bda"
+  },
+  {
+    "pairId": "pair-004",
+    "candidates": [
+      {
+        "candidateId": "sample-ba27ae82",
+        "arm": "single",
+        "version": 1,
+        "sourceSha256": "946d6bfc88928e1a551b2dd485edd5ae78213f2e3cf05b60aff3b3dd000a5d54",
+        "maskedSha256": "946d6bfc88928e1a551b2dd485edd5ae78213f2e3cf05b60aff3b3dd000a5d54",
+        "removedLines": 0
+      },
+      {
+        "candidateId": "sample-bafe0018",
+        "arm": "adtf",
+        "version": 1,
+        "sourceSha256": "946d6bfc88928e1a551b2dd485edd5ae78213f2e3cf05b60aff3b3dd000a5d54",
+        "maskedSha256": "946d6bfc88928e1a551b2dd485edd5ae78213f2e3cf05b60aff3b3dd000a5d54",
+        "removedLines": 0
+      }
+    ],
+    "packetId": "blind-d1bdf329"
+  },
+  {
+    "pairId": "pair-005",
+    "candidates": [
+      {
+        "candidateId": "sample-e439e32d",
+        "arm": "single",
+        "version": 1,
+        "sourceSha256": "c7754d8aff85864041df918af9b233414b066e35efaad071f80d376ed16fbe48",
+        "maskedSha256": "c7754d8aff85864041df918af9b233414b066e35efaad071f80d376ed16fbe48",
+        "removedLines": 0
+      },
+      {
+        "candidateId": "sample-ba6a06fd",
+        "arm": "adtf",
+        "version": 1,
+        "sourceSha256": "c7754d8aff85864041df918af9b233414b066e35efaad071f80d376ed16fbe48",
+        "maskedSha256": "c7754d8aff85864041df918af9b233414b066e35efaad071f80d376ed16fbe48",
+        "removedLines": 0
+      }
+    ],
+    "packetId": "blind-19bd2c5c"
+  },
+  {
+    "pairId": "pair-006",
+    "candidates": [
+      {
+        "candidateId": "sample-edcf907e",
+        "arm": "single",
+        "version": 1,
+        "sourceSha256": "513474848d7584900d423a67b098f562f0fd1a513e5247426da02ed6140f6593",
+        "maskedSha256": "513474848d7584900d423a67b098f562f0fd1a513e5247426da02ed6140f6593",
+        "removedLines": 0
+      },
+      {
+        "candidateId": "sample-08f455e0",
+        "arm": "adtf",
+        "version": 1,
+        "sourceSha256": "513474848d7584900d423a67b098f562f0fd1a513e5247426da02ed6140f6593",
+        "maskedSha256": "513474848d7584900d423a67b098f562f0fd1a513e5247426da02ed6140f6593",
+        "removedLines": 0
+      }
+    ],
+    "packetId": "blind-e38acdd3"
+  }
+]

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "runId": "local-20261109-162415",
+  "recordedAtUtc": "2026-11-09T07:50:55.880158+00:00",
+  "source": "User-uploaded Windows generation archive",
+  "archiveFile": "local-20261109-162415.tar.gz",
+  "archiveSha256": "815e6db7bc7d77b87b74b1de6e611189509f7b1052abeaca0cefac12863ab141",
+  "archiveBytes": 578004,
+  "safeMemberCount": 237,
+  "uncompressedBytes": 2015520,
+  "checks": [
+    "relative contained paths only",
+    "no duplicate names/links/special members",
+    "bounded members/expanded size",
+    "original file hashes match uploaded artifact manifest",
+    "freeze/runner/library match trusted local code",
+    "credential-pattern scan passed"
+  ],
+  "primaryBlinding": {
+    "inspectedBeforeSeal": "blind/index.json and six anonymous packets only; automated hashes and manifest/code metadata checked without displaying provenance",
+    "manualSealedAt": "2026-11-09T07:44:07.225Z",
+    "unblindingStartedAt": "2026-11-09T07:45:39.131Z",
+    "scoresSealedBeforeUnblind": true,
+    "otherScoresViewedBeforePrimarySeal": false,
+    "evaluationTeam": "Codex root only, no subagents/external API judges",
+    "limit": "procedural blinding, not a security barrier or external human panel"
+  },
+  "evaluationOrder": [
+    "safe import/hash checks",
+    "read anonymous candidates",
+    "seal-manual",
+    "read feedback before/after",
+    "seal-feedback",
+    "unblind",
+    "diagnose provider and pass evidence"
+  ],
+  "generationEnvironment": {
+    "platform": "win32",
+    "nodeVersion": "v24.11.0",
+    "primaryFilesObservedAtGeneration": 0,
+    "generationReceiptUnchanged": true,
+    "note": "Windows generation occurred in a fresh source folder with zero .adtf files. This does not remotely verify old projects elsewhere on the PC."
+  },
+  "cloudPrimaryCheckpoints": [
+    {
+      "checkpoint": "docs/acceptance/todo-final-20261109/runtime-checkpoint.json",
+      "filesVerified": 20,
+      "allMatch": true
+    },
+    {
+      "checkpoint": "docs/acceptance/2026-11-08/primary-runtime-checkpoint.json",
+      "filesVerified": 17,
+      "allMatch": true
+    }
+  ],
+  "originalUploadRetainedByteForByte": true,
+  "evaluationPaidApiCalls": 0,
+  "productionCodeChangedAfterObservingResults": false,
+  "originalHashedPayloadFilesUnchangedAfterEvaluation": true,
+  "artifactManifestIndexUpdatedForEvaluationAdditions": true,
+  "originalIndexPreserved": "original-upload-artifact-manifest.json plus original tar.gz"
+}

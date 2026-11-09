@@ -1,0 +1,86 @@
+[
+  {
+    "file": "plans/pair-001-adtf.md",
+    "originalJson": "local-20261109-162415/private/pairs/pair-001/final.json",
+    "contentSha256": "0fea7a0fb16194d89fa130a7523baebfb79eb77c6af67d960a81f74257a5f2e0",
+    "planVersion": 1,
+    "note": "Readable exact original content, no added headings; primary grading used blinded content before this export."
+  },
+  {
+    "file": "plans/pair-001-single.md",
+    "originalJson": "local-20261109-162415/private/pairs/pair-001/initial.json",
+    "contentSha256": "0fea7a0fb16194d89fa130a7523baebfb79eb77c6af67d960a81f74257a5f2e0",
+    "planVersion": 1,
+    "note": "Readable exact original content, no added headings; primary grading used blinded content before this export."
+  },
+  {
+    "file": "plans/pair-002-adtf.md",
+    "originalJson": "local-20261109-162415/private/pairs/pair-002/final.json",
+    "contentSha256": "6acfb3f73a3af98d905e57951012d8723e27a2655e049bfe2addc838bca1cd99",
+    "planVersion": 2,
+    "note": "Readable exact original content, no added headings; primary grading used blinded content before this export."
+  },
+  {
+    "file": "plans/pair-002-single.md",
+    "originalJson": "local-20261109-162415/private/pairs/pair-002/initial.json",
+    "contentSha256": "946739e789ccca2cbd18fda91c2660580599ac3c40393ab9fc6ef42fe7dae498",
+    "planVersion": 1,
+    "note": "Readable exact original content, no added headings; primary grading used blinded content before this export."
+  },
+  {
+    "file": "plans/pair-003-adtf.md",
+    "originalJson": "local-20261109-162415/private/pairs/pair-003/final.json",
+    "contentSha256": "d68372058d0a12a566d3084c5b3c903e4610edb14ba8d85a325cfc6f1292081c",
+    "planVersion": 1,
+    "note": "Readable exact original content, no added headings; primary grading used blinded content before this export."
+  },
+  {
+    "file": "plans/pair-003-single.md",
+    "originalJson": "local-20261109-162415/private/pairs/pair-003/initial.json",
+    "contentSha256": "d68372058d0a12a566d3084c5b3c903e4610edb14ba8d85a325cfc6f1292081c",
+    "planVersion": 1,
+    "note": "Readable exact original content, no added headings; primary grading used blinded content before this export."
+  },
+  {
+    "file": "plans/pair-004-single.md",
+    "originalJson": "local-20261109-162415/private/pairs/pair-004/initial.json",
+    "contentSha256": "946d6bfc88928e1a551b2dd485edd5ae78213f2e3cf05b60aff3b3dd000a5d54",
+    "planVersion": 1,
+    "note": "Readable exact original content, no added headings; primary grading used blinded content before this export."
+  },
+  {
+    "file": "plans/pair-004-adtf.md",
+    "originalJson": "local-20261109-162415/private/pairs/pair-004/final.json",
+    "contentSha256": "946d6bfc88928e1a551b2dd485edd5ae78213f2e3cf05b60aff3b3dd000a5d54",
+    "planVersion": 1,
+    "note": "Readable exact original content, no added headings; primary grading used blinded content before this export."
+  },
+  {
+    "file": "plans/pair-005-single.md",
+    "originalJson": "local-20261109-162415/private/pairs/pair-005/initial.json",
+    "contentSha256": "c7754d8aff85864041df918af9b233414b066e35efaad071f80d376ed16fbe48",
+    "planVersion": 1,
+    "note": "Readable exact original content, no added headings; primary grading used blinded content before this export."
+  },
+  {
+    "file": "plans/pair-005-adtf.md",
+    "originalJson": "local-20261109-162415/private/pairs/pair-005/final.json",
+    "contentSha256": "c7754d8aff85864041df918af9b233414b066e35efaad071f80d376ed16fbe48",
+    "planVersion": 1,
+    "note": "Readable exact original content, no added headings; primary grading used blinded content before this export."
+  },
+  {
+    "file": "plans/pair-006-single.md",
+    "originalJson": "local-20261109-162415/private/pairs/pair-006/initial.json",
+    "contentSha256": "513474848d7584900d423a67b098f562f0fd1a513e5247426da02ed6140f6593",
+    "planVersion": 1,
+    "note": "Readable exact original content, no added headings; primary grading used blinded content before this export."
+  },
+  {
+    "file": "plans/pair-006-adtf.md",
+    "originalJson": "local-20261109-162415/private/pairs/pair-006/final.json",
+    "contentSha256": "513474848d7584900d423a67b098f562f0fd1a513e5247426da02ed6140f6593",
+    "planVersion": 1,
+    "note": "Readable exact original content, no added headings; primary grading used blinded content before this export."
+  }
+]

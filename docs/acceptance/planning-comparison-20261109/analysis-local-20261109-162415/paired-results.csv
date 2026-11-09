@@ -1,0 +1,7 @@
+﻿pair_id,topic,repeat,single_score_18,adtf_score_18,difference,loop_status,loop_failure,single_allocated_calls,adtf_allocated_calls,single_quoted_rate_subtotal_usd,adtf_quoted_rate_subtotal_usd
+pair-001,shopping,1,14,14,0,awaiting_approval,,1,3,0.02454525,0.07125975
+pair-002,shopping,2,15,16,1,awaiting_approval,,1,6,0.0227865,0.14321850000000003
+pair-003,expenses,1,13,13,0,reviewing,adtf_loop_failed; original error retained by recorder/runtime,1,3,0.0317595,0.09222150000000001
+pair-004,expenses,2,14,14,0,reviewing,adtf_loop_failed; original error retained by recorder/runtime,1,3,0.02520075,0.08318400000000001
+pair-005,meal-week,1,12,12,0,awaiting_scope_change_approval,,1,2,0.014784,0.03730575
+pair-006,meal-week,2,15,15,0,awaiting_approval,,1,3,0.02025525,0.05909475

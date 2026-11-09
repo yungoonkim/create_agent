@@ -1,0 +1,22 @@
+{
+  "pairId": "pair-006",
+  "scenarioId": "meal-week",
+  "repeat": 2,
+  "status": "completed",
+  "state": {
+    "projectId": "comparison-pair-006",
+    "scopeContractId": "scope-1",
+    "scopeVersion": 1,
+    "iterationCount": 1,
+    "maxIterations": 3,
+    "status": "awaiting_approval",
+    "currentPlanVersion": 1,
+    "reviewId": "review-1",
+    "approvalId": "approval-566d638a-c605-4daf-a9f3-9467e397bbab"
+  },
+  "decision": "REQUEST_USER_APPROVAL",
+  "failure": null,
+  "initialSha256": "513474848d7584900d423a67b098f562f0fd1a513e5247426da02ed6140f6593",
+  "finalSha256": "513474848d7584900d423a67b098f562f0fd1a513e5247426da02ed6140f6593",
+  "sharedFirstDraft": true
+}

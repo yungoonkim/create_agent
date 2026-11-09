@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "pairId": "pair-001",
+      "reviewPath": "private/runtime/pair-001/projects/comparison-pair-001/planning/reviews/comparison-pair-001-plan/v1.json",
+      "reviewOutcome": "pass",
+      "storageCase": {
+        "state": "read_error",
+        "action": "preserve_and_block",
+        "verdict": "consistent",
+        "evidenceLines": [
+          31,
+          101
+        ],
+        "evidence": [
+          "2. 저장 데이터가 손상되었거나 스키마를 만족하지 못하면 데이터 파괴를 방지하기 위해 수정·등록이 차단되고 읽기 전용 경고가 표시된다.",
+          "  - 손상 데이터 발견 시 UI에 \"저장 데이터 오류: 원본 보존을 위해 쓰기가 차단되었습니다\" 경고를 띄우고 모든 등록·수정·삭제 버튼을 비활성화한다."
+        ],
+        "authorizationScopeIds": [],
+        "rationale": "스토리지 읽기 및 데이터 오류 발생 시 원본 파괴를 방지하기 위해 쓰기 차단 경고를 표시하고 등록·수정·삭제를 모두 비활성화합니다(Lines 31, 101)."
+      },
+      "evaluatorFinding": "The cited lines describe corrupt/invalid stored values, not exceptions thrown by getItem itself. The evidence is a genuine quote but does not support the declared read_error coverage.",
+      "classification": "unsupported assurance / missed requirement, separate from false positive criticism counts",
+      "primaryScoresAlreadySealed": true
+    },
+    {
+      "pairId": "pair-006",
+      "reviewPath": "private/runtime/pair-006/projects/comparison-pair-006/planning/reviews/comparison-pair-006-plan/v1.json",
+      "reviewOutcome": "pass",
+      "storageCase": {
+        "state": "read_error",
+        "action": "preserve_and_block",
+        "verdict": "consistent",
+        "evidenceLines": [
+          24,
+          85
+        ],
+        "evidence": [
+          "2. 만약 저장소 데이터가 외부 요인으로 깨지거나 스키마 규칙을 위반한 경우, 기존 손상 데이터를 덮어쓰거나 임의 초기화하지 않고 화면에 읽기 오류 안내를 표시하며 모든 변경 기능을 즉시 비활성화한다.",
+          "    - 화면에 \"저장 데이터 오류: 변경이 차단되었습니다\" 안내 메시지를 노출하고 모든 추가/수정/삭제 조작을 비활성화한다."
+        ],
+        "authorizationScopeIds": [
+          "requirement:R-6",
+          "constraint:3"
+        ],
+        "rationale": "저장소 읽기 과정에서 예외나 오류가 발생하는 경우 원본에 쓰기 동작 없이 읽기 오류를 안내하고 모든 변경 조작을 비활성화합니다."
+      },
+      "evaluatorFinding": "The cited lines describe corrupt/invalid stored values, not exceptions thrown by getItem itself. The evidence is a genuine quote but does not support the declared read_error coverage.",
+      "classification": "unsupported assurance / missed requirement, separate from false positive criticism counts",
+      "primaryScoresAlreadySealed": true
+    }
+  ],
+  "limits": "Post-unblind targeted check of the two observed read_error pass assurances, not an exhaustive sensitivity/specificity benchmark. Primary scores not amended."
+}
