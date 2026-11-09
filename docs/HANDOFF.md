@@ -3,6 +3,18 @@
 마지막 정리: 2026-11-09 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 작업 — 단일 작성/ADTF 익명 비교 준비, 실제 생성 대기
+
+사용자가 같은 모델·같은 요구로 기획 품질을 비교하고 중요한 비교 기록을 보존하도록 요청했다. [사전 고정한 비교 계획](planning-comparison-protocol-20261109.md), [일괄 실행 안내](../examples/planning-comparison/README.md), [준비·검증 기록](acceptance/planning-comparison-20261109/preflight-20261109.json)을 먼저 읽는다. **실제 비교 모델 호출0회이며 품질 우열 결론은 아직 없다.**
+
+- 새 장보기/생활비/주간 식단 주제별2회, 총6쌍. 동일한 최초 Writer 초안을 양쪽이 공유하고 ADTF에만 현재 Reviewer·정책·수정을 추가한다. 평가 한도는 최대3회이며 운영 샘플5회와 다르다. 생산 코드·프롬프트는 변경하지 않았다.
+- 생성 최대54 SDK 호출. 선택적 Gemini 보조 채점/감사까지 총66회. 기본 실행은 추가 유료 채점을 하지 않으며 OpenAI API도 추가하지 않았다. TEST/STUB fixture만 격리하고 실제 사용자 승인·제품/팀원 실행은 없다.
+- 주 평가자는 진행자 Codex다. `blind/` 후보만 읽고9기준·근거·점수를 `seal-manual`로 봉인한 뒤 지적과 수정 전후를 감사하고 `seal-feedback` 후 공개한다. 대응표·모델 판정·사용량을 먼저 열지 않는다. 외부 사람 패널/완전한 이중 맹검이라고 주장하지 않는다.
+- 원응답·실패·모든 버전·검토 이유·사용량·요금표·평가표·대응표·해시를 보존한다. 실패/중단을 성공으로 세거나 같은 유료 단계를 자동 재생하지 않는다. 동일 본문 점수 차이는 평가자 잡음으로 별도 기록한다. 최종 기록은 평가 후 Git에 함께 남긴다.
+- `npm run typecheck` 및 전체142개 테스트 통과(Linux, 신규5개 포함). 가짜 전체 실행·봉인·감사·공개·압축·변조 탐지를 검증했고 임시 시험 데이터는 정리했다. Windows 실모델 비교 실행은 아직 확인하지 않았다. 기존 실제 todo20파일·재고17파일 체크포인트 해시가 일치한다.
+- Cloud ADC 재인증 필요. 공식 HTTPS 로그인 준비도 공유 브라우저의 `Browser Use could not read requirements`로 실패했고 인증 우회·사용자 코드/토큰 수집은 하지 않았다. 기존 ADC로 성공한 사용자 PC에서 새 소스 폴더로 일괄 생성 후 결과 `.tar.gz` 하나를 받으면 평가를 계속할 수 있다. 옛 승인 프로젝트/설정을 새 실험에 복사하지 않는다.
+- 업로드 아카이브는 경로 탈출/심볼릭 링크를 검사하고 데이터로만 가져온다. 업로드된 스크립트를 실행하지 않는다. 생성 당시 PC와 채점하는 Cloud의 `.adtf` 보호 확인은 구분한다. 기존 완료 프로젝트를 재실행하지 않는다.
+
 ## 최신 완료 — Windows 로컬 기획 v4 최종 승인 저장 확인
 
 사용자가 최종 상태 화면을 제공했고 status=user_approved/currentPlanVersion4/iterationCount4/maxIterations5가 확인됐다. [최종 보고서](windows-planning-final-acceptance-20261109.md), [상태 관찰](acceptance/windows-review-retry-20261109/final-state-observed.json)을 우선한다. **이번 ‘개인용 로컬 웹 할 일 관리 도구’ 기획 작성·검토·수정·최종 승인 시험은 완료다.**

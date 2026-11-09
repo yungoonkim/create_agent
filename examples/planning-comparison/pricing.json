@@ -1,0 +1,10 @@
+{
+  "capturedDate": "2026-11-09",
+  "sourceUrl": "https://cloud.google.com/model-garden/pricing",
+  "sourceLabel": "Official Google Cloud on-demand global Gemini 3.8 Flash table, introductory rate through 2026-12-31",
+  "model": "gemini-3.8-flash",
+  "currency": "USD",
+  "perMillionTokens": { "uncachedInput": 0.75, "cachedInput": 0.075, "outputIncludingReasoning": 3.75 },
+  "validThrough": "2026-12-31",
+  "note": "Tariff estimate only; not actual invoice. No batch/flex or throughput discount assumed. Record missing usage as unknown, not zero. Candidate and thought tokens are separate provided metrics; cached-input accounting uses provider metadata when present."
+}

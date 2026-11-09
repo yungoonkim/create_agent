@@ -17,6 +17,8 @@ ADTF는 여러 AI Agent를 조율하기 위한 재사용 가능한 프레임워�
 
 소스를 처음 받는 경우 [Windows 중심 실행 가이드](docs/local-run-guide.md)를 따른다. [당초 계획 대비 구현 현황](docs/plan-vs-implementation-20261109.md)에서 ADTF 기능과 기획만 완료된 할 일 웹앱을 구분해 확인할 수 있다.
 
+같은 모델의 단일 작성과 ADTF 검토·수정의 효과를 비교하는 [품질 비교 계획](docs/planning-comparison-protocol-20261109.md)과 [일괄 실행 안내](examples/planning-comparison/README.md)를 추가했다. 새 일상 주제3종·각2회·익명 채점·지적/수정 감사·사용량·원자료 해시를 보존한다. 현재는 평가 도구의 오프라인 검증까지 완료했으며 **실제 Gemini 비교 결과는 아직 없다**.
+
 ## 개발
 
 Node.js 20 이상과 npm이 필요하다.
