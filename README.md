@@ -91,4 +91,6 @@ Writer·Reviewer의 [품질 절차 보완과 실제 비교](docs/planning-qualit
 
 저장 복구 검토와 새 사례 반복 검증을 [추가 보고서](docs/reviewer-reliability-20261109.md)에 기록했다. 최종 typecheck/132개 테스트 및 깨끗한 소스 설치·오프라인 실행을 통과했다. 새 사례는 전후 모두 결함6/6 차단·정상6/6 승인 단계 도달로, 이번 표본에서 성능 향상을 주장하지 않는다. 사람 승인과 팀원 실행 보류를 유지한다.
 
-Windows 실제 기획의 Reviewer challenge HTTP400에 대해 [긴 응답 형식 보완·저장 기획 재검토](docs/reviewer-request-recovery-20261109.md)를 추가했다. typecheck/137테스트 통과이며 수정본의 사용자 PC 실호출 재검증은 대기다. 기존 실행 데이터는 보존하고 `plan`을 다시 실행하지 않는다.
+Windows 실제 기획의 Reviewer challenge HTTP400에 대해 [긴 응답 형식 보완·저장 기획 재검토](docs/reviewer-request-recovery-20261109.md)를 추가했다. typecheck/137테스트 통과 후 사용자 PC에서 실제 재검토 완료를 확인했다. 기존 실행 데이터는 보존하고 `plan`을 다시 실행하지 않는다.
+
+[Windows 로컬 기획 시험 보고서](docs/windows-planning-final-acceptance-20261109.md)에 수정본137개 중135통과/2제외, 실제 Gemini 재개와 기획 v2~v4, 코드 차단·사람 점검·사용자 보완 및 최종 승인 실행 완료 보고를 기록했다. 승인 후 저장 상태 출력은 마지막 확인 대기이며, 이번 목표는 기획안 완성까지다. 제품 구현·팀원 실행은 진행하지 않는다.

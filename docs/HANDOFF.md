@@ -3,6 +3,61 @@
 마지막 정리: 2026-11-09 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 사용자 보고 — 기획 v4 최종 승인 실행, 저장 상태 마지막 확인 대기
+
+사용자가 정확한 `APPROVE my-supervisor-20261109-112551-plan v4` 문구까지 실행 완료했다고 보고했다. [최종 로컬 기획 보고서](windows-planning-final-acceptance-20261109.md), [승인 완료 사용자 보고](acceptance/windows-review-retry-20261109/final-approval-user-report.json)를 우선한다. 승인 결정은 사용자 보고로 확인했으며 승인 후 state/approval 파일 자체는 아직 받지 않았다. 마지막 직접 상태 관찰은 기획4/반복4/5/awaiting_approval이다. 이 둘을 섞어 사용자 PC의 저장 상태까지 확인했다고 쓰지 않는다.
+
+- 다음 로컬 확인은 planning/state.json을 Get-Content -Raw -Encoding UTF8로 직접 읽어 status=user_approved/currentPlanVersion4/iteration4/max5인지 짧게 확인하는 것이다. 모델 호출·승인 재실행·예산 소진이 필요하지 않다.
+- v1 challenge400 → 수정83ea913/PR7 → v2 정책 차단 → Q7 보완 v3 → 사람의 날짜/다중 탭 추가 점검 → 사용자 선택 반영 v4 → 사용자 승인 완료 보고까지 기록했다. Windows 자동 검사137개 중135통과/2제외/실패0. 원문 v3/v4 한글은 정상이며 파이프 요약만 깨진 경우를 구분했다.
+- 모델의 headline pass, 코드의 차단, 진행자 발견, 사용자 수정/승인 출처를 구분한다. v1 Review와 전체 로컬 usage는 받지 않아 총 호출/비용/자체 revise 횟수는 추정하지 않는다.
+- 사용자가 현재 목표를 기획안 완성으로 재확인했다. 이번 로컬 기획 승인 시험을 종료 확인하며, 작업 지시 제안은 별도 단계다. 제품 구현·팀원 실행·ADTF 웹 UI 구현을 자동 진행하지 않는다. 웹 UI 대화는 가능성 설명이었다.
+- 보존된 Windows 근거 파일은 docs/acceptance/windows-review-retry-20261109에만 둔다. 기존 Cloud .adtf의 두 프로젝트와 합치거나 사용자 승인 파일을 대신 생성하지 않는다. 아래는 시점별 이력이다.
+
+## 최신 수동 검토 — 기획 v4 보완 확인, 최종 사용자 승인 대기
+
+사용자가 정상 종료·awaiting_approval·기획4·iteration4/5 요약과 원본 [v4.json](acceptance/windows-review-retry-20261109/plan-v4.json)을 제공했다. [읽기용 v4](acceptance/windows-review-retry-20261109/plan-v4.md), [진행자 검토](acceptance/windows-review-retry-20261109/manual-review-v4.json)를 보존했다. UTF-8/한글·프로젝트/Scope 버전이 맞고 날짜 검증·단일 변경 탭 정책과 기존 Q-7 보호 규칙이 기능·검증 본문에 반영됐다. 이번 기획 인수 범위에서는 최종 사용자 승인 대상으로 권고한다. **아직 최종 승인한 것은 아니다.**
+
+- 날짜 형식·실제 달력·윤년·시분 범위를 등록/수정/로드/후보 저장에 검증하고 잘못된 저장값 원본 보존·쓰기 차단을 명시했다.
+- 같은 localhost:8080 origin/프로필에서 실제 Web Locks 소유 탭만 변경, 비소유/미지원 차단, 사용 탭 종료 후 새로고침·잠금 획득·최신 데이터 재로드, 두 탭 검증 사례를 명시했다. 원래 기능6개와 제외 범위를 유지한다.
+- 구현 시에는 잠금 콜백을 탭의 변경 권한 수명 동안 유지하고 잠금 획득 뒤 최신 데이터를 로드하는 등 선언된 동작을 충족해야 한다. 실제 제품 코드/브라우저 동작을 시험했다는 의미가 아니다. Web Locks는 origin/프로필 범위이며 OS 전역 잠금으로 해석하지 않는다.
+- 다음 로컬 단계는 approve-plan으로 정확한 기획 v4에 대한 사용자 승인을 기록하고 그 상태를 확인하는 일이다. 사용자가 현재 목표를 기획안 작성·검토로 재확인했으므로 제품/팀원 실행은 하지 않으며, 작업 지시 제안은 별도 단계로 구분한다. 일반 plan/resume/retry를 반복하지 않는다. 남은 반복1회를 승인에 소비하지 않는다.
+
+## 최신 사용자 결정 — v4 날짜 검증·한 탭 변경 정책 보완 진행
+
+사용자가 v3 보완 2건과 추천한 동시 한 탭 변경 정책에 동의하고 진행을 지시했다. [구체적 수정 요청](acceptance/windows-review-retry-20261109/v4-revision-request.md)을 보존했다. 사용자가 실행할 request-plan-revision → resume-plan은 아직 실행 결과를 받지 않았다. 현재 마지막 확인 상태는 v3/3회 사용/최종 승인 pending이다.
+
+- 날짜는 단순 문자열 여부를 넘어 실제 달력 날짜/시·분을 등록·수정·로드·저장 후보에 공통 검증한다. 잘못된 저장값 원본 보존·쓰기 차단을 유지한다.
+- 한 origin/브라우저 프로필에서 한 탭만 실제 배타 잠금으로 변경 권한을 갖고, 다른 탭은 안내·변경 차단한다. 주 탭 종료 뒤 새로고침하여 최신 데이터 재로드 후 사용한다. 기술적으로는 Web Locks 등 실제 배타 방식·고정 origin/지원 조건·미지원 시 차단을 기획에 구체화한다. API 선택은 기획 설계이며 사용자가 API 자체를 지정했다고 기록하지 않는다.
+- 다음 로컬 시험은 v4 보완/재검토 → 내용 검토 및 최종 사용자 승인 → 작업 지시 제안/검증 → 문서 마무리다. 현재 기획 총 한도에서2회 남았고, 모델 API 요청 횟수와 논리적 반복은 구분한다. 제품 브라우저 구현/팀원 실행 시험은 포함하지 않는다.
+- 사용자에게 제공하는 다음 실행 블록은 저장 JSON을 Get-Content -Raw -Encoding UTF8로 직접 읽어 짧은 요약을 만든다. Node stdout을 PowerShell ConvertFrom-Json으로 넘기는 이전 인코딩 문제 경로는 사용하지 않는다.
+
+## 최신 수동 검토 — v3 원문 한글 정상, 승인 전 보완 2건
+
+사용자가 원본 [v3.json](acceptance/windows-review-retry-20261109/plan-v3.json)을 제공했다. UTF-8 JSON/예상 projectId·Scope v4·Plan v3가 맞고 한글은 정상이며 대체문자0이다. 앞선 깨짐은 콘솔/PowerShell 요약 경로 문제였고 원본에서 재현되지 않았다. [읽기용 원문](acceptance/windows-review-retry-20261109/plan-v3.md), [진행자 검토](acceptance/windows-review-retry-20261109/manual-review-v3.json)를 보존했다.
+
+- Q-7의 기존 비정상 값 원본 보존·쓰기 차단, 읽기 예외, 단일 JSON·무결성, 저장 후 메모리/UI 반영과 전원 장애 한계는 반영됐다. 모델 검토 성공 사실은 유지한다.
+- 별도 진행자 점검에서는 저장 dueDateTime이 문자열이라는 조건만 있어 실제 날짜/시간 유효성 검증을 로드/변경 후보에도 적용할지 명시가 부족하고, 여러 탭이 같은 이전 목록에서 서로 덮어쓰는 경우의 사용/보호 정책이 없다. 이 두 항목을 승인 전 짧게 보완하도록 권고한다. 이는 Gemini Reviewer 자체 이슈가 아니다.
+- 실제 로컬 상태는 v3/iteration3/5/awaiting_approval, 최종 사용자 승인 pending 그대로다. 사용자 승인·새 기획 생성·Scope 수정·제품/팀원 실행은 하지 않았다. 후속 수정은 사용자가 권고를 수용하면 request-plan-revision → resume-plan으로 같은 Scope/남은2회 안에서 수행한다. 새 탭 제한 등은 기획자 제안으로 기록하며 기존 사용자 선택으로 꾸미지 않는다.
+
+## 최신 로컬 관찰 — 기획 v3 승인 대기, PowerShell 요약 인코딩 오류
+
+사용자가 Q-7 보완 답변 → resume-plan 실행 로그를 제공했다. [관찰 기록](acceptance/windows-review-retry-20261109/resume-v3-observation.json)에 성공 상태와 표시 오류를 분리했다. 보고서 전체는 깨진 한글과 줄바꿈이 포함돼 유효한 원문 JSON으로 재구성하지 않았다.
+
+- 로컬 모델 재개 종료코드0, continuation completed. Plan v3 / iteration3/5 / awaiting_approval, review-3 pass/issues[]/challengeCompleted=true, plan approval-b00d7ead-ca59-45ae-ba58-47aef133a2b8 pending, nextAction approve-plan이 출력에 보인다. 최종 승인하지 않았다.
+- 이후 진행자 안내 스크립트의 `$reportText | ConvertFrom-Json`에서 오류가 발생하고 요약 필드가 비었다. 네이티브 Node stdout을 Windows PowerShell이 캡처할 때 한글 인코딩이 깨진 것으로 보이며 모델 요청 실패가 아니다. 출력에 깨진 문자를 실제 기획 원문으로 간주하지 않는다.
+- 다음은 사용자 PC의 원본 `.adtf/projects/my-supervisor-20261109-112551/planning/plans/my-supervisor-20261109-112551-plan/v3.json` 파일을 받아 UTF-8 원문·보완 반영·품질을 확인하는 일이다. answer/resume-plan/retry-review를 반복하거나 기획을 자동 승인하지 않는다. 원문은 아직 받지 않았다.
+- 이후 로컬 상태 요약은 `Get-Content -Raw -Encoding UTF8`로 저장 JSON을 직접 읽거나 Node 안에서 처리해 PowerShell 네이티브 출력 파싱을 피한다. 사용자에게 긴 JSON 복사를 반복 요청하지 않는다.
+
+## 최신 로컬 관찰 — 수정본 Reviewer 재검토 성공, 기획 v2 피드백 대기
+
+사용자가 Windows 재시도 후 report 원문을 제공했다. [보존 report](acceptance/windows-review-retry-20261109/report.json), [기획 v2](acceptance/windows-review-retry-20261109/plan-v2.md), [판정 요약](acceptance/windows-review-retry-20261109/assessment.json)을 우선한다. 이 로컬 기록을 Cloud의 기존 재고/todo .adtf에 복원하거나 합치지 않는다.
+
+- local project my-supervisor-20261109-112551: Scope v4 approved, Supervisor r6 scope_approved, Plan v2 / iteration2/5 / awaiting_user_input / nextAction collect-feedback. 최종 기획 승인·작업 제안 없음.
+- reviewRetry는 v1 출처·시각을 보존한다. 현재 Review v2는 challengeCompleted=true로 응답 형식 검토까지 완료됐으며 이전400은 이번 report에서 재발하지 않았다. 사용자 PC에서 수정본 요청 성공이 관찰됐다. 전체 긴 기획/모델 안정성 보장은 아니다.
+- headline pass/issues[]이지만 storageAudit의 present_empty=initialize+허용근거 없음, read_error=unspecified를 코드가 차단한다. 이전과 같은 issue-storage-present_empty가 남았다는 state.reason으로 사용자 입력 대기에 진입했다. 제공된 현재 Review를 코드로 재검증해 [미해결 2항목](acceptance/windows-review-retry-20261109/policy-check.json)을 확인했다. v1 Review는 제공되지 않아 반복 비교 자체를 독립 재현했다고 주장하지 않는다.
+- 다음 로컬 행동은 collect-feedback(모델 없음) → 새 질문에 실제 보완 답변 → resume-plan(실호출)이다. 일반 plan/start/retry-review 재실행, 데이터/예약 삭제, 기획 승인으로 우회하지 않는다. 같은 Scope와 남은 총 반복3회를 유지한다. 보완 방향은 기존 비정상 값 원본 유지·변경 작업 차단, 읽기 예외의 명시 처리 및 관찰 가능한 검증 사례다.
+- 로컬 usage ledger 전체는 받지 않았으므로 총 호출/토큰을 추정하지 않는다. 이 파일들은 사용자 제공 결과 보존이며 Cloud에서 실제 모델 재실행·승인·로컬 데이터 변경은 하지 않았다. 아래 재검증 대기 문구는 이번 관찰 전 시점 기록이다.
+
 ## 최신 수정 — Windows Reviewer challenge 400, 로컬 재검증 대기
 
 사용자 Windows main ZIP 실호출에서 Writer/assessment success 후 challenge HTTP400 INVALID_ARGUMENT가 발생했다. 기획 v1은 비공백150줄이다. [진단·적용·복구 안내](reviewer-request-recovery-20261109.md), [검증 기록](acceptance/reviewer-schema-400-20261109.json)을 먼저 읽는다. 아래 완료 보고는 이전 Cloud/소규모 평가 범위이며 이번 로컬 기획의 실제 검토 완료를 뜻하지 않는다.

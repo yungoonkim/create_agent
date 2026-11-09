@@ -1,0 +1,46 @@
+{
+  "kind": "Manual review of user-provided original v3; not Gemini Reviewer output or user approval",
+  "sourceSha256": "1ee2338c996ad608563f2d737ffa9435fb09a44b512dade97a2924190b0e20b0",
+  "metadataMatchesExpectedProjectScopeVersion": true,
+  "utf8JsonValid": true,
+  "replacementCharacters": 0,
+  "koreanReadable": true,
+  "requestedQ7Corrections": {
+    "presentEmptyPreservedAndWritesBlocked": "specified at lines 182,203-204",
+    "invalidPreservedAndWritesBlocked": "specified at lines 183,206-210",
+    "readExceptionsNoInitializationOrWrites": "specified at line 184",
+    "singleObjectAndDataInvariants": "specified at lines 142,169-175",
+    "storageCommitBeforeMemoryAndUi": "specified at lines 187-196",
+    "observableFailureChecks": "specified; read error has a change-summary criterion, post-commit UI error still lacks a dedicated failure example"
+  },
+  "remainingFindings": [
+    {
+      "id": "manual-due-date-validation",
+      "severity": "major",
+      "evidenceLines": [
+        78,
+        170,
+        175,
+        183
+      ],
+      "finding": "Stored dueDateTime is only required to be a string; no explicit validation that persisted value is a valid calendar date and time. Example: not-a-date could satisfy the listed type rule.",
+      "direction": "Use the same actual date/time validity rules during registration/edit/load/candidate validation and give an invalid-value preservation test."
+    },
+    {
+      "id": "manual-concurrent-tabs",
+      "severity": "major",
+      "evidenceLines": [
+        142,
+        187,
+        188,
+        189,
+        194
+      ],
+      "finding": "No supported-tab/concurrent writer policy. Two tabs may form valid candidates from the same old snapshot and overwrite each other; a single-key setItem does not prevent lost updates.",
+      "direction": "Make a concrete single-tab protection or concurrent-write design proposal, clarify fixed origin/profile storage boundary, and include a two-tab test. Do not claim the user already chose the restriction."
+    }
+  ],
+  "recommendation": "Revise these targeted items before final user approval; preserve Scope and version history.",
+  "finalApprovalGiven": false,
+  "productImplementationPerformed": false
+}

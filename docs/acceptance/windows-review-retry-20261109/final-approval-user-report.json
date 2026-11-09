@@ -1,0 +1,22 @@
+{
+  "kind": "User statement reporting completion of exact CLI approval; not a copied local approval record",
+  "projectId": "my-supervisor-20261109-112551",
+  "planId": "my-supervisor-20261109-112551-plan",
+  "planVersion": 4,
+  "scopeContractId": "scope-v4",
+  "scopeVersion": 4,
+  "userStatement": "APPROVE my-supervisor-20261109-112551-plan v4 명령어까지 실행 완료했어. 테스트는 다 끝난거야?",
+  "explicitFinalApprovalReported": true,
+  "planSha256": "d054a08609fbb42afcb8e1a964c652ba99616257cb4afcf80197a438c5fed9f8",
+  "lastDirectStateObservation": {
+    "status": "awaiting_approval",
+    "currentPlanVersion": 4,
+    "iterationCount": 4,
+    "maxIterations": 5
+  },
+  "postApprovalStateFileProvided": false,
+  "localApprovalRecordProvided": false,
+  "expectedPostApprovalState": "user_approved",
+  "cloudRuntimeOrApprovalMutated": false,
+  "scopeOfCompletion": "Local planning-only acceptance; work-order generation is a separate stage and product/teammate execution remains held."
+}
