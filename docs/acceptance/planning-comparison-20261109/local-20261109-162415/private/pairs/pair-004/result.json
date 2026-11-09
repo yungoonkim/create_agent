@@ -1,0 +1,20 @@
+{
+  "pairId": "pair-004",
+  "scenarioId": "expenses",
+  "repeat": 2,
+  "status": "failed_with_saved_candidate",
+  "state": {
+    "projectId": "comparison-pair-004",
+    "scopeContractId": "scope-1",
+    "scopeVersion": 1,
+    "iterationCount": 0,
+    "maxIterations": 3,
+    "status": "reviewing",
+    "currentPlanVersion": 1
+  },
+  "decision": null,
+  "failure": "adtf_loop_failed; original error retained by recorder/runtime",
+  "initialSha256": "946d6bfc88928e1a551b2dd485edd5ae78213f2e3cf05b60aff3b3dd000a5d54",
+  "finalSha256": "946d6bfc88928e1a551b2dd485edd5ae78213f2e3cf05b60aff3b3dd000a5d54",
+  "sharedFirstDraft": true
+}

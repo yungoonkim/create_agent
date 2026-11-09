@@ -1,0 +1,79 @@
+{
+  "callId": "call-0009",
+  "pairId": "pair-002",
+  "allocation": "adtf",
+  "stage": "challenge",
+  "mode": "live",
+  "status": "response_received",
+  "startedAt": "2026-11-09T07:28:35.699Z",
+  "durationMs": 16984,
+  "text": "{\n  \"issues\": [],\n  \"questions\": [],\n  \"storageAudit\": {\n    \"format\": \"json\",\n    \"evidenceLines\": [88, 92, 131, 134, 138, 139, 143, 163],\n    \"rationale\": \"localStorage의 단일 키(shopping_list_data)에 schemaVersion과 items 배열을 담은 단일 JSON 문자열로 영속 상태를 관리하도록 명시되어 있습니다.\",\n    \"cases\": [\n      {\n        \"state\": \"absent\",\n        \"action\": \"initialize\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [134, 135],\n        \"authorizationScopeIds\": [\n          \"constraint:3\"\n        ],\n        \"rationale\": \"저장 키 조회 결과가 null인 경우에만 정상 최초 실행으로 간주하며, 불필요한 빈 쓰기 없이 메모리 초기 상태를 준비합니다.\"\n      },\n      {\n        \"state\": \"present_empty\",\n        \"action\": \"preserve_and_block\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [138, 143, 144],\n        \"authorizationScopeIds\": [\n          \"constraint:3\"\n        ],\n        \"rationale\": \"키가 존재하나 빈 문자열 또는 공백인 경우 비정상 데이터로 판정하여 덮어쓰기나 초기화 없이 원본을 유지하고 편집을 차단합니다.\"\n      },\n      {\n        \"state\": \"invalid\",\n        \"action\": \"preserve_and_block\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [139, 140, 141, 142, 143, 144],\n        \"authorizationScopeIds\": [\n          \"constraint:3\"\n        ],\n        \"rationale\": \"JSON 구문 오류, 스키마 버전 불일치, 필드 누락 및 불변식 위반 발견 시 로컬 저장소 원본을 보존하고 Read-Only Lock으로 모든 쓰기를 차단합니다.\"\n      },\n      {\n        \"state\": \"valid\",\n        \"action\": \"load\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [72, 128, 163],\n        \"authorizationScopeIds\": [\n          \"requirement:R-6\",\n          \"constraint:2\"\n        ],\n        \"rationale\": \"유효한 스키마와 데이터가 저장되어 있고 배타 잠금을 획득한 경우 최신 데이터를 정상 로드하여 화면을 초기화합니다.\"\n      },\n      {\n        \"state\": \"read_error\",\n        \"action\": \"preserve_and_block\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [131, 132],\n        \"authorizationScopeIds\": [\n          \"constraint:3\"\n        ],\n        \"rationale\": \"저장소 읽기 중 SecurityError 등 브라우저 예외가 발생할 경우 어떠한 쓰기도 수행하지 않고 경고 표시 후 모든 변경을 차단합니다.\"\n      }\n    ]\n  }\n}",
+  "usage": {
+    "promptTokenCount": 8824,
+    "candidatesTokenCount": 739,
+    "totalTokenCount": 11628,
+    "trafficType": "ON_DEMAND",
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 8824
+      }
+    ],
+    "candidatesTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 739
+      }
+    ],
+    "thoughtsTokenCount": 2065
+  },
+  "modelVersion": "gemini-3.8-flash",
+  "responseId": "I3bxat6QLreM0ckP_fjIyQE",
+  "rawModelResponse": {
+    "candidates": [
+      {
+        "content": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "{\n  \"issues\": [],\n  \"questions\": [],\n  \"storageAudit\": {\n    \"format\": \"json\",\n    \"evidenceLines\": [88, 92, 131, 134, 138, 139, 143, 163],\n    \"rationale\": \"localStorage의 단일 키(shopping_list_data)에 schemaVersion과 items 배열을 담은 단일 JSON 문자열로 영속 상태를 관리하도록 명시되어 있습니다.\",\n    \"cases\": [\n      {\n        \"state\": \"absent\",\n        \"action\": \"initialize\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [134, 135],\n        \"authorizationScopeIds\": [\n          \"constraint:3\"\n        ],\n        \"rationale\": \"저장 키 조회 결과가 null인 경우에만 정상 최초 실행으로 간주하며, 불필요한 빈 쓰기 없이 메모리 초기 상태를 준비합니다.\"\n      },\n      {\n        \"state\": \"present_empty\",\n        \"action\": \"preserve_and_block\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [138, 143, 144],\n        \"authorizationScopeIds\": [\n          \"constraint:3\"\n        ],\n        \"rationale\": \"키가 존재하나 빈 문자열 또는 공백인 경우 비정상 데이터로 판정하여 덮어쓰기나 초기화 없이 원본을 유지하고 편집을 차단합니다.\"\n      },\n      {\n        \"state\": \"invalid\",\n        \"action\": \"preserve_and_block\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [139, 140, 141, 142, 143, 144],\n        \"authorizationScopeIds\": [\n          \"constraint:3\"\n        ],\n        \"rationale\": \"JSON 구문 오류, 스키마 버전 불일치, 필드 누락 및 불변식 위반 발견 시 로컬 저장소 원본을 보존하고 Read-Only Lock으로 모든 쓰기를 차단합니다.\"\n      },\n      {\n        \"state\": \"valid\",\n        \"action\": \"load\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [72, 128, 163],\n        \"authorizationScopeIds\": [\n          \"requirement:R-6\",\n          \"constraint:2\"\n        ],\n        \"rationale\": \"유효한 스키마와 데이터가 저장되어 있고 배타 잠금을 획득한 경우 최신 데이터를 정상 로드하여 화면을 초기화합니다.\"\n      },\n      {\n        \"state\": \"read_error\",\n        \"action\": \"preserve_and_block\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [131, 132],\n        \"authorizationScopeIds\": [\n          \"constraint:3\"\n        ],\n        \"rationale\": \"저장소 읽기 중 SecurityError 등 브라우저 예외가 발생할 경우 어떠한 쓰기도 수행하지 않고 경고 표시 후 모든 변경을 차단합니다.\"\n      }\n    ]\n  }\n}",
+              "thoughtSignature": "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"
+            }
+          ]
+        },
+        "finishReason": "STOP"
+      }
+    ],
+    "usageMetadata": {
+      "promptTokenCount": 8824,
+      "candidatesTokenCount": 739,
+      "totalTokenCount": 11628,
+      "trafficType": "ON_DEMAND",
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 8824
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 739
+        }
+      ],
+      "thoughtsTokenCount": 2065
+    },
+    "modelVersion": "gemini-3.8-flash",
+    "responseId": "I3bxat6QLreM0ckP_fjIyQE",
+    "promptFeedback": null
+  },
+  "finishReasons": [
+    "STOP"
+  ],
+  "tariff": {
+    "knownTokenTariffSubtotalUsd": 0.017133,
+    "missingMetrics": [],
+    "cacheAssumption": "cache metric absent; provided input priced at uncached list rate",
+    "actualInvoice": false
+  }
+}

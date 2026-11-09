@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "sdkInvocationCount": 20,
+  "generationCallLimit": 54,
+  "stageCounts": {
+    "writer": 7,
+    "assessment": 7,
+    "challenge": 6
+  },
+  "recordedProviderResponses": 20,
+  "sdkTransportFailures": 0,
+  "logicalReviewAttempts": 7,
+  "completeSavedReviews": 5,
+  "reviewFailures": 2,
+  "numericUsageSum": {
+    "promptTokenCount": 143244,
+    "candidatesTokenCount": 46820,
+    "totalTokenCount": 244271,
+    "thoughtsTokenCount": 54207
+  },
+  "metricCoverageOf20": {
+    "promptTokenCount": 20,
+    "candidatesTokenCount": 20,
+    "totalTokenCount": 20,
+    "thoughtsTokenCount": 18
+  },
+  "missingThoughtMetricsCallIds": [
+    "call-0007",
+    "call-0016"
+  ],
+  "cachedMetrics": "absent in every response; input priced at uncached list rate",
+  "sdkDurationMsSum": 709676,
+  "generationStartedAt": "2026-11-09T07:24:17.387Z",
+  "generationCompletedAt": "2026-11-09T07:36:07.468Z",
+  "singleArmCallsAllocated": 6,
+  "adtfArmCallsAllocated": 20,
+  "singleArmQuotedRateSubtotalUsd": 0.13933125000000002,
+  "adtfArmQuotedRateSubtotalUsd": 0.48628425000000003,
+  "incrementalQuotedRateSubtotalUsd": 0.346953,
+  "adtfToSingleQuotedRateRatio": 3.4901305342484186,
+  "uniquePhysicalQuotedRateSubtotalUsd": 0.48628425,
+  "evaluationApiCalls": 0,
+  "invoiceClaim": false,
+  "notes": [
+    "Initial shared call charged once physically; include once per arm when comparing hypothetical independent runs. Do not add arm totals as actual spend.",
+    "Unknown thought metrics remain unknown; raw totalTokenCount retained, not repurposed as a separately billed category.",
+    "Two MAX_TOKENS parse failures are returned/billable provider responses, not transport failures; their usage is included.",
+    "List-rate subtotal only, not invoice; no credit/tax/discount/FX inference; Codex plan usage is outside this ledger."
+  ]
+}

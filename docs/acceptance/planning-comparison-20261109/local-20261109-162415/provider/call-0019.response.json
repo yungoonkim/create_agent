@@ -1,0 +1,79 @@
+{
+  "callId": "call-0019",
+  "pairId": "pair-006",
+  "allocation": "adtf",
+  "stage": "assessment",
+  "mode": "live",
+  "status": "response_received",
+  "startedAt": "2026-11-09T07:35:24.851Z",
+  "durationMs": 16534,
+  "text": "{\n  \"outcome\": \"pass\",\n  \"issues\": [],\n  \"suggestions\": [],\n  \"scopeViolation\": false,\n  \"userJudgmentRequired\": false,\n  \"qualityAssessment\": {\n    \"version\": 1,\n    \"requirements\": [\n      {\n        \"requirementId\": \"R-1\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [12, 30, 31, 32, 33, 34, 35, 143],\n        \"rationale\": \"월~일 및 아침·점심·저녁 21개 고정 칸 구성과 달력/주차 이동 배제 규칙 및 렌더링 검증 예시가 명확히 정의되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"R-2\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [37, 38, 39, 40, 41, 42, 43, 45],\n        \"rationale\": \"앞뒤 공백 제거(trim) 후 필수 메뉴명 검증, 선택적 메모, 중복 메뉴명 허용 및 실패 시 입력 보존 규칙이 완결되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"R-3\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [18, 19, 48, 49, 50, 51, 52, 53],\n        \"rationale\": \"이미 메뉴가 있는 칸 덮어쓰기 시 확인 대화창 요구, 확인 시 교체, 취소 시 기존 메뉴와 메모 유지 동작이 일관되게 규정되었습니다.\"\n      },\n      {\n        \"requirementId\": \"R-4\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [20, 55, 56, 57, 58, 59, 60, 62],\n        \"rationale\": \"선택 칸의 수정/삭제 시 확인 절차와 삭제 완료 시 빈 칸 초기화, 다른 20개 칸에 대한 격리성이 검증 예시와 함께 명시되었습니다.\"\n      },\n      {\n        \"requirementId\": \"R-5\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [64, 65, 66, 67, 68, 69, 70, 74],\n        \"rationale\": \"채워진 칸 수(0~21)의 실시간 표시와 신규 등록, 교체, 취소, 실패, 삭제 시 증감/유지 규칙이 구체적인 수치 검증과 함께 정의되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"R-6\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [77, 80, 82, 85, 87, 92, 94, 155],\n        \"rationale\": \"재접속 유지, 최초 null 실행, 손상 데이터 원본 보존 및 변경 전면 차단, 배타 잠금(Web Locks), 쓰기 파이프라인과 커밋 후 UI 실패 처리까지 충실히 기술되었습니다.\"\n      }\n    ],\n    \"checks\": [\n      {\n        \"id\": \"decision_provenance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [31, 38, 42, 58, 71, 103],\n        \"rationale\": \"Q-1, Q-2, Q-3 사전 결정 사항이 기획서의 해당 사양에 정확히 매핑되어 인용되었습니다.\"\n      },\n      {\n        \"id\": \"scope_compliance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [32, 101, 102, 103, 104],\n        \"rationale\": \"승인된 요구사항 범위(R-1~R-6)를 충실히 다루며, 제외 범위(X-1~X-3)를 명확히 준수하고 불필요한 기능 확장이 없습니다.\"\n      },\n      {\n        \"id\": \"behavior_and_errors\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [43, 51, 60, 72, 83, 85, 93, 153],\n        \"rationale\": \"정상 입력, 공백/미입력 실패, 확인 취소, 스토리지 용량 초과 및 UI 갱신 실패 등 상태 전이와 무변경 동작이 전반적으로 일관됩니다.\"\n      },\n      {\n        \"id\": \"data_integrity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [82, 83, 84, 92, 146, 149, 156, 166],\n        \"rationale\": \"스키마 검증, 21개 슬롯 키 및 값 제약, 손상 데이터 원본 보존, 저장소 직렬화 및 배타 잠금 동시성 한계가 방어적으로 명시되었습니다.\"\n      },\n      {\n        \"id\": \"acceptance_criteria\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [34, 44, 52, 61, 73, 95, 96, 97],\n        \"rationale\": \"각 요구사항마다 구체적인 입력값과 관찰 가능한 시스템 출력값 및 검증 절차가 포함되어 있습니다.\"\n      },\n      {\n        \"id\": \"revision_resolution\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [31, 38, 71, 103],\n        \"rationale\": \"사전 고정 결정(Q-1~Q-3)이 모두 사양 본문에 누락 없이 온전히 반영되어 있습니다.\"\n      },\n      {\n        \"id\": \"clarity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [10, 16, 22, 30, 110, 153],\n        \"rationale\": \"사용자 여정을 앞단에 제시하고, 요구사항별 사양과 기술 설계를 명확히 분리하여 모순 없이 기술되었습니다.\"\n      }\n    ]\n  }\n}",
+  "usage": {
+    "promptTokenCount": 7734,
+    "candidatesTokenCount": 1479,
+    "totalTokenCount": 10219,
+    "trafficType": "ON_DEMAND",
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 7734
+      }
+    ],
+    "candidatesTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1479
+      }
+    ],
+    "thoughtsTokenCount": 1006
+  },
+  "modelVersion": "gemini-3.8-flash",
+  "responseId": "vHfxaqetN72i0ckP6qKS-Aw",
+  "rawModelResponse": {
+    "candidates": [
+      {
+        "content": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "{\n  \"outcome\": \"pass\",\n  \"issues\": [],\n  \"suggestions\": [],\n  \"scopeViolation\": false,\n  \"userJudgmentRequired\": false,\n  \"qualityAssessment\": {\n    \"version\": 1,\n    \"requirements\": [\n      {\n        \"requirementId\": \"R-1\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [12, 30, 31, 32, 33, 34, 35, 143],\n        \"rationale\": \"월~일 및 아침·점심·저녁 21개 고정 칸 구성과 달력/주차 이동 배제 규칙 및 렌더링 검증 예시가 명확히 정의되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"R-2\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [37, 38, 39, 40, 41, 42, 43, 45],\n        \"rationale\": \"앞뒤 공백 제거(trim) 후 필수 메뉴명 검증, 선택적 메모, 중복 메뉴명 허용 및 실패 시 입력 보존 규칙이 완결되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"R-3\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [18, 19, 48, 49, 50, 51, 52, 53],\n        \"rationale\": \"이미 메뉴가 있는 칸 덮어쓰기 시 확인 대화창 요구, 확인 시 교체, 취소 시 기존 메뉴와 메모 유지 동작이 일관되게 규정되었습니다.\"\n      },\n      {\n        \"requirementId\": \"R-4\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [20, 55, 56, 57, 58, 59, 60, 62],\n        \"rationale\": \"선택 칸의 수정/삭제 시 확인 절차와 삭제 완료 시 빈 칸 초기화, 다른 20개 칸에 대한 격리성이 검증 예시와 함께 명시되었습니다.\"\n      },\n      {\n        \"requirementId\": \"R-5\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [64, 65, 66, 67, 68, 69, 70, 74],\n        \"rationale\": \"채워진 칸 수(0~21)의 실시간 표시와 신규 등록, 교체, 취소, 실패, 삭제 시 증감/유지 규칙이 구체적인 수치 검증과 함께 정의되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"R-6\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [77, 80, 82, 85, 87, 92, 94, 155],\n        \"rationale\": \"재접속 유지, 최초 null 실행, 손상 데이터 원본 보존 및 변경 전면 차단, 배타 잠금(Web Locks), 쓰기 파이프라인과 커밋 후 UI 실패 처리까지 충실히 기술되었습니다.\"\n      }\n    ],\n    \"checks\": [\n      {\n        \"id\": \"decision_provenance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [31, 38, 42, 58, 71, 103],\n        \"rationale\": \"Q-1, Q-2, Q-3 사전 결정 사항이 기획서의 해당 사양에 정확히 매핑되어 인용되었습니다.\"\n      },\n      {\n        \"id\": \"scope_compliance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [32, 101, 102, 103, 104],\n        \"rationale\": \"승인된 요구사항 범위(R-1~R-6)를 충실히 다루며, 제외 범위(X-1~X-3)를 명확히 준수하고 불필요한 기능 확장이 없습니다.\"\n      },\n      {\n        \"id\": \"behavior_and_errors\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [43, 51, 60, 72, 83, 85, 93, 153],\n        \"rationale\": \"정상 입력, 공백/미입력 실패, 확인 취소, 스토리지 용량 초과 및 UI 갱신 실패 등 상태 전이와 무변경 동작이 전반적으로 일관됩니다.\"\n      },\n      {\n        \"id\": \"data_integrity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [82, 83, 84, 92, 146, 149, 156, 166],\n        \"rationale\": \"스키마 검증, 21개 슬롯 키 및 값 제약, 손상 데이터 원본 보존, 저장소 직렬화 및 배타 잠금 동시성 한계가 방어적으로 명시되었습니다.\"\n      },\n      {\n        \"id\": \"acceptance_criteria\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [34, 44, 52, 61, 73, 95, 96, 97],\n        \"rationale\": \"각 요구사항마다 구체적인 입력값과 관찰 가능한 시스템 출력값 및 검증 절차가 포함되어 있습니다.\"\n      },\n      {\n        \"id\": \"revision_resolution\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [31, 38, 71, 103],\n        \"rationale\": \"사전 고정 결정(Q-1~Q-3)이 모두 사양 본문에 누락 없이 온전히 반영되어 있습니다.\"\n      },\n      {\n        \"id\": \"clarity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [10, 16, 22, 30, 110, 153],\n        \"rationale\": \"사용자 여정을 앞단에 제시하고, 요구사항별 사양과 기술 설계를 명확히 분리하여 모순 없이 기술되었습니다.\"\n      }\n    ]\n  }\n}",
+              "thoughtSignature": "AY89a19CfCbKa/gov4qsG9720lfDFLcxNvy1O6j9TJeixrUbFvBsdX3wg7WjPrxtXpMFLNNDTI6vCpZ0n7JQbktDowWy19jxFB9zIZU3oYGBmt7UkKFJJVXmoifzhCU398Nj0PMF1Ua0ak5AgLDWVst+GRqEelMAdMvvKQCiAySC2HD+7vWDe0QOw2SKrm3yUPeL3bmgyAk1PZu/ooUOzyNEx1P4sVw3I+AnvhpTCaAe4MyaE3JzppBuszfDbLxzVYIn1/J8cPfsftvtMb1FQhNtMu07r5uKr2EL1QzPwcDFoTPK7A07pssuskYbk2M35+Sg7EkwaLJ89aJrGZlr2PkiVqV7hQayGi7+584HTQ4AZL4zs6qJy/LC9HKMFwIizDx+O0q6YNtckDq+KwTNlmvImeo7Tda/KKQRQ2DjcJXCUwyT0Wg9CEbwg4ODSTJIeRVFpBGI+LVAlJKIrtMFOsyMazT1ly8C5Qpx7qFAN0VjcPWBjlN7aZLTPXLSP+RFmy1eSDBn6OBZ+tAhURpf1IiN95vNj2IcHbQgezN1PLCKRsX4hAv686MbvgEMEqQ/Ob3xZ5EJQjQuVMUYtH9miodAxZXM4olqdhe3ub+3lizKjrWhBFdW/CCOB6U99RjxpLbEZgOQ4dU9o3y3levAY/cnRXCgX1qpvyAIQ2EBsZwdchw2NXzk8kuuFAgrsiXCFRuXIi/2JTskkslMASY7U4nlqqseeuByq1NFicxVAHDzs8sA2f/8gJUQaHAyNw9bBJNEKV6DgNY3+65WD1q5XivQOsE8UQylTbJMd/fo1izFZ5rZ6Z1AOCaPLm2vLcYOPmwMLvUZWy0sNJ+KxmlA5X4AD3/MecwgFjidZC+veDC4ICDVrhe5rbRUDs0dK6FxBX5SvaI9CIC/KfMbhvwaXkMRY8OhbI2si6ecbJ2A2ZmIfE46wsF1+CFVuowlIi7z38rMNSjGkKanJ95QDaXvO8xZdYM8yz1gyyAEoOpbqkBJppOwrm+WEmK7ut85B/7vBIw350NZ3ZcbGC30fAjSQvr6DRxl+T3LyBbbwpyE+MYK4tJ8WMhOnzVri1L1+XBk2948CZrWrG5gL6z/m0a+qqhOsR7B3WwJ21L/uPxQ/c+esUKzFS+IPlCjYQWZitCGpIhtXd2CLxiO/2vqWWgvGKW0aTffaqzgms9jJ9RWWb554yAxu2mLkqsdNJBSGzeKyug3DNgmQKn0Di3fHngAr4bmIwm5IZM+eAhyOOV94ghr4jVLo9Wb0NEJL9mnoGjx2imCmqUosUU8hMpKSi+Avtey9ycSmVLzYxExra0oEDfZA9ZhiFJLDoTQks696MFhQHu/XXpvDbwca1q7XQdEhuggm08Kt5CJlZ52ayM5B7G9I3WkKfmBRzs1DFSSUgla8ob1k2NS1FA2da5ykIOcGxU1rL8dxQu1GvU9zr7xKdQEwD8f7wVKm0nUuakLQA/w7XS9wFioIyUZrVfEk0OK70uFKZx4BCziwb3BQiGE1fJVxcMoUx28XnXY8npYhP3UnVvN4uxfbmpyAgDtWTY2AuryW+LLm1uePqXNjUMypQnReCCBE3Yy9A4U6EwzG697fxzDrW2rNe09thExLqlSK1uogcgaXQN/DYpdgePNHs22TULl7a0+8zz0fA4v+2JT8+uVe7FdrAExUJln+IuT/ICvevvPdCLduXlOtxepUPOKdco7wE0x2Yzd/8sZn1LF+YHJJQKdYSDheymCUNGbFzEkfyunOik60E6ZzPRmQNWCHYFj1892Ub7JwbFI9UT2OY+J5JDSG8DPdk4Q2Ot902F6SdErSB5+7IiKMBa8zS9i/OdsgfycUjblmuPAeo4ITb3DwXqHaZ1lafC0HDQW9lsIlols9DE69nlWxsgfSAGL4uM/rKcq+s4o4WnloQdMx8bMC0ClkHJJkIQoSc089YQ4sA7oElJmAB61R6sxri7IJ1PMUyMKHztV7QJlbFwnnL3aC589hSsm3CMwwSlV80CzhZ/udAmPbJwuMZ6YyHZJSWtL9iXb+q0h72VtODTScl7mKxe5hrQH4vtSWNI+eVBAWKG5toJ8NbQZvxDypzfFTVeYJpCEhrR9FHozC4rEWTI4uyRwPbfOJxnsg2qeQEJta+TZLxWpFbfzOhl4OGmbzKQJTof4wZj7FLoDm+FkBGntKmbt/VueSvxL1kVVrbv/1qAggdUo5XokHs9HZKMFFWgb2S2eZlNW1lEL5T5MeiB8uzpk5lscGrGJsk0rOxY0rDtCIfN9M1/44RJ1pWx+YI0dGoXTPcwrhw8LE9kquoFT40pSMvmzGYQDb0nW0snLSsQYg4UM+159iy/eTV9W93U3dtIS3oXl1cvvv74Y4NkweR5fkZjWsUzMO/3gaLEzEbOmrxti1fM2b4flyBQlbXGsgZdszYFkfn1eahx4TMuXLZ0KYjuKVrw4HI6z4muWjShUsjWJPtZd5gNS7UeyYPXYN3D3+JXoRe7c7zFDwnJ0BoxeB+Lts96zHLGjx27lhwRFYAYt9aI7IY0MwY43s6Az5YJi4AfTCwkksHptBwyFl+pTPGQX4KpO833nXAdOYpMFETCf0WcOAjWKTv+83f/b9fMeLGWZsssKM+5yGZrrKO9O1Xbm/UZOd/ID2KO53fpgnKyXLsvujF3HhWZD8OFlgp9shHhGNPuK4ZuilN7oufvK6dvr3o1ES4jneEb105zQ+Mk887A3po34iCm0gC8uTNAne9hw6fb09L/iuY686IJGycwnbxzsIW0JwXvNJPXMwpeO3vSGUS3hit/em9J+FVxXYYz+HxFBURgqKC+IQD42uapDB2xU9PUwy5gZa3F3nWzAhmVLtY/jT06fnsRqNL6aYWquK5FocCHz+lx/LCRU8DMYyi6elV0eH7Hr8nSYz0wycOnSe8IiFJbrKHE0XEoDhW5l8+BZ7EpSkgvfqROoK/VtgRxrsQ0IRJYFzgTXm+D36IKr5TVHCkYK9g5hKnhrW3G6ishg5Ld8SuAdfFkSSrhnyBA7frMIzSdxSKCrrBOmAWtUAlLOli99Jf3szIg1VPxX6wEo1zBToQhLwOQLp3d1HYaYXvMt8vJ8a3gjdmzVUdr7YQ3onAgQKYikOrmXkPeInAjfJ+j0tvZo/07A7W9V/Kw9Ftzhdtx7cIVx8Sw0tgnLwGg13ta5V7QYyODsN72dBUmGmTLBlONfViJgP1s2HygX4iyVCHYWe9SxSr3BkVXeqhUQLT6dbs4zoXjImgJ2897MH/73MQiMeJ1d7DZzWR0P4RLDhkPt1fi+KHZJE8fdeyx2K8D+Y1XAHdanZDWg+uG/7M+hCJKuSGVZ3jMOBgv5OYECevLxUc9vW6qIovp12MWe3rSMobaauebqBWxIQTaVrxzxHO7sNr9UzQ62H/OJMC7UrzmwdW6YkIKPRA1r07o4dCIbZ5PkLouKqXqnTP19J6K+GnWW0x4wd0Dqfdl/hq2eW1cWMou3GyLVEL6ADDUxl8IwzWYfL1AzuusKXf5LH8qJCLpDIlBJ6shfHkcHfgOnK5q5wlSHiC0aM/jkcoSmthBQKOlHSsd3pNY6JN5RvXUCmAXnAaQc4x2LilN2D9ZYmGPpdg1q7u+BqhKOcXU2VsPHh598bKkUCJrPkCaznusoy/F74cqFdgBQlSaJHDj/nAoY6O0U1FlfQlfFL6/SHc4TGRlYJGuMB7hqz66Fex9WjOXAfYVncGOrGu+O3MuPJg0YsKTktx6Fnc4+J7nFE3nDnGc19OJRPnVTrypwRVa3PiRVoaO095x0ZB9aWDvjxU3m0Atl35XJcoezvlfRAlnU9vkpZD2zbBLAh49ddeHsV+sbMvJKX56O5aWw4OV3iUQnq6NbYls1LLB5bjdIpVibYsC2q5JmVGEuePwSWLLcvfrTaMYd9k37EC/HDuSvAeBBxJKp0sMbUolGRnKGPUigboGWoeh3xQhTs2XRCqNrOubYQpQSLwX4wDfWq7dDCnw42t61OZ8lXPrBnsdmAiaZwNI2q6YxVBDnSSzMkxxGs90/jAIdcPc+k89Vf2y/Iy5FHBmIhBr1SqYvLmTEz+vI2G2vqAK8yaLcUK55nSKpuKPbeCNhp9QojIYyPa+BzLswQ/vuVSFQEsljw5xmWloncgIGZP7MjWaxKmOq9tq8A+wtj49at+kmMYfCLvpXcFmhBzofduN/nsA10RTWNPn9RV5dgBZrfv9e8zWWXrnqIiidNBunivZLMeLbWXcBMS4qsec7gyfdnoMLvHWrtSTcll+typTPxJo6P4vW5krHk7fKYs2O2FHWHctiTaKj0tDTT1eHQBhwJtPDWJMcWBag/5ka8+iQ2+f1mos5khgpHG6svcZT7QhJuV3aKQntZY64ihjLcpMiyUhEkipdncirPKFK0XcHjj9LDTqU46eJDA3bn3qMTwgr0ZBKLhiF+pOcBbkcG5NIJUGXI/XKw5GOsq9AyRNehoNIzSZ9j4aReR/f+Csd8nOqzqTdCew4qHFRYIHm4cfFUbD8bTGHFl9+/NZUkdOxFo2DM9XI6piWLtIrlQ76NLoztfWhcAiyHjHUnaVL/VOB5/dRSilSbLrCuWCNhcbaWjAackl6A7JSmnsBAtDrkLThCsHDWlDJVpUc7beEC8rw0a5BqbFdV/EHkte/d95ZrxYB9s/GKqb0QemSYr0HnSgZ4HK/pODeCisvqke5hsnnFQG/vXfCR+klmLfEmCZjbSBQ28pxJCjkiCqeUV7ZpQRBEoyWQFsrz/KMhRfq0xTh1lVh+ckeMsQnt9nFJ9pTykDMo3znwcBZHmwXynIOD94GsUagaTchaccgriUYOz93gH3tIWd5UkYN3hRHR3WqVx6TRHrIiNZ39WkawFoaN35YqmmLq5d4zOkAO/oOnzsCumin4BN2p/D8ZyScROxFtZKi+g9pn2VhiylCdkQ5fg=="
+            }
+          ]
+        },
+        "finishReason": "STOP"
+      }
+    ],
+    "usageMetadata": {
+      "promptTokenCount": 7734,
+      "candidatesTokenCount": 1479,
+      "totalTokenCount": 10219,
+      "trafficType": "ON_DEMAND",
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 7734
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 1479
+        }
+      ],
+      "thoughtsTokenCount": 1006
+    },
+    "modelVersion": "gemini-3.8-flash",
+    "responseId": "vHfxaqetN72i0ckP6qKS-Aw",
+    "promptFeedback": null
+  },
+  "finishReasons": [
+    "STOP"
+  ],
+  "tariff": {
+    "knownTokenTariffSubtotalUsd": 0.01511925,
+    "missingMetrics": [],
+    "cacheAssumption": "cache metric absent; provided input priced at uncached list rate",
+    "actualInvoice": false
+  }
+}

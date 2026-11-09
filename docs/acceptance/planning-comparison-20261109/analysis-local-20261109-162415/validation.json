@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-11-09T07:56:52.800404+00:00",
+  "typecheck": "passed",
+  "tests": 142,
+  "passed": 142,
+  "failed": 0,
+  "skipped": 0,
+  "platform": "Cloud Linux; uploaded actual generation on Windows",
+  "trustedRunnerVerify": "passed",
+  "frozenInputAndSourceHashes": "passed, unchanged",
+  "markdownLocalLinks": "passed",
+  "paidModelCallsDuringAnalysis": 0,
+  "credentialsPatternScan": "passed",
+  "newProductionCodeOrDependencyChanges": false,
+  "note": "Automatic tests passed; two actual MAX_TOKENS model review failures are preserved and not hidden by this result.",
+  "originalUploadPayloadHashesStillMatch": true,
+  "originalArtifactIndexRetainedSeparately": true
+}

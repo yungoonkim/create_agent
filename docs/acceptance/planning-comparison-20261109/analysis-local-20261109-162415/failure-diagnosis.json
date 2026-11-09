@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "failures": [
+    {
+      "callId": "call-0012",
+      "pairId": "pair-003",
+      "stage": "challenge",
+      "finishReasons": [
+        "MAX_TOKENS"
+      ],
+      "requestedMaxOutputTokens": 8000,
+      "thinkingConfig": {
+        "thinkingLevel": "MEDIUM"
+      },
+      "usage": {
+        "promptTokenCount": 10683,
+        "candidatesTokenCount": 1045,
+        "totalTokenCount": 18668,
+        "trafficType": "ON_DEMAND",
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 10683
+          }
+        ],
+        "candidatesTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 1045
+          }
+        ],
+        "thoughtsTokenCount": 6940
+      },
+      "parseError": "Unterminated string starting at: line 57 column 18 (char 2538)",
+      "responseEndsInsideJsonString": true,
+      "conclusion": "Confirmed MAX_TOKENS with incomplete JSON, unlike prior HTTP400 schema incident; no retry or speculative completion applied."
+    },
+    {
+      "callId": "call-0015",
+      "pairId": "pair-004",
+      "stage": "challenge",
+      "finishReasons": [
+        "MAX_TOKENS"
+      ],
+      "requestedMaxOutputTokens": 8000,
+      "thinkingConfig": {
+        "thinkingLevel": "MEDIUM"
+      },
+      "usage": {
+        "promptTokenCount": 8663,
+        "candidatesTokenCount": 861,
+        "totalTokenCount": 16648,
+        "trafficType": "ON_DEMAND",
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 8663
+          }
+        ],
+        "candidatesTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 861
+          }
+        ],
+        "thoughtsTokenCount": 7124
+      },
+      "parseError": "Unterminated string starting at: line 54 column 9 (char 3186)",
+      "responseEndsInsideJsonString": true,
+      "conclusion": "Confirmed MAX_TOKENS with incomplete JSON, unlike prior HTTP400 schema incident; no retry or speculative completion applied."
+    }
+  ],
+  "treatment": "Preserve initial candidates and failed reviewing states. Do not treat as completed reviews or successful iterative planning. Do not replay this frozen evaluation to replace failures.",
+  "futureWork": "Use a separate development change and new held-out cases to test completion-budget/finish-reason handling. No production tuning during this evaluation."
+}

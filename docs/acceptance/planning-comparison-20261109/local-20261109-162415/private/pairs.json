@@ -1,0 +1,129 @@
+[
+  {
+    "pairId": "pair-001",
+    "scenarioId": "shopping",
+    "repeat": 1,
+    "status": "completed",
+    "state": {
+      "projectId": "comparison-pair-001",
+      "scopeContractId": "scope-1",
+      "scopeVersion": 1,
+      "iterationCount": 1,
+      "maxIterations": 3,
+      "status": "awaiting_approval",
+      "currentPlanVersion": 1,
+      "reviewId": "review-1",
+      "approvalId": "approval-d4ab56c4-55b4-4367-845a-ad12f8090a17"
+    },
+    "decision": "REQUEST_USER_APPROVAL",
+    "failure": null,
+    "initialSha256": "0fea7a0fb16194d89fa130a7523baebfb79eb77c6af67d960a81f74257a5f2e0",
+    "finalSha256": "0fea7a0fb16194d89fa130a7523baebfb79eb77c6af67d960a81f74257a5f2e0",
+    "sharedFirstDraft": true
+  },
+  {
+    "pairId": "pair-002",
+    "scenarioId": "shopping",
+    "repeat": 2,
+    "status": "completed",
+    "state": {
+      "projectId": "comparison-pair-002",
+      "scopeContractId": "scope-1",
+      "scopeVersion": 1,
+      "iterationCount": 2,
+      "maxIterations": 3,
+      "status": "awaiting_approval",
+      "currentPlanVersion": 2,
+      "reviewId": "review-2",
+      "approvalId": "approval-66941521-1be8-4e1a-b90a-df54bb54488a"
+    },
+    "decision": "REQUEST_USER_APPROVAL",
+    "failure": null,
+    "initialSha256": "946739e789ccca2cbd18fda91c2660580599ac3c40393ab9fc6ef42fe7dae498",
+    "finalSha256": "6acfb3f73a3af98d905e57951012d8723e27a2655e049bfe2addc838bca1cd99",
+    "sharedFirstDraft": true
+  },
+  {
+    "pairId": "pair-003",
+    "scenarioId": "expenses",
+    "repeat": 1,
+    "status": "failed_with_saved_candidate",
+    "state": {
+      "projectId": "comparison-pair-003",
+      "scopeContractId": "scope-1",
+      "scopeVersion": 1,
+      "iterationCount": 0,
+      "maxIterations": 3,
+      "status": "reviewing",
+      "currentPlanVersion": 1
+    },
+    "decision": null,
+    "failure": "adtf_loop_failed; original error retained by recorder/runtime",
+    "initialSha256": "d68372058d0a12a566d3084c5b3c903e4610edb14ba8d85a325cfc6f1292081c",
+    "finalSha256": "d68372058d0a12a566d3084c5b3c903e4610edb14ba8d85a325cfc6f1292081c",
+    "sharedFirstDraft": true
+  },
+  {
+    "pairId": "pair-004",
+    "scenarioId": "expenses",
+    "repeat": 2,
+    "status": "failed_with_saved_candidate",
+    "state": {
+      "projectId": "comparison-pair-004",
+      "scopeContractId": "scope-1",
+      "scopeVersion": 1,
+      "iterationCount": 0,
+      "maxIterations": 3,
+      "status": "reviewing",
+      "currentPlanVersion": 1
+    },
+    "decision": null,
+    "failure": "adtf_loop_failed; original error retained by recorder/runtime",
+    "initialSha256": "946d6bfc88928e1a551b2dd485edd5ae78213f2e3cf05b60aff3b3dd000a5d54",
+    "finalSha256": "946d6bfc88928e1a551b2dd485edd5ae78213f2e3cf05b60aff3b3dd000a5d54",
+    "sharedFirstDraft": true
+  },
+  {
+    "pairId": "pair-005",
+    "scenarioId": "meal-week",
+    "repeat": 1,
+    "status": "completed",
+    "state": {
+      "projectId": "comparison-pair-005",
+      "scopeContractId": "scope-1",
+      "scopeVersion": 1,
+      "iterationCount": 1,
+      "maxIterations": 3,
+      "status": "awaiting_scope_change_approval",
+      "currentPlanVersion": 1,
+      "changeRequestId": "change-approval-17f38873-6c2c-4e08-a128-6ec575304312"
+    },
+    "decision": "REQUEST_SCOPE_CHANGE_APPROVAL",
+    "failure": null,
+    "initialSha256": "c7754d8aff85864041df918af9b233414b066e35efaad071f80d376ed16fbe48",
+    "finalSha256": "c7754d8aff85864041df918af9b233414b066e35efaad071f80d376ed16fbe48",
+    "sharedFirstDraft": true
+  },
+  {
+    "pairId": "pair-006",
+    "scenarioId": "meal-week",
+    "repeat": 2,
+    "status": "completed",
+    "state": {
+      "projectId": "comparison-pair-006",
+      "scopeContractId": "scope-1",
+      "scopeVersion": 1,
+      "iterationCount": 1,
+      "maxIterations": 3,
+      "status": "awaiting_approval",
+      "currentPlanVersion": 1,
+      "reviewId": "review-1",
+      "approvalId": "approval-566d638a-c605-4daf-a9f3-9467e397bbab"
+    },
+    "decision": "REQUEST_USER_APPROVAL",
+    "failure": null,
+    "initialSha256": "513474848d7584900d423a67b098f562f0fd1a513e5247426da02ed6140f6593",
+    "finalSha256": "513474848d7584900d423a67b098f562f0fd1a513e5247426da02ed6140f6593",
+    "sharedFirstDraft": true
+  }
+]

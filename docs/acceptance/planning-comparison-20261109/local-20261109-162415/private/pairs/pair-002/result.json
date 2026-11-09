@@ -1,0 +1,22 @@
+{
+  "pairId": "pair-002",
+  "scenarioId": "shopping",
+  "repeat": 2,
+  "status": "completed",
+  "state": {
+    "projectId": "comparison-pair-002",
+    "scopeContractId": "scope-1",
+    "scopeVersion": 1,
+    "iterationCount": 2,
+    "maxIterations": 3,
+    "status": "awaiting_approval",
+    "currentPlanVersion": 2,
+    "reviewId": "review-2",
+    "approvalId": "approval-66941521-1be8-4e1a-b90a-df54bb54488a"
+  },
+  "decision": "REQUEST_USER_APPROVAL",
+  "failure": null,
+  "initialSha256": "946739e789ccca2cbd18fda91c2660580599ac3c40393ab9fc6ef42fe7dae498",
+  "finalSha256": "6acfb3f73a3af98d905e57951012d8723e27a2655e049bfe2addc838bca1cd99",
+  "sharedFirstDraft": true
+}
