@@ -3,6 +3,14 @@
 마지막 정리: 2026-11-09 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 완료 — Windows 로컬 기획 v4 최종 승인 저장 확인
+
+사용자가 최종 상태 화면을 제공했고 status=user_approved/currentPlanVersion4/iterationCount4/maxIterations5가 확인됐다. [최종 보고서](windows-planning-final-acceptance-20261109.md), [상태 관찰](acceptance/windows-review-retry-20261109/final-state-observed.json)을 우선한다. **이번 ‘개인용 로컬 웹 할 일 관리 도구’ 기획 작성·검토·수정·최종 승인 시험은 완료다.**
+
+- 승인된 원문은 [기획 v4](acceptance/windows-review-retry-20261109/plan-v4.json), 승인 Scope는 v4다. 남은 반복1회를 소진하거나 approve-plan/plan/resume/retry를 다시 실행할 필요 없다.
+- 사용자 PC의 저장 상태 화면으로 확인한 것이며 전체 state/approval 파일은 받지 않았다. Cloud .adtf에 사용자 로컬 프로젝트를 복원하거나 승인 레코드를 대신 생성하지 않는다.
+- 작업 지시 생성은 별도 단계이며 제품 코드·팀원 실행·ADTF 웹 UI 구현은 진행하지 않는다. 기존 Cloud 재고/할 일 두 프로젝트와 이번 Windows 프로젝트를 구분한다. 아래 승인/확인 대기 문구는 이전 시점 이력이다.
+
 ## 최신 사용자 보고 — 기획 v4 최종 승인 실행, 저장 상태 마지막 확인 대기
 
 사용자가 정확한 `APPROVE my-supervisor-20261109-112551-plan v4` 문구까지 실행 완료했다고 보고했다. [최종 로컬 기획 보고서](windows-planning-final-acceptance-20261109.md), [승인 완료 사용자 보고](acceptance/windows-review-retry-20261109/final-approval-user-report.json)를 우선한다. 승인 결정은 사용자 보고로 확인했으며 승인 후 state/approval 파일 자체는 아직 받지 않았다. 마지막 직접 상태 관찰은 기획4/반복4/5/awaiting_approval이다. 이 둘을 섞어 사용자 PC의 저장 상태까지 확인했다고 쓰지 않는다.

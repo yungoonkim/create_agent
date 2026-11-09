@@ -93,4 +93,4 @@ Writer·Reviewer의 [품질 절차 보완과 실제 비교](docs/planning-qualit
 
 Windows 실제 기획의 Reviewer challenge HTTP400에 대해 [긴 응답 형식 보완·저장 기획 재검토](docs/reviewer-request-recovery-20261109.md)를 추가했다. typecheck/137테스트 통과 후 사용자 PC에서 실제 재검토 완료를 확인했다. 기존 실행 데이터는 보존하고 `plan`을 다시 실행하지 않는다.
 
-[Windows 로컬 기획 시험 보고서](docs/windows-planning-final-acceptance-20261109.md)에 수정본137개 중135통과/2제외, 실제 Gemini 재개와 기획 v2~v4, 코드 차단·사람 점검·사용자 보완 및 최종 승인 실행 완료 보고를 기록했다. 승인 후 저장 상태 출력은 마지막 확인 대기이며, 이번 목표는 기획안 완성까지다. 제품 구현·팀원 실행은 진행하지 않는다.
+[Windows 로컬 기획 시험 보고서](docs/windows-planning-final-acceptance-20261109.md)에 수정본137개 중135통과/2제외, 실제 Gemini 재개와 기획 v2~v4, 코드 차단·사람 점검·사용자 보완 및 최종 승인 실행 완료 보고를 기록했다. 최종 user_approved/기획4/반복4/5 상태 화면까지 확인해 로컬 기획 인수를 완료했다. 이번 목표는 기획안 완성까지다. 제품 구현·팀원 실행은 진행하지 않는다.

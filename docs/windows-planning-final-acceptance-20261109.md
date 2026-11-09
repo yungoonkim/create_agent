@@ -6,7 +6,7 @@
 
 사용자 PC에서 오프라인 데모와 회귀 검사를 통과하고 실제 Gemini로 질문·Scope·기획 v1~v4를 진행했다. Reviewer 요청 실패를 수정해 재개했고, 코드가 모델 pass에 남은 저장 문제를 차단하는 흐름과 사용자 보완 요청에 따른 수정·재검토를 확인했다. 진행자가 기획 v4 원문을 검토해 승인 대상으로 권고했으며, 사용자는 정확한 v4 승인 문구까지 실행 완료했다고 보고했다.
 
-**기획 내용 작성·검토와 사용자 승인 결정까지 진행됐다. 마지막 `user_approved` 저장 상태 출력은 아직 받지 않았다.** 이 보고서는 사용자 완료 보고와 직접 확보한 파일·상태 관찰을 구분하며, 로컬 승인 파일을 읽었거나 Cloud에서 대신 승인했다고 기록하지 않는다. 최종 상태를 확인하면 이번 로컬 기획 시험을 완료로 확정한다. 작업 지시 생성은 별도 단계로 남기며 자동으로 진행하지 않는다.
+**최종 상태 화면에서 `user_approved` / 기획4 / 반복4/5까지 확인해 이번 로컬 기획 작성·검토·수정·최종 승인 시험을 완료했다.** [마지막 상태 관찰](acceptance/windows-review-retry-20261109/final-state-observed.json)을 보존했다. 사용자 완료 보고·원본 기획 파일·상태 화면 관찰은 구분하며, 로컬 승인 파일 전체를 받았거나 Cloud에서 대신 승인했다고 기록하지 않는다. 작업 지시 생성은 별도 단계로 남기며 자동으로 진행하지 않는다.
 
 ## 실행 환경과 데이터 구분
 
@@ -17,9 +17,9 @@
 | 모델 | Vertex AI / gemini-3.8-flash, Writer·Reviewer 동일 |
 | GCP | iceu-songpa11 / global / PC의 ADC |
 | 승인 Scope | scope-v4 / version4 |
-| 마지막 확인 기획 | v4, 반복4/5, awaiting_approval |
+| 최종 확인 기획 | v4, 반복4/5, user_approved |
 | 사용자 최종 승인 보고 | APPROVE my-supervisor-20261109-112551-plan v4 실행 완료 |
-| 승인 후 저장 상태 | 사용자 PC에서 최종 확인 대기 |
+| 승인 후 저장 상태 | 사용자 제공 상태 화면에서 user_approved 확인 |
 
 PC의 `.adtf`는 Cloud의 기존 재고·할 일 인수 데이터와 별개다. 원본 파일을 읽어 증거 폴더에 보존했으며 Cloud 프로젝트 메모리에 복원·병합하거나 승인 레코드를 생성하지 않았다. 인증 파일·토큰·코드는 수집하지 않았다.
 
@@ -40,7 +40,7 @@ PC의 `.adtf`는 Cloud의 기존 재고·할 일 인수 데이터와 별개다. 
 | 진행자 추가 검토 | v3의 저장 마감일이 문자열 검사에 그친 점과 다중 탭 덮어쓰기 정책 누락 발견. Gemini 자체 이슈와 구분 |
 | 사용자 추가 결정·기획 v4 | 날짜 실제 유효성 검사와 동시에 한 탭만 변경하는 방식을 수락. 수정 요청·재개 후 종료0/기획4/반복4/5/awaiting_approval 요약 확인 |
 | v4 원문 검토 | 날짜·잠금 정책과 기존 보호 규칙의 본문·검증 사례 반영을 확인. 최종 승인 대상으로 권고 |
-| 사용자 승인 | 사용자가 정확한 v4 승인 문구 실행 완료를 보고. 승인 후 저장 상태는 마지막 확인 대기 |
+| 사용자 승인 | 정확한 v4 승인 문구 실행 완료 보고 후 user_approved/기획4/반복4/5 상태 화면까지 확인 |
 
 Windows에서 제외한2개는 프로세스 종료 신호와 작업 폴더 밖을 가리키는 심볼릭 링크 검사다. 코드에 Windows 제외가 명시돼 있다. 나머지 테스트는 자동화된 Fake·모의 모델·실제 임시 파일/검사 명령 기반이며, Gemini 의미 품질 시험과 구분한다.
 
@@ -65,7 +65,7 @@ Windows에서 제외한2개는 프로세스 종료 신호와 작업 폴더 밖�
 - [v2 report와 감사](acceptance/windows-review-retry-20261109/report.json), [진행 요약](acceptance/windows-review-retry-20261109/assessment.json), [추가 질문 수집](acceptance/windows-review-retry-20261109/collected-feedback.json)
 - [v3 원본](acceptance/windows-review-retry-20261109/plan-v3.json), [읽기용 v3](acceptance/windows-review-retry-20261109/plan-v3.md), [진행자 검토](acceptance/windows-review-retry-20261109/manual-review-v3.json), [콘솔 요약 오류 관찰](acceptance/windows-review-retry-20261109/resume-v3-observation.json)
 - [v4 수정 지시](acceptance/windows-review-retry-20261109/v4-revision-request.md), [v4 원본](acceptance/windows-review-retry-20261109/plan-v4.json), [읽기용 v4](acceptance/windows-review-retry-20261109/plan-v4.md), [진행자 검토](acceptance/windows-review-retry-20261109/manual-review-v4.json)
-- [사용자 최종 승인 실행 완료 보고](acceptance/windows-review-retry-20261109/final-approval-user-report.json)
+- [사용자 최종 승인 실행 완료 보고](acceptance/windows-review-retry-20261109/final-approval-user-report.json), [승인 저장 상태 확인](acceptance/windows-review-retry-20261109/final-state-observed.json)
 
 전체 로컬 usage ledger와 v1 Review·기획 원문은 받지 않았다. 총 모델 호출·토큰·비용이나 Reviewer 자체 수정 요청 횟수를 추정하지 않는다. 시험용 임시 파일·버전별 기획과 실제 사용자 승인 기록도 서로 대신하지 않는다.
 
@@ -78,4 +78,4 @@ $state = Get-Content ".adtf/projects/my-supervisor-20261109-112551/planning/stat
 $state | Select-Object status, currentPlanVersion, iterationCount, maxIterations | Format-List
 ```
 
-`user_approved`, 기획4, 반복4/5가 확인되면 이번 기획 작성·검토·최종 승인 시험을 완료로 확정한다. 남은 반복을 소진할 필요는 없다. 작업 지시 제안·제품 구현·팀원 Agent 실행·ADTF 웹 UI 구현은 이 종료 확인으로 자동 시작하지 않는다. 웹 UI에 대한 대화는 향후 가능성 설명이며 구현 지시로 취급하지 않았다.
+사용자 제공 화면에서 `user_approved`, 기획4, 반복4/5를 확인했다. 이번 기획 작성·검토·최종 승인 시험은 완료다. 남은 반복을 소진할 필요는 없다. 작업 지시 제안·제품 구현·팀원 Agent 실행·ADTF 웹 UI 구현은 이 종료 확인으로 자동 시작하지 않는다. 웹 UI에 대한 대화는 향후 가능성 설명이며 구현 지시로 취급하지 않았다.

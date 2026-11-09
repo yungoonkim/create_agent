@@ -1,0 +1,18 @@
+{
+  "kind": "Final state observed in user-supplied screenshot; not a copied full state or approval file",
+  "projectId": "my-supervisor-20261109-112551",
+  "planId": "my-supervisor-20261109-112551-plan",
+  "observedState": {
+    "status": "user_approved",
+    "currentPlanVersion": 4,
+    "iterationCount": 4,
+    "maxIterations": 5
+  },
+  "evidenceSource": "User screenshot after explicit UTF-8 read of local planning/state.json",
+  "finalApprovalPersistedStateConfirmed": true,
+  "localFullStateFileProvided": false,
+  "localApprovalRecordProvided": false,
+  "planSha256": "d054a08609fbb42afcb8e1a964c652ba99616257cb4afcf80197a438c5fed9f8",
+  "acceptanceScope": "Planning, review, revisions and final human approval completed. Work-order generation is separate; no product code or teammate execution.",
+  "cloudApprovalOrProjectMemoryChanged": false
+}
