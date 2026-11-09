@@ -142,6 +142,23 @@ export class SupervisorController {
     });
   }
 
+  async reviseTasks(reason: string): Promise<SupervisorState> {
+    const rationale = text(reason);
+    return this.change("revise-tasks", "Unaccepted work orders revised; previous proposal preserved.", async (state) => {
+      this.phase(state, "tasks_proposed");
+      if (await this.options.developmentStore.get(this.projectId) !== undefined) throw new Error("Initialized tasks cannot be revised.");
+      await this.ensureScope(state);
+      const previous = state.taskProposal!;
+      const source = await requireApprovedPlan(this.options.memory, this.projectId, this.planId());
+      if (!same(previous.source, source)) throw new Error("Task proposal source is stale.");
+      const plan = await this.options.memory.getPlanDraft(this.projectId, source.planId, source.planVersion);
+      if (plan === undefined) throw new Error("Approved plan missing.");
+      const orders = parseOrders(await this.options.proposer.tasks({ ...state, taskRevision: { reason: rationale, previousOrders: previous.orders } }, this.scope(state), plan), this.projectId, this.scope(state));
+      if (!same(source, await requireApprovedPlan(this.options.memory, this.projectId, this.planId()))) throw new Error("Approved source changed during task revision.");
+      return { ...state, taskProposal: { source, orders }, taskRevisions: [...state.taskRevisions ?? [], { reason: rationale, previous, revisedAt: this.now() }] };
+    });
+  }
+
   async initializeTasks(confirmation: string): Promise<SupervisorState> {
     return this.change("initialize-tasks", "Operator accepted proposed tasks. Worker runtime remains disconnected.", async (state) => {
       this.phase(state, "tasks_proposed");

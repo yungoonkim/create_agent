@@ -1,0 +1,8 @@
+{
+  "id": "approval-e127e39b-d1e0-41ee-bd66-56f7e050d904",
+  "projectId": "supervisor-gemini-acceptance",
+  "subject": "Approve plan supervisor-gemini-acceptance-plan v3",
+  "status": "approved",
+  "decidedAt": "2026-11-08T12:00:44.263Z",
+  "rationale": "사용자가 채팅에서 기획안 v3을 승인한다고 명시함. 승인 범위는 기획 확정 및 작업 지시 품질 시험이며 실제 제품 구현·팀원 실행은 보류"
+}

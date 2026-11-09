@@ -1,9 +1,56 @@
 # ADTF 개발 인수인계
 
-마지막 정리: 2026-11-08 (Asia/Seoul)
+마지막 정리: 2026-11-09 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
-## 현재 상태
+## 최신 작업 완료 — Writer/Reviewer 품질 절차 보완·실제 비교
+
+사용자 요청에 따라 시스템 프롬프트·검토 형식·코드 통과 조건을 보완했다. [최종 보고서](planning-quality-hardening-20261108.md)를 우선한다. todo 기획 v4 최종 승인은 여전히 pending이며 제품 구현·팀원 Agent 작업은 보류다.
+
+- Writer는 사용자 선택/제안/미정 출처, 쉬운 이용 흐름, 요구별 정상/실패/수락 기준, 수정·회귀 점검을 지시한다.
+- 새 Gemini Review는 qualityAssessment v1에 필수 요구 전체와 7개 점검의 상태·근거 위치·이유를 제출한다. 현재 기획의 실제 비어 있지 않은 줄 번호만 응답 스키마에서 선택할 수 있고 코드는 원문을 추출·참조 검증한다. 미해결은 모델 pass보다 우선해 수정/질문으로 보낸다.
+- 승인 대상으로 넘어갈 때만 독립 반례 검토를 한 번 더 호출한다(동일 모델, 앞 판정은 전달하지 않음). 실패하면 이전 pass를 반환하지 않는다. 논리적 반복 예산은 유지하며 실제 모델 호출은 reviewer 절차당 최대2, usage의 reviewStage로 구분한다. MEDIUM thinking·단계별 출력8,000 한도를 사용한다.
+- typecheck/전체 **128개 테스트 통과**. 기존 qualityAssessment 없는 리뷰/fixture는 호환하며 과거 기록을 새 방식으로 검증된 것으로 바꾸지 않는다.
+- [동일 고정 사례 최종 비교](acceptance/planning-quality-bounded-20261108/comparison.json): 결함5개×2회 차단이 기존6/10 → 최종9/10, 정상2개×2회는 양쪽4/4 통과, 최종 형식 오류0. **빈 저장 문자열 자동 초기화 결함은 최종1회 놓쳤으므로 의미 품질을 보장하지 않는다.** 개발에 사용한 소규모 세트이며 일반 정확도/통계 검증이 아니다.
+- 최종 고정 후보 14회 검토에서 모델 요청 기록은21개(기존14). 모든 중간 실패·재시험·Writer 표본까지94개를 [ledger](acceptance/planning-quality-bounded-20261108/all-usage.jsonl)에 보존했다. 기록된 입력470,294/출력100,451/reasoning181,079; 지표 없는10행은 추정하지 않는다.
+- 새로운 Writer 미승인 표본은 [최종 별도 검토](acceptance/planning-quality-bounded-20261108/writer-sample-final-review.json)에서 승인 대상으로 제시 가능 판정이다. 실제 사용자 승인이 아니며 현재 todo v4와 합치지 않는다.
+- 평가 스크립트/후보/원본 baseline은 examples/planning-quality-eval에 있다. baseline은951588b의 원본 어댑터다. initial/references/challenge/bounded의 기존 실행 경로는 모두 완료했으므로 재실행하지 않는다. 모델 호출·승인·Planning 재개를 중복 실행하지 않는다.
+
+기존 todo·재고와 관련 승인 파일은 전후 동일하다. todo는 Scope v6 approved / Plan v4 awaiting_approval / 반복4/5 / Supervisor revision17이다. 강화된 별도 평가의 기존 v4는 두 번 모두 통과했으나 정식 과거 Review를 덮어쓰거나 기획 승인을 대신하지 않았다. 이후에는 사용자 결정에 따라 최종 승인 또는 같은 Scope의 남은 예산 내 수정을 진행한다. 상세 상태는 아래와 원래 체크포인트를 본다.
+
+## 새 주제 시험 — 내 할 일 목록 관리, 기획 v4 최종 승인 대기
+
+재고 인수 완료 이력은 아래에 보존한다. 새 projectId `supervisor-todo-acceptance-20261108`, [진행 기록](supervisor-todo-acceptance-20261108.md), [설정](../examples/supervisor-todo-gemini/config.json), [입력](../examples/supervisor-todo-gemini/request.md)을 따른다. 기존 재고 프로젝트 파일은 해시가 그대로이며 서로 합치지 않는다.
+
+- **현재 실제 상태:** Scope v6 approved, Supervisor revision 17 / scope_approved, Planning currentPlanVersion 4 / awaiting_approval / iterationCount 4/5. Plan 승인 ID `approval-a3422782-30f5-4fc9-a7bf-3971193373c5` pending. 작업 제안·제품 구현·팀원 실행 없음.
+- 사용자 질문 7개 답변 + Scope 승인 + 상세 질문 3개 답변을 기록했다. 상세 확정은 제목·마감일시 필수/메모 선택, 날짜+시간, 삭제 확인이다. [결정 출처](acceptance/todo-20261108/user-decisions.md)를 본다.
+- [기획 v4 쉬운 요약](acceptance/todo-20261108/plan-v4-user-summary.md), [전체 원문](acceptance/todo-20261108/plan-v4.md), [점검](acceptance/todo-20261108/assessment-v4.md)을 사용자에게 제시한다. 직접 확정하지 않은 과거 마감일 허용·단일 탭·저장 기술은 승인 대기 제안이다.
+- Reviewer 검토 4회 모두 pass / 자체 revise 0회. 사용자 추가 답변·진행자 점검으로 3회 수정했고 v1~v4와 Review/이유를 [이력](acceptance/todo-20261108/reviewer-history.md)에 보존했다. pass 이후 사람이 발견한 누락을 숨기지 않는다.
+- **다음은 사용자 기획 v4 승인 또는 수정 결정.** 이미 Scope 승인한 것을 다시 묻지 않는다. 실제 최종 승인 후에만 approve-plan → propose-tasks를 진행하며 제품 구현·팀원 연결로 확장하지 않는다. 모델 반복은 1회만 남았다. 단순 모델/승인 재실행은 하지 않는다.
+- [체크포인트](acceptance/todo-20261108/runtime-checkpoint.json)는 todo 프로젝트와 관련 승인만 포함한다. 실제 데이터 최신 상태를 먼저 확인하고 더 최신 데이터를 덮어쓰지 않는다. 이전 재고/격리 시험 체크포인트와 혼동하지 않는다.
+
+기존 ADC로 모델 호출 성공, GCP iceu-songpa11/global / gemini-3.8-flash / Node 24.22.1 --use-env-proxy 유지. 인증 파일 본문·토큰을 출력하지 않는다. 전체 typecheck/119개 테스트 통과. 이 주제의 실제 모델 호출 10회 성공, 입력 60,107 / 출력 21,496 / reasoning 10,708 / 228,051ms. [사용량](acceptance/todo-20261108/usage-summary.json). 새 주제는 최종 승인과 지시 품질 시험이 남아 있어 아직 전체 완료로 선언하지 않는다.
+
+## 최신 상태 — 지휘자 단독 대표 인수 완료
+
+- 브랜치 `docs/supervisor-only-acceptance`. 구현 체크포인트 `3fef309`, typecheck 및 **119개 테스트** 통과. [최종 인수 보고서](supervisor-final-acceptance-20261108.md)를 우선한다.
+- **primary 실제 상태:** 사용자 승인 Scope v4 / Plan v3, planning user_approved / iterationCount 3/5. Supervisor revision 16 / tasks_proposed, 작업 제안 5개 / taskRevisions 2개. [최종 지시서](acceptance/2026-11-08/primary-work-orders-v3.md). primary 작업 초기화·제품 구현·팀원 실행 없음.
+- 질문·Scope 지침, 안전한 실패 분류, 승인 대기 기획 수정과 재개, 미수락 작업 재제안 이력, 확인 stdin EOF 실패를 개선했다. 기존 원문·승인·버전·총 예산을 보존한다.
+- [승인 출처 정책 시험](acceptance/2026-11-08/approved-source-policy-fixture.json): 선행 조건/근거 부족 거부, 재작업·한도, 환경 차단·품질 카운터 구분과 사실에 맞는 보고 확인. TEST/STUB 텍스트만 사용했다.
+- [독립 실제 모델 재현](acceptance/2026-11-08/approved-scope-replay-20261108/result.json): 새 Writer v1 → Reviewer revise(major 2) → Writer v2 → Reviewer pass, 2/5. 이 후보는 최종 사용자 승인하지 않았고 primary 승인 기획을 대체하지 않는다.
+- 사용자가 시험 Scope v5 원문을 검토하고 **두 격리 분기 실행을 승인했으며 시험 완료**했다. [결과](acceptance/2026-11-08/scope-change-test/results.json): 거절은 Scope v4/독립 Plan v2·2/5 유지, 모델 미호출. 승인은 시험 Scope v5/새 Plan v3·Reviewer pass·3/5이며 새 기획 최종 승인 pending. 양 분기에서 과거 스냅샷·총 예산을 보존했고 실제 primary는 그대로다. 시험 요구는 N 생략 시 기본 7일이며 실제 제품 변경으로 채택하지 않았다.
+- 실제 Reviewer 검토 **6회 / 수정 요청 1회**. 사유·심각도·관련 요구·수정 방향·원문은 [Reviewer 이력](acceptance/2026-11-08/reviewer-history.md)에 보존했다. primary v1→v2→v3의 수정은 사용자·진행자 요청이므로 Reviewer 자체 요청 횟수와 구분한다.
+- 전체 모델 어댑터 호출 21회(성공 20/실패 1), 제공 토큰 입력 137,489 / 출력 38,749 / reasoning 16,901, 호출 시간 410,995ms. [집계](acceptance/2026-11-08/model-usage-summary.json)는 복사 ledger 중복을 제거하며 미제공 지표를 추정하지 않는다.
+
+### 재개 시 경계
+
+현재 사용자 목표인 사람 승인형 CLI 지휘자·기획자 구현과 재고·유통기한 대표 단독 인수는 완료했다. 팀원 Agent 설계·개발·연결·제품 구현은 사용자 재지시 전까지 보류한다. `report.progress.completed=false`는 제품 작업 미완료 의미이며 이번 지휘자 인수 판정과 다르다. 모델 pass는 사람 승인이나 무인 품질 보장이 아니다.
+
+완료한 모델/결정 스크립트를 재실행하지 않는다. 격리 데이터는 `/workspace/scratch/approved-scope-replay-20261108`, `approved-scope-change-reject-20261108`, `approved-scope-change-approve-20261108`에 각각 있다. projectId는 기존 genuine Scope 승인 결합을 유지하기 위해 같지만 물리 메모리 루트와 실행 ID는 다르다. [원본 격리 체크포인트](acceptance/2026-11-08/scope-change-test/runtime-checkpoint.json), [거절 분기](acceptance/2026-11-08/scope-change-test/reject/runtime-checkpoint.json), [승인 분기](acceptance/2026-11-08/scope-change-test/approve/runtime-checkpoint.json)는 각 격리 루트에만 복원하며 primary와 합치지 않는다. 시험 후보의 최종 승인·작업 생성은 하지 않았다.
+
+ADC 파일 `/workspace/.gcloud-adc/application_default_credentials.json`은 마지막 호출에서 유효했고 토큰을 출력하지 않는다. GCP iceu-songpa11/global, Writer/Reviewer gemini-3.8-flash, Node 24.22.1의 --use-env-proxy를 사용했다. [primary 체크포인트](acceptance/2026-11-08/primary-runtime-checkpoint.json)는 실제 프로젝트 데이터다. 최신 상태·해시를 확인하고 더 최신인 데이터를 덮어쓰거나 모델 호출·사용자 결정을 중복 실행하지 않는다. primary에서 start/plan/resume-plan을 다시 실행하지 않는다. 아래는 과거 구현 기록이다.
+
+## 기존 구현 상태 (실제 인수 전 기록)
 
 **사용자 최신 우선순위:** 현재 지휘자 겸 기획자 Agent 하나를 확실히 완성하고 테스트한다. 팀원 Agent 설계·개발·연결은 사용자 재지시 전까지 보류하며, 인수 완료 후에도 자동으로 착수하지 않는다. [현재 Agent 완료 기준](supervisor-acceptance.md)에 따라 부족한 부분을 수정·재시험한다.
 

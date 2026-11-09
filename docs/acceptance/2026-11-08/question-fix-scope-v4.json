@@ -1,0 +1,74 @@
+{
+  "id": "scope-v4",
+  "projectId": "supervisor-gemini-acceptance-qfix-20261108",
+  "version": 4,
+  "goal": "작은 매장에서 로트(lot) 단위로 상품 재고와 유통기한을 정확하게 관리하고 임박·만료 상태를 조회할 수 있는 Node.js CLI 기반 단일 사용자용 재고 관리 도구 기획",
+  "requiredFeatures": [
+    {
+      "id": "REQ-1",
+      "statement": "로트(lot) 신규 등록: 고유 lotId, 상품명, 초기 수량(0 이상의 정수), 단위 문자열, 유효한 YYYY-MM-DD 유통기한을 검증하여 등록하며, 중복 lotId나 빈 문자열 입력은 거부한다."
+    },
+    {
+      "id": "REQ-2",
+      "statement": "lotId 기준 수량 증감 처리: 지정한 lotId에 대해 안전한 정수 범위의 증감량을 반영하며, 결과 수량이 음수가 되거나 미존재 lotId를 지정한 경우 오류를 반환하고 기존 데이터를 보존한다."
+    },
+    {
+      "id": "REQ-3",
+      "statement": "전체 재고 목록 조회: 수량이 0인 로트를 포함하여 등록된 모든 로트의 lotId, 상품명, 수량, 단위, 유통기한을 표시한다."
+    },
+    {
+      "id": "REQ-4",
+      "statement": "기준일(YYYY-MM-DD) 및 N일 기준 만료·임박 재고 조회: 수량 0인 로트를 제외하고, 기준일 미만은 만료로 별도 분류하며 기준일 이상 기준일+N일 이하는 임박으로 조회한다. 출력은 유통기한 오름차순, 동일 날짜는 lotId 오름차순으로 정렬한다."
+    },
+    {
+      "id": "REQ-5",
+      "statement": "로컬 파일 영속성 및 원자적 저장: 로컬 UTF-8 JSON 파일로 데이터를 유지하며, 임시 파일 작성 후 원자적 교체 방식으로 저장하고, 파일 손상 또는 읽기/쓰기 오류 발생 시 임의 초기화 없이 명확히 오류를 보고한다."
+    }
+  ],
+  "excludedFeatures": [
+    {
+      "id": "EXC-1",
+      "statement": "유통기한 임박 순(FEFO) 자동 출고 차감"
+    },
+    {
+      "id": "EXC-2",
+      "statement": "별도 폐기 처리 workflow 및 폐기 사유/감사 이력 기록"
+    },
+    {
+      "id": "EXC-3",
+      "statement": "바코드, QR 코드, 모바일 카메라 및 스캐너 연동"
+    },
+    {
+      "id": "EXC-4",
+      "statement": "웹/모바일 GUI, POS 시스템, 엑셀 연동 및 외부 알림(SMS, 알림톡, 이메일, 푸시) 발송"
+    },
+    {
+      "id": "EXC-5",
+      "statement": "다중 기기 동기화, 동시 쓰기 제어, 중앙 서버 및 클라우드 DB 연동"
+    },
+    {
+      "id": "EXC-6",
+      "statement": "사용자 로그인, 인증/인가 및 역할별 권한 관리"
+    },
+    {
+      "id": "EXC-7",
+      "statement": "발주 및 거래처 관리, 판매/결제 처리 및 매출 통계 분석"
+    },
+    {
+      "id": "EXC-8",
+      "statement": "별도 텍스트 검색, 재고실사 보정, 로트 메타데이터 수정/삭제, 백업/복원 workflow"
+    },
+    {
+      "id": "EXC-9",
+      "statement": "실제 애플리케이션 제품 구현 및 개발 팀원 Agent 실행"
+    }
+  ],
+  "technicalConstraints": [
+    "Node.js CLI 환경 및 TypeScript strict 모드 적용",
+    "로컬 파일시스템의 UTF-8 인코딩 JSON 파일 영속화 및 임시 파일 작성 후 원자적 교체(atomic replace) 저장 메커니즘 사용",
+    "날짜 계산은 PC 로컬 시각에 의존하지 않고 명시적으로 입력된 Asia/Seoul 달력 기준 YYYY-MM-DD 날짜로 판정",
+    "모든 수량 및 증감 연산은 안전한 정수(Number.isSafeInteger) 범위 내의 0 이상 정수만 허용(소수점, NaN, 무한대, 음수 재고 차단)",
+    "단일 프로세스 순차 사용 환경 전제"
+  ],
+  "createdAt": "2026-11-08T09:38:54.956Z"
+}

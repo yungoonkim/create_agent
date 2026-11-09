@@ -1,0 +1,48 @@
+{
+  "id": "review-baseline-empty-corrupt-storage-1",
+  "variant": "baseline",
+  "caseId": "empty-corrupt-storage",
+  "repeat": 1,
+  "operation": "review",
+  "expected": "block",
+  "inputContentSha256": "c692c20d6ee86f0eec81ed08ab4dd49a2b05064e4654482b741ba2b6269b28f8",
+  "status": "completed",
+  "review": {
+    "id": "review-1",
+    "projectId": "supervisor-todo-acceptance-20261108",
+    "planId": "supervisor-todo-acceptance-20261108-plan",
+    "planVersion": 1,
+    "scopeContractId": "scope-v6",
+    "scopeVersion": 6,
+    "outcome": "pass",
+    "issues": [],
+    "suggestions": [
+      "과거 마감일시 입력 허용 정책(경과 알림 미제공 및 단순 기록)은 기획자가 제안한 상태이므로, 최종 기획안 사용자 검토 승인 단계에서 사용자에게 해당 제안 사항을 다시 한 번 명확히 안내하고 승인을 획득하십시오."
+    ],
+    "scopeViolation": false,
+    "userJudgmentRequired": false,
+    "reviewedAt": "2026-11-08T23:37:01.403Z"
+  },
+  "decision": {
+    "type": "REQUEST_USER_APPROVAL",
+    "planId": "supervisor-todo-acceptance-20261108-plan",
+    "version": 1
+  },
+  "usage": [
+    {
+      "projectId": "supervisor-todo-acceptance-20261108",
+      "planId": "supervisor-todo-acceptance-20261108-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 3741,
+      "outputTokens": 111,
+      "reasoningTokens": 1039,
+      "outcome": "success",
+      "durationMs": 9167,
+      "recordedAt": "2026-11-08T23:37:01.403Z"
+    }
+  ],
+  "rawModelResponse": "{\n  \"outcome\": \"pass\",\n  \"issues\": [],\n  \"suggestions\": [\n    \"과거 마감일시 입력 허용 정책(경과 알림 미제공 및 단순 기록)은 기획자가 제안한 상태이므로, 최종 기획안 사용자 검토 승인 단계에서 사용자에게 해당 제안 사항을 다시 한 번 명확히 안내하고 승인을 획득하십시오.\"\n  ],\n  \"scopeViolation\": false,\n  \"userJudgmentRequired\": false\n}"
+}

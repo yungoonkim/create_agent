@@ -1,0 +1,182 @@
+{
+  "id": "review-enhanced-clock-order-2",
+  "variant": "enhanced",
+  "caseId": "clock-order",
+  "repeat": 2,
+  "operation": "review",
+  "expected": "block",
+  "inputContentSha256": "ce4baa247e853e65694999c5601609eebf04ed0a2d37f5751fe68227327ca394",
+  "status": "completed",
+  "review": {
+    "id": "review-1",
+    "projectId": "supervisor-todo-acceptance-20261108",
+    "planId": "supervisor-todo-acceptance-20261108-plan",
+    "planVersion": 1,
+    "scopeContractId": "scope-v6",
+    "scopeVersion": 6,
+    "outcome": "revise",
+    "issues": [
+      {
+        "id": "issue-6d904f7266d40c04",
+        "kind": "contradiction",
+        "severity": "major",
+        "description": "REQ-02 명세에서는 등록 순번 오름차순 정렬을 규정하며 'A(1),B(2) 등록 후 PC 시계를 뒤로 돌려 C를 등록해도 A,B,C 순서다'라고 명시했으나, 기술 설계 제안에서는 '정렬은 등록할 때 PC 현재시각으로 기록한 createdAt을 우선하여 오름차순으로 하고, 같은 시각만 순번으로 정한다'라고 기술하여 상호 모순됩니다. 또한 항목 스키마 정의에는 id, title, memo, dueDateTime, isCompleted, sequenceNumber만 나열되어 있고 createdAt 필드가 누락되어 있습니다.",
+        "suggestedDirection": "기술 설계의 정렬 기준을 REQ-02 수락 기준 및 불변식에 맞추어 sequenceNumber 단일 오름차순으로 일원화하고, createdAt을 통한 시계 의존 정렬 문구를 삭제하거나 정합성을 맞추어야 합니다.",
+        "relatedRequirementId": "REQ-02"
+      }
+    ],
+    "suggestions": [
+      "기술 설계 제안에서 항목 필드 목록과 정렬 키 기준을 REQ-02의 등록 순번(sequenceNumber) 단일 기준으로 통일하십시오."
+    ],
+    "scopeViolation": false,
+    "userJudgmentRequired": false,
+    "reviewedAt": "2026-11-08T23:38:55.725Z",
+    "qualityAssessment": {
+      "version": 1,
+      "requirements": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "REQ-01: 제목·마감일시 필수/메모 선택. 공백뿐인 제목, 빠진 날짜/시간, 2월30일, 24:00은 거부하고 입력과 기존 목록을 유지한다. ‘장보기’를 같은 내용으로 두 번 추가하면 별개 ID 두 개가 생긴다."
+          ],
+          "rationale": "제목, 메모, 마감일 입력 규칙 및 유효성 검증 실패 시 입력 보존, 동일 제목 중복 등록 허용 동작을 구체적으로 명시하고 있습니다.",
+          "requirementId": "REQ-01"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "REQ-02: 미완료와 완료 두 구역, 영속 등록 순번 오름차순. A(1),B(2) 등록 후 PC 시계를 뒤로 돌려 C를 등록해도 A,B,C 순서다.",
+            "정렬은 등록할 때 PC 현재시각으로 기록한 createdAt을 우선하여 오름차순으로 하고, 같은 시각만 순번으로 정한다."
+          ],
+          "rationale": "REQ-02 수락 기준은 시계를 되돌려도 순번 오름차순(A,B,C) 정렬을 요구하지만, 기술 설계 절에서는 createdAt을 우선 정렬 기준으로 제시하여 시계 변경 시 순서가 뒤바뀌는 모순이 존재합니다.",
+          "requirementId": "REQ-02"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "REQ-03: A만 완료하면 완료 구역에 A만 이동한다. 취소하면 미완료 구역의 원래 등록순 위치로 돌아온다. 저장 실패 시 상태가 이동하지 않는다."
+          ],
+          "rationale": "완료 및 미완료 전환 시 구역 이동, 취소 시 원래 등록 순번 위치 복귀, 저장 실패 시 무변경 처리를 구체적으로 정의했습니다.",
+          "requirementId": "REQ-03"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "REQ-04: 동일 제목 두 항목 중 두 번째를 수정하면 두 번째만 바뀐다. 제목/마감일시 검증 실패 또는 저장 실패면 기존 목록을 유지하고 수정 입력을 보존한다. 수정 취소는 무변경이다."
+          ],
+          "rationale": "식별자 기반의 특정 항목 수정, 유효성/저장 실패 시 기존 목록 유지 및 입력값 보존, 수정 취소 동작을 구체적으로 명시했습니다.",
+          "requirementId": "REQ-04"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "REQ-05: 삭제 확인 취소는 무변경, 확인은 선택 ID 한 건만 삭제. 저장 실패 시 항목을 지우지 않고 오류를 표시한다."
+          ],
+          "rationale": "삭제 확인 다이얼로그 취소 시 무변경, 승인 시 대상 항목 단건 삭제 및 저장 실패 시 롤백/오류 안내를 충실히 규정했습니다.",
+          "requirementId": "REQ-05"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다."
+          ],
+          "rationale": "재접속 시 로컬 데이터 복원, 저장 실패 시 보존, 손상 데이터 로드 시 임의 덮어쓰기 금지 및 쓰기 차단 한계를 명시했습니다.",
+          "requirementId": "REQ-06"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "REQ-07: 모든 동작은 브라우저 입력창과 버튼으로 수행한다. 제목이나 메모의 '<b>장보기</b>'나 '<script>' 문자는 코드가 아닌 글자로 표시한다."
+          ],
+          "rationale": "웹 브라우저 폼과 버튼 조작, HTML 태그 문자열의 안전한 텍스트 이스케이프 렌더링을 정의했습니다.",
+          "requirementId": "REQ-07"
+        }
+      ],
+      "checks": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "Q-1~Q-7: 브라우저 버튼 사용, 제목·메모·마감일, 수정·삭제, 완료 취소, 분리 목록과 등록순, 동일 제목 허용, 내 컴퓨터 저장(세부 방식 위임). DETAIL-1: 제목·마감일 필수/메모 선택. DETAIL-2: 날짜+시간. DETAIL-3: 삭제 확인. 과거 마감일 허용은 사용자가 직접 확정한 것이 아닌 기획자의 승인 대기 제안이다."
+          ],
+          "rationale": "사용자 확정 사항과 기획자의 승인 대기 제안(과거 마감일 허용)의 출처를 정직하게 구분하여 명시했습니다.",
+          "id": "decision_provenance"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "현재 세션은 기획·검토·지시 품질 시험이며 제품 구현·제품 테스트·팀원 실행을 하지 않는다. 로그인·계정·외부 서버 동기화·공유·검색·필터·태그·기한순 정렬을 추가하지 않는다."
+          ],
+          "rationale": "제외 기능(EXC-01~04)을 엄격히 준수하고 시험 경계 내에서 기획 범위만 다루고 있습니다.",
+          "id": "scope_compliance"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "REQ-02: 미완료와 완료 두 구역, 영속 등록 순번 오름차순. A(1),B(2) 등록 후 PC 시계를 뒤로 돌려 C를 등록해도 A,B,C 순서다.",
+            "정렬은 등록할 때 PC 현재시각으로 기록한 createdAt을 우선하여 오름차순으로 하고, 같은 시각만 순번으로 정한다."
+          ],
+          "rationale": "정상 동작인 목록 정렬 방식에서 요구사항 본문(시계 무관 sequenceNumber 오름차순)과 기술 설계(createdAt 우선 정렬) 간 동작 명세가 상충합니다.",
+          "id": "behavior_and_errors"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다.",
+            "정렬은 등록할 때 PC 현재시각으로 기록한 createdAt을 우선하여 오름차순으로 하고"
+          ],
+          "rationale": "저장 객체 스키마의 item 불변식 필드 정의에 createdAt이 누락되어 있음에도 정렬 규칙에서는 createdAt을 참조하고 있어 데이터 무결성 스키마와 정렬 로직이 불일치합니다.",
+          "id": "data_integrity"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "공백뿐인 제목, 빠진 날짜/시간, 2월30일, 24:00은 거부하고 입력과 기존 목록을 유지한다.",
+            "B 삭제 후 D 등록은 A(1),C(3),D(4)다.",
+            "데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다."
+          ],
+          "rationale": "구체적인 입력값과 실패 시의 화면/저장소 동작 상태가 검증 가능한 수준으로 기술되어 있습니다.",
+          "id": "acceptance_criteria"
+        },
+        {
+          "status": "not_applicable",
+          "evidence": [
+            "이 초기 후보에는 이전 버전 수정 요청이 없다."
+          ],
+          "rationale": "초기 기획안(v1) 검토이며 이전 검토 이력이나 미해결 사용자 수정 요청이 없으므로 해당하지 않습니다.",
+          "id": "revision_resolution"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "## 사용자 이용 예시\n제목 ‘장보기’, 메모 ‘우유 1팩’, 마감일시 ‘2026-11-10 15:00’을 적고 추가한다.",
+            "## 기술 설계 제안 (아직 사용자 승인 전)"
+          ],
+          "rationale": "사용자 일상 예시를 최상단에 배치하고 기술적 세부 설계를 별도 절로 명확히 분리하여 기술했습니다.",
+          "id": "clarity"
+        }
+      ]
+    }
+  },
+  "decision": {
+    "type": "REVISE",
+    "feedback": "issue-6d904f7266d40c04: REQ-02 명세에서는 등록 순번 오름차순 정렬을 규정하며 'A(1),B(2) 등록 후 PC 시계를 뒤로 돌려 C를 등록해도 A,B,C 순서다'라고 명시했으나, 기술 설계 제안에서는 '정렬은 등록할 때 PC 현재시각으로 기록한 createdAt을 우선하여 오름차순으로 하고, 같은 시각만 순번으로 정한다'라고 기술하여 상호 모순됩니다. 또한 항목 스키마 정의에는 id, title, memo, dueDateTime, isCompleted, sequenceNumber만 나열되어 있고 createdAt 필드가 누락되어 있습니다. — 기술 설계의 정렬 기준을 REQ-02 수락 기준 및 불변식에 맞추어 sequenceNumber 단일 오름차순으로 일원화하고, createdAt을 통한 시계 의존 정렬 문구를 삭제하거나 정합성을 맞추어야 합니다.\n기술 설계 제안에서 항목 필드 목록과 정렬 키 기준을 REQ-02의 등록 순번(sequenceNumber) 단일 기준으로 통일하십시오.\nREQ-02: REQ-02 수락 기준은 시계를 되돌려도 순번 오름차순(A,B,C) 정렬을 요구하지만, 기술 설계 절에서는 createdAt을 우선 정렬 기준으로 제시하여 시계 변경 시 순서가 뒤바뀌는 모순이 존재합니다.\nbehavior_and_errors: 정상 동작인 목록 정렬 방식에서 요구사항 본문(시계 무관 sequenceNumber 오름차순)과 기술 설계(createdAt 우선 정렬) 간 동작 명세가 상충합니다.\ndata_integrity: 저장 객체 스키마의 item 불변식 필드 정의에 createdAt이 누락되어 있음에도 정렬 규칙에서는 createdAt을 참조하고 있어 데이터 무결성 스키마와 정렬 로직이 불일치합니다.",
+    "nextVersion": 2
+  },
+  "usage": [
+    {
+      "projectId": "supervisor-todo-acceptance-20261108",
+      "planId": "supervisor-todo-acceptance-20261108-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 4711,
+      "outputTokens": 2451,
+      "reasoningTokens": 2083,
+      "outcome": "success",
+      "durationMs": 28360,
+      "recordedAt": "2026-11-08T23:38:55.726Z"
+    }
+  ],
+  "rawModelResponse": "{\n  \"outcome\": \"revise\",\n  \"issues\": [\n    {\n      \"kind\": \"contradiction\",\n      \"severity\": \"major\",\n      \"description\": \"REQ-02 명세에서는 등록 순번 오름차순 정렬을 규정하며 'A(1),B(2) 등록 후 PC 시계를 뒤로 돌려 C를 등록해도 A,B,C 순서다'라고 명시했으나, 기술 설계 제안에서는 '정렬은 등록할 때 PC 현재시각으로 기록한 createdAt을 우선하여 오름차순으로 하고, 같은 시각만 순번으로 정한다'라고 기술하여 상호 모순됩니다. 또한 항목 스키마 정의에는 id, title, memo, dueDateTime, isCompleted, sequenceNumber만 나열되어 있고 createdAt 필드가 누락되어 있습니다.\",\n      \"suggestedDirection\": \"기술 설계의 정렬 기준을 REQ-02 수락 기준 및 불변식에 맞추어 sequenceNumber 단일 오름차순으로 일원화하고, createdAt을 통한 시계 의존 정렬 문구를 삭제하거나 정합성을 맞추어야 합니다.\",\n      \"relatedRequirementId\": \"REQ-02\"\n    }\n  ],\n  \"suggestions\": [\n    \"기술 설계 제안에서 항목 필드 목록과 정렬 키 기준을 REQ-02의 등록 순번(sequenceNumber) 단일 기준으로 통일하십시오.\"\n  ],\n  \"scopeViolation\": false,\n  \"userJudgmentRequired\": false,\n  \"qualityAssessment\": {\n    \"version\": 1,\n    \"requirements\": [\n      {\n        \"requirementId\": \"REQ-01\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"REQ-01: 제목·마감일시 필수/메모 선택. 공백뿐인 제목, 빠진 날짜/시간, 2월30일, 24:00은 거부하고 입력과 기존 목록을 유지한다. ‘장보기’를 같은 내용으로 두 번 추가하면 별개 ID 두 개가 생긴다.\"\n        ],\n        \"rationale\": \"제목, 메모, 마감일 입력 규칙 및 유효성 검증 실패 시 입력 보존, 동일 제목 중복 등록 허용 동작을 구체적으로 명시하고 있습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-02\",\n        \"status\": \"missing\",\n        \"evidence\": [\n          \"REQ-02: 미완료와 완료 두 구역, 영속 등록 순번 오름차순. A(1),B(2) 등록 후 PC 시계를 뒤로 돌려 C를 등록해도 A,B,C 순서다.\",\n          \"정렬은 등록할 때 PC 현재시각으로 기록한 createdAt을 우선하여 오름차순으로 하고, 같은 시각만 순번으로 정한다.\"\n        ],\n        \"rationale\": \"REQ-02 수락 기준은 시계를 되돌려도 순번 오름차순(A,B,C) 정렬을 요구하지만, 기술 설계 절에서는 createdAt을 우선 정렬 기준으로 제시하여 시계 변경 시 순서가 뒤바뀌는 모순이 존재합니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-03\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"REQ-03: A만 완료하면 완료 구역에 A만 이동한다. 취소하면 미완료 구역의 원래 등록순 위치로 돌아온다. 저장 실패 시 상태가 이동하지 않는다.\"\n        ],\n        \"rationale\": \"완료 및 미완료 전환 시 구역 이동, 취소 시 원래 등록 순번 위치 복귀, 저장 실패 시 무변경 처리를 구체적으로 정의했습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-04\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"REQ-04: 동일 제목 두 항목 중 두 번째를 수정하면 두 번째만 바뀐다. 제목/마감일시 검증 실패 또는 저장 실패면 기존 목록을 유지하고 수정 입력을 보존한다. 수정 취소는 무변경이다.\"\n        ],\n        \"rationale\": \"식별자 기반의 특정 항목 수정, 유효성/저장 실패 시 기존 목록 유지 및 입력값 보존, 수정 취소 동작을 구체적으로 명시했습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-05\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"REQ-05: 삭제 확인 취소는 무변경, 확인은 선택 ID 한 건만 삭제. 저장 실패 시 항목을 지우지 않고 오류를 표시한다.\"\n        ],\n        \"rationale\": \"삭제 확인 다이얼로그 취소 시 무변경, 승인 시 대상 항목 단건 삭제 및 저장 실패 시 롤백/오류 안내를 충실히 규정했습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-06\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.\"\n        ],\n        \"rationale\": \"재접속 시 로컬 데이터 복원, 저장 실패 시 보존, 손상 데이터 로드 시 임의 덮어쓰기 금지 및 쓰기 차단 한계를 명시했습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-07\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"REQ-07: 모든 동작은 브라우저 입력창과 버튼으로 수행한다. 제목이나 메모의 '<b>장보기</b>'나 '<script>' 문자는 코드가 아닌 글자로 표시한다.\"\n        ],\n        \"rationale\": \"웹 브라우저 폼과 버튼 조작, HTML 태그 문자열의 안전한 텍스트 이스케이프 렌더링을 정의했습니다.\"\n      }\n    ],\n    \"checks\": [\n      {\n        \"id\": \"decision_provenance\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"Q-1~Q-7: 브라우저 버튼 사용, 제목·메모·마감일, 수정·삭제, 완료 취소, 분리 목록과 등록순, 동일 제목 허용, 내 컴퓨터 저장(세부 방식 위임). DETAIL-1: 제목·마감일 필수/메모 선택. DETAIL-2: 날짜+시간. DETAIL-3: 삭제 확인. 과거 마감일 허용은 사용자가 직접 확정한 것이 아닌 기획자의 승인 대기 제안이다.\"\n        ],\n        \"rationale\": \"사용자 확정 사항과 기획자의 승인 대기 제안(과거 마감일 허용)의 출처를 정직하게 구분하여 명시했습니다.\"\n      },\n      {\n        \"id\": \"scope_compliance\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"현재 세션은 기획·검토·지시 품질 시험이며 제품 구현·제품 테스트·팀원 실행을 하지 않는다. 로그인·계정·외부 서버 동기화·공유·검색·필터·태그·기한순 정렬을 추가하지 않는다.\"\n        ],\n        \"rationale\": \"제외 기능(EXC-01~04)을 엄격히 준수하고 시험 경계 내에서 기획 범위만 다루고 있습니다.\"\n      },\n      {\n        \"id\": \"behavior_and_errors\",\n        \"status\": \"missing\",\n        \"evidence\": [\n          \"REQ-02: 미완료와 완료 두 구역, 영속 등록 순번 오름차순. A(1),B(2) 등록 후 PC 시계를 뒤로 돌려 C를 등록해도 A,B,C 순서다.\",\n          \"정렬은 등록할 때 PC 현재시각으로 기록한 createdAt을 우선하여 오름차순으로 하고, 같은 시각만 순번으로 정한다.\"\n        ],\n        \"rationale\": \"정상 동작인 목록 정렬 방식에서 요구사항 본문(시계 무관 sequenceNumber 오름차순)과 기술 설계(createdAt 우선 정렬) 간 동작 명세가 상충합니다.\"\n      },\n      {\n        \"id\": \"data_integrity\",\n        \"status\": \"missing\",\n        \"evidence\": [\n          \"각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다.\",\n          \"정렬은 등록할 때 PC 현재시각으로 기록한 createdAt을 우선하여 오름차순으로 하고\"\n        ],\n        \"rationale\": \"저장 객체 스키마의 item 불변식 필드 정의에 createdAt이 누락되어 있음에도 정렬 규칙에서는 createdAt을 참조하고 있어 데이터 무결성 스키마와 정렬 로직이 불일치합니다.\"\n      },\n      {\n        \"id\": \"acceptance_criteria\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"공백뿐인 제목, 빠진 날짜/시간, 2월30일, 24:00은 거부하고 입력과 기존 목록을 유지한다.\",\n          \"B 삭제 후 D 등록은 A(1),C(3),D(4)다.\",\n          \"데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.\"\n        ],\n        \"rationale\": \"구체적인 입력값과 실패 시의 화면/저장소 동작 상태가 검증 가능한 수준으로 기술되어 있습니다.\"\n      },\n      {\n        \"id\": \"revision_resolution\",\n        \"status\": \"not_applicable\",\n        \"evidence\": [\n          \"이 초기 후보에는 이전 버전 수정 요청이 없다.\"\n        ],\n        \"rationale\": \"초기 기획안(v1) 검토이며 이전 검토 이력이나 미해결 사용자 수정 요청이 없으므로 해당하지 않습니다.\"\n      },\n      {\n        \"id\": \"clarity\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"## 사용자 이용 예시\\n제목 ‘장보기’, 메모 ‘우유 1팩’, 마감일시 ‘2026-11-10 15:00’을 적고 추가한다.\",\n          \"## 기술 설계 제안 (아직 사용자 승인 전)\"\n        ],\n        \"rationale\": \"사용자 일상 예시를 최상단에 배치하고 기술적 세부 설계를 별도 절로 명확히 분리하여 기술했습니다.\"\n      }\n    ]\n  }\n}"
+}

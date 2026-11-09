@@ -1,0 +1,18 @@
+{
+  "changeApproval": {
+    "id": "approval-cdcec274-0293-4a54-9fbf-14b6e071f22c",
+    "projectId": "supervisor-gemini-acceptance",
+    "subject": "Scope change for plan supervisor-gemini-acceptance-plan v2",
+    "status": "rejected",
+    "decidedAt": "2026-11-08T13:04:42.130Z",
+    "rationale": "사용자가 격리된 두 시험 복사본에서 승인/거절 분기를 각각 진행하도록 명시적으로 허용: reject 시험. primary 변경·제품 구현·팀원 실행 없음."
+  },
+  "scopeApproval": {
+    "id": "approval-e9d63a05-487e-4cc5-9574-ff8ff5edbc7f",
+    "projectId": "supervisor-gemini-acceptance",
+    "subject": "Scope Contract scope-v5 v5",
+    "status": "rejected",
+    "decidedAt": "2026-11-08T13:04:42.133Z",
+    "rationale": "사용자가 격리된 두 시험 복사본에서 승인/거절 분기를 각각 진행하도록 명시적으로 허용: reject 시험. primary 변경·제품 구현·팀원 실행 없음."
+  }
+}

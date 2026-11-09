@@ -1,0 +1,16 @@
+{
+  "id": "review-3",
+  "projectId": "supervisor-gemini-acceptance",
+  "planId": "supervisor-gemini-acceptance-plan",
+  "planVersion": 3,
+  "scopeContractId": "scope-v4",
+  "scopeVersion": 4,
+  "outcome": "pass",
+  "issues": [],
+  "suggestions": [
+    "추후 작업 지시서 작성 시 Windows 환경에서 fs.rename 호출 시 대상 파일이 열려 있거나 바이러스 검사 프로그램 등에 의해 잠겨 발생하는 EPERM/EBUSY 오류에 대비한 재시도(retry) 정책 또는 사용자 안내 문구를 함께 명시하면 실무적으로 도움이 될 수 있습니다."
+  ],
+  "scopeViolation": false,
+  "userJudgmentRequired": false,
+  "reviewedAt": "2026-11-08T11:52:12.045Z"
+}

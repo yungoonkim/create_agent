@@ -13,7 +13,7 @@ ADTF는 여러 AI Agent를 조율하기 위한 재사용 가능한 프레임워�
 - 검증 프로필 작업은 파일 해시·실제 검사 결과를 수집하고 시도·재작업 한도를 관리한다. 객관적 검사 후 최종 완료 조건은 별도로 검수한다.
 - 지휘자 기본 통합 CLI로 원문·질문 답변·Scope 제안·개별 승인·기획·작업 분해·지시서·진행 보고를 연결한다.
 - 기획 중 추가 답변·Scope 변경 승인/거절 후 명시적 재개를 지원하며 원문·기획 버전·총 반복 한도를 보존한다.
-- 실제 모델 기획 품질 인수, Worker Runtime 자동 실행 및 무인 재작업 루프는 후속 단계다.
+- 재고·유통기한 대표 시나리오의 실제 Gemini 단독 인수를 마쳤다. Worker Runtime 자동 실행과 무인 재작업 루프는 제공하지 않는다.
 
 ## 개발
 
@@ -71,7 +71,7 @@ npm run development -- list --config examples/planning-gemini/config.json
 - [지휘자 통합 CLI 사용법](docs/supervisor-workflow.md)
 - [STEP 5A 구현·검증 보고서](docs/step5a-report.md)
 - [STEP 5B 재개·변경 승인 검증 보고서](docs/step5b-report.md)
-- [실제 Gemini 인수 실행 현황·환경 연결 대기](docs/gemini-acceptance-status.md)
+- [실제 Gemini 인수 실행 이력](docs/gemini-acceptance-status.md)
 - [아키텍처](docs/architecture.md)
 - [PM Agent 명세](docs/pm-agent-spec.md)
 - [Planning Loop](docs/planning-loop.md)
@@ -80,3 +80,9 @@ npm run development -- list --config examples/planning-gemini/config.json
 - [STEP 4 구현·검증 보고서](docs/step4-report.md)
 - [로드맵](docs/roadmap.md)
 - [설계 결정](docs/decisions.md)
+
+실제 Gemini로 질문·Scope·기획·수정·작업 지시와 격리 정책·Scope 변경 두 분기를 시험하고 [지휘자 단독 인수 최종 보고서](docs/supervisor-final-acceptance-20261108.md)에 정리했다. [Reviewer 이력](docs/acceptance/2026-11-08/reviewer-history.md)에 수정 사유와 원문을 보존했다. typecheck 및 전체 119개 테스트 통과. 사람의 Scope·기획 승인 절차를 유지하며, 실제 제품 구현·팀원 실행은 보류한다.
+
+두 번째 주제인 [내 할 일 목록 관리 시험](docs/supervisor-todo-acceptance-20261108.md)은 쉬운 설명·사용 예시 중심으로 진행하며 Scope v6 승인과 실제 답변을 반영해 기획안 v4까지 검토했으며, 현재 최종 기획 승인을 기다린다.
+
+Writer·Reviewer의 [품질 절차 보완과 실제 비교](docs/planning-quality-hardening-20261108.md)를 추가했다. 새 Gemini 리뷰는 요구별 근거·고정 점검표와 통과 전 반례 검토를 사용한다. 전체 128개 테스트 통과. 고정 개발 사례에서 개선됐지만 미검출이 남아 사람의 최종 승인을 유지한다.

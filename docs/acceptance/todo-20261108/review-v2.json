@@ -1,0 +1,16 @@
+{
+  "id": "review-2",
+  "projectId": "supervisor-todo-acceptance-20261108",
+  "planId": "supervisor-todo-acceptance-20261108-plan",
+  "planVersion": 2,
+  "scopeContractId": "scope-v6",
+  "scopeVersion": 6,
+  "outcome": "pass",
+  "issues": [],
+  "suggestions": [
+    "미확정 제안 항목인 '기한 경과 항목의 단순 텍스트 표시([기한 경과])' 및 '다중 탭 변경 감지 시 안내 바 표시' 여부는 사용자 최종 승인 단계에서 의견을 수렴하여 확정할 것을 권장합니다."
+  ],
+  "scopeViolation": false,
+  "userJudgmentRequired": false,
+  "reviewedAt": "2026-11-08T13:57:18.447Z"
+}

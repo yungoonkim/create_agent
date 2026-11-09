@@ -1,5 +1,9 @@
 # Cloud에서 Gemini ADC 사용을 위한 환경 설정
 
+> 최신: ADC 로그인 및 SDK 갱신이 완료됐고 실제 Gemini 제안 호출에 성공했다. 현재 로그인 재시작이 필요한 상태가 아니다. 사용자 앱에는 Desktop 항목이 없어 Cloud 터미널에서 공식 원격 인증을 실행했고, 코드는 TTY에만 입력했다. [현재 인수 보고서](supervisor-live-acceptance-20261108.md)를 우선한다. 아래 미설정/로그인 대기 설명은 이전 시점의 진단 이력이다.
+
+> 2026-11-08 17:52 한국 시간 재확인: 새 실행기에 프로젝트·위치 변수와 Google 호스트 허용 정책이 적용됐다. CLI 접속은 성공했으며 ADC는 아직 없다. gcloud 592.0.0 설치 및 localhost 브라우저 회수 흐름까지 준비했다. 프록시 지정 Chromium 실행은 사용자 승인 후 수행했다. Cloud CA도 사용자 승인 후 로그인용 프로필의 Trusted Certificates에 등록했고 Google Auth Library 화면을 열었다. 사용자 Windows Codex UI에는 Desktop 항목이 없어 기존 localhost 흐름은 종료했다. 현재는 Cloud 터미널에서 `/workspace/scratch/adtf-adc-login.sh`를 직접 실행하고 PC 브라우저로 로그인하는 공식 원격 인증 흐름을 안내한다. 반환 코드는 Cloud 터미널에만 입력하며 채팅으로 받지 않는다. [최신 실행 근거](gemini-acceptance-status.md)를 우선한다. 아래 미설정 설명은 이전 환경의 확인 기록이다.
+
 확인: 2026-11-08 16:16 (한국 시간)
 
 사용자는 실제 Gemini 인수 시험을 Cloud에서 실행하도록 선택했다. 현재 적용된 실행 환경에는 GCP 인증·런타임 변수가 없고 Google API 접속이 제한되어 있다. 이 대화에 제공된 환경 도구는 조회만 지원하며 변경 요청·초안 저장 도구는 없다. `cloud-environment-runtime` 안내에 따라 환경 설정 화면에서 인증 연결과 네트워크 정책을 적용해야 한다.
@@ -50,3 +54,13 @@ Vertex AI 생성 요청은 aiplatform.googleapis.com을 사용한다. 사용자 
 4. 현재 Cloud의 인수 프로젝트는 이미 intake(revision 1)까지 등록되어 있으므로, 같은 실행 데이터가 유지되면 questions부터 실제 시험을 이어간다. 새 환경 인스턴스라면 인수 상태를 먼저 조회한다.
 
 현재 실제 Gemini 모델 요청이나 사용자 Scope/Plan 승인은 실행하지 않았다. 기존 실행 상태는 [인수 현황](gemini-acceptance-status.md)에 기록했다.
+
+## 현재 Cloud의 Node 실행 주의점 (2026-11-08)
+
+Node 24.22.1의 기본 fetch는 inherited proxy를 자동 사용하지 않아 Google API HEAD에서 EAI_AGAIN이었다. `node --use-env-proxy`로는 같은 호스트가 TLS 검증을 유지하며 HTTP 404를 반환했다. 현재 Cloud에서 실제 Gemini CLI는 다음 형태로 실행한다. ADC 파일 생성 및 인증 성공을 먼저 확인해야 하며 404만으로 모델 사용 권한을 판정하지 않는다.
+
+```sh
+GOOGLE_APPLICATION_CREDENTIALS=/workspace/.gcloud-adc/application_default_credentials.json node --use-env-proxy dist/src/cli/supervisor.js questions --config examples/supervisor-gemini/config.json
+```
+
+브라우저는 별도 프록시·CA 준비가 필요했고 사용자 승인 후 설정했다. 토큰 출력 명령을 검증 근거로 사용하거나 인증 파일을 Git에 추가하지 않는다.

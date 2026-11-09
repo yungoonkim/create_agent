@@ -73,6 +73,24 @@ export interface ReviewIssue {
 
 export type PlanReviewOutcome = "pass" | "revise" | "needs_user_input" | "failed";
 
+export const REVIEW_CHECK_IDS = ["decision_provenance", "scope_compliance", "behavior_and_errors",
+  "data_integrity", "acceptance_criteria", "revision_resolution", "clarity"] as const;
+export type ReviewCheckId = typeof REVIEW_CHECK_IDS[number];
+export type ReviewCheckStatus = "satisfied" | "missing" | "needs_user_input" | "not_applicable";
+export interface ReviewQualityItem {
+  readonly status: ReviewCheckStatus;
+  /** Verbatim excerpts from the current Plan, not invented section references. */
+  readonly evidence: readonly string[];
+  /** New Gemini responses select lines; the adapter extracts evidence text itself. */
+  readonly evidenceLines?: readonly number[];
+  readonly rationale: string;
+}
+export interface ReviewQualityAssessment {
+  readonly version: 1;
+  readonly requirements: readonly (ReviewQualityItem & { readonly requirementId: string })[];
+  readonly checks: readonly (ReviewQualityItem & { readonly id: ReviewCheckId })[];
+}
+
 export interface PlanReview {
   readonly id: PlanReviewId;
   readonly projectId: ProjectId;
@@ -86,6 +104,9 @@ export interface PlanReview {
   readonly scopeViolation: boolean;
   readonly userJudgmentRequired: boolean;
   readonly reviewedAt: string;
+  /** Absent only for legacy reviews and offline fixtures; mandatory for new Gemini reviews. */
+  readonly qualityAssessment?: ReviewQualityAssessment;
+  readonly challengeCompleted?: boolean;
 }
 
 export interface PlanningWriterContext {
@@ -218,6 +239,7 @@ export interface TokenUsageRecord {
   readonly planId: PlanId;
   readonly iteration: number;
   readonly role: "writer" | "reviewer";
+  readonly reviewStage?: "assessment" | "challenge";
   readonly providerId: string;
   readonly modelId: string;
   readonly inputTokens?: number;

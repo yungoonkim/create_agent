@@ -61,6 +61,17 @@ npm run supervisor -- resume-plan --config examples/supervisor-gemini/config.jso
 
 Reviewer 질문은 기존 질문 뒤의 새 Q-ID로 기록한다. 모든 질문에 답해야 재개할 수 있다. 답변 저장은 API를 호출하지 않는다. `resume-plan`은 별도 CALL 확인을 거쳐 같은 Plan ID의 다음 버전을 만들고 Reviewer에게 검토받는다. 원문과 이전 Plan/Review는 보존하고, 검토 통과 후 새 버전의 최종 승인을 다시 받는다.
 
+## 승인 대기 중인 기획안 수정 후 재개
+
+Scope를 바꾸지 않는 사용자 수정 요청은 `request-plan-revision --reason`으로 기록한다. 현재 기획의 최종 승인이 pending이고 아직 작업 제안 전일 때만 가능하다. 요청 기록은 API를 호출하지 않으며 Scope·기존 Plan/Review·이전 승인 기록을 변경하지 않는다.
+
+```sh
+npm run supervisor -- request-plan-revision --config examples/supervisor-gemini/config.json --reason "숫자 표기, 저장 JSON 검증, 저장 실패 처리를 구체화"
+npm run supervisor -- resume-plan --config examples/supervisor-gemini/config.json
+```
+
+`resume-plan`은 CALL 확인 후 같은 Plan ID의 다음 버전을 작성·검토한다. 수정 이유를 Writer와 Reviewer 모두에게 전달하며 Reviewer는 각 요청의 해결 여부를 확인한다. 기존 총 반복 예산을 유지하고 새 Plan의 최종 사용자 승인을 다시 받아야 한다. 이미 최종 승인한 기획이나 Scope 변경은 이 명령으로 처리하지 않는다. 중단·중복 호출·출처 해시 검증은 기존 continuation 정책과 같다.
+
 ## Scope 변경 승인 또는 거절 후 재개
 
 작업 제안 **이전**의 검토된 기획에서 사용자가 변경을 요청하거나 Reviewer가 범위 위반을 보고하면 다음을 사용한다. 진행 중인 다른 continuation은 먼저 완료하거나 결정해야 한다. 초기화된 작업 정의를 변경하는 명령은 아니다.
@@ -80,6 +91,14 @@ Reviewer가 이미 생성한 요청이 있으면 그 요청·승인 ID를 재사
 변경을 승인해도 기획안 최종 승인은 자동으로 나지 않는다. `resume-plan` 이후 새 Plan의 `approve-plan`을 거쳐야 작업 분해가 가능하다. 이전 Scope·기획·승인 기록은 그대로 유지한다. 승인 출처가 새 버전에 연결된 작업만 초기화한다.
 
 ## 검증 프로필 연결
+
+미수락 작업 지시의 내용 오류는 `revise-tasks --reason "수정할 점"`으로 재제안한다. CALL 확인 후 같은 승인 Scope/Plan 출처로 모델을 호출하며, 현재 제안을 `taskRevisions[].previous`에 보존한다. 이전 이력은 수정할 수 없고 수락 문구의 revision도 바뀐다. 작업 초기화 후에는 지시 정의를 바꾸지 않는다. 재제안은 새 작업을 수락하거나 제품·Agent를 실행하지 않는다. 검증 프로필·예산은 운영자가 다시 확인한다.
+
+```sh
+npm run supervisor -- revise-tasks --config examples/supervisor-gemini/config.json --reason "CLI 구문과 선행 빌드 설정을 명시"
+```
+
+CLI 확인 입력이 결정 없이 닫히면 명시적으로 exit 1을 반환하며 모델/승인/작업을 실행하지 않는다.
 
 모델이 검사 실행 파일이나 재작업 예산을 결정하지 않도록, 자동 생성 작업은 기본 수동 검수 방식이다. `initialize-tasks` **이전**에 운영자가 필요한 작업의 프로필을 지정할 수 있다.
 
@@ -110,9 +129,15 @@ npm run supervisor -- initialize-tasks --config examples/supervisor-demo/config.
 - 질문·변경 대기는 report에 수집/제안/결정/재개 명령을 표시한다. 반복 한도·실패·모델 호출 도중 중단은 STOP이다. 일반 `plan`으로 기존 상태를 재실행하지 않는다.
 - 기획의 총 iterationCount/maxIterations는 재개 사이에도 유지한다. 설정을 바꿔 예산을 초기화하지 못하며 소진되면 호출하지 않는다. 한도를 늘려 기존 실행을 복구하는 기능은 없다.
 - 재개 시작 후 모델 실행이 완료됐으나 supervisor 기록만 실패했다면 `resume-plan` 재시도가 완료 기록만 마무리한다. Planning의 continuationId·버전·Scope로 확인하며 모델을 다시 부르지 않는다. 도중 끊긴 drafting/reviewing 상태는 자동 재호출하지 않는다.
-- **남음:** 실제 Gemini로 전체 주제 기획의 의미상 인수 시험. 현재 Cloud에는 ADC와 Vertex AI 접속 설정이 없어 실행하지 않았다.
+- **대표 인수 완료:** 실제 Gemini 재고·유통기한 질문·Scope·기획·사용자 수정·작업 지시와 독립 모델 수정 반복, 격리 정책·Scope 변경 두 분기를 확인했다. [최종 보고서](supervisor-final-acceptance-20261108.md)와 [Reviewer 이력](acceptance/2026-11-08/reviewer-history.md)을 따른다. 실제 제품 구현·Worker Runtime 실행은 하지 않았으며 사람 승인 절차를 유지한다.
 - Scope 승인 또는 작업 초기화의 하위 저장 직후 중단되면 같은 명령으로 명시적으로 재시도할 수 있다. 기획 도중 중단된 실행의 자동 복구는 지원하지 않는다.
 - 여러 저장소를 묶는 DB 트랜잭션은 없다. 기획·개발 명령을 같은 프로젝트에서 동시에 실행하지 않는다. 남은 잠금은 실제 프로세스 종료를 확인한 운영자가 복구하며 자동 제거하지 않는다.
 - 실제 개발·테스트 팀원 Runtime, 자동 Worker 재호출, 제품 개발 완료, 모바일 푸시 전송은 이번 구현에 포함되지 않는다.
 
 구현·시험 근거는 [STEP 5A 보고서](step5a-report.md)와 [STEP 5B 보고서](step5b-report.md), 전체 목표는 [테스트 계획](supervisor-test-plan.md)을 참고한다.
+
+## 새 Gemini 검토의 통과 조건
+
+Reviewer는 각 요구와 점검 항목의 상태·판단 이유·기획 원문 근거를 제출한다. 모델이 pass라고 해도 미해결 사항은 수정 또는 사용자 질문으로 전환한다. 기획 원문에 없는 근거나 빠진 점검표는 검증 실패로 중단하며 자동 재호출하지 않는다. 과거 리뷰 이력과 별도 최종 사용자 승인은 유지한다. [검토 절차와 비교 평가](planning-quality-hardening-20261108.md)를 따른다.
+
+새 검토의 통과 후보에는 독립 반례 점검이 최대1회 추가된다. 단계별 `reviewStage=assessment/challenge`를 기록하며 기획 iterationCount와 실제 모델 요청 수를 혼동하지 않는다. 해당 추가 요청이 실패하면 이전 pass로 진행하지 않는다. 같은 모델의 사각지대는 남을 수 있으므로 사용자 검토·최종 승인은 유지한다.

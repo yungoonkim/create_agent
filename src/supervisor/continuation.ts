@@ -32,6 +32,19 @@ export class PlanningContinuationController {
     });
   }
 
+  async requestPlanRevision(reason: string): Promise<SupervisorState> {
+    const rationale = text(reason);
+    return this.change("request-plan-revision", async (state) => {
+      await this.beforeRequest(state);
+      const base = await this.current();
+      if (base.status !== "awaiting_approval" || (await this.options.memory.get(base.approvalId))?.status !== "pending") throw new Error("Plan revision requires a reviewed plan awaiting final approval.");
+      const snapshots = await this.snapshots(base);
+      const continuation: PlanningContinuation = { ...this.baseRecord(base, snapshots.scope, snapshots.fingerprint, rationale),
+        kind: "revision", status: "ready", questionIds: [] };
+      return { ...state, continuations: [...state.continuations ?? [], continuation] };
+    });
+  }
+
   async requestScopeChange(reason?: string): Promise<SupervisorState> {
     return this.change("request-scope-change", async (state) => {
       await this.beforeRequest(state);
@@ -122,7 +135,8 @@ export class PlanningContinuationController {
         writer: { write: async (context, role) => { const plan = await writer.write(context, role); if (plan.id !== this.planId()) throw new Error("Supervisor Plan ID mismatch."); return plan; } },
         reviewer: this.options.reviewer, now: this.now }).resume({ requirements: state.originalRequest, scopeContract: scope, clarificationDecisions: decisions },
         { id: item.id, planId: item.planId, expectedState: item.base, kind: item.kind,
-          ...(item.kind === "answers" ? {} : { scopeChangeRequestId: item.scopeChangeRequestId!, scopeChangeDecision: changeDecision! }) });
+          ...(item.kind === "revision" ? { revisionReason: item.reason } : {}),
+          ...(item.kind === "scope_change" ? { scopeChangeRequestId: item.scopeChangeRequestId!, scopeChangeDecision: changeDecision! } : {}) });
       return this.replace(state, { ...item, status: "completed" });
     });
   }
@@ -172,7 +186,7 @@ export class PlanningContinuationController {
     return decision.status;
   }
   private async targetScope(item: PlanningContinuation): Promise<ScopeContract> {
-    if (item.kind === "answers" || await this.changeDecision(item) === "rejected") return item.baseScope;
+    if (item.kind === "answers" || item.kind === "revision" || await this.changeDecision(item) === "rejected") return item.baseScope;
     const scope = item.proposedScope!;
     const approval = await this.options.memory.get(item.scopeApprovalId!);
     const link = await this.options.memory.getScopeApprovalRecord(this.projectId, scope.id);

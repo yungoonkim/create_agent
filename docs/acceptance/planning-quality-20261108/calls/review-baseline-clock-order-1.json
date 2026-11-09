@@ -1,0 +1,57 @@
+{
+  "id": "review-baseline-clock-order-1",
+  "variant": "baseline",
+  "caseId": "clock-order",
+  "repeat": 1,
+  "operation": "review",
+  "expected": "block",
+  "inputContentSha256": "ce4baa247e853e65694999c5601609eebf04ed0a2d37f5751fe68227327ca394",
+  "status": "completed",
+  "review": {
+    "id": "review-1",
+    "projectId": "supervisor-todo-acceptance-20261108",
+    "planId": "supervisor-todo-acceptance-20261108-plan",
+    "planVersion": 1,
+    "scopeContractId": "scope-v6",
+    "scopeVersion": 6,
+    "outcome": "revise",
+    "issues": [
+      {
+        "id": "issue-5291624bbaf710a1",
+        "kind": "contradiction",
+        "severity": "major",
+        "description": "REQ-02 수락 기준에서는 PC 시계를 뒤로 돌려도 영속 등록 순번(sequenceNumber) 오름차순으로 정렬 순서가 유지된다고 규정하고 있으나, 기술 설계 절에서는 '등록할 때 PC 현재시각으로 기록한 createdAt을 우선하여 오름차순으로 하고, 같은 시각만 순번으로 정한다'고 기술하여 서로 모순됩니다. 또한 기술 설계의 데이터 항목 스키마 필드 목록에는 createdAt이 누락되어 있습니다.",
+        "suggestedDirection": "정렬 기준을 REQ-02의 수락 기준 및 스키마에 일치하도록 단일 영속 순번(sequenceNumber) 오름차순으로 통일하거나, createdAt 사용 여부 및 시계 변경 시의 정렬 동작을 상호 모순 없이 정합화하십시오.",
+        "relatedRequirementId": "REQ-02"
+      }
+    ],
+    "suggestions": [
+      "PC 시계 조작이나 시스템 시간 왜곡의 영향을 배제하려면 기술 설계의 정렬 기준에서 createdAt 우선 조건을 제거하고 sequenceNumber 단일 오름차순 정렬로 단순화하는 것이 안전합니다."
+    ],
+    "scopeViolation": false,
+    "userJudgmentRequired": false,
+    "reviewedAt": "2026-11-08T23:36:52.234Z"
+  },
+  "decision": {
+    "type": "REVISE",
+    "feedback": "issue-5291624bbaf710a1: REQ-02 수락 기준에서는 PC 시계를 뒤로 돌려도 영속 등록 순번(sequenceNumber) 오름차순으로 정렬 순서가 유지된다고 규정하고 있으나, 기술 설계 절에서는 '등록할 때 PC 현재시각으로 기록한 createdAt을 우선하여 오름차순으로 하고, 같은 시각만 순번으로 정한다'고 기술하여 서로 모순됩니다. 또한 기술 설계의 데이터 항목 스키마 필드 목록에는 createdAt이 누락되어 있습니다. — 정렬 기준을 REQ-02의 수락 기준 및 스키마에 일치하도록 단일 영속 순번(sequenceNumber) 오름차순으로 통일하거나, createdAt 사용 여부 및 시계 변경 시의 정렬 동작을 상호 모순 없이 정합화하십시오.\nPC 시계 조작이나 시스템 시간 왜곡의 영향을 배제하려면 기술 설계의 정렬 기준에서 createdAt 우선 조건을 제거하고 sequenceNumber 단일 오름차순 정렬로 단순화하는 것이 안전합니다.",
+    "nextVersion": 2
+  },
+  "usage": [
+    {
+      "projectId": "supervisor-todo-acceptance-20261108",
+      "planId": "supervisor-todo-acceptance-20261108-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 3747,
+      "outputTokens": 315,
+      "reasoningTokens": 1899,
+      "outcome": "success",
+      "durationMs": 13164,
+      "recordedAt": "2026-11-08T23:36:52.235Z"
+    }
+  ],
+  "rawModelResponse": "{\n  \"outcome\": \"revise\",\n  \"issues\": [\n    {\n      \"kind\": \"contradiction\",\n      \"severity\": \"major\",\n      \"description\": \"REQ-02 수락 기준에서는 PC 시계를 뒤로 돌려도 영속 등록 순번(sequenceNumber) 오름차순으로 정렬 순서가 유지된다고 규정하고 있으나, 기술 설계 절에서는 '등록할 때 PC 현재시각으로 기록한 createdAt을 우선하여 오름차순으로 하고, 같은 시각만 순번으로 정한다'고 기술하여 서로 모순됩니다. 또한 기술 설계의 데이터 항목 스키마 필드 목록에는 createdAt이 누락되어 있습니다.\",\n      \"suggestedDirection\": \"정렬 기준을 REQ-02의 수락 기준 및 스키마에 일치하도록 단일 영속 순번(sequenceNumber) 오름차순으로 통일하거나, createdAt 사용 여부 및 시계 변경 시의 정렬 동작을 상호 모순 없이 정합화하십시오.\",\n      \"relatedRequirementId\": \"REQ-02\"\n    }\n  ],\n  \"suggestions\": [\n    \"PC 시계 조작이나 시스템 시간 왜곡의 영향을 배제하려면 기술 설계의 정렬 기준에서 createdAt 우선 조건을 제거하고 sequenceNumber 단일 오름차순 정렬로 단순화하는 것이 안전합니다.\"\n  ],\n  \"scopeViolation\": false,\n  \"userJudgmentRequired\": false\n}"
+}

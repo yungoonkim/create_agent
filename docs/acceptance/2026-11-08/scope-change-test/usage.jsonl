@@ -1,0 +1,1 @@
+{"id":"usage-c4ae620f-7bb9-4cca-ba3b-4394a4a4edf7","projectId":"supervisor-gemini-acceptance","operation":"scope","providerId":"vertex-ai","modelId":"gemini-3.8-flash","outcome":"success","durationMs":10489,"recordedAt":"2026-11-08T12:26:20.832Z","inputTokens":2693,"outputTokens":1192,"reasoningTokens":585}

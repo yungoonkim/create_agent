@@ -1,0 +1,57 @@
+{
+  "id": "review-baseline-post-commit-rollback-2",
+  "variant": "baseline",
+  "caseId": "post-commit-rollback",
+  "repeat": 2,
+  "operation": "review",
+  "expected": "block",
+  "inputContentSha256": "03e79d1f0666f3684795c1bc132471622be0f4ccf6a1423bc041d12539ff510e",
+  "status": "completed",
+  "review": {
+    "id": "review-1",
+    "projectId": "supervisor-todo-acceptance-20261108",
+    "planId": "supervisor-todo-acceptance-20261108-plan",
+    "planVersion": 1,
+    "scopeContractId": "scope-v6",
+    "scopeVersion": 6,
+    "outcome": "revise",
+    "issues": [
+      {
+        "id": "issue-869e57571c005289",
+        "kind": "implementation_risk",
+        "severity": "major",
+        "description": "기획안의 기술 설계에서 'setItem 성공 뒤 표시가 실패하면 setItem 성공 자체가 취소되므로 저장값도 자동으로 이전 값으로 돌아갔다고 안내한다'고 서술하고 있으나, 브라우저 로컬 저장소(localStorage)는 setItem 호출이 완료된 후 UI 표시 단계에서 에러가 발생하더라도 자동으로 이전 저장값으로 롤백되지 않습니다. 커밋 이후 실패에 대해 비현실적인 자동 취소 보장을 안내하는 기술적 모순 및 구현 리스크가 존재합니다.",
+        "suggestedDirection": "커밋 전후의 실패 한계와 복구 규칙을 명확히 수정해야 합니다. setItem이 성공한 이후 화면 갱신이 실패한 경우, 저장 자체가 자동 취소된다고 안내하지 말고 이미 커밋된 저장소 상태와 화면 불일치를 해결하기 위해 화면 새로고침을 유도하거나 명시적인 예외 복구(저장소 롤백 처리 등) 기준을 기술하십시오.",
+        "relatedRequirementId": "REQ-06"
+      }
+    ],
+    "suggestions": [
+      "브라우저 로컬 저장소 쓰기 완료(커밋 성공) 후 화면 렌더링 실패 시 저장소가 자동 롤백된다는 설명을 제거하고, 새로고침 안내 또는 명시적 롤백 로직 규정으로 변경해 주십시오."
+    ],
+    "scopeViolation": false,
+    "userJudgmentRequired": false,
+    "reviewedAt": "2026-11-08T23:39:25.992Z"
+  },
+  "decision": {
+    "type": "REVISE",
+    "feedback": "issue-869e57571c005289: 기획안의 기술 설계에서 'setItem 성공 뒤 표시가 실패하면 setItem 성공 자체가 취소되므로 저장값도 자동으로 이전 값으로 돌아갔다고 안내한다'고 서술하고 있으나, 브라우저 로컬 저장소(localStorage)는 setItem 호출이 완료된 후 UI 표시 단계에서 에러가 발생하더라도 자동으로 이전 저장값으로 롤백되지 않습니다. 커밋 이후 실패에 대해 비현실적인 자동 취소 보장을 안내하는 기술적 모순 및 구현 리스크가 존재합니다. — 커밋 전후의 실패 한계와 복구 규칙을 명확히 수정해야 합니다. setItem이 성공한 이후 화면 갱신이 실패한 경우, 저장 자체가 자동 취소된다고 안내하지 말고 이미 커밋된 저장소 상태와 화면 불일치를 해결하기 위해 화면 새로고침을 유도하거나 명시적인 예외 복구(저장소 롤백 처리 등) 기준을 기술하십시오.\n브라우저 로컬 저장소 쓰기 완료(커밋 성공) 후 화면 렌더링 실패 시 저장소가 자동 롤백된다는 설명을 제거하고, 새로고침 안내 또는 명시적 롤백 로직 규정으로 변경해 주십시오.",
+    "nextVersion": 2
+  },
+  "usage": [
+    {
+      "projectId": "supervisor-todo-acceptance-20261108",
+      "planId": "supervisor-todo-acceptance-20261108-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 3733,
+      "outputTokens": 306,
+      "reasoningTokens": 1901,
+      "outcome": "success",
+      "durationMs": 16502,
+      "recordedAt": "2026-11-08T23:39:25.992Z"
+    }
+  ],
+  "rawModelResponse": "{\"outcome\":\"revise\",\"issues\":[{\"kind\":\"implementation_risk\",\"severity\":\"major\",\"description\":\"기획안의 기술 설계에서 'setItem 성공 뒤 표시가 실패하면 setItem 성공 자체가 취소되므로 저장값도 자동으로 이전 값으로 돌아갔다고 안내한다'고 서술하고 있으나, 브라우저 로컬 저장소(localStorage)는 setItem 호출이 완료된 후 UI 표시 단계에서 에러가 발생하더라도 자동으로 이전 저장값으로 롤백되지 않습니다. 커밋 이후 실패에 대해 비현실적인 자동 취소 보장을 안내하는 기술적 모순 및 구현 리스크가 존재합니다.\",\"suggestedDirection\":\"커밋 전후의 실패 한계와 복구 규칙을 명확히 수정해야 합니다. setItem이 성공한 이후 화면 갱신이 실패한 경우, 저장 자체가 자동 취소된다고 안내하지 말고 이미 커밋된 저장소 상태와 화면 불일치를 해결하기 위해 화면 새로고침을 유도하거나 명시적인 예외 복구(저장소 롤백 처리 등) 기준을 기술하십시오.\",\"relatedRequirementId\":\"REQ-06\"}],\"suggestions\":[\"브라우저 로컬 저장소 쓰기 완료(커밋 성공) 후 화면 렌더링 실패 시 저장소가 자동 롤백된다는 설명을 제거하고, 새로고침 안내 또는 명시적 롤백 로직 규정으로 변경해 주십시오.\"],\"scopeViolation\":false,\"userJudgmentRequired\":false}"
+}

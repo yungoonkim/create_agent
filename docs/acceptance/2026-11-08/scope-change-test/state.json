@@ -1,0 +1,286 @@
+{
+  "schemaVersion": 1,
+  "projectId": "supervisor-gemini-acceptance",
+  "revision": 3,
+  "phase": "scope_approved",
+  "originalRequest": "작은 매장에서 재고와 유통기한을 관리할 도구를 만들고 싶어.\n\n필요한 정보는 먼저 질문해줘. 범위를 함께 정한 다음 내가 승인한 범위에 대해서만 기획안을 만들어줘.\n기획안에는 구현 순서, 빠뜨리기 쉬운 규칙, 위험, 확인 가능한 완료 조건을 넣어줘.\n현재는 지휘자 겸 기획자 Agent의 기획과 작업 지시 품질을 확인하는 단계야. 실제 개발 팀원 실행이나 제품 구현은 진행하지 마.\n",
+  "clarifications": [
+    {
+      "id": "Q-1",
+      "question": "도구를 주로 사용할 기기 환경(모바일 앱, PC 웹, 태블릿 등)은 무엇인가요?",
+      "answer": "인수시험 진행자의 재현용 답변이다. Node.js CLI와 TypeScript strict, 로컬 UTF-8 JSON 파일을 사용한다. 재실행 시 데이터를 유지하며 잘못된 날짜/파일 손상/읽기/쓰기 오류는 명확히 보고하고 기존 파일을 임의 초기화하거나 덮어쓰지 않는다. 저장은 임시 파일 후 원자적 교체로 설계한다. 단일 프로세스 순차 사용이며 동시 writer와 다중 기기 동기화, 서버/클라우드 저장은 제외한다. 기획안과 작업 지시서는 한국어로 작성한다. 인수시험 진행자의 재현용 답변이다. 동일 상품도 입고 묶음별 고유 lotId와 유통기한을 따로 보존한다. 사용자가 lotId를 지정해 수량을 증감한다. FEFO 자동 차감은 제외한다. 수량 0인 lot도 전체 재고 조회에는 남긴다."
+    },
+    {
+      "id": "Q-2",
+      "question": "바코드/QR 코드 스캔을 통한 입출고 처리나 기존 POS/엑셀 연동이 필요한가요?",
+      "answer": "인수시험 진행자의 재현용 답변이다. lotId로 정확히 식별하고 전체 목록에서 lotId, 상품명, 수량, 단위, 유통기한을 표시한다. lotId, 상품명, 단위는 빈 문자열을 거부한다. 중복 lotId 등록도 거부한다. 별도 텍스트 검색, 바코드/QR, 카메라/스캐너 연동은 제외한다. 인수시험 진행자의 재현용 답변이다. lot 등록, lotId별 정수 증감, 전체 재고 조회, 만료/임박 조회가 범위다. 별도 실사 보정 workflow, 폐기 처리 및 사유 기록은 제외한다. 수량이 0 미만이 되는 변경과 존재하지 않는 lotId 변경은 오류로 처리하고 기존 데이터를 유지한다. 증감량 0은 수량을 유지한다. 인수시험 진행자의 재현용 답변이다. 수량은 0 이상의 안전한 정수이며 소수, 음수 재고, NaN, 무한대 및 안전정수 범위를 벗어난 입력/연산결과는 거부한다. 증감량 자체는 양수/음수/0 정수로 입력할 수 있다. 단위는 비어 있지 않은 표시용 문자열이며 단위 변환은 없다."
+    },
+    {
+      "id": "Q-3",
+      "question": "유통기한 임박 시 알림을 받는 방식(대시보드 표시, 카카오톡/SMS/이메일 알림 등)에 대해 선호하는 형태가 있나요?",
+      "answer": "인수시험 진행자의 재현용 답변이다. 조회 시 실제 존재하는 YYYY-MM-DD 기준일과 0 이상의 정수 N을 명시한다. 날짜 기준은 Asia/Seoul의 달력 날짜이며 PC 현재 시각에 의존하지 않는다. 유통기한 < 기준일이면 만료, 기준일 <= 유통기한 <= 기준일+N일이면 임박이다. 양 끝을 포함하고 만료는 별도로 분류한다. 수량 0인 lot는 만료/임박 조회에서 제외한다. 출력은 유통기한 오름차순, 같은 날짜는 lotId 오름차순이다. 상태는 조회 시 계산하며 별도 폐기 상태를 저장하지 않는다. N도 안전한 0 이상의 정수만 허용하고, 기준일+N의 날짜 계산이 지원 날짜 범위를 넘으면 거부한다. 알림 발송 없이 CLI에서만 조회한다."
+    },
+    {
+      "id": "Q-4",
+      "question": "단일 사용자(점주 1인) 기준인가요, 아니면 직원별 권한 분리가 필요한 다중 사용자 환경인가요?",
+      "answer": "인수시험 진행자의 재현용 답변이다. 점주 1인 단일 사용자이며 로그인과 역할/권한 구분은 제외한다. 인수시험 진행자의 재현용 답변이다. 로그인/권한, 결제, 문자/푸시/이메일/알림톡, 바코드/QR, 외부 API, POS/엑셀 연동, 발주/거래처, 매출 통계, 웹/모바일 UI, 배포, 자동 FEFO, 폐기 사유/감사 이력, 별도 삭제/수정/검색/백업복원 workflow는 제외한다. 이 실행은 지휘자 단독의 기획·검토·작업 지시 품질 시험이며 실제 제품 구현과 팀원 Agent 실행은 하지 않는다. 이 답변은 Scope나 기획안의 승인이 아니다. 제품 구현을 위한 기획 및 작업 지시 작성은 시험에 포함하되 실제 제품 코드 작성이나 팀원 실행은 이 시험에서 하지 않는다는 실행 제한이다."
+    }
+  ],
+  "scope": {
+    "id": "scope-v4",
+    "projectId": "supervisor-gemini-acceptance",
+    "version": 4,
+    "goal": "작은 매장의 점주 1인이 로컬 환경에서 로트(lot) 단위로 재고 및 유통기한을 안전하게 기록·조회할 수 있는 Node.js CLI 도구의 상세 기획 및 작업 지시서를 한국어로 수립한다.",
+    "requiredFeatures": [
+      {
+        "id": "REQ-01",
+        "statement": "고유 lotId, 상품명, 수량, 표시용 단위, YYYY-MM-DD 형식의 유통기한을 입력받아 신규 lot을 등록하는 기능 (lotId 중복 거부, 빈 문자열 거부, 등록 수량은 0 이상의 안전한 정수 보장)"
+      },
+      {
+        "id": "REQ-02",
+        "statement": "특정 lotId에 대해 정수 증감량(양수/음수/0 허용)을 입력받아 수량을 갱신하는 기능 (존재하지 않는 lotId나 변경 후 결과 수량이 0 미만 또는 안전 정수 범위를 벗어나는 경우 오류 처리 및 기존 상태 유지, 증감량 0은 수량 유지)"
+      },
+      {
+        "id": "REQ-03",
+        "statement": "전체 재고를 lotId, 상품명, 수량, 단위, 유통기한 항목으로 표시하는 기능 (수량이 0인 lot도 목록에 유지)"
+      },
+      {
+        "id": "REQ-04",
+        "statement": "명시된 기준일(YYYY-MM-DD, Asia/Seoul 달력 기준)과 0 이상의 안전한 정수 N을 입력받아 유통기한 만료(유통기한 < 기준일) 및 임박(기준일 <= 유통기한 <= 기준일+N일) 목록을 구분 조회하는 기능 (수량 0인 lot 제외, 유통기한 오름차순 및 동일 날짜는 lotId 오름차순 정렬, 계산 결과 지원 날짜 범위 초과 시 거부)"
+      },
+      {
+        "id": "REQ-05",
+        "statement": "로컬 UTF-8 JSON 파일에 영속화하며 재실행 시 데이터 유지, 임시 파일 후 원자적 교체(atomic rename) 방식 저장 및 잘못된 날짜/파일 손상/읽기/쓰기 오류 시 명확한 보고와 기존 파일 임의 초기화/덮어쓰기 방지 기능"
+      }
+    ],
+    "excludedFeatures": [
+      {
+        "id": "EXC-01",
+        "statement": "FEFO(선입선출/유통기한 우선) 자동 출고 및 자동 차감 기능"
+      },
+      {
+        "id": "EXC-02",
+        "statement": "별도 폐기 처리, 폐기 사유 기록, 감사 이력 보존 및 별도 폐기 상태 필드 저장"
+      },
+      {
+        "id": "EXC-03",
+        "statement": "실사 보정 workflow, 별도 lot 삭제/수정 workflow, 텍스트 검색 기능"
+      },
+      {
+        "id": "EXC-04",
+        "statement": "바코드/QR 코드 스캔, 카메라 연동, 외부 POS 및 엑셀 연동"
+      },
+      {
+        "id": "EXC-05",
+        "statement": "SMS, 카카오 알림톡, 이메일, 모바일 푸시 등 외부 알림 발송 기능"
+      },
+      {
+        "id": "EXC-06",
+        "statement": "사용자 로그인, 계정 및 역할/권한 구분, 다중 사용자 및 동시 writer 지원"
+      },
+      {
+        "id": "EXC-07",
+        "statement": "웹/모바일 UI, 클라우드/서버 저장, 다중 기기 동기화, 배포 파이프라인 구축"
+      },
+      {
+        "id": "EXC-08",
+        "statement": "결제, 발주/거래처 관리, 매출 통계 기능 및 단위 자동 변환 기능"
+      }
+    ],
+    "technicalConstraints": [
+      "런타임 환경은 Node.js이며 구현 언어는 TypeScript strict 모드를 적용한다.",
+      "데이터 저장은 로컬 단일 UTF-8 JSON 파일을 사용하며 단일 프로세스 순차 실행 환경을 전제한다.",
+      "수량 및 N 값은 JavaScript 안전 정수(Number.isSafeInteger) 범위 내 0 이상의 정수여야 하며, 소수·NaN·무한대·음수 재고 결과는 거부한다.",
+      "날짜 처리는 PC 시스템 시각에 의존하지 않고 명시된 YYYY-MM-DD(Asia/Seoul 달력 기준)를 기반으로 검증 및 계산한다.",
+      "모든 기획 문서, 작업 지시서 및 CLI 출력/오류 메시지는 한국어로 작성한다.",
+      "본 인수시험 세션 중에는 실제 제품 코드 구현 및 팀원 Agent 실행을 진행하지 않으며, 지휘자 단독의 기획 및 작업 지시 수립만 수행한다."
+    ],
+    "createdAt": "2026-11-08T09:40:44.375Z"
+  },
+  "scopeApprovalId": "approval-2c1ec6a8-53fe-4915-bcec-36904e469a20",
+  "continuations": [
+    {
+      "id": "continue-83bf5e0b-7dc9-4f63-8af7-4ea940aed196",
+      "planId": "supervisor-gemini-acceptance-plan",
+      "base": {
+        "projectId": "supervisor-gemini-acceptance",
+        "scopeContractId": "scope-v4",
+        "scopeVersion": 4,
+        "iterationCount": 2,
+        "maxIterations": 5,
+        "status": "awaiting_approval",
+        "currentPlanVersion": 2,
+        "reviewId": "review-2",
+        "approvalId": "approval-24d5b3d7-48fb-4372-9b2c-ebb25f7537c8"
+      },
+      "baseScope": {
+        "id": "scope-v4",
+        "projectId": "supervisor-gemini-acceptance",
+        "version": 4,
+        "goal": "작은 매장의 점주 1인이 로컬 환경에서 로트(lot) 단위로 재고 및 유통기한을 안전하게 기록·조회할 수 있는 Node.js CLI 도구의 상세 기획 및 작업 지시서를 한국어로 수립한다.",
+        "requiredFeatures": [
+          {
+            "id": "REQ-01",
+            "statement": "고유 lotId, 상품명, 수량, 표시용 단위, YYYY-MM-DD 형식의 유통기한을 입력받아 신규 lot을 등록하는 기능 (lotId 중복 거부, 빈 문자열 거부, 등록 수량은 0 이상의 안전한 정수 보장)"
+          },
+          {
+            "id": "REQ-02",
+            "statement": "특정 lotId에 대해 정수 증감량(양수/음수/0 허용)을 입력받아 수량을 갱신하는 기능 (존재하지 않는 lotId나 변경 후 결과 수량이 0 미만 또는 안전 정수 범위를 벗어나는 경우 오류 처리 및 기존 상태 유지, 증감량 0은 수량 유지)"
+          },
+          {
+            "id": "REQ-03",
+            "statement": "전체 재고를 lotId, 상품명, 수량, 단위, 유통기한 항목으로 표시하는 기능 (수량이 0인 lot도 목록에 유지)"
+          },
+          {
+            "id": "REQ-04",
+            "statement": "명시된 기준일(YYYY-MM-DD, Asia/Seoul 달력 기준)과 0 이상의 안전한 정수 N을 입력받아 유통기한 만료(유통기한 < 기준일) 및 임박(기준일 <= 유통기한 <= 기준일+N일) 목록을 구분 조회하는 기능 (수량 0인 lot 제외, 유통기한 오름차순 및 동일 날짜는 lotId 오름차순 정렬, 계산 결과 지원 날짜 범위 초과 시 거부)"
+          },
+          {
+            "id": "REQ-05",
+            "statement": "로컬 UTF-8 JSON 파일에 영속화하며 재실행 시 데이터 유지, 임시 파일 후 원자적 교체(atomic rename) 방식 저장 및 잘못된 날짜/파일 손상/읽기/쓰기 오류 시 명확한 보고와 기존 파일 임의 초기화/덮어쓰기 방지 기능"
+          }
+        ],
+        "excludedFeatures": [
+          {
+            "id": "EXC-01",
+            "statement": "FEFO(선입선출/유통기한 우선) 자동 출고 및 자동 차감 기능"
+          },
+          {
+            "id": "EXC-02",
+            "statement": "별도 폐기 처리, 폐기 사유 기록, 감사 이력 보존 및 별도 폐기 상태 필드 저장"
+          },
+          {
+            "id": "EXC-03",
+            "statement": "실사 보정 workflow, 별도 lot 삭제/수정 workflow, 텍스트 검색 기능"
+          },
+          {
+            "id": "EXC-04",
+            "statement": "바코드/QR 코드 스캔, 카메라 연동, 외부 POS 및 엑셀 연동"
+          },
+          {
+            "id": "EXC-05",
+            "statement": "SMS, 카카오 알림톡, 이메일, 모바일 푸시 등 외부 알림 발송 기능"
+          },
+          {
+            "id": "EXC-06",
+            "statement": "사용자 로그인, 계정 및 역할/권한 구분, 다중 사용자 및 동시 writer 지원"
+          },
+          {
+            "id": "EXC-07",
+            "statement": "웹/모바일 UI, 클라우드/서버 저장, 다중 기기 동기화, 배포 파이프라인 구축"
+          },
+          {
+            "id": "EXC-08",
+            "statement": "결제, 발주/거래처 관리, 매출 통계 기능 및 단위 자동 변환 기능"
+          }
+        ],
+        "technicalConstraints": [
+          "런타임 환경은 Node.js이며 구현 언어는 TypeScript strict 모드를 적용한다.",
+          "데이터 저장은 로컬 단일 UTF-8 JSON 파일을 사용하며 단일 프로세스 순차 실행 환경을 전제한다.",
+          "수량 및 N 값은 JavaScript 안전 정수(Number.isSafeInteger) 범위 내 0 이상의 정수여야 하며, 소수·NaN·무한대·음수 재고 결과는 거부한다.",
+          "날짜 처리는 PC 시스템 시각에 의존하지 않고 명시된 YYYY-MM-DD(Asia/Seoul 달력 기준)를 기반으로 검증 및 계산한다.",
+          "모든 기획 문서, 작업 지시서 및 CLI 출력/오류 메시지는 한국어로 작성한다.",
+          "본 인수시험 세션 중에는 실제 제품 코드 구현 및 팀원 Agent 실행을 진행하지 않으며, 지휘자 단독의 기획 및 작업 지시 수립만 수행한다."
+        ],
+        "createdAt": "2026-11-08T09:40:44.375Z"
+      },
+      "baseHash": "dad25c1427af30b8be2b8a0aab32a25bc579ced34396d3a9a8b6c6115ac90d24",
+      "questionIds": [],
+      "kind": "scope_change",
+      "status": "proposed",
+      "reason": "인수시험용 가정이다. 실제 primary 기획을 바꾸거나 제품을 구현하려는 요청이 아니다. 기존 유통기한 조회에서 N을 반드시 입력하도록 한 조건을 바꾸어, N을 생략하면 7일을 기본값으로 사용하고 명시한 N이 있으면 기존대로 검증·적용하도록 변경하는 승인/거절 분기를 시험한다. 명시적인 기준일, lot·수량·날짜 경계, 저장·제외 기능은 그대로 보존한다. 이 제안은 사용자 결정 전까지 채택하지 않는다.",
+      "createdAt": "2026-11-08T12:26:10.339Z",
+      "scopeChangeRequestId": "change-approval-cdcec274-0293-4a54-9fbf-14b6e071f22c",
+      "changeApprovalId": "approval-cdcec274-0293-4a54-9fbf-14b6e071f22c",
+      "proposedScope": {
+        "id": "scope-v5",
+        "projectId": "supervisor-gemini-acceptance",
+        "version": 5,
+        "goal": "작은 매장의 점주 1인이 로컬 환경에서 로트(lot) 단위로 재고 및 유통기한을 안전하게 기록·조회할 수 있는 Node.js CLI 도구의 상세 기획 및 작업 지시서를 한국어로 수립한다.",
+        "requiredFeatures": [
+          {
+            "id": "REQ-01",
+            "statement": "고유 lotId, 상품명, 수량, 표시용 단위, YYYY-MM-DD 형식의 유통기한을 입력받아 신규 lot을 등록하는 기능 (lotId 중복 거부, 빈 문자열 거부, 등록 수량은 0 이상의 안전한 정수 보장)"
+          },
+          {
+            "id": "REQ-02",
+            "statement": "특정 lotId에 대해 정수 증감량(양수/음수/0 허용)을 입력받아 수량을 갱신하는 기능 (존재하지 않는 lotId이거나 변경 후 결과 수량이 0 미만 또는 안전 정수 범위를 벗어나는 경우 오류 처리 및 기존 상태 유지, 증감량 0 입력 시 수량 유지)"
+          },
+          {
+            "id": "REQ-03",
+            "statement": "전체 재고를 lotId, 상품명, 수량, 단위, 유통기한 항목으로 표시하는 기능 (수량이 0인 lot도 목록에 유지)"
+          },
+          {
+            "id": "REQ-04",
+            "statement": "명시된 기준일(YYYY-MM-DD, Asia/Seoul 달력 기준)과 N(생략 시 기본값 7일 적용, 명시 시 0 이상의 안전한 정수 검증)을 기반으로 유통기한 만료(유통기한 < 기준일) 및 임박(기준일 <= 유통기한 <= 기준일+N일) 목록을 구분 조회하는 기능 (수량 0인 lot 제외, 유통기한 오름차순 및 동일 날짜는 lotId 오름차순 정렬, 계산 결과 지원 날짜 범위 초과 시 거부)"
+          },
+          {
+            "id": "REQ-05",
+            "statement": "로컬 UTF-8 JSON 파일에 영속화하며 재실행 시 데이터 유지, 임시 파일 후 원자적 교체(atomic rename) 방식 저장 및 잘못된 날짜/파일 손상/읽기/쓰기 오류 시 명확한 보고와 기존 파일 임의 초기화/덮어쓰기 방지 기능"
+          }
+        ],
+        "excludedFeatures": [
+          {
+            "id": "EXC-01",
+            "statement": "FEFO(선입선출/유통기한 우선) 자동 출고 및 자동 차감 기능"
+          },
+          {
+            "id": "EXC-02",
+            "statement": "별도 폐기 처리, 폐기 사유 기록, 감사 이력 보존 및 별도 폐기 상태 필드 저장"
+          },
+          {
+            "id": "EXC-03",
+            "statement": "실사 보정 workflow, 별도 lot 삭제/수정 workflow, 텍스트 검색 기능"
+          },
+          {
+            "id": "EXC-04",
+            "statement": "바코드/QR 코드 스캔, 카메라 연동, 외부 POS 및 엑셀 연동"
+          },
+          {
+            "id": "EXC-05",
+            "statement": "SMS, 카카오 알림톡, 이메일, 모바일 푸시 등 외부 알림 발송 기능"
+          },
+          {
+            "id": "EXC-06",
+            "statement": "사용자 로그인, 계정 및 역할/권한 구분, 다중 사용자 및 동시 writer 지원"
+          },
+          {
+            "id": "EXC-07",
+            "statement": "웹/모바일 UI, 클라우드/서버 저장, 다중 기기 동기화, 배포 파이프라인 구축"
+          },
+          {
+            "id": "EXC-08",
+            "statement": "결제, 발주/거래처 관리, 매출 통계 기능 및 단위 자동 변환 기능"
+          }
+        ],
+        "technicalConstraints": [
+          "런타임 환경은 Node.js이며 구현 언어는 TypeScript strict 모드를 적용한다.",
+          "데이터 저장은 로컬 단일 UTF-8 JSON 파일을 사용하며 단일 프로세스 순차 실행 환경을 전제한다.",
+          "수량 및 N 값은 JavaScript 안전 정수(Number.isSafeInteger) 범위 내 0 이상의 정수여야 하며, 소수·NaN·무한대·음수 재고 결과는 거부한다.",
+          "날짜 처리는 PC 시스템 시각에 의존하지 않고 명시된 YYYY-MM-DD(Asia/Seoul 달력 기준)를 기반으로 검증 및 계산한다.",
+          "모든 기획 문서, 작업 지시서 및 CLI 출력/오류 메시지는 한국어로 작성한다.",
+          "본 인수시험 세션 중에는 실제 제품 코드 구현 및 팀원 Agent 실행을 진행하지 않으며, 지휘자 단독의 기획 및 작업 지시 수립만 수행한다."
+        ],
+        "createdAt": "2026-11-08T12:26:20.834Z"
+      },
+      "scopeApprovalId": "approval-e9d63a05-487e-4cc5-9574-ff8ff5edbc7f"
+    }
+  ],
+  "events": [
+    {
+      "at": "2026-11-08T12:26:10.329Z",
+      "action": "TEST-STUB-context-import",
+      "detail": "Isolated fixture imports genuine approved Scope and reviewed replay Plan; no primary workflow or user decision is fabricated."
+    },
+    {
+      "at": "2026-11-08T12:26:10.339Z",
+      "action": "request-scope-change",
+      "detail": "Explicit planning continuation; original requirements and snapshots preserved."
+    },
+    {
+      "at": "2026-11-08T12:26:20.836Z",
+      "action": "propose-scope-change",
+      "detail": "Explicit planning continuation; original requirements and snapshots preserved."
+    }
+  ]
+}

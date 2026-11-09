@@ -1,0 +1,36 @@
+{
+  "summary": {
+    "baseline": {
+      "reviewCalls": 14,
+      "defectiveCandidates": 10,
+      "blockedDefectiveCandidates": 6,
+      "unsafeAdvance": 4,
+      "adequateCandidates": 4,
+      "adequateAdvanced": 4,
+      "adequateBlocked": 0,
+      "failedOrInvalid": 0
+    },
+    "enhanced": {
+      "reviewCalls": 14,
+      "defectiveCandidates": 10,
+      "blockedDefectiveCandidates": 6,
+      "unsafeAdvance": 1,
+      "adequateCandidates": 4,
+      "adequateAdvanced": 1,
+      "adequateBlocked": 0,
+      "failedOrInvalid": 6
+    }
+  },
+  "totals": {
+    "adapterCalls": 32,
+    "providedTokens": {
+      "inputTokens": 108713,
+      "outputTokens": 27762,
+      "reasoningTokens": 47079
+    },
+    "durationMs": 771755
+  },
+  "activeProjectAndApprovalFilesUnchanged": true,
+  "completedAt": "2026-11-08T23:42:03.635Z",
+  "note": "Two repetitions of seven pre-labeled candidates. Protocol failures are not successful defect detection. Blocking any defect is not proof the injected issue was correctly explained; inspect raw reviews. Generated Writer samples are unlabeled and excluded from rates. Small sample, not a general quality guarantee."
+}

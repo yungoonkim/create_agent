@@ -12,7 +12,7 @@ export function parseContinuations(raw: unknown, projectId: string): PlanningCon
     const id = text(value.id), planId = text(value.planId);
     assertSafeStorageId(id, "Continuation ID"); assertSafeStorageId(planId, "Plan ID");
     if (base.projectId !== projectId || base.currentPlanVersion === undefined || !["awaiting_user_input", "awaiting_scope_change_approval", "awaiting_approval", "user_approved"].includes(base.status)) throw new Error("Invalid continuation base.");
-    if (!["answers", "scope_change"].includes(String(value.kind)) || !["awaiting_answers", "ready", "requested", "proposed", "approved", "rejected", "started", "completed"].includes(String(value.status))) throw new Error("Invalid continuation kind/status.");
+    if (!["answers", "scope_change", "revision"].includes(String(value.kind)) || !["awaiting_answers", "ready", "requested", "proposed", "approved", "rejected", "started", "completed"].includes(String(value.status))) throw new Error("Invalid continuation kind/status.");
     if (typeof value.baseHash !== "string" || !/^[a-f0-9]{64}$/.test(value.baseHash)) throw new Error("Invalid continuation source hash.");
     const baseScope = parseScopeContract(value.baseScope, projectId);
     if (baseScope.id !== base.scopeContractId || baseScope.version !== base.scopeVersion) throw new Error("Continuation base Scope mismatch.");
@@ -24,6 +24,8 @@ export function parseContinuations(raw: unknown, projectId: string): PlanningCon
     if (proposedScope !== undefined && (proposedScope.version <= baseScope.version || proposedScope.id === baseScope.id)) throw new Error("Scope change requires a new version.");
     if (value.kind === "answers") {
       if (base.status !== "awaiting_user_input" || questionIds.length === 0 || !["awaiting_answers", "ready", "started", "completed"].includes(String(value.status)) || proposedScope !== undefined || value.changeApprovalId !== undefined || value.scopeApprovalId !== undefined || value.scopeChangeRequestId !== undefined) throw new Error("Invalid answer continuation.");
+    } else if (value.kind === "revision") {
+      if (base.status !== "awaiting_approval" || questionIds.length !== 0 || !["ready", "started", "completed"].includes(String(value.status)) || proposedScope !== undefined || value.changeApprovalId !== undefined || value.scopeApprovalId !== undefined || value.scopeChangeRequestId !== undefined) throw new Error("Invalid plan revision continuation.");
     } else if (questionIds.length !== 0 || !["requested", "proposed", "approved", "rejected", "started", "completed"].includes(String(value.status)) || value.changeApprovalId === undefined || value.scopeChangeRequestId === undefined ||
         (["proposed", "approved", "rejected", "started", "completed"].includes(String(value.status)) && (proposedScope === undefined || value.scopeApprovalId === undefined))) throw new Error("Invalid Scope change continuation.");
     return { id, planId, base, baseScope, baseHash: value.baseHash, questionIds, kind: value.kind as PlanningContinuation["kind"], status: value.status as PlanningContinuation["status"],

@@ -19,6 +19,8 @@ async function main(): Promise<void> {
     start: ["file"], questions: [], answer: ["file"], "propose-scope": [], "approve-scope": ["reason"], "reject-scope": ["reason"],
     plan: [], "approve-plan": ["reason"], "propose-tasks": [], "configure-verification": ["file"], "initialize-tasks": [], report: [],
     "collect-feedback": [], "request-scope-change": ["reason"], "propose-scope-change": [],
+    "request-plan-revision": ["reason"],
+    "revise-tasks": ["reason"],
     "approve-scope-change": ["reason"], "reject-scope-change": ["reason"], "resume-plan": [],
   };
   const [command, ...values] = process.argv.slice(2);
@@ -43,16 +45,21 @@ async function main(): Promise<void> {
   if (!fake && args.has("fixture")) throw new Error("Fixtures are allowed only with fake models.");
   const memory = new FilePlanningMemoryStore(config.memory.directory);
   const store = new FileSupervisorStore(config.memory.directory);
-  const modelCommands = ["questions", "propose-scope", "plan", "propose-tasks", "propose-scope-change", "resume-plan"];
+  const modelCommands = ["questions", "propose-scope", "plan", "propose-tasks", "revise-tasks", "propose-scope-change", "resume-plan"];
   // Report/approval/intake never require credentials or construct a provider client.
   const live = !fake && modelCommands.includes(command);
   const confirm = async (phrase: string, label: string): Promise<string> => {
     const prompt = createInterface({ input: stdin, output: stdout });
-    try { const answer = (await prompt.question(`${label}\nType ${phrase}: `)).trim(); if (answer !== phrase) throw new Error("Confirmation did not match."); return answer; }
-    finally { prompt.close(); }
+    let onClose!: () => void;
+    const closed = new Promise<never>((_resolve, reject) => {
+      onClose = () => reject(new Error("Confirmation input closed without a decision; no action was taken."));
+      prompt.once("close", onClose);
+    });
+    try { const answer = (await Promise.race([prompt.question(`${label}\nType ${phrase}: `), closed])).trim(); if (answer !== phrase) throw new Error("Confirmation did not match."); return answer; }
+    finally { prompt.off("close", onClose); prompt.close(); }
   };
   if (live) {
-    console.log(JSON.stringify({ model: config.planning.writer.model, reviewer: config.planning.reviewer.model, projectId: config.projectId, data: await store.get(config.projectId) }, null, 2));
+    console.log(JSON.stringify({ model: config.planning.writer.model, reviewer: config.planning.reviewer.model, projectId: config.projectId, ...(command === "revise-tasks" ? { revisionReason: arg("reason") } : {}), data: await store.get(config.projectId) }, null, 2));
     await confirm("CALL", "This sends the stored request, answers and relevant Scope/Plan to Vertex AI and may incur charges.");
   }
   const client = live ? createVertexAiClient() : undefined;
@@ -91,6 +98,7 @@ async function main(): Promise<void> {
       result = await controller.approvePlan(await confirm(`APPROVE ${plan.id} v${plan.version}`, "Review the plan above."), arg("reason")); break;
     }
     case "propose-tasks": result = await controller.proposeTasks(); break;
+    case "revise-tasks": result = await controller.reviseTasks(arg("reason")); break;
     case "configure-verification": result = await controller.configureVerification(await readJson(arg("file"))); break;
     case "initialize-tasks": {
       const state = await store.get(config.projectId);
@@ -100,6 +108,7 @@ async function main(): Promise<void> {
     }
     case "report": result = await controller.report(); break;
     case "collect-feedback": result = await controller.continuation().collectFeedback(); break;
+    case "request-plan-revision": result = await controller.continuation().requestPlanRevision(arg("reason")); break;
     case "request-scope-change": result = await controller.continuation().requestScopeChange(arg("reason")); break;
     case "propose-scope-change": result = await controller.continuation().proposeScopeChange(); break;
     case "resume-plan": result = await controller.continuation().resumePlan(); break;

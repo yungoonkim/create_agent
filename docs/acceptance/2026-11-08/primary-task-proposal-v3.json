@@ -1,0 +1,176 @@
+{
+  "source": {
+    "planId": "supervisor-gemini-acceptance-plan",
+    "scopeContractId": "scope-v4",
+    "approvalId": "approval-e127e39b-d1e0-41ee-bd66-56f7e050d904",
+    "contentHash": "8ab525ac5156dfdbbde6308365fdae961d72f962abffdf58c2979e68dd0c4859",
+    "planVersion": 3,
+    "scopeVersion": 4
+  },
+  "orders": [
+    {
+      "task": {
+        "id": "task-01-parser-and-validation",
+        "projectId": "supervisor-gemini-acceptance",
+        "status": "pending",
+        "title": "TypeScript 프로젝트 기반 설정 및 입력 표기·안전 정수·달력 날짜 검증 모듈 구현",
+        "description": "후속 모듈이 독립적으로 타입 검사와 단위 테스트를 수행할 수 있도록 기본 package.json 및 strict 모드 tsconfig.json을 구성하고, 수량·증감량·임박 일수(N)의 비정형 문자열 표기 차단 및 안전 정수 검증 로직과 시스템 시각에 독립적인 Asia/Seoul 달력 날짜 파서를 구현합니다. 피연산자(증감량 자체는 음수/0/양수 허용)와 저장/결과값(0 이상의 안전 정수)의 제약을 엄격히 구분합니다.",
+        "dependsOn": [],
+        "expectedArtifacts": [
+          "package.json",
+          "tsconfig.json",
+          "src/common/validation/number-parser.ts",
+          "src/common/validation/date-parser.ts",
+          "src/common/types/domain.ts",
+          "tests/common/parser-and-validation.test.ts"
+        ],
+        "acceptanceCriteria": [
+          "TypeScript strict 모드가 활성화된 tsconfig.json과 테스트 및 타입 검사 스크립트(test, typecheck, build)가 포함된 package.json을 제공하여 후행 작업들이 독립적으로 검증 가능해야 한다.",
+          "수량 및 임박 일수 N의 문자열 입력은 정규식 ^(0|[1-9]\\d*)$ 형식만 허용하며, 지수 표기(예: 1e3), 소수점(예: 10.0), 선행 부호(예: +5), 공백, 16진수 표기는 파싱 단계에서 즉시 거부되어야 한다.",
+          "증감량 피연산자의 문자열 입력은 정규식 ^(0|-?[1-9]\\d*)$ 형식만 허용하며, 음수(-10), 0, 양수(10) 표기를 정확히 허용하되 지수/소수점/NaN/무한대는 거부되어야 한다.",
+          "수량, N, 변경 후 재고 결과 값은 0 이상 Number.MAX_SAFE_INTEGER 이하의 안전 정수여야 하며, 증감량 피연산자 자체는 -Number.MAX_SAFE_INTEGER 이상 Number.MAX_SAFE_INTEGER 이하의 안전 정수여야 한다. (피연산자와 결과 수량 제약을 혼동하여 음수 증감량 자체가 차단되지 않아야 한다.)",
+          "날짜 문자열은 YYYY-MM-DD 정규식을 통과해야 하며, 시스템 시각(Date.now 등)을 조회하지 않고 명시된 연/월/일 문자열 기준으로 윤년(예: 2024년 2월 29일 허용, 2026년 2월 29일 거부) 및 월별 말일을 Asia/Seoul 달력 기준으로 정확히 판정해야 한다.",
+          "lotId, 상품명, 단위 문자열은 trim 후 길이가 1 이상이어야 하며, 빈 문자열이나 공백만으로 구성된 입력은 거부되어야 한다."
+        ],
+        "verificationMethod": "TypeScript 타입 검사(npm run typecheck) 및 단위 테스트를 실행하여 패키지 빌드 기반 동작, 지수/소수점/부호 입력 거부, 음수/0/양수 증감량 허용, 윤년 경계 날짜 판정, 빈 문자열 거부 로직 통과를 검증"
+      },
+      "requirementIds": [
+        "REQ-01",
+        "REQ-02",
+        "REQ-04"
+      ]
+    },
+    {
+      "task": {
+        "id": "task-02-storage-engine",
+        "projectId": "supervisor-gemini-acceptance",
+        "status": "pending",
+        "title": "원자적 교체 및 실패 경계 분리 기반 JSON 파일 영속화 모듈 구현",
+        "description": "단일 루트 JSON 스키마({ version: 1, lots: [...] })를 관리하며, 원자적 임시 파일 교체(atomic rename), 3단계 실패 경계 분리, 최선 노력 cleanup 및 중복 lotId 전수 검증을 수행하는 저장소 엔진을 구현합니다.",
+        "dependsOn": [
+          "task-01-parser-and-validation"
+        ],
+        "expectedArtifacts": [
+          "src/storage/schema.ts",
+          "src/storage/atomic-file-store.ts",
+          "src/storage/storage-errors.ts",
+          "tests/storage/atomic-file-store.test.ts"
+        ],
+        "acceptanceCriteria": [
+          "저장 파일 루트 스키마는 { version: 1, lots: [...] } 단일 객체 구조를 엄격히 준수해야 하며, version !== 1이거나 최상위 알 수 없는 필드가 있거나 스키마 불일치 시 기존 파일을 절대 초기화/덮어쓰기하지 않고 로드를 거부해야 한다.",
+          "파일 로드 시 lots 배열 내 각 객체의 5대 필수 필드(lotId, productName, quantity, unit, expirationDate)의 타입과 값을 검증하고, 배열 전체를 전수 검사하여 동일 lotId가 2개 이상 존재하면 파일 손상으로 간주하여 로드를 즉시 거부해야 한다.",
+          "임시 파일은 EXDEV(교차 파일시스템) 오류를 원천 방지하기 위해 본파일과 동일한 디렉터리 내에 [본파일이름].[pid].[timestamp].tmp 형식으로 생성해야 한다.",
+          "[경계 1: rename 이전 실패] 임시 파일 쓰기 또는 임시 파일 fsync 실패 시 기존 본파일은 100% 무결성을 유지해야 하며, 최선 노력(best-effort)으로 임시 파일 삭제(unlink)를 시도해야 한다.",
+          "임시 파일 cleanup 자체가 실패하더라도 본래의 근본 원인 에러를 덮어쓰지 않고 최우선 보존하며, cleanup 실패는 부가 오류로 병합 보고해야 한다.",
+          "[경계 2: rename 실패] fs.rename 시스템 콜 실패 시 기존 본파일은 그대로 유지되고 임시 파일 정리를 시도해야 한다.",
+          "[경계 3: rename 성공 후 디렉터리 동기화 실패] POSIX 환경에서 부모 디렉터리 fsync 실패 시 본파일이 이미 교체되었을 수 있으므로 '원본 파일 불변'으로 약속하지 않고 '저장 결과 불확실(Uncertain Storage Result)' 오류를 명시적으로 보고하며 임의 되돌리기나 덮어쓰기를 하지 않아야 한다.",
+          "Node.js 프로세스 강제 종료(SIGKILL)나 물리적 전원 단절 시 finally/cleanup이 실행되지 않아 디스크에 고아 .tmp 파일이 남을 수 있음을 인정하며, 차기 실행 시 .tmp 파일을 절대 본파일로 자동 승격하거나 병합하지 않고 무시해야 한다."
+        ],
+        "verificationMethod": "단위 및 결함 주입 테스트를 실행하여 디스크 풀, 쓰기 실패, rename 실패, 디렉터리 동기화 실패, cleanup 실패 상황별 본파일 상태 보존 및 오류 격리 여부를 검증"
+      },
+      "requirementIds": [
+        "REQ-05"
+      ]
+    },
+    {
+      "task": {
+        "id": "task-03-inventory-domain-service",
+        "projectId": "supervisor-gemini-acceptance",
+        "status": "pending",
+        "title": "로트 재고 관리 도메인 서비스 구현",
+        "description": "신규 lot 등록, 수량 정수 증감, 전체 재고 조회, 유통기한 만료/임박 분리 조회의 비즈니스 규칙을 저장소 엔진과 연동하여 수행하는 도메인 서비스를 구현합니다.",
+        "dependsOn": [
+          "task-01-parser-and-validation",
+          "task-02-storage-engine"
+        ],
+        "expectedArtifacts": [
+          "src/domain/inventory-service.ts",
+          "src/domain/inventory-model.ts",
+          "tests/domain/inventory-service.test.ts"
+        ],
+        "acceptanceCriteria": [
+          "신규 lot 등록 시 기존에 존재하는 lotId와의 중복을 거부하고, 수량은 0 이상의 안전 정수만 등록을 허용해야 한다.",
+          "수량 변경 시 존재하는 lotId만 처리하고, 변경 후 결과 수량이 0 미만이 되거나 Number.MAX_SAFE_INTEGER를 초과하면 변경을 거부하고 기존 수량을 온전히 유지해야 한다. (예: LOT-B 수량 5에서 증감량 -2 적용 시 3으로 갱신, 이후 증감량 -4 시도 시 결과가 음수이므로 거부되고 3 유지)",
+          "증감량으로 0이 입력된 경우 오류 없이 기존 수량을 온전히 유지하고 정상 성공으로 처리해야 한다.",
+          "전체 재고 조회 시 수량이 0인 lot(예: LOT-E)도 누락 없이 전체 목록에 포함하여 반환해야 한다.",
+          "유통기한 만료 및 임박 조회 시 기준일과 0 이상의 정수 N을 입력받아 '유통기한 < 기준일'인 만료 목록과 '기준일 <= 유통기한 <= 기준일 + N일'인 임박 목록으로 정확히 분리해야 한다.",
+          "수량이 0인 lot은 유통기한 날짜 조건에 부합하더라도 만료 및 임박 조회 결과에서 반드시 제외되어야 한다.",
+          "만료 및 임박 목록의 정렬 순서는 유통기한 오름차순이어야 하며, 동일 날짜 내에서는 lotId 오름차순(사전순)으로 정렬되어야 한다.",
+          "실행 예 검증: 기준일 2026-11-08, N=2인 경우, LOT-A(3개, 2026-11-07)는 만료 목록, LOT-B(5개, 2026-11-08) 및 LOT-C(2개, 2026-11-10)는 임박 목록에 포함되고, LOT-D(4개, 2026-11-11)는 대상 제외, LOT-E(0개, 2026-11-09)는 수량 0으로 제외되어야 한다. N=0일 때는 기준일 당일(2026-11-08) 만료 예정인 LOT-B만 임박 목록에 포함되어야 한다.",
+          "기준일 + N일 연산 결과가 지원 가능한 유효 달력 범위(연도 9999 초과 등)를 벗어나는 경우 조회를 거부해야 한다."
+        ],
+        "verificationMethod": "도메인 단위 테스트를 실행하여 등록 중복 거부, 음수 재고 방지, 증감량 0 유지, 수량 0 lot 처리 비대칭성, 날짜 및 lotId 정렬 결과를 검증"
+      },
+      "requirementIds": [
+        "REQ-01",
+        "REQ-02",
+        "REQ-03",
+        "REQ-04",
+        "REQ-05"
+      ]
+    },
+    {
+      "task": {
+        "id": "task-04-cli-interface",
+        "projectId": "supervisor-gemini-acceptance",
+        "status": "pending",
+        "title": "단일 사용자 Node.js CLI 인터페이스 및 한국어 입출력 핸들러 구현",
+        "description": "명령줄 인자를 파싱하여 도메인 서비스를 호출하고 한국어로 결과를 콘솔에 출력하는 CLI 엔트리포인트를 구현합니다. task-01에서 마련된 빌드 설정을 바탕으로 CLI 실행용 스크립트/바이너리 설정을 확정하고, 서브커맨드, 플래그, 기본 파일 경로, 환경변수 오버라이드, 종료 코드 규칙을 확정합니다.",
+        "dependsOn": [
+          "task-03-inventory-domain-service"
+        ],
+        "expectedArtifacts": [
+          "src/cli/index.ts",
+          "src/cli/commands.ts",
+          "src/cli/formatter.ts",
+          "tests/cli/cli-interface.test.ts"
+        ],
+        "acceptanceCriteria": [
+          "기존 package.json에 CLI 실행용 스크립트(bin 또는 start)를 연결하여 node dist/cli/index.js 형태로 실행 가능하게 구성해야 한다.",
+          "기본 데이터 파일 경로는 ./data/inventory.json으로 설정하되, 모든 서브커맨드에서 --data-file <경로> 플래그 또는 INVENTORY_DATA_PATH 환경변수를 통해 경로 재지정이 가능해야 한다. (우선순위: 플래그 > 환경변수 > 기본값)",
+          "CLI 서브커맨드 구문 확정:\n1) 등록: add --lot-id <id> --product-name <name> --quantity <qty> --unit <unit> --expiration-date <YYYY-MM-DD>\n2) 수량 변경: update-quantity --lot-id <id> --delta <delta>\n3) 전체 조회: list-all\n4) 만료/임박 조회: list-expiring --base-date <YYYY-MM-DD> --days <N>",
+          "종료 코드 규칙:\n- 성공 시: exit code 0\n- 사용자 입력 오류, 비즈니스 규칙 위반(중복 lotId, 음수 재고 시도, 날짜 오류 등): exit code 1 및 한국어 에러 메시지 출력\n- 파일 손상, 스키마 불일치, 저장 결과 불확실성 등 시스템/스토리지 오류: exit code 2 및 구체적 한국어 원인/불확실성 안내 출력",
+          "출력 서식:\n- list-all 실행 시 lotId, 상품명, 수량, 단위, 유통기한 헤더를 가진 정형화된 한국어 콘솔 테이블로 출력해야 한다.\n- list-expiring 실행 시 '=== 유통기한 만료 목록 ==='과 '=== 유통기한 임박 목록 (N일 이내) ==='으로 명확히 구분하여 유통기한 및 lotId 오름차순으로 출력해야 한다."
+        ],
+        "verificationMethod": "CLI 인수 파싱 및 콘솔 입출력 통합 테스트를 통해 서브커맨드 실행, 플래그 경로 재지정, 표 서식 출력, 에러 시 종료 코드 및 한국어 메시지를 검증"
+      },
+      "requirementIds": [
+        "REQ-01",
+        "REQ-02",
+        "REQ-03",
+        "REQ-04",
+        "REQ-05"
+      ]
+    },
+    {
+      "task": {
+        "id": "task-05-fault-and-boundary-verification",
+        "projectId": "supervisor-gemini-acceptance",
+        "status": "pending",
+        "title": "저장소 장애 경계 및 파일 무결성 관찰 가능성 종합 검증",
+        "description": "소프트웨어 결함 주입을 통해 임시 파일 쓰기 중단, 중복 lotId 파일 격리, 디렉터리 동기화 실패, 고아 임시 파일 무시 등 원자적 저장 설계의 경계별 동작을 관찰 가능한 테스트로 검증합니다.",
+        "dependsOn": [
+          "task-02-storage-engine",
+          "task-04-cli-interface"
+        ],
+        "expectedArtifacts": [
+          "tests/integration/fault-injection.test.ts",
+          "tests/fixtures/corrupted-inventory.json",
+          "tests/fixtures/duplicate-lot-inventory.json"
+        ],
+        "acceptanceCriteria": [
+          "손상된 JSON 구문이나 중복 lotId가 포함된 픽스처 파일을 대상으로 CLI 실행 시 파일 내용이 빈 데이터 등으로 재작성되지 않고 원형 그대로 보존됨을 파일 해시로 검증해야 한다.",
+          "임시 파일 쓰기 또는 rename 이전 단계 실패 주입 시 기존 본파일이 100% 무결성을 유지함을 검증해야 한다.",
+          "임시 파일 cleanup 실패 시뮬레이션 시 기본 저장 실패 에러와 cleanup 실패 에러가 모두 콘솔/로그에 보존되어 출력되는지 검증해야 한다.",
+          "rename 성공 후 디렉터리 동기화 실패 주입 시 '원본 파일 불변'으로 약속하지 않고 '저장 결과 불확실' 오류 코드가 발생하며 추가적인 임의 되돌리기 쓰기가 발생하지 않음을 검증해야 한다.",
+          "디렉터리에 고아 .tmp 파일이 잔류한 상태에서 차기 CLI 명령을 실행해도 .tmp 파일이 본파일로 자동 승격되지 않고 무시됨을 검증해야 한다.",
+          "본 검증은 소프트웨어 레벨의 오류 주입 및 결함 경계 검사로 구성되며, 물리적 전원 단절 실험을 수행하지 않은 상태에서 무손실이 증명되었다는 허위 주장을 포함하지 않아야 한다."
+        ],
+        "verificationMethod": "소프트웨어 결함 주입 통합 테스트 스위트를 실행하여 파일 상태 불변성, 오류 코드 및 한국어 메시지 격리 여부를 자동으로 검증"
+      },
+      "requirementIds": [
+        "REQ-05"
+      ]
+    }
+  ]
+}

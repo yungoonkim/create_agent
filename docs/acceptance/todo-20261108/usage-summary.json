@@ -1,0 +1,15 @@
+{
+  "calls": 10,
+  "success": 10,
+  "failure": 0,
+  "reviewerCalls": 4,
+  "reviewerRevisionRequests": 0,
+  "userOrFacilitatorPlanRevisionRequests": 3,
+  "providedTokens": {
+    "inputTokens": 60107,
+    "outputTokens": 21496,
+    "reasoningTokens": 10708
+  },
+  "durationMs": 228051,
+  "note": "Only provider-reported metrics; no billing estimate."
+}

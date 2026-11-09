@@ -1,0 +1,11 @@
+{
+  "projectId": "supervisor-gemini-acceptance",
+  "scopeContractId": "scope-v4",
+  "scopeVersion": 4,
+  "iterationCount": 3,
+  "maxIterations": 5,
+  "currentPlanVersion": 3,
+  "status": "user_approved",
+  "approvalId": "approval-e127e39b-d1e0-41ee-bd66-56f7e050d904",
+  "continuationId": "continue-663ba55f-3c8f-47a6-9478-f9cd4a795089"
+}

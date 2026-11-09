@@ -1,0 +1,24 @@
+{
+  "source": "actual user replies to three detail questions in chat",
+  "status": "answered",
+  "questions": [
+    {
+      "id": "DETAIL-1",
+      "question": "메모·마감일을 비워도 되는가",
+      "recommended": "제목만 필수, 메모·마감일은 비워도 됨",
+      "answer": "제목·마감일은 필수, 메모만 비워도 됨"
+    },
+    {
+      "id": "DETAIL-2",
+      "question": "마감일에 시간도 필요한가",
+      "recommended": "날짜만",
+      "answer": "날짜와 시간 — 예: 11월 10일 오후 3시까지"
+    },
+    {
+      "id": "DETAIL-3",
+      "question": "삭제 전에 확인하는가",
+      "recommended": "확인 후 삭제",
+      "answer": "‘정말 삭제할까요?’ 확인 후 삭제"
+    }
+  ]
+}

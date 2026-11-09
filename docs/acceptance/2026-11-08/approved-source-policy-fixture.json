@@ -1,0 +1,52 @@
+{
+  "label": "TEST/STUB",
+  "projectId": "supervisor-gemini-acceptance",
+  "source": {
+    "planId": "supervisor-gemini-acceptance-plan",
+    "scopeContractId": "scope-v4",
+    "approvalId": "approval-e127e39b-d1e0-41ee-bd66-56f7e050d904",
+    "contentHash": "8ab525ac5156dfdbbde6308365fdae961d72f962abffdf58c2979e68dd0c4859",
+    "planVersion": 3,
+    "scopeVersion": 4
+  },
+  "primaryStateUnchanged": true,
+  "noModelOrAgentRuntime": true,
+  "observations": {
+    "prematureDependencyRejected": true,
+    "bareSuccessRejected": true,
+    "firstMissingArtifact": {
+      "status": "rework",
+      "evidence": "failed",
+      "executedCommands": 0
+    },
+    "repeatedFailure": {
+      "status": "blocked",
+      "reason": "verification_limit",
+      "attempts": 2,
+      "reworks": 1,
+      "resetRejected": true
+    },
+    "missingTool": {
+      "status": "blocked",
+      "reason": "environment",
+      "reworks": 0,
+      "evidence": "blocked",
+      "commandReason": "COMMAND_START_FAILED:ENOENT"
+    },
+    "report": {
+      "completed": false,
+      "sourceCurrent": true,
+      "counts": {
+        "pending": 4,
+        "ready": 0,
+        "in_progress": 0,
+        "awaiting_review": 0,
+        "approved": 0,
+        "rework": 0,
+        "blocked": 1,
+        "cancelled": 0
+      },
+      "workerRuntimeConnected": false
+    }
+  }
+}

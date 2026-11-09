@@ -1,0 +1,14 @@
+{
+  "id": "review-2",
+  "projectId": "supervisor-gemini-acceptance",
+  "planId": "supervisor-gemini-acceptance-plan",
+  "planVersion": 2,
+  "scopeContractId": "scope-v4",
+  "scopeVersion": 4,
+  "outcome": "pass",
+  "issues": [],
+  "suggestions": [],
+  "scopeViolation": false,
+  "userJudgmentRequired": false,
+  "reviewedAt": "2026-11-08T12:20:52.729Z"
+}

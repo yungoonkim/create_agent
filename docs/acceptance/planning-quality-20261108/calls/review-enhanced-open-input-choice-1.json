@@ -1,0 +1,187 @@
+{
+  "id": "review-enhanced-open-input-choice-1",
+  "variant": "enhanced",
+  "caseId": "open-input-choice",
+  "repeat": 1,
+  "operation": "review",
+  "expected": "block",
+  "inputContentSha256": "dfa96fe7616328b664f9cc2f61aad09dd913c83b4da3529e9b90634402b16737",
+  "status": "completed",
+  "review": {
+    "id": "review-1",
+    "projectId": "supervisor-todo-acceptance-20261108",
+    "planId": "supervisor-todo-acceptance-20261108-plan",
+    "planVersion": 1,
+    "scopeContractId": "scope-v6",
+    "scopeVersion": 6,
+    "outcome": "needs_user_input",
+    "issues": [
+      {
+        "id": "issue-ee6f7b3b4eb4a041",
+        "kind": "contradiction",
+        "severity": "major",
+        "description": "마감일시 필수 여부가 아직 미정이라며 결정을 작업 지시 단계로 미룬다고 기술했으나, 동일 절의 검증 규칙에서는 '빠진 날짜/시간'을 거부 항목으로 지정하여 서로 모순됩니다.",
+        "suggestedDirection": "DETAIL-1에 대한 사용자의 의사(마감일시 입력이 필수인지, 아니면 메모처럼 생략 가능한 선택 사항인지)를 직접 확인받아 확정하고, 검증 규칙과 수락 기준을 일관되게 정리해야 합니다.",
+        "relatedRequirementId": "REQ-01"
+      }
+    ],
+    "suggestions": [
+      "마감일시를 필수로 할지 선택으로 할지에 대한 사용자 선택지를 명확히 질문하여 기획안에 반영하십시오."
+    ],
+    "scopeViolation": false,
+    "userJudgmentRequired": true,
+    "reviewedAt": "2026-11-08T23:36:43.228Z",
+    "qualityAssessment": {
+      "version": 1,
+      "requirements": [
+        {
+          "status": "needs_user_input",
+          "evidence": [
+            "마감일시 필수 여부는 아직 미정이며 구현자가 나중에 결정한다.",
+            "REQ-01: 제목 필수이며 마감일시의 필수 여부는 작업 지시 단계로 미룬다. 공백뿐인 제목, 빠진 날짜/시간, 2월30일, 24:00은 거부하고 입력과 기존 목록을 유지한다."
+          ],
+          "rationale": "마감일시 필수 여부가 사용자 질문(DETAIL-1) 미답변 상태로 남아 있으며, 기획안에서 이를 작업 지시로 미루면서 동시에 빠진 날짜/시간을 거부한다는 상반된 규칙을 포함하고 있어 사용자의 명확한 결정이 필요합니다.",
+          "requirementId": "REQ-01"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "REQ-02: 미완료와 완료 두 구역, 영속 등록 순번 오름차순. A(1),B(2) 등록 후 PC 시계를 뒤로 돌려 C를 등록해도 A,B,C 순서다. B 삭제 후 D 등록은 A(1),C(3),D(4)다. 수정/상태 변경/재시작으로 순번을 바꾸지 않는다."
+          ],
+          "rationale": "미완료 및 완료 목록 분리와 컴퓨터 시계 변동에 영향받지 않는 등록 순번 오름차순 정렬 규칙이 구체적으로 정의되어 있습니다.",
+          "requirementId": "REQ-02"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "REQ-03: A만 완료하면 완료 구역에 A만 이동한다. 취소하면 미완료 구역의 원래 등록순 위치로 돌아온다. 저장 실패 시 상태가 이동하지 않는다."
+          ],
+          "rationale": "완료 전환과 완료 취소 시의 구역 이동 동작, 원래 등록순 위치 복귀, 저장 실패 시 무변경 처리가 명시되어 있습니다.",
+          "requirementId": "REQ-03"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "REQ-04: 동일 제목 두 항목 중 두 번째를 수정하면 두 번째만 바뀐다. 제목/마감일시 검증 실패 또는 저장 실패면 기존 목록을 유지하고 수정 입력을 보존한다. 수정 취소는 무변경이다."
+          ],
+          "rationale": "제목·메모·마감일시 수정 기능, 고유 ID 기반 개별 수정, 검증/저장 실패 및 취소 시의 무변경/입력 보존 동작이 정확히 규정되어 있습니다.",
+          "requirementId": "REQ-04"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "REQ-05: 삭제 확인 취소는 무변경, 확인은 선택 ID 한 건만 삭제. 저장 실패 시 항목을 지우지 않고 오류를 표시한다."
+          ],
+          "rationale": "삭제 확인 대화상자 취소 시 무변경, 확인 시 단일 항목 삭제, 저장 실패 시 무삭제 및 오류 표시 동작이 완결되어 있습니다.",
+          "requirementId": "REQ-05"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다."
+          ],
+          "rationale": "브라우저 재실행 시 상태 복원, 고유 스토리지 키 관리, 저장 실패 및 손상 데이터 감지 시 안전한 읽기/쓰기 차단 경계가 명확합니다.",
+          "requirementId": "REQ-06"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "REQ-07: 모든 동작은 브라우저 입력창과 버튼으로 수행한다. 제목이나 메모의 '<b>장보기</b>'나 '<script>' 문자는 코드가 아닌 글자로 표시한다."
+          ],
+          "rationale": "웹 브라우저 폼 입력 및 버튼 클릭 인터페이스와 텍스트 이스케이프 처리 규칙이 명시되어 있습니다.",
+          "requirementId": "REQ-07"
+        }
+      ],
+      "checks": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "Q-1~Q-7: 브라우저 버튼 사용, 제목·메모·마감일, 수정·삭제, 완료 취소, 분리 목록과 등록순, 동일 제목 허용, 내 컴퓨터 저장(세부 방식 위임). DETAIL-1은 아직 답변하지 않았다. DETAIL-2: 날짜+시간. DETAIL-3: 삭제 확인. 과거 마감일 허용은 사용자가 직접 확정한 것이 아닌 기획자의 승인 대기 제안이다."
+          ],
+          "rationale": "사용자가 동의한 결정(Q-1~Q-7, DETAIL-2, DETAIL-3)과 미답변 항목(DETAIL-1), 그리고 기획자 제안 항목(과거 마감일 허용)의 출처를 왜곡 없이 명확히 구분하고 있습니다.",
+          "id": "decision_provenance"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "향후 작업 순서는 화면 흐름·입력 규칙 확정 → 검증/순번 모델 → 저장/실패 경계 → UI 연결 → 위 정상·실패 수락 사례 확인이다.",
+            "현재 세션은 기획·검토·지시 품질 시험이며 제품 구현·제품 테스트·팀원 실행을 하지 않는다. 로그인·계정·외부 서버 동기화·공유·검색·필터·태그·기한순 정렬을 추가하지 않는다."
+          ],
+          "rationale": "승인된 Scope 요구사항을 충실히 반영하며, 로그인/공유/검색 등 제외 기능을 배제하고 시험 실행 경계를 준수하고 있습니다.",
+          "id": "scope_compliance"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "마감일시 필수 여부는 아직 미정이며 구현자가 나중에 결정한다.",
+            "REQ-01: 제목 필수이며 마감일시의 필수 여부는 작업 지시 단계로 미룬다. 공백뿐인 제목, 빠진 날짜/시간, 2월30일, 24:00은 거부하고 입력과 기존 목록을 유지한다."
+          ],
+          "rationale": "마감일시 필수 여부를 미정으로 남겨 작업 지시로 미룬다고 서술하면서도, 입력 검증에서는 빠진 날짜/시간을 거부한다고 기술하여 동작 및 오류 처리 기준이 모순됩니다.",
+          "id": "behavior_and_errors"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다.",
+            "id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다.",
+            "후보 객체를 검증·직렬화한 뒤 setItem 성공 반환을 커밋으로 보고 확정 목록/화면을 갱신한다. 커밋 전 또는 setItem 실패는 기존 저장값·확정 목록·입력을 보존한다."
+          ],
+          "rationale": "단일 키 원자적 저장, 불변식(id/순번 중복 불가, nextSequence 단조 증가), 시계 역행 무관 순번 정렬, 손상 데이터 보호 및 커밋 전후 실패 경계가 충실히 수립되어 있습니다.",
+          "id": "data_integrity"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "A(1),B(2) 등록 후 PC 시계를 뒤로 돌려 C를 등록해도 A,B,C 순서다. B 삭제 후 D 등록은 A(1),C(3),D(4)다.",
+            "제목이나 메모의 '<b>장보기</b>'나 '<script>' 문자는 코드가 아닌 글자로 표시한다.",
+            "삭제 확인 취소는 무변경, 확인은 선택 ID 한 건만 삭제. 저장 실패 시 항목을 지우지 않고 오류를 표시한다."
+          ],
+          "rationale": "각 요구사항별로 구체적인 입력/조작 시나리오와 관찰 가능한 기대 결과(정상/실패 케이스 포함)가 구체적으로 명시되어 있습니다.",
+          "id": "acceptance_criteria"
+        },
+        {
+          "status": "not_applicable",
+          "evidence": [
+            "이 초기 후보에는 이전 버전 수정 요청이 없다."
+          ],
+          "rationale": "본 문서는 초기 기획안 후보(version 1)이며 이전 검토에서 전달된 수정 요청 항목이 존재하지 않으므로 점검 대상이 아닙니다.",
+          "id": "revision_resolution"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "## 사용자 이용 예시",
+            "## 기술 설계 제안 (아직 사용자 승인 전)",
+            "제목 ‘장보기’, 메모 ‘우유 1팩’, 마감일시 ‘2026-11-10 15:00’을 적고 추가한다."
+          ],
+          "rationale": "사용자 관점의 일상적인 사용 예시를 전면에 먼저 배치하고 기술적 상세 규격을 별도 절로 분리하여 쉬운 한국어로 설명하고 있습니다.",
+          "id": "clarity"
+        }
+      ]
+    }
+  },
+  "decision": {
+    "type": "REQUEST_USER_INPUT",
+    "questions": [
+      "REQ-01: 마감일시 필수 여부가 사용자 질문(DETAIL-1) 미답변 상태로 남아 있으며, 기획안에서 이를 작업 지시로 미루면서 동시에 빠진 날짜/시간을 거부한다는 상반된 규칙을 포함하고 있어 사용자의 명확한 결정이 필요합니다.",
+      "마감일시를 필수로 할지 선택으로 할지에 대한 사용자 선택지를 명확히 질문하여 기획안에 반영하십시오."
+    ]
+  },
+  "usage": [
+    {
+      "projectId": "supervisor-todo-acceptance-20261108",
+      "planId": "supervisor-todo-acceptance-20261108-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 4688,
+      "outputTokens": 2538,
+      "reasoningTokens": 2436,
+      "outcome": "success",
+      "durationMs": 23378,
+      "recordedAt": "2026-11-08T23:36:43.228Z"
+    }
+  ],
+  "rawModelResponse": "{\n  \"outcome\": \"needs_user_input\",\n  \"issues\": [\n    {\n      \"kind\": \"contradiction\",\n      \"severity\": \"major\",\n      \"description\": \"마감일시 필수 여부가 아직 미정이라며 결정을 작업 지시 단계로 미룬다고 기술했으나, 동일 절의 검증 규칙에서는 '빠진 날짜/시간'을 거부 항목으로 지정하여 서로 모순됩니다.\",\n      \"suggestedDirection\": \"DETAIL-1에 대한 사용자의 의사(마감일시 입력이 필수인지, 아니면 메모처럼 생략 가능한 선택 사항인지)를 직접 확인받아 확정하고, 검증 규칙과 수락 기준을 일관되게 정리해야 합니다.\",\n      \"relatedRequirementId\": \"REQ-01\"\n    }\n  ],\n  \"suggestions\": [\n    \"마감일시를 필수로 할지 선택으로 할지에 대한 사용자 선택지를 명확히 질문하여 기획안에 반영하십시오.\"\n  ],\n  \"scopeViolation\": false,\n  \"userJudgmentRequired\": true,\n  \"qualityAssessment\": {\n    \"version\": 1,\n    \"requirements\": [\n      {\n        \"requirementId\": \"REQ-01\",\n        \"status\": \"needs_user_input\",\n        \"evidence\": [\n          \"마감일시 필수 여부는 아직 미정이며 구현자가 나중에 결정한다.\",\n          \"REQ-01: 제목 필수이며 마감일시의 필수 여부는 작업 지시 단계로 미룬다. 공백뿐인 제목, 빠진 날짜/시간, 2월30일, 24:00은 거부하고 입력과 기존 목록을 유지한다.\"\n        ],\n        \"rationale\": \"마감일시 필수 여부가 사용자 질문(DETAIL-1) 미답변 상태로 남아 있으며, 기획안에서 이를 작업 지시로 미루면서 동시에 빠진 날짜/시간을 거부한다는 상반된 규칙을 포함하고 있어 사용자의 명확한 결정이 필요합니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-02\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"REQ-02: 미완료와 완료 두 구역, 영속 등록 순번 오름차순. A(1),B(2) 등록 후 PC 시계를 뒤로 돌려 C를 등록해도 A,B,C 순서다. B 삭제 후 D 등록은 A(1),C(3),D(4)다. 수정/상태 변경/재시작으로 순번을 바꾸지 않는다.\"\n        ],\n        \"rationale\": \"미완료 및 완료 목록 분리와 컴퓨터 시계 변동에 영향받지 않는 등록 순번 오름차순 정렬 규칙이 구체적으로 정의되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-03\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"REQ-03: A만 완료하면 완료 구역에 A만 이동한다. 취소하면 미완료 구역의 원래 등록순 위치로 돌아온다. 저장 실패 시 상태가 이동하지 않는다.\"\n        ],\n        \"rationale\": \"완료 전환과 완료 취소 시의 구역 이동 동작, 원래 등록순 위치 복귀, 저장 실패 시 무변경 처리가 명시되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-04\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"REQ-04: 동일 제목 두 항목 중 두 번째를 수정하면 두 번째만 바뀐다. 제목/마감일시 검증 실패 또는 저장 실패면 기존 목록을 유지하고 수정 입력을 보존한다. 수정 취소는 무변경이다.\"\n        ],\n        \"rationale\": \"제목·메모·마감일시 수정 기능, 고유 ID 기반 개별 수정, 검증/저장 실패 및 취소 시의 무변경/입력 보존 동작이 정확히 규정되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-05\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"REQ-05: 삭제 확인 취소는 무변경, 확인은 선택 ID 한 건만 삭제. 저장 실패 시 항목을 지우지 않고 오류를 표시한다.\"\n        ],\n        \"rationale\": \"삭제 확인 대화상자 취소 시 무변경, 확인 시 단일 항목 삭제, 저장 실패 시 무삭제 및 오류 표시 동작이 완결되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-06\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.\"\n        ],\n        \"rationale\": \"브라우저 재실행 시 상태 복원, 고유 스토리지 키 관리, 저장 실패 및 손상 데이터 감지 시 안전한 읽기/쓰기 차단 경계가 명확합니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-07\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"REQ-07: 모든 동작은 브라우저 입력창과 버튼으로 수행한다. 제목이나 메모의 '<b>장보기</b>'나 '<script>' 문자는 코드가 아닌 글자로 표시한다.\"\n        ],\n        \"rationale\": \"웹 브라우저 폼 입력 및 버튼 클릭 인터페이스와 텍스트 이스케이프 처리 규칙이 명시되어 있습니다.\"\n      }\n    ],\n    \"checks\": [\n      {\n        \"id\": \"decision_provenance\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"Q-1~Q-7: 브라우저 버튼 사용, 제목·메모·마감일, 수정·삭제, 완료 취소, 분리 목록과 등록순, 동일 제목 허용, 내 컴퓨터 저장(세부 방식 위임). DETAIL-1은 아직 답변하지 않았다. DETAIL-2: 날짜+시간. DETAIL-3: 삭제 확인. 과거 마감일 허용은 사용자가 직접 확정한 것이 아닌 기획자의 승인 대기 제안이다.\"\n        ],\n        \"rationale\": \"사용자가 동의한 결정(Q-1~Q-7, DETAIL-2, DETAIL-3)과 미답변 항목(DETAIL-1), 그리고 기획자 제안 항목(과거 마감일 허용)의 출처를 왜곡 없이 명확히 구분하고 있습니다.\"\n      },\n      {\n        \"id\": \"scope_compliance\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"향후 작업 순서는 화면 흐름·입력 규칙 확정 → 검증/순번 모델 → 저장/실패 경계 → UI 연결 → 위 정상·실패 수락 사례 확인이다.\",\n          \"현재 세션은 기획·검토·지시 품질 시험이며 제품 구현·제품 테스트·팀원 실행을 하지 않는다. 로그인·계정·외부 서버 동기화·공유·검색·필터·태그·기한순 정렬을 추가하지 않는다.\"\n        ],\n        \"rationale\": \"승인된 Scope 요구사항을 충실히 반영하며, 로그인/공유/검색 등 제외 기능을 배제하고 시험 실행 경계를 준수하고 있습니다.\"\n      },\n      {\n        \"id\": \"behavior_and_errors\",\n        \"status\": \"missing\",\n        \"evidence\": [\n          \"마감일시 필수 여부는 아직 미정이며 구현자가 나중에 결정한다.\",\n          \"REQ-01: 제목 필수이며 마감일시의 필수 여부는 작업 지시 단계로 미룬다. 공백뿐인 제목, 빠진 날짜/시간, 2월30일, 24:00은 거부하고 입력과 기존 목록을 유지한다.\"\n        ],\n        \"rationale\": \"마감일시 필수 여부를 미정으로 남겨 작업 지시로 미룬다고 서술하면서도, 입력 검증에서는 빠진 날짜/시간을 거부한다고 기술하여 동작 및 오류 처리 기준이 모순됩니다.\"\n      },\n      {\n        \"id\": \"data_integrity\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다.\",\n          \"id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다.\",\n          \"후보 객체를 검증·직렬화한 뒤 setItem 성공 반환을 커밋으로 보고 확정 목록/화면을 갱신한다. 커밋 전 또는 setItem 실패는 기존 저장값·확정 목록·입력을 보존한다.\"\n        ],\n        \"rationale\": \"단일 키 원자적 저장, 불변식(id/순번 중복 불가, nextSequence 단조 증가), 시계 역행 무관 순번 정렬, 손상 데이터 보호 및 커밋 전후 실패 경계가 충실히 수립되어 있습니다.\"\n      },\n      {\n        \"id\": \"acceptance_criteria\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"A(1),B(2) 등록 후 PC 시계를 뒤로 돌려 C를 등록해도 A,B,C 순서다. B 삭제 후 D 등록은 A(1),C(3),D(4)다.\",\n          \"제목이나 메모의 '<b>장보기</b>'나 '<script>' 문자는 코드가 아닌 글자로 표시한다.\",\n          \"삭제 확인 취소는 무변경, 확인은 선택 ID 한 건만 삭제. 저장 실패 시 항목을 지우지 않고 오류를 표시한다.\"\n        ],\n        \"rationale\": \"각 요구사항별로 구체적인 입력/조작 시나리오와 관찰 가능한 기대 결과(정상/실패 케이스 포함)가 구체적으로 명시되어 있습니다.\"\n      },\n      {\n        \"id\": \"revision_resolution\",\n        \"status\": \"not_applicable\",\n        \"evidence\": [\n          \"이 초기 후보에는 이전 버전 수정 요청이 없다.\"\n        ],\n        \"rationale\": \"본 문서는 초기 기획안 후보(version 1)이며 이전 검토에서 전달된 수정 요청 항목이 존재하지 않으므로 점검 대상이 아닙니다.\"\n      },\n      {\n        \"id\": \"clarity\",\n        \"status\": \"satisfied\",\n        \"evidence\": [\n          \"## 사용자 이용 예시\",\n          \"## 기술 설계 제안 (아직 사용자 승인 전)\",\n          \"제목 ‘장보기’, 메모 ‘우유 1팩’, 마감일시 ‘2026-11-10 15:00’을 적고 추가한다.\"\n        ],\n        \"rationale\": \"사용자 관점의 일상적인 사용 예시를 전면에 먼저 배치하고 기술적 상세 규격을 별도 절로 분리하여 쉬운 한국어로 설명하고 있습니다.\"\n      }\n    ]\n  }\n}"
+}

@@ -1,0 +1,48 @@
+{
+  "id": "review-baseline-normal-complete-1",
+  "variant": "baseline",
+  "caseId": "normal-complete",
+  "repeat": 1,
+  "operation": "review",
+  "expected": "adequate",
+  "inputContentSha256": "d28bc7936c2bee6992497b4909c4fb142c1ee8498a9d2177da0486e0ccc0071c",
+  "status": "completed",
+  "review": {
+    "id": "review-1",
+    "projectId": "supervisor-todo-acceptance-20261108",
+    "planId": "supervisor-todo-acceptance-20261108-plan",
+    "planVersion": 1,
+    "scopeContractId": "scope-v6",
+    "scopeVersion": 6,
+    "outcome": "pass",
+    "issues": [],
+    "suggestions": [
+      "과거 마감일시 등록 허용 여부는 기획안 본문에 명시된 대로 사용자 최종 승인 시 확인을 거치도록 안내하십시오."
+    ],
+    "scopeViolation": false,
+    "userJudgmentRequired": false,
+    "reviewedAt": "2026-11-08T23:36:07.215Z"
+  },
+  "decision": {
+    "type": "REQUEST_USER_APPROVAL",
+    "planId": "supervisor-todo-acceptance-20261108-plan",
+    "version": 1
+  },
+  "usage": [
+    {
+      "projectId": "supervisor-todo-acceptance-20261108",
+      "planId": "supervisor-todo-acceptance-20261108-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 3735,
+      "outputTokens": 78,
+      "reasoningTokens": 937,
+      "outcome": "success",
+      "durationMs": 8536,
+      "recordedAt": "2026-11-08T23:36:07.215Z"
+    }
+  ],
+  "rawModelResponse": "{\n  \"outcome\": \"pass\",\n  \"issues\": [],\n  \"suggestions\": [\n    \"과거 마감일시 등록 허용 여부는 기획안 본문에 명시된 대로 사용자 최종 승인 시 확인을 거치도록 안내하십시오.\"\n  ],\n  \"scopeViolation\": false,\n  \"userJudgmentRequired\": false\n}"
+}
