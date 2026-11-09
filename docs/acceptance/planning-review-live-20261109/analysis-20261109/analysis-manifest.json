@@ -1,0 +1,15 @@
+{
+  "label": "Additional audit files, separate from immutable original artifact manifests",
+  "hashes": {
+    "validation.json": "6ffab9a29b6af6f55bba1e92bbbc9f7b955792c22d7e46a48285db1d1121d601",
+    "test-output.txt": "147a876eda45f716840631119db7ddae94be268f5038ff5147a5dcc1a2a3c810",
+    "manual-audit.json": "6ca9686449693707a4bb745c0e5fb1d145fa467dd6792b25b16ed8e58b727138",
+    "verification.json": "5c230ea8cbb99bc43f42963e07c316127fb8847361a632b3a0b950bca2498901",
+    "reception.json": "858326cd4ecff8341f5a2f3cd89d8b82019564f398f82e164df79656cb45ff1f",
+    "frozen/cases.json": "e94611528623ae83e007ab90782ddb2b4cb2b26ffa873c26e669f43ea8b567e1",
+    "frozen/freeze.json": "9492a986f9ef9d336c6421cd20d76fb7b7661fd8290de04d4cd9c42540174fde",
+    "frozen/pricing.json": "de383406485576c124b6794e0813d3f333decf1e616f36e4341649a0673fccfc",
+    "frozen/package-lock.json": "8c3c4d7041bb3f58308a5b3d0ac7d747603930c1660e61869799d1387a5d6e18",
+    "frozen/run.mjs": "b287f8aa76c5b42929edd17832581a3b4b7115c3a756708d52b7f02a01ff54e9"
+  }
+}

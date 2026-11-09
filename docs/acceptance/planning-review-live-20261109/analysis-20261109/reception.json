@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "receivedAtUtc": "2026-11-09T13:01:08.480614+00:00",
+  "source": "user-uploaded Windows archives; treated as data, uploaded scripts not executed",
+  "attempts": [
+    {
+      "runId": "local-1794227914170-5fd21835",
+      "archiveSha256": "81ac681f7048dfde0b8f6192c9f77f5edabf529bdb142fa5b692ee159984010e",
+      "payloadFiles": 19
+    },
+    {
+      "runId": "local-1794228751746-1ceb6788",
+      "archiveSha256": "7dec88090afcb56802c89cdd88fa79354546f565ee7cb704becec0bad2d30bff",
+      "payloadFiles": 59
+    }
+  ],
+  "relationship": "Initial run failed authentication_or_permission before any model response. After user-reported ADC login and explicit instruction to retain the old folder, the follow-up used a separate fresh checkout. Both are retained; no successful result replaced.",
+  "initialRunRootCause": "Provider detail was sanitized; missing credentials, expired credentials, and permission denial cannot be distinguished from archive alone.",
+  "manualReviewBy": "Codex, same system implementer; not blinded or independent external evaluation",
+  "additionalModelCallsForAnalysis": 0,
+  "finalUserApprovalRecorded": false,
+  "productOrWorkerExecuted": false
+}

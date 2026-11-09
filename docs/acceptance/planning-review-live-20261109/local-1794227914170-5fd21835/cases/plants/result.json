@@ -1,0 +1,21 @@
+{
+  "caseId": "plants",
+  "title": "반려식물 물주기 기록",
+  "status": "drafting",
+  "failure": "See immutable provider responses and runtime/errors; no paid retry.",
+  "decision": null,
+  "currentPlanVersion": null,
+  "iterationCount": 0,
+  "scopeVersionUnchanged": true,
+  "exportCreated": false,
+  "rowStatuses": [],
+  "actualUserApprovalCreated": false,
+  "implementationVerified": false,
+  "factsOnlyNotQualityPass": true,
+  "manualChecks": [
+    "새 응답 형식이 파싱/검증되고 MAX_TOKENS 중단을 성공으로 취급하지 않는다.",
+    "요구별 정상/실패/확인 사례 원문 근거와 저장 상태 trigger 근거를 검사한다.",
+    "원본 Scope와 기존 프로젝트를 유지하고 실제 사용자 승인을 생성하지 않는다.",
+    "내보낸 사용자 검토표와 원문/파일 해시를 대조한다."
+  ]
+}

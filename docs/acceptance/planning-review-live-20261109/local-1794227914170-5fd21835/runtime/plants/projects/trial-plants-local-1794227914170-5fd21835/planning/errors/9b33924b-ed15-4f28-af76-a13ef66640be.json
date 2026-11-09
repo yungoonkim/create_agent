@@ -1,0 +1,14 @@
+{
+  "projectId": "trial-plants-local-1794227914170-5fd21835",
+  "occurredAt": "2026-11-09T12:38:43.631Z",
+  "operation": "call Writer",
+  "message": "Recorded authentication_or_permission; no automatic replay.",
+  "lastState": {
+    "projectId": "trial-plants-local-1794227914170-5fd21835",
+    "scopeContractId": "plants-scope",
+    "scopeVersion": 1,
+    "iterationCount": 0,
+    "maxIterations": 2,
+    "status": "drafting"
+  }
+}

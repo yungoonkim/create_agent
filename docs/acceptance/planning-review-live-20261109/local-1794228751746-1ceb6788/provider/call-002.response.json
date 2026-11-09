@@ -1,0 +1,78 @@
+{
+  "callId": "call-002",
+  "caseId": "plants",
+  "stage": "assessment",
+  "mode": "live",
+  "startedAt": "2026-11-09T12:53:20.370Z",
+  "status": "response_received",
+  "durationMs": 22621,
+  "finishReasons": [
+    "STOP"
+  ],
+  "usage": {
+    "promptTokenCount": 9219,
+    "candidatesTokenCount": 1620,
+    "totalTokenCount": 11862,
+    "trafficType": "ON_DEMAND",
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 9219
+      }
+    ],
+    "candidatesTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1620
+      }
+    ],
+    "thoughtsTokenCount": 1023
+  },
+  "modelVersion": "gemini-3.8-flash",
+  "responseId": "QMLxatj_CPCKx9gPtPbxuQk",
+  "tariff": {
+    "knownTokenTariffSubtotalUsd": 0.0168255,
+    "missingMetrics": [],
+    "cacheAssumption": "cache metric absent; provided input priced at uncached list rate",
+    "actualInvoice": false
+  },
+  "text": "{\n  \"outcome\": \"pass\",\n  \"issues\": [],\n  \"suggestions\": [],\n  \"scopeViolation\": false,\n  \"userJudgmentRequired\": false,\n  \"qualityAssessment\": {\n    \"version\": 1,\n    \"requirements\": [\n      {\n        \"requirementId\": \"WATER-1\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [30, 34, 35, 36, 37, 39, 40, 45],\n        \"rationale\": \"식물 이름(공백 제외 1자 이상), 유효한 YYYY-MM-DD 날짜, 선택 메모 입력 및 동일 내용 독립 기록 등록 규칙과 최초 seq 기반 표시 순서가 명확히 명세되어 있습니다.\",\n        \"behaviorEvidence\": {\n          \"normal\": {\n            \"evidenceLines\": [33, 34, 35, 36, 37]\n          },\n          \"failure\": {\n            \"evidenceLines\": [38, 39, 40, 42, 43]\n          },\n          \"acceptance\": {\n            \"evidenceLines\": [44, 45, 46, 47, 48, 181, 182, 186]\n          },\n          \"failureNotApplicableReason\": \"\"\n        }\n      },\n      {\n        \"requirementId\": \"WATER-2\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [52, 56, 57, 59, 60, 62, 65, 67],\n        \"rationale\": \"선택한 단일 항목에 대한 수정 시 ID/seq 유지 규칙, 삭제 확인 대화창을 통한 단건 삭제 및 취소 시 저장소·목록 무변경 원칙이 구체적으로 정의되어 있습니다.\",\n        \"behaviorEvidence\": {\n          \"normal\": {\n            \"evidenceLines\": [55, 56, 57]\n          },\n          \"failure\": {\n            \"evidenceLines\": [58, 59, 60, 61, 62, 63]\n          },\n          \"acceptance\": {\n            \"evidenceLines\": [64, 65, 66, 67, 68, 187, 188, 190]\n          },\n          \"failureNotApplicableReason\": \"\"\n        }\n      },\n      {\n        \"requirementId\": \"WATER-3\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [72, 76, 78, 81, 88, 89, 91, 95],\n        \"rationale\": \"정상 재접속 보존, getItem 결과 null만 신규 취급, 빈값/손상/버전오류/무결성위반 시 원본 보존 및 변경 차단, 커밋 경계 분리 및 Web Locks 배타 잠금 규칙이 일관되게 명세되었습니다.\",\n        \"behaviorEvidence\": {\n          \"normal\": {\n            \"evidenceLines\": [75, 76, 88, 89, 96]\n          },\n          \"failure\": {\n            \"evidenceLines\": [78, 79, 81, 82, 84, 90, 91, 97]\n          },\n          \"acceptance\": {\n            \"evidenceLines\": [92, 93, 192, 193, 194, 195, 196]\n          },\n          \"failureNotApplicableReason\": \"\"\n        }\n      }\n    ],\n    \"checks\": [\n      {\n        \"id\": \"decision_provenance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [12, 13, 14, 15, 16, 17, 18, 19],\n        \"rationale\": \"settledDecisions의 사용자 확정 사항과 기획자 위임 기술 제안이 왜곡 없이 명확히 구분되어 기록되어 있습니다.\"\n      },\n      {\n        \"id\": \"scope_compliance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 104, 105, 106, 111, 112, 113, 114],\n        \"rationale\": \"승인된 Scope 요구사항을 충실히 반영하고, EX-WATER 및 EX-RUN 제외 범위(서버, 로그인, 알림, 실제 구현/실행/승인 제외)를 정확히 준수합니다.\"\n      },\n      {\n        \"id\": \"behavior_and_errors\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [42, 43, 61, 62, 79, 81, 90, 91],\n        \"rationale\": \"입력 오류, 손상 저장소 상태, 용량 초과 예외, 락 획득 실패 시의 무변경 및 안내 동작이 구체적으로 정의되어 있습니다.\"\n      },\n      {\n        \"id\": \"data_integrity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [149, 150, 151, 155, 160, 161, 162, 172],\n        \"rationale\": \"schemaVersion:1, 양의 안전 정수 seq 및 nextSeq, nextSeq > max(seq) 불변식, 손상 데이터 미덮어쓰기 및 지속성 한계가 엄밀하게 규정되었습니다.\"\n      },\n      {\n        \"id\": \"acceptance_criteria\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [44, 45, 64, 65, 181, 182, 188, 193],\n        \"rationale\": \"각 기능별 구체적인 입력값, 사용자 조작 및 기대되는 관찰 결과가 인수 검증 항목으로 명시되어 있습니다.\"\n      },\n      {\n        \"id\": \"revision_resolution\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [13, 14, 15, 16, 17, 18],\n        \"rationale\": \"사용자 확정 결정사항이 누락 없이 모두 초안에 반영되어 있습니다.\"\n      },\n      {\n        \"id\": \"clarity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [30, 33, 52, 55, 121, 123, 200, 202],\n        \"rationale\": \"쉬운 한국어 사용자 여정과 사례를 앞부분에 배치하고, 상세 기술 규약과 용어 사전을 분리하여 가독성이 우수합니다.\"\n      }\n    ]\n  }\n}",
+  "rawModelResponse": {
+    "candidates": [
+      {
+        "content": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "{\n  \"outcome\": \"pass\",\n  \"issues\": [],\n  \"suggestions\": [],\n  \"scopeViolation\": false,\n  \"userJudgmentRequired\": false,\n  \"qualityAssessment\": {\n    \"version\": 1,\n    \"requirements\": [\n      {\n        \"requirementId\": \"WATER-1\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [30, 34, 35, 36, 37, 39, 40, 45],\n        \"rationale\": \"식물 이름(공백 제외 1자 이상), 유효한 YYYY-MM-DD 날짜, 선택 메모 입력 및 동일 내용 독립 기록 등록 규칙과 최초 seq 기반 표시 순서가 명확히 명세되어 있습니다.\",\n        \"behaviorEvidence\": {\n          \"normal\": {\n            \"evidenceLines\": [33, 34, 35, 36, 37]\n          },\n          \"failure\": {\n            \"evidenceLines\": [38, 39, 40, 42, 43]\n          },\n          \"acceptance\": {\n            \"evidenceLines\": [44, 45, 46, 47, 48, 181, 182, 186]\n          },\n          \"failureNotApplicableReason\": \"\"\n        }\n      },\n      {\n        \"requirementId\": \"WATER-2\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [52, 56, 57, 59, 60, 62, 65, 67],\n        \"rationale\": \"선택한 단일 항목에 대한 수정 시 ID/seq 유지 규칙, 삭제 확인 대화창을 통한 단건 삭제 및 취소 시 저장소·목록 무변경 원칙이 구체적으로 정의되어 있습니다.\",\n        \"behaviorEvidence\": {\n          \"normal\": {\n            \"evidenceLines\": [55, 56, 57]\n          },\n          \"failure\": {\n            \"evidenceLines\": [58, 59, 60, 61, 62, 63]\n          },\n          \"acceptance\": {\n            \"evidenceLines\": [64, 65, 66, 67, 68, 187, 188, 190]\n          },\n          \"failureNotApplicableReason\": \"\"\n        }\n      },\n      {\n        \"requirementId\": \"WATER-3\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [72, 76, 78, 81, 88, 89, 91, 95],\n        \"rationale\": \"정상 재접속 보존, getItem 결과 null만 신규 취급, 빈값/손상/버전오류/무결성위반 시 원본 보존 및 변경 차단, 커밋 경계 분리 및 Web Locks 배타 잠금 규칙이 일관되게 명세되었습니다.\",\n        \"behaviorEvidence\": {\n          \"normal\": {\n            \"evidenceLines\": [75, 76, 88, 89, 96]\n          },\n          \"failure\": {\n            \"evidenceLines\": [78, 79, 81, 82, 84, 90, 91, 97]\n          },\n          \"acceptance\": {\n            \"evidenceLines\": [92, 93, 192, 193, 194, 195, 196]\n          },\n          \"failureNotApplicableReason\": \"\"\n        }\n      }\n    ],\n    \"checks\": [\n      {\n        \"id\": \"decision_provenance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [12, 13, 14, 15, 16, 17, 18, 19],\n        \"rationale\": \"settledDecisions의 사용자 확정 사항과 기획자 위임 기술 제안이 왜곡 없이 명확히 구분되어 기록되어 있습니다.\"\n      },\n      {\n        \"id\": \"scope_compliance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 104, 105, 106, 111, 112, 113, 114],\n        \"rationale\": \"승인된 Scope 요구사항을 충실히 반영하고, EX-WATER 및 EX-RUN 제외 범위(서버, 로그인, 알림, 실제 구현/실행/승인 제외)를 정확히 준수합니다.\"\n      },\n      {\n        \"id\": \"behavior_and_errors\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [42, 43, 61, 62, 79, 81, 90, 91],\n        \"rationale\": \"입력 오류, 손상 저장소 상태, 용량 초과 예외, 락 획득 실패 시의 무변경 및 안내 동작이 구체적으로 정의되어 있습니다.\"\n      },\n      {\n        \"id\": \"data_integrity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [149, 150, 151, 155, 160, 161, 162, 172],\n        \"rationale\": \"schemaVersion:1, 양의 안전 정수 seq 및 nextSeq, nextSeq > max(seq) 불변식, 손상 데이터 미덮어쓰기 및 지속성 한계가 엄밀하게 규정되었습니다.\"\n      },\n      {\n        \"id\": \"acceptance_criteria\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [44, 45, 64, 65, 181, 182, 188, 193],\n        \"rationale\": \"각 기능별 구체적인 입력값, 사용자 조작 및 기대되는 관찰 결과가 인수 검증 항목으로 명시되어 있습니다.\"\n      },\n      {\n        \"id\": \"revision_resolution\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [13, 14, 15, 16, 17, 18],\n        \"rationale\": \"사용자 확정 결정사항이 누락 없이 모두 초안에 반영되어 있습니다.\"\n      },\n      {\n        \"id\": \"clarity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [30, 33, 52, 55, 121, 123, 200, 202],\n        \"rationale\": \"쉬운 한국어 사용자 여정과 사례를 앞부분에 배치하고, 상세 기술 규약과 용어 사전을 분리하여 가독성이 우수합니다.\"\n      }\n    ]\n  }\n}",
+              "thoughtSignature": "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"
+            }
+          ]
+        },
+        "finishReason": "STOP"
+      }
+    ],
+    "usageMetadata": {
+      "promptTokenCount": 9219,
+      "candidatesTokenCount": 1620,
+      "totalTokenCount": 11862,
+      "trafficType": "ON_DEMAND",
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 9219
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 1620
+        }
+      ],
+      "thoughtsTokenCount": 1023
+    },
+    "modelVersion": "gemini-3.8-flash",
+    "responseId": "QMLxatj_CPCKx9gPtPbxuQk",
+    "promptFeedback": null
+  }
+}

@@ -1,0 +1,1 @@
+{"projectId":"trial-plants-local-1794227914170-5fd21835","planId":"trial-plants-local-1794227914170-5fd21835-plan","iteration":1,"role":"writer","providerId":"vertex-ai","modelId":"gemini-3.8-flash","outcome":"failure","durationMs":9362,"error":"Recorded authentication_or_permission; no automatic replay.","recordedAt":"2026-11-09T12:38:43.631Z"}
