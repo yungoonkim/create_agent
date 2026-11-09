@@ -1,0 +1,57 @@
+{
+  "id": "review-baseline-post-commit-rollback-1",
+  "variant": "baseline",
+  "caseId": "post-commit-rollback",
+  "repeat": 1,
+  "operation": "review",
+  "expected": "block",
+  "inputContentSha256": "03e79d1f0666f3684795c1bc132471622be0f4ccf6a1423bc041d12539ff510e",
+  "status": "completed",
+  "review": {
+    "id": "review-1",
+    "projectId": "supervisor-todo-acceptance-20261108",
+    "planId": "supervisor-todo-acceptance-20261108-plan",
+    "planVersion": 1,
+    "scopeContractId": "scope-v6",
+    "scopeVersion": 6,
+    "outcome": "revise",
+    "issues": [
+      {
+        "id": "issue-135c24e3d02b9d79",
+        "kind": "contradiction",
+        "severity": "major",
+        "description": "기획안 기술 설계 제안에 'setItem 성공 뒤 표시가 실패하면 setItem 성공 자체가 취소되므로 저장값도 자동으로 이전 값으로 돌아갔다고 안내한다'고 기술되어 있습니다. 그러나 브라우저 localStorage.setItem은 호출 성공 시 이미 스토리지에 동기적으로 커밋되므로, 이후 UI 렌더링/표시 과정에서 오류가 발생하더라도 스토리지 데이터가 자동으로 취소되거나 이전 값으로 롤백되지 않습니다. 이는 브라우저 스토리지 동작 원리와 모순되며 실제 저장 상태와 사용자 안내 간의 불일치를 초래합니다.",
+        "suggestedDirection": "커밋(setItem 성공) 이후 UI 표시 실패 시 스토리지 롤백이 자동으로 일어난다고 기술하지 마십시오. 저장은 이미 완료되었으나 화면 갱신에 실패했음을 사용자에게 알리고 새로고침을 유도하거나, 명시적인 보상 트랜잭션(이전 데이터 재저장) 또는 기술적 한계를 현실적인 브라우저 동작 모델에 맞추어 명문화해야 합니다.",
+        "relatedRequirementId": "REQ-06"
+      }
+    ],
+    "suggestions": [
+      "localStorage 커밋 전 실패(입력 유지 및 무변경)와 커밋 후 표시 실패(저장소 반영 완료 후 화면 동기화 실패)의 실패 경계를 분리하고, 커밋 후 장애 시 새로고침 안내 등 적절한 복구 경로를 규정하십시오."
+    ],
+    "scopeViolation": false,
+    "userJudgmentRequired": false,
+    "reviewedAt": "2026-11-08T23:37:28.479Z"
+  },
+  "decision": {
+    "type": "REVISE",
+    "feedback": "issue-135c24e3d02b9d79: 기획안 기술 설계 제안에 'setItem 성공 뒤 표시가 실패하면 setItem 성공 자체가 취소되므로 저장값도 자동으로 이전 값으로 돌아갔다고 안내한다'고 기술되어 있습니다. 그러나 브라우저 localStorage.setItem은 호출 성공 시 이미 스토리지에 동기적으로 커밋되므로, 이후 UI 렌더링/표시 과정에서 오류가 발생하더라도 스토리지 데이터가 자동으로 취소되거나 이전 값으로 롤백되지 않습니다. 이는 브라우저 스토리지 동작 원리와 모순되며 실제 저장 상태와 사용자 안내 간의 불일치를 초래합니다. — 커밋(setItem 성공) 이후 UI 표시 실패 시 스토리지 롤백이 자동으로 일어난다고 기술하지 마십시오. 저장은 이미 완료되었으나 화면 갱신에 실패했음을 사용자에게 알리고 새로고침을 유도하거나, 명시적인 보상 트랜잭션(이전 데이터 재저장) 또는 기술적 한계를 현실적인 브라우저 동작 모델에 맞추어 명문화해야 합니다.\nlocalStorage 커밋 전 실패(입력 유지 및 무변경)와 커밋 후 표시 실패(저장소 반영 완료 후 화면 동기화 실패)의 실패 경계를 분리하고, 커밋 후 장애 시 새로고침 안내 등 적절한 복구 경로를 규정하십시오.",
+    "nextVersion": 2
+  },
+  "usage": [
+    {
+      "projectId": "supervisor-todo-acceptance-20261108",
+      "planId": "supervisor-todo-acceptance-20261108-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 3733,
+      "outputTokens": 380,
+      "reasoningTokens": 3040,
+      "outcome": "success",
+      "durationMs": 21501,
+      "recordedAt": "2026-11-08T23:37:28.479Z"
+    }
+  ],
+  "rawModelResponse": "{\n  \"outcome\": \"revise\",\n  \"issues\": [\n    {\n      \"kind\": \"contradiction\",\n      \"severity\": \"major\",\n      \"description\": \"기획안 기술 설계 제안에 'setItem 성공 뒤 표시가 실패하면 setItem 성공 자체가 취소되므로 저장값도 자동으로 이전 값으로 돌아갔다고 안내한다'고 기술되어 있습니다. 그러나 브라우저 localStorage.setItem은 호출 성공 시 이미 스토리지에 동기적으로 커밋되므로, 이후 UI 렌더링/표시 과정에서 오류가 발생하더라도 스토리지 데이터가 자동으로 취소되거나 이전 값으로 롤백되지 않습니다. 이는 브라우저 스토리지 동작 원리와 모순되며 실제 저장 상태와 사용자 안내 간의 불일치를 초래합니다.\",\n      \"suggestedDirection\": \"커밋(setItem 성공) 이후 UI 표시 실패 시 스토리지 롤백이 자동으로 일어난다고 기술하지 마십시오. 저장은 이미 완료되었으나 화면 갱신에 실패했음을 사용자에게 알리고 새로고침을 유도하거나, 명시적인 보상 트랜잭션(이전 데이터 재저장) 또는 기술적 한계를 현실적인 브라우저 동작 모델에 맞추어 명문화해야 합니다.\",\n      \"relatedRequirementId\": \"REQ-06\"\n    }\n  ],\n  \"suggestions\": [\n    \"localStorage 커밋 전 실패(입력 유지 및 무변경)와 커밋 후 표시 실패(저장소 반영 완료 후 화면 동기화 실패)의 실패 경계를 분리하고, 커밋 후 장애 시 새로고침 안내 등 적절한 복구 경로를 규정하십시오.\"\n  ],\n  \"scopeViolation\": false,\n  \"userJudgmentRequired\": false\n}"
+}

@@ -1,7 +1,22 @@
 # ADTF 개발 인수인계
 
-마지막 정리: 2026-11-08 (Asia/Seoul)
+마지막 정리: 2026-11-09 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
+
+## 최신 작업 완료 — Writer/Reviewer 품질 절차 보완·실제 비교
+
+사용자 요청에 따라 시스템 프롬프트·검토 형식·코드 통과 조건을 보완했다. [최종 보고서](planning-quality-hardening-20261108.md)를 우선한다. todo 기획 v4 최종 승인은 여전히 pending이며 제품 구현·팀원 Agent 작업은 보류다.
+
+- Writer는 사용자 선택/제안/미정 출처, 쉬운 이용 흐름, 요구별 정상/실패/수락 기준, 수정·회귀 점검을 지시한다.
+- 새 Gemini Review는 qualityAssessment v1에 필수 요구 전체와 7개 점검의 상태·근거 위치·이유를 제출한다. 현재 기획의 실제 비어 있지 않은 줄 번호만 응답 스키마에서 선택할 수 있고 코드는 원문을 추출·참조 검증한다. 미해결은 모델 pass보다 우선해 수정/질문으로 보낸다.
+- 승인 대상으로 넘어갈 때만 독립 반례 검토를 한 번 더 호출한다(동일 모델, 앞 판정은 전달하지 않음). 실패하면 이전 pass를 반환하지 않는다. 논리적 반복 예산은 유지하며 실제 모델 호출은 reviewer 절차당 최대2, usage의 reviewStage로 구분한다. MEDIUM thinking·단계별 출력8,000 한도를 사용한다.
+- typecheck/전체 **128개 테스트 통과**. 기존 qualityAssessment 없는 리뷰/fixture는 호환하며 과거 기록을 새 방식으로 검증된 것으로 바꾸지 않는다.
+- [동일 고정 사례 최종 비교](acceptance/planning-quality-bounded-20261108/comparison.json): 결함5개×2회 차단이 기존6/10 → 최종9/10, 정상2개×2회는 양쪽4/4 통과, 최종 형식 오류0. **빈 저장 문자열 자동 초기화 결함은 최종1회 놓쳤으므로 의미 품질을 보장하지 않는다.** 개발에 사용한 소규모 세트이며 일반 정확도/통계 검증이 아니다.
+- 최종 고정 후보 14회 검토에서 모델 요청 기록은21개(기존14). 모든 중간 실패·재시험·Writer 표본까지94개를 [ledger](acceptance/planning-quality-bounded-20261108/all-usage.jsonl)에 보존했다. 기록된 입력470,294/출력100,451/reasoning181,079; 지표 없는10행은 추정하지 않는다.
+- 새로운 Writer 미승인 표본은 [최종 별도 검토](acceptance/planning-quality-bounded-20261108/writer-sample-final-review.json)에서 승인 대상으로 제시 가능 판정이다. 실제 사용자 승인이 아니며 현재 todo v4와 합치지 않는다.
+- 평가 스크립트/후보/원본 baseline은 examples/planning-quality-eval에 있다. baseline은951588b의 원본 어댑터다. initial/references/challenge/bounded의 기존 실행 경로는 모두 완료했으므로 재실행하지 않는다. 모델 호출·승인·Planning 재개를 중복 실행하지 않는다.
+
+기존 todo·재고와 관련 승인 파일은 전후 동일하다. todo는 Scope v6 approved / Plan v4 awaiting_approval / 반복4/5 / Supervisor revision17이다. 강화된 별도 평가의 기존 v4는 두 번 모두 통과했으나 정식 과거 Review를 덮어쓰거나 기획 승인을 대신하지 않았다. 이후에는 사용자 결정에 따라 최종 승인 또는 같은 Scope의 남은 예산 내 수정을 진행한다. 상세 상태는 아래와 원래 체크포인트를 본다.
 
 ## 새 주제 시험 — 내 할 일 목록 관리, 기획 v4 최종 승인 대기
 

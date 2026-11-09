@@ -1,0 +1,11 @@
+{
+  "sourceCommit": "951588b",
+  "sourceFile": "src/planning/google-genai.ts",
+  "sha256": "06b3114d45e7246385f82018049e2a25196544332043859e53d84c04f7afe7a3",
+  "casesFrozenBeforeCalls": true,
+  "repetitions": 2,
+  "reviewCalls": 28,
+  "writerBeforeAfterSampleCalls": 4,
+  "model": "gemini-3.8-flash",
+  "note": "Combined prompt+structured protocol+Controller gate comparison. Same model and original output token budgets. No active project writes or approvals."
+}

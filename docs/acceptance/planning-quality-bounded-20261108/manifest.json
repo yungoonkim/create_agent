@@ -1,0 +1,26 @@
+{
+  "sourceCommit": "951588b",
+  "sourceFile": "src/planning/google-genai.ts",
+  "sha256": "06b3114d45e7246385f82018049e2a25196544332043859e53d84c04f7afe7a3",
+  "casesFrozenBeforeCalls": true,
+  "repetitions": 2,
+  "reviewCalls": 14,
+  "writerBeforeAfterSampleCalls": 0,
+  "model": "gemini-3.8-flash",
+  "note": "Frozen candidates and model; compare complete pipelines, not an isolated prompt effect. Final pipeline uses MEDIUM thinking and at most two reviewer model calls; baseline uses the original single-call settings. No active project writes or approvals.",
+  "startedAt": "2026-11-08T23:52:14.823Z",
+  "datasetSha256": "4422ae43e6d2ffa2914390210cb0b997226962d9baab3419cff3e25d21e530cc",
+  "round": "bounded",
+  "runnerSha256": "a5b633298db61d26ce68ab5098c2282c7dd4a8a62e987fd7be2629349cfc895e",
+  "logicalReviewerInvocations": 14,
+  "maxReviewerModelCallsPerInvocation": 2,
+  "enhancedSourceSha256": {
+    "src/planning/contracts.ts": "8f5cbc022303b17c38396db78f93235b903120f2006ea88776524c07ad587cc9",
+    "src/planning/google-genai.ts": "9d1c8b14e89e809b50a28fae919e9afae3d498d2071bb7e47329d8441e4f6419",
+    "src/planning/prompts.ts": "0ac373dea4c795f19f9a7de198a82a2eeb6d48a88d4feeb3b40aaeac66dbf217",
+    "src/planning/policy.ts": "3f9c8f2c2b5b9a2955a004c18f13fa07aeced45b663e62858ed87f0db64806c0",
+    "src/planning/review-quality.ts": "56142c0c75d125da4b048a18ed55b5fa183b4c71720809288edb3e3c6d0c1772"
+  },
+  "label": "isolated review/Writer evaluation; not an approval or active Planning continuation",
+  "primaryWrites": false
+}

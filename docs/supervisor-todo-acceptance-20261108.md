@@ -2,6 +2,9 @@
 
 ## 현재 상태
 
+이후 사용자 요청으로 [Writer·Reviewer 품질 절차](planning-quality-hardening-20261108.md)를 보완했다. 강화된 별도 평가에서도 기존 기획 v4는 두 번 모두 통과했지만, 아래 정식 Review/기획/승인 기록은 덮어쓰지 않았다. 최종 기획 승인 대기는 유지한다.
+
+
 **Scope v6 사용자 승인 완료, 기획안 v4 최종 사용자 승인 대기**다. [쉬운 기획 요약](acceptance/todo-20261108/plan-v4-user-summary.md), [기획 원문](acceptance/todo-20261108/plan-v4.md), [최종 Review](acceptance/todo-20261108/review-v4.json), [진행자 점검](acceptance/todo-20261108/assessment-v4.md)을 함께 검토한다. 작업 지시 생성·제품 구현·제품 테스트·팀원 실행은 아직 없다.
 
 - projectId: `supervisor-todo-acceptance-20261108`, 별도 프로젝트 데이터로 기존 재고 시험 보존

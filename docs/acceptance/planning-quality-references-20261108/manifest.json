@@ -1,0 +1,22 @@
+{
+  "sourceCommit": "951588b",
+  "sourceFile": "src/planning/google-genai.ts",
+  "sha256": "06b3114d45e7246385f82018049e2a25196544332043859e53d84c04f7afe7a3",
+  "casesFrozenBeforeCalls": true,
+  "repetitions": 2,
+  "reviewCalls": 14,
+  "writerBeforeAfterSampleCalls": 2,
+  "model": "gemini-3.8-flash",
+  "note": "Combined prompt+structured protocol+Controller gate comparison. Same model and original output token budgets. No active project writes or approvals.",
+  "startedAt": "2026-11-08T23:40:27.341Z",
+  "datasetSha256": "4422ae43e6d2ffa2914390210cb0b997226962d9baab3419cff3e25d21e530cc",
+  "round": "references",
+  "enhancedSourceSha256": {
+    "src/planning/google-genai.ts": "931d90aa7d4f72bb9d1f3388a47182e411cfeab3f468ba99af2c3475cde9ebae",
+    "src/planning/prompts.ts": "71a57ec738f7146fdff8f246230378d98d33afae7706b532e0d9f58d819ac23f",
+    "src/planning/policy.ts": "ab704e6b530deb003b2170bbff21c33d1753f1e91fbeeee7c48def6be060210a",
+    "src/planning/review-quality.ts": "56142c0c75d125da4b048a18ed55b5fa183b4c71720809288edb3e3c6d0c1772"
+  },
+  "label": "isolated review/Writer evaluation; not an approval or active Planning continuation",
+  "primaryWrites": false
+}

@@ -1,0 +1,48 @@
+{
+  "id": "review-baseline-normal-existing-v4-1",
+  "variant": "baseline",
+  "caseId": "normal-existing-v4",
+  "repeat": 1,
+  "operation": "review",
+  "expected": "adequate",
+  "inputContentSha256": "1999805ed727b02ca2f425ec41a605b6d797a85f7cb67d8f3562b25c4ff94953",
+  "status": "completed",
+  "review": {
+    "id": "review-4",
+    "projectId": "supervisor-todo-acceptance-20261108",
+    "planId": "supervisor-todo-acceptance-20261108-plan",
+    "planVersion": 4,
+    "scopeContractId": "scope-v6",
+    "scopeVersion": 6,
+    "outcome": "pass",
+    "issues": [],
+    "suggestions": [
+      "최종 사용자에게 기획안을 제시할 때 6절에 명시된 '최종 승인 대기 설계 제안 사항'(과거 마감일시 허용, 저장소 Envelope 및 키 명칭, 마감일시 정규 표기, 다중 탭 운용 제한)을 명확히 안내하고 별도 동의를 구하는 절차를 진행할 것을 권장합니다."
+    ],
+    "scopeViolation": false,
+    "userJudgmentRequired": false,
+    "reviewedAt": "2026-11-08T23:36:11.707Z"
+  },
+  "decision": {
+    "type": "REQUEST_USER_APPROVAL",
+    "planId": "supervisor-todo-acceptance-20261108-plan",
+    "version": 4
+  },
+  "usage": [
+    {
+      "projectId": "supervisor-todo-acceptance-20261108",
+      "planId": "supervisor-todo-acceptance-20261108-plan",
+      "iteration": 4,
+      "role": "reviewer",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 9483,
+      "outputTokens": 132,
+      "reasoningTokens": 1631,
+      "outcome": "success",
+      "durationMs": 12984,
+      "recordedAt": "2026-11-08T23:36:11.707Z"
+    }
+  ],
+  "rawModelResponse": "{\n  \"outcome\": \"pass\",\n  \"issues\": [],\n  \"suggestions\": [\n    \"최종 사용자에게 기획안을 제시할 때 6절에 명시된 '최종 승인 대기 설계 제안 사항'(과거 마감일시 허용, 저장소 Envelope 및 키 명칭, 마감일시 정규 표기, 다중 탭 운용 제한)을 명확히 안내하고 별도 동의를 구하는 절차를 진행할 것을 권장합니다.\"\n  ],\n  \"scopeViolation\": false,\n  \"userJudgmentRequired\": false\n}"
+}

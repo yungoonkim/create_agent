@@ -1,0 +1,95 @@
+{
+  "baseline": {
+    "reviewCalls": 14,
+    "defectiveCandidates": 10,
+    "blockedDefectiveCandidates": 6,
+    "unsafeAdvance": 4,
+    "adequateCandidates": 4,
+    "adequateAdvanced": 4,
+    "adequateBlocked": 0,
+    "failedOrInvalid": 0
+  },
+  "initialLiteralQuotes": {
+    "reviewCalls": 14,
+    "defectiveCandidates": 10,
+    "blockedDefectiveCandidates": 6,
+    "unsafeAdvance": 1,
+    "adequateCandidates": 4,
+    "adequateAdvanced": 1,
+    "adequateBlocked": 0,
+    "failedOrInvalid": 6
+  },
+  "lineReferences": {
+    "reviewCalls": 14,
+    "defectiveCandidates": 10,
+    "blockedDefectiveCandidates": 5,
+    "unsafeAdvance": 3,
+    "adequateCandidates": 4,
+    "adequateAdvanced": 4,
+    "adequateBlocked": 0,
+    "failedOrInvalid": 2
+  },
+  "independentChallenge": {
+    "reviewCalls": 14,
+    "defectiveCandidates": 10,
+    "blockedDefectiveCandidates": 8,
+    "unsafeAdvance": 1,
+    "adequateCandidates": 4,
+    "adequateAdvanced": 4,
+    "adequateBlocked": 0,
+    "failedOrInvalid": 1
+  },
+  "finalBoundedReferences": {
+    "reviewCalls": 14,
+    "defectiveCandidates": 10,
+    "blockedDefectiveCandidates": 9,
+    "unsafeAdvance": 1,
+    "adequateCandidates": 4,
+    "adequateAdvanced": 4,
+    "adequateBlocked": 0,
+    "failedOrInvalid": 0
+  },
+  "allRunsUsage": {
+    "modelRequestRecords": 94,
+    "success": 82,
+    "failure": 12,
+    "providedRecordedTokens": {
+      "inputTokens": 470294,
+      "outputTokens": 100451,
+      "reasoningTokens": 181079
+    },
+    "rowsWithoutTokenMetrics": 10,
+    "durationMs": 2328222,
+    "note": "Sum of recorded provider fields, not billing or HTTP retry count; initial protocol failures did not retain response token fields. Final reviewer captures available fields even on protocol failure."
+  },
+  "writerSampleFinalReview": {
+    "status": "completed",
+    "decision": "REQUEST_USER_APPROVAL",
+    "modelCalls": 2,
+    "includedInLabeledRates": false
+  },
+  "allRunsPreserved": true,
+  "activeProjectsUnchanged": true,
+  "finishedAt": "2026-11-08T23:57:20.666909+00:00",
+  "interpretation": "Development evaluation on known, pre-labeled cases; combined prompt/protocol/decoding/thinking/challenge change. Two repeats cannot establish general accuracy or statistical significance. No user approval or product execution.",
+  "labeledCaseCostRecords": {
+    "baseline": {
+      "modelRequests": 14,
+      "providedTokens": {
+        "inputTokens": 63784,
+        "outputTokens": 2470,
+        "reasoningTokens": 24752
+      },
+      "durationMs": 197153
+    },
+    "final": {
+      "modelRequests": 21,
+      "providedTokens": {
+        "inputTokens": 131999,
+        "outputTokens": 22178,
+        "reasoningTokens": 48075
+      },
+      "durationMs": 459523
+    }
+  }
+}

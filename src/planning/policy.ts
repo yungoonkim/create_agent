@@ -9,6 +9,7 @@ import type {
   ScopeContract,
   ScopeRequirement,
 } from "./contracts.js";
+import { parseReviewQuality, qualityFindings, validateReviewQuality } from "./review-quality.js";
 
 const allowedTransitions: Readonly<Record<PlanningLoopStatus, readonly PlanningLoopStatus[]>> = {
   drafting: ["reviewing", "awaiting_user_input", "failed", "stopped"],
@@ -148,6 +149,10 @@ export function decideAfterReview(input: PlanningDecisionInput): PlanningDecisio
   if (review.scopeContractId !== approvedScope.id || review.scopeVersion !== approvedScope.version) {
     return { type: "FAILED", reason: "Review does not match the approved Scope version." };
   }
+  if (review.qualityAssessment !== undefined) {
+    try { validateReviewQuality(parseReviewQuality(review.qualityAssessment), currentPlan, approvedScope); }
+    catch { return { type: "FAILED", reason: "Review quality coverage or Plan evidence is invalid." }; }
+  }
   if (review.outcome === "failed") return { type: "FAILED", reason: "Reviewer reported a failed review." };
   const scopeIssueIds = review.issues.filter((issue) => issue.kind === "scope_violation").map((issue) => issue.id);
   if (review.scopeViolation || scopeIssueIds.length > 0) {
@@ -165,8 +170,10 @@ export function decideAfterReview(input: PlanningDecisionInput): PlanningDecisio
       reason: "Reviewer identified a scope violation that requires a separate approved change.",
     };
   }
-  if (review.outcome === "needs_user_input" || review.userJudgmentRequired) {
-    return { type: "REQUEST_USER_INPUT", questions: review.suggestions };
+  const findings = qualityFindings(review);
+  const questions = findings.filter((finding) => finding.status === "needs_user_input").map((finding) => finding.message);
+  if (review.outcome === "needs_user_input" || review.userJudgmentRequired || questions.length > 0) {
+    return { type: "REQUEST_USER_INPUT", questions: [...questions, ...review.suggestions] };
   }
 
   const blockingIssues = review.issues.filter(
@@ -182,11 +189,11 @@ export function decideAfterReview(input: PlanningDecisionInput): PlanningDecisio
     };
   }
 
-  const needsRevision = review.outcome === "revise" || blockingIssues.length > 0;
+  const needsRevision = review.outcome === "revise" || blockingIssues.length > 0 || findings.length > 0;
   if (!needsRevision) {
     return { type: "REQUEST_USER_APPROVAL", planId: review.planId, version: review.planVersion };
   }
-  if (review.issues.length === 0 && review.suggestions.length === 0) {
+  if (review.issues.length === 0 && review.suggestions.length === 0 && findings.length === 0) {
     return { type: "FAILED", reason: "Reviewer requested revision without actionable feedback." };
   }
 
@@ -199,6 +206,7 @@ export function decideAfterReview(input: PlanningDecisionInput): PlanningDecisio
     feedback: [
       ...review.issues.map((issue) => `${issue.id}: ${issue.description} — ${issue.suggestedDirection}`),
       ...review.suggestions,
+      ...findings.map((finding) => finding.message),
     ].join("\n"),
     nextVersion: review.planVersion + 1,
   };
@@ -262,6 +270,11 @@ export function parsePlanReview(raw: unknown): PlanReview {
   if (new Set(issues.map((issue) => issue.id)).size !== issues.length) throw invalidReviewField("issues: duplicate IDs");
   const reviewedAt = reviewString(value.reviewedAt, "reviewedAt");
   if (Number.isNaN(Date.parse(reviewedAt))) throw invalidReviewField("reviewedAt");
+  let qualityAssessment: PlanReview["qualityAssessment"];
+  if (value.qualityAssessment !== undefined) {
+    try { qualityAssessment = parseReviewQuality(value.qualityAssessment); }
+    catch { throw invalidReviewField("qualityAssessment"); }
+  }
   return {
     id: reviewIdentifier(value.id, "id"),
     projectId: reviewIdentifier(value.projectId, "projectId"),
@@ -275,6 +288,8 @@ export function parsePlanReview(raw: unknown): PlanReview {
     scopeViolation: reviewBoolean(value.scopeViolation, "scopeViolation"),
     userJudgmentRequired: reviewBoolean(value.userJudgmentRequired, "userJudgmentRequired"),
     reviewedAt,
+    ...(qualityAssessment === undefined ? {} : { qualityAssessment }),
+    ...(value.challengeCompleted === undefined ? {} : { challengeCompleted: reviewBoolean(value.challengeCompleted, "challengeCompleted") }),
   };
 }
 
@@ -293,6 +308,10 @@ export function validatePlanReview(raw: unknown, plan: PlanDraft, approvedScope:
     review.scopeContractId !== approvedScope.id || review.scopeVersion !== approvedScope.version
   ) {
     throw new ReviewValidationError("REVIEW_SCOPE_MISMATCH", "Review must reference the Plan's approved Scope version.");
+  }
+  if (review.qualityAssessment !== undefined) {
+    try { validateReviewQuality(review.qualityAssessment, plan, approvedScope); }
+    catch { throw invalidReviewField("qualityAssessment coverage or Plan evidence"); }
   }
   return review;
 }

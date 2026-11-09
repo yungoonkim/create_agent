@@ -1,0 +1,46 @@
+{
+  "id": "review-baseline-empty-corrupt-storage-2",
+  "variant": "baseline",
+  "caseId": "empty-corrupt-storage",
+  "repeat": 2,
+  "operation": "review",
+  "expected": "block",
+  "inputContentSha256": "c692c20d6ee86f0eec81ed08ab4dd49a2b05064e4654482b741ba2b6269b28f8",
+  "status": "completed",
+  "review": {
+    "id": "review-1",
+    "projectId": "supervisor-todo-acceptance-20261108",
+    "planId": "supervisor-todo-acceptance-20261108-plan",
+    "planVersion": 1,
+    "scopeContractId": "scope-v6",
+    "scopeVersion": 6,
+    "outcome": "pass",
+    "issues": [],
+    "suggestions": [],
+    "scopeViolation": false,
+    "userJudgmentRequired": false,
+    "reviewedAt": "2026-11-08T23:39:09.488Z"
+  },
+  "decision": {
+    "type": "REQUEST_USER_APPROVAL",
+    "planId": "supervisor-todo-acceptance-20261108-plan",
+    "version": 1
+  },
+  "usage": [
+    {
+      "projectId": "supervisor-todo-acceptance-20261108",
+      "planId": "supervisor-todo-acceptance-20261108-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 3741,
+      "outputTokens": 22,
+      "reasoningTokens": 1650,
+      "outcome": "success",
+      "durationMs": 13760,
+      "recordedAt": "2026-11-08T23:39:09.488Z"
+    }
+  ],
+  "rawModelResponse": "{\"outcome\":\"pass\",\"issues\":[],\"suggestions\":[],\"scopeViolation\":false,\"userJudgmentRequired\":false}"
+}

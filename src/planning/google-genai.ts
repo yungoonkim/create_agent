@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, ThinkingLevel } from "@google/genai";
 import type {
   PlanDraft,
   PlanReview,
@@ -10,7 +10,10 @@ import type {
   PlanningWriter,
   PlanningWriterContext,
 } from "./contracts.js";
-import { parsePlanReview } from "./policy.js";
+import { decideAfterReview, validatePlanReview } from "./policy.js";
+import { REVIEW_CHECK_IDS } from "./contracts.js";
+import { WRITER_SYSTEM_INSTRUCTION, REVIEWER_SYSTEM_INSTRUCTION, REVIEW_CHALLENGE_SYSTEM_INSTRUCTION } from "./prompts.js";
+import { bindReviewEvidence } from "./review-quality.js";
 
 export interface VertexAiClientOptions {
   readonly project?: string;
@@ -64,7 +67,7 @@ export class GeminiPlanningWriter implements PlanningWriter {
         model: role.model.modelId,
         contents: prompt,
         config: {
-          systemInstruction: "You are the Planning Writer in ADTF. Produce a draft only; do not claim approval or execution.",
+          systemInstruction: WRITER_SYSTEM_INSTRUCTION,
           maxOutputTokens: 16_000,
         },
       });
@@ -156,68 +159,84 @@ export class GeminiPlanningReviewer implements PlanningReviewer {
         projectId: context.projectId,
         originalRequirements: context.originalRequirements,
         approvedScope: context.approvedScope,
-        currentPlan: context.currentPlan,
+        currentPlan: { ...context.currentPlan, content: undefined },
+        currentPlanLines: context.currentPlan.content.split("\n").map((text, index) => ({ line: index + 1, text })),
         settledDecisions: context.settledDecisions,
         previousReviews: context.previousReviews ?? [],
       }),
     ].join("\n\n");
-    const startedAt = Date.now();
+    let stage: "assessment" | "challenge" = "assessment";
+    let stageStartedAt = Date.now();
+    let metrics: { inputTokens?: number; outputTokens?: number; reasoningTokens?: number } = {};
+    const log = async (outcome: "success" | "failure", error?: unknown): Promise<void> => {
+      await this.memory.appendTokenUsage({ projectId: context.projectId, planId: context.currentPlan.id,
+        iteration: context.currentPlan.version, role: "reviewer", reviewStage: stage,
+        providerId: role.model.providerId, modelId: role.model.modelId, ...metrics,
+        outcome, durationMs: Date.now() - stageStartedAt,
+        ...(error === undefined ? {} : { error: safeErrorMessage(error) }), recordedAt: this.now() });
+    };
+    const capture = (usage: { promptTokenCount?: number; candidatesTokenCount?: number; thoughtsTokenCount?: number } | undefined): void => {
+      metrics = { ...(usage?.promptTokenCount === undefined ? {} : { inputTokens: usage.promptTokenCount }),
+        ...(usage?.candidatesTokenCount === undefined ? {} : { outputTokens: usage.candidatesTokenCount }),
+        ...(usage?.thoughtsTokenCount === undefined ? {} : { reasoningTokens: usage.thoughtsTokenCount }) };
+    };
     try {
       const response = await this.client.models.generateContent({
-        model: role.model.modelId,
-        contents: prompt,
-        config: {
-          systemInstruction: "You are the independent Planning Reviewer in ADTF. Review evidence and scope; never approve a plan on behalf of the user.",
-          responseMimeType: "application/json",
-          responseJsonSchema: REVIEW_SCHEMA,
-          maxOutputTokens: 8_000,
-        },
+        model: role.model.modelId, contents: prompt,
+        config: { systemInstruction: REVIEWER_SYSTEM_INSTRUCTION, responseMimeType: "application/json",
+          responseJsonSchema: reviewSchemaFor(context.currentPlan), maxOutputTokens: 8_000, thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM } },
       });
+      capture(response.usageMetadata);
       const raw = parseJsonResponse(response.text);
-      const result = parsePlanReview({
-        ...raw,
-        id: `review-${context.currentPlan.version}`,
-        projectId: context.projectId,
-        planId: context.currentPlan.id,
-        planVersion: context.currentPlan.version,
-        scopeContractId: context.approvedScope.id,
-        scopeVersion: context.approvedScope.version,
-        reviewedAt: this.now(),
-        issues: normalizeIssues(raw.issues, context),
+      if (raw.qualityAssessment === undefined) throw new Error("Gemini Reviewer omitted mandatory quality assessment.");
+      const result = validatePlanReview({ ...raw, id: `review-${context.currentPlan.version}`, projectId: context.projectId,
+        planId: context.currentPlan.id, planVersion: context.currentPlan.version,
+        scopeContractId: context.approvedScope.id, scopeVersion: context.approvedScope.version,
+        reviewedAt: this.now(), issues: normalizeIssues(raw.issues, context),
+        qualityAssessment: bindReviewEvidence(raw.qualityAssessment, context.currentPlan),
+      }, context.currentPlan, context.approvedScope);
+      await log("success");
+      const decision = decideAfterReview({ review: result, currentPlan: context.currentPlan, approvedScope: context.approvedScope,
+        iterationCount: 1, maxIterations: 2 });
+      if (decision.type !== "REQUEST_USER_APPROVAL") return result;
+
+      // At most one independent challenge call, only when the first review would allow approval.
+      stage = "challenge"; stageStartedAt = Date.now(); metrics = {};
+      const challenge = await this.client.models.generateContent({ model: role.model.modelId,
+        contents: JSON.stringify({ projectId: context.projectId, originalRequirements: context.originalRequirements,
+          approvedScope: context.approvedScope, settledDecisions: context.settledDecisions,
+          currentPlanLines: context.currentPlan.content.split("\n").map((text, index) => ({ line: index + 1, text })) }),
+        config: { systemInstruction: REVIEW_CHALLENGE_SYSTEM_INSTRUCTION, responseMimeType: "application/json",
+          responseJsonSchema: CHALLENGE_SCHEMA, maxOutputTokens: 8_000, thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM } },
       });
-      await this.memory.appendTokenUsage({
-        projectId: context.projectId,
-        planId: context.currentPlan.id,
-        iteration: context.currentPlan.version,
-        role: "reviewer",
-        providerId: role.model.providerId,
-        modelId: role.model.modelId,
-        ...(response.usageMetadata?.promptTokenCount === undefined ? {} : { inputTokens: response.usageMetadata.promptTokenCount }),
-        ...(response.usageMetadata?.candidatesTokenCount === undefined ? {} : { outputTokens: response.usageMetadata.candidatesTokenCount }),
-        ...(response.usageMetadata?.thoughtsTokenCount === undefined ? {} : { reasoningTokens: response.usageMetadata.thoughtsTokenCount }),
-        outcome: "success",
-        durationMs: Date.now() - startedAt,
-        recordedAt: this.now(),
-      });
-      return result;
+      capture(challenge.usageMetadata);
+      const counterexamples = parseJsonResponse(challenge.text);
+      if (!Array.isArray(counterexamples.questions)) throw new Error("Challenge review omitted questions array.");
+      const issues = normalizeIssues(counterexamples.issues, context);
+      if (!Array.isArray(issues)) throw new Error("Challenge review omitted issues array.");
+      const combined = validatePlanReview({ ...result,
+        issues: [...new Map([...result.issues, ...issues].map((issue: { id: string }) => [issue.id, issue])).values()],
+        suggestions: [...result.suggestions, ...counterexamples.questions],
+        userJudgmentRequired: counterexamples.questions.length > 0,
+        scopeViolation: issues.some((issue: { kind?: unknown }) => issue.kind === "scope_violation"),
+        outcome: counterexamples.questions.length > 0 ? "needs_user_input"
+          : issues.some((issue: { severity?: unknown }) => issue.severity === "major" || issue.severity === "critical") ? "revise" : result.outcome,
+        challengeCompleted: true, reviewedAt: this.now(),
+      }, context.currentPlan, context.approvedScope);
+      await log("success");
+      return combined;
     } catch (error) {
-      await this.memory.appendTokenUsage({
-        projectId: context.projectId,
-        planId: context.currentPlan.id,
-        iteration: context.currentPlan.version,
-        role: "reviewer",
-        providerId: role.model.providerId,
-        modelId: role.model.modelId,
-        outcome: "failure",
-        durationMs: Date.now() - startedAt,
-        error: safeErrorMessage(error),
-        recordedAt: this.now(),
-      });
+      await log("failure", error);
       throw new Error(safeErrorMessage(error), { cause: error });
     }
   }
 }
 
+const QUALITY_ITEM_PROPERTIES = {
+  status: { type: "string", enum: ["satisfied", "missing", "needs_user_input", "not_applicable"] },
+  evidenceLines: { type: "array", items: { type: "integer" }, maxItems: 8 },
+  rationale: { type: "string" },
+} as const;
 const REVIEW_SCHEMA = {
   type: "object",
   properties: {
@@ -239,9 +258,42 @@ const REVIEW_SCHEMA = {
     suggestions: { type: "array", items: { type: "string" } },
     scopeViolation: { type: "boolean" },
     userJudgmentRequired: { type: "boolean" },
+    qualityAssessment: {
+      type: "object", properties: {
+        version: { type: "integer", enum: [1] },
+        requirements: { type: "array", items: { type: "object",
+          properties: { requirementId: { type: "string" }, ...QUALITY_ITEM_PROPERTIES },
+          required: ["requirementId", "status", "evidenceLines", "rationale"] } },
+        checks: { type: "array", items: { type: "object",
+          properties: { id: { type: "string", enum: [...REVIEW_CHECK_IDS] }, ...QUALITY_ITEM_PROPERTIES },
+          required: ["id", "status", "evidenceLines", "rationale"] } },
+      }, required: ["version", "requirements", "checks"],
+    },
   },
-  required: ["outcome", "issues", "suggestions", "scopeViolation", "userJudgmentRequired"],
+  required: ["outcome", "issues", "suggestions", "scopeViolation", "userJudgmentRequired", "qualityAssessment"],
 } as const;
+
+const CHALLENGE_SCHEMA = {
+  type: "object", properties: {
+    issues: REVIEW_SCHEMA.properties.issues,
+    questions: { type: "array", items: { type: "string" } },
+  }, required: ["issues", "questions"],
+} as const;
+
+/** Constrained decoding can choose only actual nonblank source lines; validation still checks the response. */
+function reviewSchemaFor(plan: PlanDraft): object {
+  const validLines = plan.content.split("\n").flatMap((text, index) => text.trim().length > 0 ? [index + 1] : []);
+  if (validLines.length === 0) throw new Error("Cannot review a Plan without nonblank content.");
+  const evidenceLines = { ...QUALITY_ITEM_PROPERTIES.evidenceLines, items: { type: "integer", enum: validLines } };
+  const quality = REVIEW_SCHEMA.properties.qualityAssessment;
+  return { ...REVIEW_SCHEMA, properties: { ...REVIEW_SCHEMA.properties, qualityAssessment: { ...quality,
+    properties: { ...quality.properties,
+      requirements: { ...quality.properties.requirements, items: { ...quality.properties.requirements.items,
+        properties: { ...quality.properties.requirements.items.properties, evidenceLines } } },
+      checks: { ...quality.properties.checks, items: { ...quality.properties.checks.items,
+        properties: { ...quality.properties.checks.items.properties, evidenceLines } } },
+    } } } };
+}
 
 function normalizeIssues(rawIssues: unknown, context: PlanningReviewerContext): unknown {
   if (!Array.isArray(rawIssues)) return rawIssues;

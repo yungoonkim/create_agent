@@ -135,3 +135,9 @@ npm run supervisor -- initialize-tasks --config examples/supervisor-demo/config.
 - 실제 개발·테스트 팀원 Runtime, 자동 Worker 재호출, 제품 개발 완료, 모바일 푸시 전송은 이번 구현에 포함되지 않는다.
 
 구현·시험 근거는 [STEP 5A 보고서](step5a-report.md)와 [STEP 5B 보고서](step5b-report.md), 전체 목표는 [테스트 계획](supervisor-test-plan.md)을 참고한다.
+
+## 새 Gemini 검토의 통과 조건
+
+Reviewer는 각 요구와 점검 항목의 상태·판단 이유·기획 원문 근거를 제출한다. 모델이 pass라고 해도 미해결 사항은 수정 또는 사용자 질문으로 전환한다. 기획 원문에 없는 근거나 빠진 점검표는 검증 실패로 중단하며 자동 재호출하지 않는다. 과거 리뷰 이력과 별도 최종 사용자 승인은 유지한다. [검토 절차와 비교 평가](planning-quality-hardening-20261108.md)를 따른다.
+
+새 검토의 통과 후보에는 독립 반례 점검이 최대1회 추가된다. 단계별 `reviewStage=assessment/challenge`를 기록하며 기획 iterationCount와 실제 모델 요청 수를 혼동하지 않는다. 해당 추가 요청이 실패하면 이전 pass로 진행하지 않는다. 같은 모델의 사각지대는 남을 수 있으므로 사용자 검토·최종 승인은 유지한다.

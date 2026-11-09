@@ -1,0 +1,25 @@
+{
+  "id": "review-enhanced-post-commit-rollback-2",
+  "variant": "enhanced",
+  "caseId": "post-commit-rollback",
+  "repeat": 2,
+  "operation": "review",
+  "expected": "block",
+  "inputContentSha256": "03e79d1f0666f3684795c1bc132471622be0f4ccf6a1423bc041d12539ff510e",
+  "status": "failed",
+  "error": "model_call_or_protocol_validation_failed",
+  "usage": [
+    {
+      "projectId": "supervisor-todo-acceptance-20261108",
+      "planId": "supervisor-todo-acceptance-20261108-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "outcome": "failure",
+      "durationMs": 75176,
+      "recordedAt": "2026-11-08T23:40:12.712Z"
+    }
+  ],
+  "rawModelResponse": "{\"outcome\":\"revise\",\"issues\":[{\"kind\":\"contradiction\",\"severity\":\"major\",\"description\":\"기술 설계 제안에서 'setItem 성공 뒤 표시가 실패하면 setItem 성공 자체가 취소되므로 저장값도 자동으로 이전 값으로 돌아갔다고 안내한다'라고 명시되어 있습니다. 그러나 웹 브라우저의 로컬 스토리지(localStorage)는 setItem 호출이 성공한 이후 화면 렌더링 단계에서 예외가 발생하더라도 저장된 데이터가 브라우저 차원에서 자동으로 취소되거나 이전 값으로 롤백되지 않습니다. 따라서 실제 저장소 데이터와 사용자 안내 간의 불일치가 발생합니다.\",\"suggestedDirection\":\"커밋 후(setItem 성공 후) 화면 표시 실패 시 저장소가 자동 취소된다고 단정하지 말고, 이전 스냅샷으로 명시적 복원 저장을 시도하거나, 저장은 완료되었으나 화면 반영에 실패했음을 안내하고 새로고침을 유도하는 등 현실적인 실패 경계 처리를 명시해야 합니다.\",\"relatedRequirementId\":\"REQ-06\"}],\"suggestions\":[\"커밋 후 UI 표시 실패 시 자동 롤백을 가정하지 말고, 브라우저 스토리지의 특성에 맞추어 명시적 롤백 복구 시도 또는 새로고침 유도 안내 방식을 기획안에 명시하세요.\"],\"scopeViolation\":false,\"userJudgmentRequired\":false,\"qualityAssessment\":{\"version\":1,\"requirements\":[{\"requirementId\":\"REQ-01\",\"status\":\"satisfied\",\"evidence\":[\"REQ-01: 제목·마감일시 필수/메모 선택. 공백뿐인 제목, 빠진 날짜/시간, 2월30일, 24:00은 거부하고 입력과 기존 목록을 유지한다. ‘장보기’를 같은 내용으로 두 번 추가하면 별개 ID 두 개가 생긴다.\"],\"rationale\":\"필수/선택 입력 항목 정의와 유효성 검증 규칙, 동일 제목 중복 등록 허용 및 개별 ID 부여 규칙을 명확하게 규정하여 요구사항을 충족합니다.\"},{\"requirementId\":\"REQ-02\",\"status\":\"satisfied\",\"evidence\":[\"REQ-02: 미완료와 완료 두 구역, 영속 등록 순번 오름차순. A(1),B(2) 등록 후 PC 시계를 뒤로 돌려 C를 등록해도 A,B,C 순서다. B 삭제 후 D 등록은 A(1),C(3),D(4)다. 수정/상태 변경/재시작으로 순번을 바꾸지 않는다.\"],\"rationale\":\"미완료 및 완료 구역 분리 표시와 시스템 시계 변경/수정 작업에도 불변인 등록 순번 기준 정렬 규칙을 구체적으로 명시하여 만족합니다.\"},{\"requirementId\":\"REQ-03\",\"status\":\"satisfied\",\"evidence\":[\"REQ-03: A만 완료하면 완료 구역에 A만 이동한다. 취소하면 미완료 구역의 원래 등록순 위치로 돌아온다. 저장 실패 시 상태가 이동하지 않는다.\"],\"rationale\":\"완료 및 완료 취소에 따른 상태 전환, 구역 간 이동, 원래 등록 순번 위치 복귀, 저장 실패 시 무변경 규칙을 정확히 다루고 있습니다.\"},{\"requirementId\":\"REQ-04\",\"status\":\"satisfied\",\"evidence\":[\"REQ-04: 동일 제목 두 항목 중 두 번째를 수정하면 두 번째만 바뀐다. 제목/마감일시 검증 실패 또는 저장 실패면 기존 목록을 유지하고 수정 입력을 보존한다. 수정 취소는 무변경이다.\"],\"rationale\":\"동일 제목 항목 중 특정 항목 수정 식별, 입력 검증 실패 및 저장 실패 시 기존 목록 유지와 입력값 보존 규칙을 만족합니다.\"},{\"requirementId\":\"REQ-05\",\"status\":\"satisfied\",\"evidence\":[\"REQ-05: 삭제 확인 취소는 무변경, 확인은 선택 ID 한 건만 삭제. 저장 실패 시 항목을 지우지 않고 오류를 표시한다.\"],\"rationale\":\"삭제 전 확인 대화창 절차, 취소 시 무변경, 저장 실패 시 항목 유지 및 오류 안내 등 완전 삭제 요구를 충족합니다.\"},{\"requirementId\":\"REQ-06\",\"status\":\"satisfied\",\"evidence\":[\"REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를"
+}

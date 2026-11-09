@@ -1,0 +1,48 @@
+{
+  "id": "review-baseline-fresh-writer-sample-1",
+  "variant": "baseline",
+  "caseId": "fresh-writer-sample",
+  "repeat": 1,
+  "operation": "review",
+  "expected": "unlabeled generated sample",
+  "inputContentSha256": "0528c3ecbd3711b67faadf3bb00b5ea1a80b0b5633bed3584e4441221af8821e",
+  "status": "completed",
+  "review": {
+    "id": "review-1",
+    "projectId": "supervisor-todo-acceptance-20261108",
+    "planId": "supervisor-todo-acceptance-20261108-plan",
+    "planVersion": 1,
+    "scopeContractId": "scope-v6",
+    "scopeVersion": 6,
+    "outcome": "pass",
+    "issues": [],
+    "suggestions": [
+      "향후 작업 지시서 작성 시 localStorage 용량 초과 또는 JSON 파싱 실패 등 예외 상황에 대한 안전 대책(fallback/손상 감지)을 세부 지침에 포함하는 것을 권장합니다."
+    ],
+    "scopeViolation": false,
+    "userJudgmentRequired": false,
+    "reviewedAt": "2026-11-08T23:41:08.157Z"
+  },
+  "decision": {
+    "type": "REQUEST_USER_APPROVAL",
+    "planId": "supervisor-todo-acceptance-20261108-plan",
+    "version": 1
+  },
+  "usage": [
+    {
+      "projectId": "supervisor-todo-acceptance-20261108",
+      "planId": "supervisor-todo-acceptance-20261108-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 4022,
+      "outputTokens": 93,
+      "reasoningTokens": 899,
+      "outcome": "success",
+      "durationMs": 6510,
+      "recordedAt": "2026-11-08T23:41:08.157Z"
+    }
+  ],
+  "rawModelResponse": "{\n  \"outcome\": \"pass\",\n  \"issues\": [],\n  \"suggestions\": [\n    \"향후 작업 지시서 작성 시 localStorage 용량 초과 또는 JSON 파싱 실패 등 예외 상황에 대한 안전 대책(fallback/손상 감지)을 세부 지침에 포함하는 것을 권장합니다.\"\n  ],\n  \"scopeViolation\": false,\n  \"userJudgmentRequired\": false\n}"
+}

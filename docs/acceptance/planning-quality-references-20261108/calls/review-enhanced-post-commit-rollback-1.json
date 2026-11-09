@@ -1,0 +1,25 @@
+{
+  "id": "review-enhanced-post-commit-rollback-1",
+  "variant": "enhanced",
+  "caseId": "post-commit-rollback",
+  "repeat": 1,
+  "operation": "review",
+  "expected": "block",
+  "inputContentSha256": "03e79d1f0666f3684795c1bc132471622be0f4ccf6a1423bc041d12539ff510e",
+  "status": "failed",
+  "error": "model_call_or_protocol_validation_failed",
+  "usage": [
+    {
+      "projectId": "supervisor-todo-acceptance-20261108",
+      "planId": "supervisor-todo-acceptance-20261108-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "outcome": "failure",
+      "durationMs": 72380,
+      "recordedAt": "2026-11-08T23:42:29.699Z"
+    }
+  ],
+  "rawModelResponse": "{\n  \"outcome\": \"revise\",\n  \"issues\": [\n    {\n      \"kind\": \"contradiction\",\n      \"severity\": \"major\",\n      \"description\": \"28행에서 'setItem 성공 뒤 표시가 실패하면 setItem 성공 자체가 취소되므로 저장값도 자동으로 이전 값으로 돌아갔다고 안내한다'고 규정하고 있으나, 브라우저의 localStorage는 setItem이 성공한 즉시 영속 반영되며 이후 UI 렌더링/표시 단계에서 예외가 발생하더라도 저장소 데이터가 자동으로 롤백되지 않습니다. 이는 커밋 이후 실패 처리 한계를 사실과 다르게 규정하여 실제 저장 상태와 사용자 안내 간 모순을 일으킵니다.\",\n      \"suggestedDirection\": \"localStorage 커밋(setItem 성공 반환)이 완료된 이후 UI 표시 오류가 발생할 경우, 저장소 데이터가 자동으로 이전 값으로 돌아갔다고 잘못 안내하지 않도록 수정해야 합니다. 저장은 성공했으나 화면 표시에 실패했음을 알리고 새로고침을 통해 저장된 상태를 다시 불러오도록 안내하거나, 실패 시 명시적인 이전 값 재저장(보상 복구) 로직을 구체화하십시오.\",\n      \"relatedRequirementId\": \"REQ-06\"\n    }\n  ],\n  \"suggestions\": [\n    \"커밋 후 UI 렌더링 실패 시의 오류 안내 문구를 '자동 롤백 완료"
+}

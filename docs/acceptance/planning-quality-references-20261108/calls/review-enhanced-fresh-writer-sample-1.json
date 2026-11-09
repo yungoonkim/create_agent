@@ -1,0 +1,25 @@
+{
+  "id": "review-enhanced-fresh-writer-sample-1",
+  "variant": "enhanced",
+  "caseId": "fresh-writer-sample",
+  "repeat": 1,
+  "operation": "review",
+  "expected": "unlabeled generated sample",
+  "inputContentSha256": "472ea4565531d076ffeca1366aa95d9b005b408f0d3363d1e2ea45c517c60a58",
+  "status": "failed",
+  "error": "model_call_or_protocol_validation_failed",
+  "usage": [
+    {
+      "projectId": "supervisor-todo-acceptance-20261108",
+      "planId": "supervisor-todo-acceptance-20261108-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "outcome": "failure",
+      "durationMs": 15661,
+      "recordedAt": "2026-11-08T23:44:42.039Z"
+    }
+  ],
+  "rawModelResponse": "{\n  \"outcome\": \"pass\",\n  \"issues\": [],\n  \"suggestions\": [],\n  \"scopeViolation\": false,\n  \"userJudgmentRequired\": false,\n  \"qualityAssessment\": {\n    \"version\": 1,\n    \"requirements\": [\n      {\n        \"requirementId\": \"REQ-01\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [44, 45, 46, 47, 48, 49, 50, 51],\n        \"rationale\": \"제목·메모·마감일 입력 생성, 필수 입력 검증(제목/마감일), 공백 검증, 중복 제목 허용, 실패 시 오류 안내 및 무변경 처리가 구체적으로 명시되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-02\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [56, 57, 58, 59, 60, 61],\n        \"rationale\": \"진행 중인 '할 일'과 '완료한 일'의 시각적 분리 및 단조 증가 등록 순번(registrationOrder) 기반 오름차순 정렬 조회가 명확히 정의되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-03\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [63, 64, 65, 66, 67, 68, 69, 70],\n        \"rationale\": \"체크 버튼을 통한 완료 전환 및 완료 취소 전환, 목록 간 상호 이동, 유효 ID 검증 및 기완료/기취소 상태 시 무변경 유지가 명시되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-04\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [73, 74, 75, 76, 77, 78],\n        \"rationale\": \"기존 정보 노출 후 제목·메모·마감일 수정, 필수 입력 검증, 취소 또는 검증 실패 시 기존 값 유지 및 무변경 처리가 명시되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-05\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [80, 81, 82, 83, 84, 85, 86],\n        \"rationale\": \"삭제 버튼 클릭 시 '정말 삭제할까요?' 확인창 표시, 확인 시 영구 삭제, 취소 시 무변경 유지 동작이 명확히 규정되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-06\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [88, 89, 90, 91, 92, 93, 94],\n        \"rationale\": \"브라우저 로컬 저장소(localStorage) 영속화, 재기동 시 복원, 데이터 부재 시 초기화 및 JSON 손상 시 안내 후 안전 초기화 규칙이 정의되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-07\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [96, 97, 98, 99],\n        \"rationale\": \"데스크톱 웹 브라우저 환경에서 마우스 클릭 및 폼 입력을 통한 직관적 조작과 영역별 UI 구성이 명시되어 있습니다.\"\n      }\n    ],\n    \"checks\": [\n      {\n        \"id\": \"decision_provenance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [9, 10, 11, 16, 17, 18, 19, 21],\n        \"rationale\": \"사용자 확정 결정(Q-1~Q-7, DETAIL-1~DETAIL-3)의 출처가 정확히 매핑되어 있고, localStorage 및 registrationOrder 등 기술적 위임 설계안이 분리되어 표시되었습니다.\"\n      },\n      {\n        \"id\": \"scope_compliance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [105, 106, 107, 108, 109, 111, 112],\n        \"rationale\": \"승인된 REQ-01~REQ-07 요구사항을 모두 충족하며, EXC-01~EXC-04 제외 항목(다중 사용자, 서버 동기화, 고급 검색, 코드 구현)을 철저히 준수했습니다.\"\n      },\n      {\n        \"id\": \"behavior_and_errors\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [46, 51, 67, 68, 75, 76, 82, 83],\n        \"rationale\": \"정상 동작뿐 아니라 빈 입력, 유효하지 않은 날짜, 확인창 취소, 동일 상태 재요청 등 실패 및 무변경 상태가 일관되게 명시되어 있습니다.\"\n      },\n      {\n        \"id\": \"data_integrity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [90, 91, 92, 120, 124, 129, 132, 133],\n        \"rationale\": \"고유 식별자(id) 부여로 중복 제목을 안전하게 구별하고, 시계 변경에 불변인 registrationOrder 정렬, 변경 시 동기 직렬화 커밋, 손상된 데이터 처리 한계가 명시되었습니다.\"\n      },\n      {\n        \"id\": \"acceptance_criteria\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [52, 53, 54, 60, 61, 70, 71, 84],\n        \"rationale\": \"모든 요구사항에 대해 구체적인 입력값과 관찰 가능한 예상 결과를 포함한 수락 검증 예시가 명시되어 있습니다.\"\n      },\n      {\n        \"id\": \"revision_resolution\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [146, 147, 148, 149, 150, 151],\n        \"rationale\": \"초기 버전 작성 건으로 이전 검토 반려 이력은 없으며, 사용자가 요청한 세부 결정사항(DETAIL-1~DETAIL-3)이 기획안에 누락 없이 반영되었습니다.\"\n      },\n      {\n        \"id\": \"clarity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [31, 33, 34, 36, 38, 137, 139, 141],\n        \"rationale\": \"일상적인 사용 흐름 예시가 앞단에 배치되어 있고, 기술 세부사항은 별도 절로 분리되었으며, 어려운 기술 용어에 대한 쉬운 한국어 해설이 포함되어 있습니다.\"\n      }\n    ]\n  }\n}"
+}

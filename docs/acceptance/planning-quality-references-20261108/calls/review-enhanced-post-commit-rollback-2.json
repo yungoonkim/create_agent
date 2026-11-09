@@ -1,0 +1,25 @@
+{
+  "id": "review-enhanced-post-commit-rollback-2",
+  "variant": "enhanced",
+  "caseId": "post-commit-rollback",
+  "repeat": 2,
+  "operation": "review",
+  "expected": "block",
+  "inputContentSha256": "03e79d1f0666f3684795c1bc132471622be0f4ccf6a1423bc041d12539ff510e",
+  "status": "failed",
+  "error": "model_call_or_protocol_validation_failed",
+  "usage": [
+    {
+      "projectId": "supervisor-todo-acceptance-20261108",
+      "planId": "supervisor-todo-acceptance-20261108-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "outcome": "failure",
+      "durationMs": 71610,
+      "recordedAt": "2026-11-08T23:43:47.174Z"
+    }
+  ],
+  "rawModelResponse": "{\n  \"outcome\": \"revise\",\n  \"issues\": [\n    {\n      \"kind\": \"unverifiable\",\n      \"severity\": \"major\",\n      \"description\": \"28행에서 setItem 커밋 성공 후 화면 표시가 실패했을 때 'setItem 성공 자체가 취소되므로 저장값도 자동으로 이전 값으로 돌아갔다고 안내한다'고 명시하고 있습니다. 그러나 브라우저 localStorage의 setItem 호출이 성공하여 반환된 시점에 영속 저장은 이미 완료되며, 이후 화면 렌더링 단계에서 예외가 발생하더라도 저장된 데이터가 자동으로 롤백되지 않습니다. 수동 롤백 로직 없이 자동 취소된다는 설명은 실제 웹 스토리지 동작과 맞지 않으며 데이터와 화면 상태 간 불일치를 초래합니다.\",\n      \"suggestedDirection\": \"커밋 성공 후 화면 렌더링 실패 시에는 저장값은 반영되었음을 인지하고 새로고침을 유도하거나, 자바스크립트 레벨에서 이전 값을 다시 setItem하여 되돌리는 명시적 복구 절차 및 복구 실패 시 한계를 구체적으로 정의해야 합니다.\",\n      \"relatedRequirementId\": \"REQ-06\"\n    }\n  ],\n  \"suggestions\": [\n    \"setItem 성공 후 UI 렌더링 예외가 발생할 경우 사용자에게 '저장은 완료되었으나 화면 갱신에 실패했으므로 새로고"
+}
