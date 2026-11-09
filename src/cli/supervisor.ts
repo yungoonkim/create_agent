@@ -13,11 +13,12 @@ import { SupervisorController } from "../supervisor/controller.js";
 import { FileSupervisorStore } from "../supervisor/memory-store.js";
 import { GeminiSupervisorProposer } from "../supervisor/google-genai.js";
 import type { SupervisorProposer } from "../supervisor/contracts.js";
+import { exportUserReviewBundle } from "../planning/review-export.js";
 
 async function main(): Promise<void> {
   const commands: Readonly<Record<string, readonly string[]>> = {
     start: ["file"], questions: [], answer: ["file"], "propose-scope": [], "approve-scope": ["reason"], "reject-scope": ["reason"],
-    plan: [], "retry-review": ["reason"], "approve-plan": ["reason"], "propose-tasks": [], "configure-verification": ["file"], "initialize-tasks": [], report: [],
+    plan: [], "retry-review": ["reason"], "approve-plan": ["reason"], "propose-tasks": [], "configure-verification": ["file"], "initialize-tasks": [], report: [], "review-plan": ["output"],
     "collect-feedback": [], "request-scope-change": ["reason"], "propose-scope-change": [],
     "request-plan-revision": ["reason"],
     "revise-tasks": ["reason"],
@@ -108,6 +109,12 @@ async function main(): Promise<void> {
       result = await controller.initializeTasks(await confirm(`ACCEPT TASKS r${state.revision}`, "Review tasks before initializing manual development.")); break;
     }
     case "report": result = await controller.report(); break;
+    case "review-plan": {
+      const { plan, table } = await controller.reviewPlan();
+      const directory = await exportUserReviewBundle(resolveProjectPath(root, arg("output")), plan, table);
+      result = { directory, files: ["plan.md", "review.md", "review.json", "bundle.json"], modelCalls: 0, approvalChanged: false,
+        message: "기획 원문과 사용자 검토표를 저장했습니다. 실제 구현·실행 검증은 하지 않았습니다." }; break;
+    }
     case "collect-feedback": result = await controller.continuation().collectFeedback(); break;
     case "request-plan-revision": result = await controller.continuation().requestPlanRevision(arg("reason")); break;
     case "request-scope-change": result = await controller.continuation().requestScopeChange(arg("reason")); break;

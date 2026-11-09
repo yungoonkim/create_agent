@@ -1,0 +1,27 @@
+import {mkdtemp} from 'node:fs/promises';
+import {join,resolve} from 'node:path';
+import {tmpdir} from 'node:os';
+import {FilePlanningMemoryStore, PlanningLoopController, GeminiPlanningReviewer, parsePlanningConfig} from '../../dist/src/planning/index.js';
+import {FileSupervisorStore} from '../../dist/src/supervisor/memory-store.js';
+import {FileDevelopmentStore} from '../../dist/src/development/memory-store.js';
+import {SupervisorController} from '../../dist/src/supervisor/controller.js';
+import {exportUserReviewBundle} from '../../dist/src/planning/review-export.js';
+import {scope,content,assessment,challenge} from './fixture.mjs';
+const [flag, output, ...rest] = process.argv.slice(2);
+if(flag!=='--output'||!output||rest.length)throw new Error('Use --output NEW_DIRECTORY; existing outputs are never replaced.');
+const root=await mkdtemp(join(tmpdir(),'adtf-book-review-'));
+const memory=new FilePlanningMemoryStore(join(root,'memory'));
+await memory.importDemoFixture(scope,{approval:{id:'book-demo-approval',projectId:scope.projectId,subject:`Scope Contract ${scope.id} v1`,status:'approved',rationale:'DEMO FIXTURE: synthetic book review, no user approval.'},scopeApproval:{projectId:scope.projectId,scopeContractId:scope.id,approvalId:'book-demo-approval'}});
+const config=parsePlanningConfig({projectId:scope.projectId,planning:{writer:{providerId:'fake',modelId:'writer'},reviewer:{providerId:'fake',modelId:'reviewer'},maxIterations:2,requireUserApproval:true,scenario:'improve-once'},memory:{type:'file',directory:'memory'}},root);
+const draft={id:`${scope.projectId}-plan`,projectId:scope.projectId,version:1,scopeContractId:scope.id,scopeVersion:1,content,status:'ready_for_review',createdAt:scope.createdAt};
+const writer={write:async()=>draft};let calls=0;
+const client={models:{generateContent:async()=>({text:JSON.stringify(++calls===1?assessment:challenge),candidates:[{finishReason:'STOP'}]})}};
+const reviewer=new GeminiPlanningReviewer(client,memory);
+// The real adapter is exercised against canned responses; no Google client/credentials/network.
+const liveRole={model:{providerId:'vertex-ai',modelId:'gemini-3.8-flash'},personaId:'TEST/STUB'};
+await new PlanningLoopController({config,memory,writer,reviewer:{review:(context)=>reviewer.review(context,liveRole)}}).run({requirements:scope.goal,scopeContract:scope});
+const unavailable=async()=>{throw new Error('No proposals in review export demo');};
+const controller=new SupervisorController({config,memory,store:new FileSupervisorStore(config.memory.directory),developmentStore:new FileDevelopmentStore(config.memory.directory),writer,reviewer,proposer:{questions:unavailable,scope:unavailable,tasks:unavailable}});
+const result=await controller.reviewPlan();
+const directory=await exportUserReviewBundle(resolve(output),result.plan,result.table);
+console.log(JSON.stringify({label:'TEST/STUB: canned review, not Gemini quality evidence',directory,isolatedMemory:root,modelApiCalls:0,fixtureResponses:calls,actualUserApproval:false,implementationVerified:false},null,2));

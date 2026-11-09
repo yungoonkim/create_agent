@@ -18,6 +18,7 @@ import type { LivePlanningConfig, OfflinePlanningConfig } from "./config.js";
 import { assertSafeStorageId } from "./config.js";
 import { isDeepStrictEqual } from "node:util";
 import { createHash } from "node:crypto";
+import { modelOutputFailure } from "./model-output.js";
 
 export interface PlanningResumeAuthorization {
   readonly id: string;
@@ -255,6 +256,7 @@ export class PlanningLoopController {
         occurredAt: this.now(),
         operation,
         message,
+        ...(modelOutputFailure(error) === undefined ? {} : { modelOutputFailure: modelOutputFailure(error)! }),
         ...(lastState === undefined ? {} : { lastState }),
       };
       try {

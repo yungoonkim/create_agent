@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "complete": true,
+  "kind": "planning_document_review",
+  "source": {
+    "projectId": "book-review-demo",
+    "scopeId": "book-scope",
+    "scopeVersion": 1,
+    "scopeSha256": "d70cbebc5a502ca1005d7a5b185d4c73132c31bd7d6272842b4a5ade985decc5",
+    "planId": "book-review-demo-plan",
+    "planVersion": 1,
+    "planSha256": "7044c3948ad53f23dbde10e32cecd51ed59065d9ef16ca3de027c895f091e4b8",
+    "reviewSha256": "c5589b7cd6d0c42b7a9590d9b3a392021cfc03b0dd90907c2a408407ed76dbb2"
+  },
+  "implementationVerification": "not_performed",
+  "hashes": {
+    "plan.md": "8fd2ece7b4516030b617f8c1f8878d60ce2385ad2fb1eb6726f2729b5ac28c7a",
+    "review.json": "5de77aa7add904ad5e00fb433ce07b2a2a84def6acf95577607bf725b3492339",
+    "review.md": "0674e7551b962d6243664d3024afa6362265e85868ad0fa541adb17bf6fde829"
+  }
+}

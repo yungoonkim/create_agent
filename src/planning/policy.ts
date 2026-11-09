@@ -159,7 +159,8 @@ export function decideAfterReview(input: PlanningDecisionInput): PlanningDecisio
     catch { return { type: "FAILED", reason: "Review storage audit coverage or evidence is invalid." }; }
   }
   if (review.outcome === "failed") return { type: "FAILED", reason: "Reviewer reported a failed review." };
-  const scopeIssueIds = review.issues.filter((issue) => issue.kind === "scope_violation").map((issue) => issue.id);
+  const scopeIssues = review.issues.filter((issue) => issue.kind === "scope_violation");
+  const scopeIssueIds = scopeIssues.map((issue) => issue.id);
   if (review.scopeViolation || scopeIssueIds.length > 0) {
     if (scopeIssueIds.length === 0) {
       return {
@@ -167,12 +168,14 @@ export function decideAfterReview(input: PlanningDecisionInput): PlanningDecisio
         questions: ["Reviewer flagged a scope violation but did not provide a structured scope issue."],
       };
     }
-    return {
-      type: "REQUEST_SCOPE_CHANGE_APPROVAL",
-      planId: review.planId,
-      version: review.planVersion,
-      issueIds: scopeIssueIds,
-      reason: "Reviewer identified a scope violation that requires a separate approved change.",
+    // Legacy issues retain the conservative approval route; new issues must state how to resolve them.
+    if (scopeIssues.some(issue => issue.scopeDisposition === undefined || issue.scopeDisposition === "change_scope")) return {
+      type: "REQUEST_SCOPE_CHANGE_APPROVAL", planId: review.planId, version: review.planVersion, issueIds: scopeIssueIds,
+      reason: "Reviewer identified a scope change requiring separate approval; approved Scope was not modified.",
+    };
+    if (scopeIssues.some(issue => issue.scopeDisposition === "clarify")) return {
+      type: "REQUEST_USER_INPUT", questions: scopeIssues.filter(issue => issue.scopeDisposition === "clarify")
+        .map(issue => `${issue.description} — ${issue.dispositionReason}`),
     };
   }
   const findings = qualityFindings(review);
@@ -195,7 +198,7 @@ export function decideAfterReview(input: PlanningDecisionInput): PlanningDecisio
     };
   }
 
-  const needsRevision = review.outcome === "revise" || blockingIssues.length > 0 || findings.length > 0;
+  const needsRevision = review.outcome === "revise" || blockingIssues.length > 0 || findings.length > 0 || scopeIssues.length > 0;
   if (!needsRevision) {
     return { type: "REQUEST_USER_APPROVAL", planId: review.planId, version: review.planVersion };
   }
@@ -272,8 +275,14 @@ export function parsePlanReview(raw: unknown): PlanReview {
       ...(item.relatedRequirementId === undefined
         ? {}
         : { relatedRequirementId: reviewString(item.relatedRequirementId, "issue.relatedRequirementId") }),
+      ...(item.scopeDisposition === undefined ? {} : {
+        scopeDisposition: reviewChoice(item.scopeDisposition, ["not_applicable", "revise_plan", "change_scope", "clarify"], "issue.scopeDisposition"),
+        dispositionReason: reviewString(item.dispositionReason, "issue.dispositionReason"),
+      }),
     };
   });
+  if (issues.some(issue => issue.scopeDisposition !== undefined &&
+    (issue.kind === "scope_violation" ? issue.scopeDisposition === "not_applicable" : issue.scopeDisposition !== "not_applicable"))) throw invalidReviewField("issue.scopeDisposition does not match issue kind");
   if (new Set(issues.map((issue) => issue.id)).size !== issues.length) throw invalidReviewField("issues: duplicate IDs");
   const reviewedAt = reviewString(value.reviewedAt, "reviewedAt");
   if (Number.isNaN(Date.parse(reviewedAt))) throw invalidReviewField("reviewedAt");

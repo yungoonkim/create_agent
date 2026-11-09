@@ -1,5 +1,5 @@
 import { STORAGE_AUDIT_STATES, type PlanDraft, type ReviewIssue, type ScopeContract, type StorageAudit } from "./contracts.js";
-import { evidenceFromLines } from "./review-quality.js";
+import { evidenceFromLines, parsePlanEvidence, validatePlanEvidence } from "./review-quality.js";
 
 function object(value: unknown): Record<string, unknown> {
   if (typeof value !== "object" || value === null || Array.isArray(value)) throw new Error("Invalid storage audit object.");
@@ -30,7 +30,9 @@ export function bindStorageAudit(raw: unknown, plan: PlanDraft): unknown {
   if (!Array.isArray(audit.cases)) throw new Error("Missing storage audit cases.");
   return { ...audit, evidence: evidenceFromLines(audit.evidenceLines, plan), cases: audit.cases.map((rawCase) => {
     const item = object(rawCase);
-    return { ...item, evidence: evidenceFromLines(item.evidenceLines, plan) };
+    const trigger = item.trigger === undefined ? undefined : object(item.trigger);
+    return { ...item, evidence: evidenceFromLines(item.evidenceLines, plan),
+      ...(trigger === undefined ? {} : { trigger: { ...trigger, evidence: evidenceFromLines(trigger.evidenceLines, plan) } }) };
   }) };
 }
 export function parseStorageAudit(raw: unknown): StorageAudit {
@@ -44,7 +46,8 @@ export function parseStorageAudit(raw: unknown): StorageAudit {
       action: choice(item.action, ["initialize", "load", "preserve_and_block", "reset_or_overwrite", "unspecified"] as const),
       verdict: choice(item.verdict, ["consistent", "unsafe", "needs_user_input"] as const),
       evidenceLines: refs(item.evidenceLines), evidence: evidence(item.evidence),
-      authorizationScopeIds: item.authorizationScopeIds.map(text), rationale: text(item.rationale) };
+      authorizationScopeIds: item.authorizationScopeIds.map(text), rationale: text(item.rationale),
+      ...(item.trigger === undefined ? {} : { trigger: parsePlanEvidence(item.trigger) }) };
   });
   if (format === "json" ? cases.length !== STORAGE_AUDIT_STATES.length || new Set(cases.map((c) => c.state)).size !== cases.length : cases.length !== 0) {
     throw new Error("JSON storage audit needs each input state exactly once; non-JSON formats use an empty case table.");
@@ -59,6 +62,7 @@ export function validateStorageAudit(audit: StorageAudit, plan: PlanDraft, scope
   }
   if ((audit.format === "json" || audit.format === "other") && audit.evidence.length === 0) throw new Error("Declared storage format needs Plan evidence.");
   for (const row of audit.cases) {
+    if (row.trigger !== undefined) validatePlanEvidence(row.trigger, plan);
     if (row.action !== "unspecified" && row.evidence.length === 0) throw new Error("Declared storage action needs Plan evidence.");
     if (row.authorizationScopeIds.some((id) => sources[id] === undefined)) throw new Error("Storage recovery authorization references an unknown approved Scope source.");
   }
@@ -70,11 +74,22 @@ export function storageAuditFindings(audit: StorageAudit | undefined): { readonl
     description: `저장 형식과 복구 동작을 검토할 수 없습니다: ${audit.rationale}`, suggestedDirection: "위임된 저장 설계를 기획에서 구체화하고 초기 상태와 손상을 구분하십시오." });
   for (const row of audit.cases) {
     const destructiveWithoutSource = row.state !== "absent" && (row.action === "initialize" || row.action === "reset_or_overwrite") && row.authorizationScopeIds.length === 0;
-    if (row.verdict === "unsafe" || row.action === "unspecified" || destructiveWithoutSource) {
+    const triggerGap = row.trigger !== undefined && (row.trigger.evidence.length === 0 ||
+      row.state === "read_error" && !hasExplicitReadFailure(row.trigger.evidence));
+    if (row.verdict === "unsafe" || row.action === "unspecified" || destructiveWithoutSource || triggerGap) {
       issues.push({ id: `issue-storage-${row.state}`, kind: "implementation_risk", severity: "major",
-        description: `${row.state}: ${row.rationale}${destructiveWithoutSource ? " 기존 JSON 값을 초기화/덮어쓰는 복구에 대한 승인 Scope 근거가 없습니다." : ""}`,
+        description: `${row.state}: ${row.rationale}${destructiveWithoutSource ? " 기존 JSON 값을 초기화/덮어쓰는 복구에 대한 승인 Scope 근거가 없습니다." : ""}${triggerGap ? " 해당 상황 자체의 원문 근거가 불충분하여 확인이 필요합니다. 손상된 값과 읽기 작업 자체의 실패를 구분하십시오." : ""}`,
         suggestedDirection: "원본 보존·쓰기 차단으로 보완하거나, 명시적으로 허용된 복구 정책의 승인 Scope 근거를 확인하십시오." });
     } else if (row.verdict === "needs_user_input") questions.push(`${row.state}: ${row.rationale}`);
   }
   return { issues, questions };
+}
+
+/** Conservative evidence gate, not semantic certification. Unrecognized phrasing stays unconfirmed. */
+export function hasExplicitReadFailure(quotes: readonly string[]): boolean {
+  return quotes.some(quote => {
+    const read = /getItem|readFile|읽기\s*(?:작업|자체|도중|중)|읽(?:을|지)\s*(?:수\s*)?없|read\s*(?:operation|access|error|failure|exception)/i.test(quote);
+    const failure = /SecurityError|EACCES|ENOENT|예외|접근\s*(?:거부|오류|차단)|권한\s*(?:거부|오류)|읽기\s*(?:실패|오류)|실패|throw|exception|denied|fail|error/i.test(quote);
+    return read && failure && !/예외.*(?:다루지|처리하지|고려하지|없다)|does\s+not\s+(?:handle|cover)/i.test(quote);
+  });
 }

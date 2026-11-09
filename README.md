@@ -17,6 +17,8 @@ ADTF는 여러 AI Agent를 조율하기 위한 재사용 가능한 프레임워�
 
 소스를 처음 받는 경우 [Windows 중심 실행 가이드](docs/local-run-guide.md)를 따른다. [당초 계획 대비 구현 현황](docs/plan-vs-implementation-20261109.md)에서 ADTF 기능과 기획만 완료된 할 일 웹앱을 구분해 확인할 수 있다.
 
+[사용자 기획 검토표](docs/user-planning-review.md)는 요구별 정상·실패·확인 사례의 원문 근거와 남은 문제를 보여준다. `review-plan`은 저장된 기획을 추가 API 호출·승인 변경 없이 Markdown/JSON으로 내보낸다. [독서 목록 예시](docs/acceptance/planning-review-table-20261109/demo-bundle/review.md)는 TEST/STUB이며 실제 구현 검증이나 Gemini 품질 결과가 아니다. [신뢰성 보완 보고서](docs/planning-review-table-report-20261109.md)에 응답 잘림·범위 내 수정 분기·155개 테스트와 실제 모델 재검증의 한계를 남겼다.
+
 같은 모델의 단일 작성과 ADTF 검토·수정의 효과를 비교하는 [품질 비교 계획](docs/planning-comparison-protocol-20261109.md)과 [실제6쌍 결과](docs/planning-comparison-results-20261109.md)를 제공한다. 새 일상 주제3종·각2회의 익명 채점·지적/수정 감사·사용량·원자료 해시를 보존했다. 점수 합계83→84/108, 승인 요청3·판단 대기1·검토 실패2였으며 안정적인 품질 향상을 입증했다고 해석하지 않는다. [일괄 실행 안내](examples/planning-comparison/README.md)는 실행 방법 기록이며 완료한 실험을 다시 실행할 필요 없다.
 
 ## 개발
