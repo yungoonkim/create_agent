@@ -38,6 +38,9 @@ export { FakePlanningReviewer } from "./fake-reviewer.js";
 export { FakePlanningWriter } from "./fake-writer.js";
 export { GeminiPlanningReviewer, GeminiPlanningWriter, createVertexAiClient } from "./google-genai.js";
 export type { VertexAiClientOptions } from "./google-genai.js";
+export { buildUserReviewTable, renderUserReviewTable } from "./user-review.js";
+export type { UserReviewInput, UserReviewTable, UserReviewRow, UserReviewStatus } from "./user-review.js";
+export { exportUserReviewBundle } from "./review-export.js";
 export {
   assertSafeProjectId,
   assertSafeStorageId,

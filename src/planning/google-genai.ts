@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { GoogleGenAI, ThinkingLevel } from "@google/genai";
+import { GoogleGenAI, ThinkingLevel, type GenerateContentResponse } from "@google/genai";
 import type {
   PlanDraft,
   PlanReview,
@@ -17,6 +17,7 @@ import { WRITER_SYSTEM_INSTRUCTION, REVIEWER_SYSTEM_INSTRUCTION, REVIEW_CHALLENG
 import { bindReviewEvidence } from "./review-quality.js";
 import { bindStorageAudit, scopeAuthorizationSources } from "./storage-audit.js";
 import { STORAGE_AUDIT_STATES } from "./contracts.js";
+import { assertCompleteOutput, modelOutputFailure } from "./model-output.js";
 
 export interface VertexAiClientOptions {
   readonly project?: string;
@@ -65,15 +66,18 @@ export class GeminiPlanningWriter implements PlanningWriter {
       }),
     ].join("\n\n");
     const startedAt = Date.now();
+    let response: GenerateContentResponse | undefined;
     try {
-      const response = await this.client.models.generateContent({
+      response = await this.client.models.generateContent({
         model: role.model.modelId,
         contents: prompt,
         config: {
           systemInstruction: WRITER_SYSTEM_INSTRUCTION,
           maxOutputTokens: 16_000,
+          httpOptions: { retryOptions: { attempts: 1 } },
         },
       });
+      assertCompleteOutput(response, "writer");
       const content = response.text?.trim();
       if (content === undefined || content.length === 0) throw new Error("Gemini Writer returned no text.");
       const result: PlanDraft = {
@@ -102,7 +106,7 @@ export class GeminiPlanningWriter implements PlanningWriter {
       });
       return result;
     } catch (error) {
-      await this.recordFailure(context.projectId, planId, version, "writer", role, error, startedAt);
+      await this.recordFailure(context.projectId, planId, version, "writer", role, error, startedAt, response);
       throw new Error(safeErrorMessage(error), { cause: error });
     }
   }
@@ -119,6 +123,7 @@ export class GeminiPlanningWriter implements PlanningWriter {
     role: PlanningRoleConfig,
     error: unknown,
     startedAt: number,
+    response: GenerateContentResponse | undefined,
   ): Promise<void> {
     await this.recordUsage({
       projectId,
@@ -130,6 +135,10 @@ export class GeminiPlanningWriter implements PlanningWriter {
       outcome: "failure",
       durationMs: Date.now() - startedAt,
       error: safeErrorMessage(error),
+      ...(response?.usageMetadata?.promptTokenCount === undefined ? {} : { inputTokens: response.usageMetadata.promptTokenCount }),
+      ...(response?.usageMetadata?.candidatesTokenCount === undefined ? {} : { outputTokens: response.usageMetadata.candidatesTokenCount }),
+      ...(response?.usageMetadata?.thoughtsTokenCount === undefined ? {} : { reasoningTokens: response.usageMetadata.thoughtsTokenCount }),
+      ...(modelOutputFailure(error) === undefined ? {} : { finishReasons: modelOutputFailure(error)!.finishReasons, failureCode: modelOutputFailure(error)!.code }),
       recordedAt: this.now(),
     });
   }
@@ -171,12 +180,14 @@ export class GeminiPlanningReviewer implements PlanningReviewer {
     let stage: "assessment" | "challenge" = "assessment";
     let stageStartedAt = Date.now();
     let metrics: { inputTokens?: number; outputTokens?: number; reasoningTokens?: number } = {};
+    let finishReasons: readonly string[] = [];
     const log = async (outcome: "success" | "failure", error?: unknown): Promise<void> => {
       await this.memory.appendTokenUsage({ projectId: context.projectId, planId: context.currentPlan.id,
         iteration: context.currentPlan.version, role: "reviewer", reviewStage: stage,
         providerId: role.model.providerId, modelId: role.model.modelId, ...metrics,
         outcome, durationMs: Date.now() - stageStartedAt,
-        ...(error === undefined ? {} : { error: safeErrorMessage(error) }), recordedAt: this.now() });
+        finishReasons, ...(error === undefined ? {} : { error: safeErrorMessage(error) }),
+        ...(modelOutputFailure(error) === undefined ? {} : { failureCode: modelOutputFailure(error)!.code }), recordedAt: this.now() });
     };
     const capture = (usage: { promptTokenCount?: number; candidatesTokenCount?: number; thoughtsTokenCount?: number } | undefined): void => {
       metrics = { ...(usage?.promptTokenCount === undefined ? {} : { inputTokens: usage.promptTokenCount }),
@@ -187,11 +198,16 @@ export class GeminiPlanningReviewer implements PlanningReviewer {
       const response = await this.client.models.generateContent({
         model: role.model.modelId, contents: prompt,
         config: { systemInstruction: REVIEWER_SYSTEM_INSTRUCTION, responseMimeType: "application/json",
-          responseJsonSchema: reviewSchemaFor(context.currentPlan, context.approvedScope), maxOutputTokens: 8_000, thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM } },
+          responseJsonSchema: reviewSchemaFor(context.currentPlan, context.approvedScope), maxOutputTokens: 16_000, thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM },
+          httpOptions: { retryOptions: { attempts: 1 } } },
       });
       capture(response.usageMetadata);
+      finishReasons = response.candidates?.flatMap(c => c.finishReason === undefined ? [] : [c.finishReason]) ?? [];
+      assertCompleteOutput(response, "assessment");
       const raw = parseJsonResponse(response.text);
       if (raw.qualityAssessment === undefined) throw new Error("Gemini Reviewer omitted mandatory quality assessment.");
+      const assessment = raw.qualityAssessment as { requirements?: readonly { behaviorEvidence?: unknown }[] };
+      if (!Array.isArray(assessment.requirements) || assessment.requirements.some(row => row.behaviorEvidence === undefined)) throw new Error("Gemini Reviewer omitted mandatory behavioral evidence.");
       const result = validatePlanReview({ ...raw, id: `review-${context.currentPlan.version}`, projectId: context.projectId,
         planId: context.currentPlan.id, planVersion: context.currentPlan.version,
         scopeContractId: context.approvedScope.id, scopeVersion: context.approvedScope.version,
@@ -204,17 +220,22 @@ export class GeminiPlanningReviewer implements PlanningReviewer {
       if (decision.type !== "REQUEST_USER_APPROVAL") return result;
 
       // At most one independent challenge call, only when the first review would allow approval.
-      stage = "challenge"; stageStartedAt = Date.now(); metrics = {};
+      stage = "challenge"; stageStartedAt = Date.now(); metrics = {}; finishReasons = [];
       const challenge = await this.client.models.generateContent({ model: role.model.modelId,
         contents: JSON.stringify({ projectId: context.projectId, originalRequirements: context.originalRequirements,
           approvedScope: context.approvedScope, settledDecisions: context.settledDecisions,
           approvedScopeSources: scopeAuthorizationSources(context.approvedScope),
           currentPlanLines: sourceLinesFor(context.currentPlan) }),
         config: { systemInstruction: REVIEW_CHALLENGE_SYSTEM_INSTRUCTION, responseMimeType: "application/json",
-          responseJsonSchema: challengeSchemaFor(context.currentPlan, context.approvedScope), maxOutputTokens: 8_000, thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM } },
+          responseJsonSchema: challengeSchemaFor(context.currentPlan, context.approvedScope), maxOutputTokens: 16_000, thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM },
+          httpOptions: { retryOptions: { attempts: 1 } } },
       });
       capture(challenge.usageMetadata);
+      finishReasons = challenge.candidates?.flatMap(c => c.finishReason === undefined ? [] : [c.finishReason]) ?? [];
+      assertCompleteOutput(challenge, "challenge");
       const counterexamples = parseJsonResponse(challenge.text);
+      const audit = counterexamples.storageAudit as { cases?: readonly { trigger?: unknown }[] } | undefined;
+      if (audit === undefined || !Array.isArray(audit.cases) || audit.cases.some(row => row.trigger === undefined)) throw new Error("Challenge omitted mandatory storage trigger evidence.");
       if (!Array.isArray(counterexamples.questions)) throw new Error("Challenge review omitted questions array.");
       const issues = normalizeIssues(counterexamples.issues, context);
       if (!Array.isArray(issues)) throw new Error("Challenge review omitted issues array.");
@@ -256,8 +277,10 @@ const REVIEW_SCHEMA = {
           description: { type: "string" },
           suggestedDirection: { type: "string" },
           relatedRequirementId: { type: "string" },
+          scopeDisposition: { type: "string", enum: ["not_applicable", "revise_plan", "change_scope", "clarify"] },
+          dispositionReason: { type: "string" },
         },
-        required: ["kind", "severity", "description", "suggestedDirection"],
+        required: ["kind", "severity", "description", "suggestedDirection", "scopeDisposition", "dispositionReason"],
       },
     },
     suggestions: { type: "array", items: { type: "string" } },
@@ -268,7 +291,7 @@ const REVIEW_SCHEMA = {
         version: { type: "integer", enum: [1] },
         requirements: { type: "array", items: { type: "object",
           properties: { requirementId: { type: "string" }, ...QUALITY_ITEM_PROPERTIES },
-          required: ["requirementId", "status", "evidenceLines", "rationale"] } },
+          required: ["requirementId", "status", "evidenceLines", "rationale", "behaviorEvidence"] } },
         checks: { type: "array", items: { type: "object",
           properties: { id: { type: "string", enum: [...REVIEW_CHECK_IDS] }, ...QUALITY_ITEM_PROPERTIES },
           required: ["id", "status", "evidenceLines", "rationale"] } },
@@ -306,9 +329,10 @@ function challengeSchemaFor(plan: PlanDraft, scope: ScopeContract): object {
         state: { type: "string", enum: [...STORAGE_AUDIT_STATES] },
         action: { type: "string", enum: ["initialize", "load", "preserve_and_block", "reset_or_overwrite", "unspecified"] },
         verdict: { type: "string", enum: ["consistent", "unsafe", "needs_user_input"] }, evidenceLines,
+        trigger: { type: "object", properties: { evidenceLines }, required: ["evidenceLines"] },
         authorizationScopeIds: { type: "array", items: { type: "string", enum: Object.keys(scopeAuthorizationSources(scope)) } },
         rationale: { type: "string" },
-      }, required: ["state", "action", "verdict", "evidenceLines", "authorizationScopeIds", "rationale"] } },
+      }, required: ["state", "action", "verdict", "evidenceLines", "authorizationScopeIds", "rationale", "trigger"] } },
     }, required: ["format", "evidenceLines", "rationale", "cases"] },
   }, required: ["issues", "questions", "storageAudit"] };
 }
@@ -320,7 +344,14 @@ function reviewSchemaFor(plan: PlanDraft, scope: ScopeContract): object {
   return { ...REVIEW_SCHEMA, properties: { ...REVIEW_SCHEMA.properties, issues: issueSchemaFor(scope), qualityAssessment: { ...quality,
     properties: { ...quality.properties,
       requirements: { ...quality.properties.requirements, items: { ...quality.properties.requirements.items,
-        properties: { ...quality.properties.requirements.items.properties, evidenceLines } } },
+        properties: { ...quality.properties.requirements.items.properties, evidenceLines,
+          behaviorEvidence: { type: "object", properties: {
+            normal: { type: "object", properties: { evidenceLines }, required: ["evidenceLines"] },
+            failure: { type: "object", properties: { evidenceLines }, required: ["evidenceLines"] },
+            acceptance: { type: "object", properties: { evidenceLines }, required: ["evidenceLines"] },
+            failureNotApplicableReason: { type: "string" },
+          }, required: ["normal", "failure", "acceptance", "failureNotApplicableReason"] },
+        } } },
       checks: { ...quality.properties.checks, items: { ...quality.properties.checks.items,
         properties: { ...quality.properties.checks.items.properties, evidenceLines } } },
     } } } };
@@ -332,6 +363,7 @@ function normalizeIssues(rawIssues: unknown, context: PlanningReviewerContext): 
   return rawIssues.map((rawIssue) => {
     if (typeof rawIssue !== "object" || rawIssue === null || Array.isArray(rawIssue)) return rawIssue;
     const issue = rawIssue as Record<string, unknown>;
+    if (issue.kind === "scope_violation" && (issue.scopeDisposition === undefined || issue.dispositionReason === undefined)) throw new Error("Scope issue needs an explicit correction/change/clarification disposition.");
     const relatedId = issue.relatedRequirementId;
     if (relatedId !== undefined && (typeof relatedId !== "string" || !validRequirementIds.has(relatedId))) {
       throw new Error("Reviewer returned an issue linked to an unknown requirement.");

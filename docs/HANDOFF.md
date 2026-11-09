@@ -3,6 +3,42 @@
 마지막 정리: 2026-11-09 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 작업 — 새 실모델 재시험 준비 완료, 인증된 PC 생성 대기
+
+사용자의 다음 작업 지시로 검토표/신뢰성 보완의 실제 Gemini 시험을 준비했다. [새 시험 계획](planning-review-live-protocol-20261109.md), [실행 안내](../examples/planning-review-live/README.md), [준비 기록](acceptance/planning-review-live-20261109/preflight.json)을 우선한다. **실제 모델 호출0회, 실모델 합격/품질 결과는 아직 없다.**
+
+- 이번 Cloud ADC refresh는 reauthentication_required였고, 공유 브라우저의 공식 Google HTTPS 첫 호출도 `Browser Use could not read requirements`로 실패했다. CUA 종료를 기록했고 새 로그인 프로세스/코드 흐름은 시작하지 않았다. 토큰 출력·채팅 인증 코드/토큰 요구·네트워크/TLS 우회는 없다. 현재 호스트에는 cloud-desktop 열기 target도 없다. 과거의 추측성 Desktop 메뉴 안내를 반복하지 않는다.
+- 새 두 사례: 식물 물주기 기록은 실제 Writer부터 시작, 운동 기록은 고의로 공개 서버 전송을 넣은 고정 초안에서 Scope 유지 교정을 시험한다. 운동 최초 초안은 모델 생성 결과가 아니다. 참고 답안/검사표를 live Writer에게 정답 지시로 보내지 않는다. 입력/기준/생산 소스/실행기/요금표는 생성 전에 고정했다.
+- 각2회 반복·전체 최대11 SDK 요청(6+5), SDK1시도, 추가 유료 채점 없음, 실제 사용자 승인/제품/팀원 실행 없음. Scope 승인 fixture만 격리한다. 체크아웃당 고정 trial live 시작1회를 먼저 예약하고 같은 ID/새 ID 자동 재생을 막는다. 인증/권한 실패는 남은 사례를 건너뛴다.
+- `npm.cmd run eval:planning-review -- generate --run-live --bundle` 한 번으로 실행명 자동 생성·고정 project/location·진행 로그·결과 압축을 제공한다. CMD/PowerShell 변수 설정은 필요 없다. 실패/대기 종료코드2라도 압축을 전달하며 유료 실행을 반복하지 않는다. 압축만 실패하면 기존 ID의 pack만 수행한다.
+- 타입 검사/158개 테스트 통과(기존155+새3). 고정 응답으로두 사례 흐름·범위 내 교정·내보내기·압축·변조/재생 차단을 확인했지만 이는 실모델 증거가 아니다. 전체 준비 dry-run은 `/workspace/scratch/planning-review-live-preparation`에 따로 보존했고 Git에는 명확한 TEST/STUB 요약만 둔다. primary50파일·승인37파일·이전 비교162파일이 보존됐다.
+- 다음: 인증된 PC의 실제 결과 압축 하나를 받아 경로/링크/해시를 검사하고 원문 근거·완료/중단·Scope 교정·기존 요구 보존·검토표·사용량을 감사한다. 모델 pass/사례 상태만으로 합격을 단정하지 않는다. 기존6쌍 비교나 실제 승인 프로젝트를 재실행하지 않는다. 이번 trial용 생산 코드 수정은 없다.
+
+## 최신 완료 — 사용자 검토표 1차·신뢰성 보완·재개 자료
+
+중단된 `feature/planning-review-table` 작업을 재개해 코드 점검·사용 안내·검증 기록·문서 갱신을 마무리했다. [사용 안내](user-planning-review.md), [구현 보고서](planning-review-table-report-20261109.md), [검증 기록](acceptance/planning-review-table-20261109/validation.json), [읽기용 예시](acceptance/planning-review-table-20261109/demo-bundle/review.md)를 먼저 읽는다. 아래 재개 당시 점검은 완료 전 이력이다.
+
+- 구현 완료: MAX_TOKENS/비정상 종료 시 완성본 사용 금지·부분 응답/실패 사용량 보존·자동 SDK 재시도 차단, 새 정상/실패/확인 사례 근거 및 저장 상태 trigger, 범위 내 교정/실제 Scope 변경/질문 분리. 불변 과거 Review와 승인/총 예산은 보존한다.
+- 사용자 기능: `review-plan --config 실제설정 --output 새폴더`와 `report.userReview`. 추가 API·CALL·승인 변경 없이 plan.md/review.md/review.json/bundle.json을 내보낸다. 부족한 과거 근거는 확인 필요로 표시하며 과거 승인을 취소하지 않는다. 실제 구현 시험과 모델의 문서 판단을 구분한다.
+- 오프라인155테스트/타입 검사 통과. 새 독서 목록 fixture, 무ADC live-config CLI, Scope 교정 v1→v2/승인pending, 중단·오래된 출처·출력 덮어쓰기 차단과 역사적 비교 검증을 포함한다. 실제 Cloud의 기존 승인2프로젝트도 읽기 전용 내보내기 확인. 승인37파일 해시와 비교 원자료 보존을 검증했다.
+- 이번 변경의 실제 Gemini 호출0회. 새 프롬프트/응답 형식/16000 출력 예산의 실모델 성공·품질 향상은 아직 확인하지 않았다. 출력 한도와 보수적 문구 검사는 보장이 아니다. 다음 실모델 검증은 새 사례를 고정해 수행해야 한다.
+- 재개 시 기존 비교/승인 프로젝트의 plan/resume/retry를 다시 실행하지 않는다. 과거6쌍은 `node examples/planning-comparison/verify-archive.mjs --run-id local-20261109-162415`로 원자료만 검증한다. 옛 생성기의 소스 고정 차단을 해제하거나 점수/사례를 바꾸지 않는다. 변경 영향표·웹 UI·일반 채팅 수정 비교·팀원/제품 구현은 별도 범위다.
+- 소스·문서는 위 브랜치의 한국어 커밋으로 보존하며 PR은 이 대화의 첨부를 참조한다. 다음 재개는 AGENTS.md와 이 절을 읽고 git 상태·첨부 PR을 확인한다.
+
+구현 커밋: `69027b1` — 사용자 기획 검토표와 응답 중단 및 범위 교정 정책 보완. [PR #11](https://github.com/yungoonkim/create_agent/pull/11)에 소스·예시·검증·문서를 제출했다. 다음 재개에는 이 링크로 PR 상태를 확인한다. 대화 PR 첨부 도구는 응답 지연으로 완료를 확인하지 못했지만 GitHub PR 생성·소스 push는 확인했다. 구현/오프라인 검증은 완료이며 다음 미검증 항목은 새 사례의 실제 Gemini 재시험이다.
+
+## 재개 당시 점검 — 사용자 검토표·신뢰성 보완 구현, 문서/커밋 마무리 전
+
+사용자가 일반 채팅과 구별되는 강점을 위해 제안한 1단계 신뢰성 보완과 2단계 사용자 검토표 구현을 승인했다. 브랜치는 `feature/planning-review-table`이며 아래 실제 비교 기록은 변경/재실행하지 않는다. 팀원·제품 구현·웹 UI·변경 영향표는 이번 범위 밖이다.
+
+- 구현: 모델 MAX_TOKENS/비정상 종료를 완성본으로 사용하지 않고 부분 응답·제공 토큰·사유 보존, SDK 자동 재시도1시도로 제한, Reviewer 출력 한도8000→16000. 새로운 Review는 정상/실패/확인 사례 원문 근거와 저장 상태 trigger 근거를 분리한다. 읽기 예외 근거의 보수적 문구 검사는 의미상 정답을 보증하지 않는다.
+- 구현: 새 scopeDisposition으로 기획 교정(revise_plan)·실제 Scope 변경(change_scope)·질문(clarify)을 구분한다. 기존 미분류 Review는 보수적인 기존 경로를 유지하고 승인 스냅샷을 수정하지 않는다.
+- 구현: `review-plan --config ... --output 새폴더`가 plan.md/review.md/review.json/bundle.json을 추가 API·CALL·승인 변경 없이 내보낸다. `report`에도 userReview/오류를 포함한다. 이전 세부 근거 없는 Review는 확인 필요로 표시한다. 기존 승인 취소가 아니다.
+- 마지막 확인: typecheck/전체155테스트 통과, 로그 `/workspace/scratch/review-table-final-tests.log`. 새 독서 목록 fixture로 오프라인 검증했으며 `docs/acceptance/planning-review-table-20261109/demo-bundle`은 TEST/STUB 샘플이다. 이번 변경의 실제 Gemini 재시험은 아직 하지 않았다.
+- 기존 Cloud 승인 재고/할 일 프로젝트도 읽기 전용 export 성공(출력은 `/workspace/scratch/existing-inventory-review-20261109`, `existing-todo-review-20261109`). 최종 원본37파일 해시 대조 기록은 마무리 단계에서 남긴다.
+- 역사적 비교 runner/freeze/lib는 그대로 보존한다. 현재 생산 소스가 달라졌으므로 옛 생성기가 차단하는 것이 정상이다. 새 `examples/planning-comparison/verify-archive.mjs --run-id local-20261109-162415`로 원자료만 읽기 전용 검증한다. 새 테스트는 이 보호 경로와 복사본 변조 탐지를 확인한다.
+- 남은 작업: 코드 최종 점검, 사용 안내·구현/검증 보고서·이력/로드맵 갱신, 원자료/승인 해시/비밀정보/문서 링크 확인, 한국어 커밋·push·PR 생성 및 첨부. 현재 변경은 아직 미커밋이다. 완료 시 이 절보다 위에 최종 상태를 기록한다.
+
 ## 최신 완료 — 단일 작성/ADTF 실제6쌍 비교·익명 채점·원자료 보존
 
 사용자가 `local-20261109-162415.tar.gz`를 업로드했다. [최종 비교 보고서](planning-comparison-results-20261109.md), [원자료 인덱스](acceptance/planning-comparison-20261109/README.md), [수신/평가 순서 기록](acceptance/planning-comparison-20261109/analysis-local-20261109-162415/reception.json)을 우선한다. 아래 실제 호출0회·실행 대기는 이전 준비 시점 이력이다. **이번 비교 분석은 완료했으며 안정적인 품질 향상을 입증한 것은 아니다.**

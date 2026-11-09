@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "recordedAtUtc": "2026-11-09T12:00:44.565917+00:00",
+  "status": "ready_for_authenticated_PC_generation; Cloud blocked by ADC reauthentication and shared browser bootstrap error",
+  "actualModelCalls": 0,
+  "actualAcceptanceResult": null,
+  "adcRefreshStatus": "reauthentication_required",
+  "tokenPrinted": false,
+  "browserAttempt": "official Google HTTPS via shared cdp browser",
+  "browserError": "Browser Use could not read requirements",
+  "authenticationCodeOrTokenRequestedInChat": false,
+  "networkOrTlsPolicyBypassed": false,
+  "pendingLoginProcessStarted": false,
+  "project": "iceu-songpa11",
+  "location": "global",
+  "model": "gemini-3.8-flash",
+  "maxSdkCalls": 11,
+  "cases": [
+    "fresh plant-watering Writer/Reviewer/export",
+    "deliberately faulty exercise draft -> same-Scope correction"
+  ],
+  "testTypecheck": "passed",
+  "tests": 158,
+  "passed": 158,
+  "failed": 0,
+  "skipped": 0,
+  "newTests": 3,
+  "offlineDryRun": {
+    "label": "TEST/STUB, not real Gemini quality evidence",
+    "adapterInvocations": 7,
+    "realApiCalls": 0,
+    "casePlanVersions": [
+      1,
+      2
+    ],
+    "scopeUnchanged": true,
+    "manualAcceptance": "not performed; canned behavior only"
+  },
+  "primaryFilesUnchanged": 50,
+  "approvedCheckpoints": [
+    {
+      "checkpoint": "todo-final-20261109/runtime-checkpoint.json",
+      "files": 20,
+      "allMatch": true
+    },
+    {
+      "checkpoint": "2026-11-08/primary-runtime-checkpoint.json",
+      "files": 17,
+      "allMatch": true
+    }
+  ],
+  "historicalComparisonFilesUnchanged": 162,
+  "productionChangesForThisTrial": false,
+  "frozenFiles": {
+    "examples/planning-review-live/cases.json": "e94611528623ae83e007ab90782ddb2b4cb2b26ffa873c26e669f43ea8b567e1",
+    "examples/planning-review-live/freeze.json": "9492a986f9ef9d336c6421cd20d76fb7b7661fd8290de04d4cd9c42540174fde",
+    "examples/planning-review-live/run.mjs": "b287f8aa76c5b42929edd17832581a3b4b7115c3a756708d52b7f02a01ff54e9"
+  },
+  "next": "Authenticated PC runs one variable-free command, uploads one archive; root audits actual source/repair/usage, retaining all failures.",
+  "sourcePinsVerified": true,
+  "testedFinalRunnerSha256": "b287f8aa76c5b42929edd17832581a3b4b7115c3a756708d52b7f02a01ff54e9"
+}

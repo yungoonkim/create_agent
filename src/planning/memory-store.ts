@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { appendFile, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { appendFile, mkdir, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, isAbsolute, relative, resolve, sep } from "node:path";
 import type { ApprovalId, ApprovalManager, ApprovalRecord, ApprovalStatus, MemoryEvent, ProjectId } from "../core/types.js";
 import { assertSafeProjectId, assertSafeStorageId, parseScopeContract } from "./config.js";
@@ -276,6 +276,31 @@ export class FilePlanningMemoryStore implements PlanningMemoryStore, ApprovalMan
     assertSafeProjectId(record.projectId);
     const file = this.projectFile(record.projectId, "planning", "errors", `${randomUUID()}.json`);
     await this.writeJson(file, record, true);
+  }
+
+  async getPlanningErrors(projectId: ProjectId): Promise<readonly PlanningErrorRecord[]> {
+    const dir = this.projectFile(projectId, "planning", "errors");
+    let entries;
+    try { entries = await readdir(dir, { withFileTypes: true }); }
+    catch (error) { if (isNodeError(error) && error.code === "ENOENT") return []; throw error; }
+    const records: PlanningErrorRecord[] = [];
+    for (const entry of entries) {
+      if (!entry.isFile() || !entry.name.endsWith(".json")) throw new Error("Invalid Planning error entry.");
+      const value = asRecord(await this.readJsonOptional(resolve(dir, entry.name)), "Planning error");
+      if (value.projectId !== projectId || typeof value.occurredAt !== "string" || Number.isNaN(Date.parse(value.occurredAt)) ||
+        typeof value.operation !== "string" || typeof value.message !== "string") throw new Error("Invalid Planning error record.");
+      if (value.lastState !== undefined && parsePlanningLoopState(value.lastState).projectId !== projectId) throw new Error("Planning error source belongs to another project.");
+      if (value.modelOutputFailure !== undefined) {
+        const failure = asRecord(value.modelOutputFailure, "Model output failure");
+        if (!["MODEL_OUTPUT_LIMIT", "MODEL_OUTPUT_INCOMPLETE"].includes(String(failure.code)) ||
+          !["writer", "assessment", "challenge"].includes(String(failure.stage)) || !Array.isArray(failure.finishReasons) ||
+          failure.finishReasons.some(r => typeof r !== "string") || typeof failure.partialText !== "string" ||
+          failure.partialText.length > 131072 || typeof failure.nextAction !== "string") throw new Error("Invalid model output failure details.");
+      }
+      // Diagnostic details are data, never executable commands or authority to retry/approve.
+      records.push(value as unknown as PlanningErrorRecord);
+    }
+    return records.sort((a, b) => a.occurredAt.localeCompare(b.occurredAt));
   }
 
   async request(projectId: ProjectId, subject: string): Promise<ApprovalRecord> {

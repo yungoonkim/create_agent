@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp, readFile, writeFile, rm} from 'node:fs/promises';
+import {mkdtemp, readFile, writeFile, rm, cp} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join, resolve} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
-import {anonymize, blindPair, validateGrade, tariff, sha, references} from '../examples/planning-comparison/lib.mjs';
+import {anonymize, blindPair, validateGrade, tariff, sha, references, fileHashes} from '../examples/planning-comparison/lib.mjs';
+import {verifyArchive} from '../examples/planning-comparison/verify-archive.mjs';
 
 test('comparison blinding removes provenance while keeping business rules and calendar values', () => {
   const input = '# [기획안 초안 v4] 장보기\nProject: comparison-pair-001\n## 0. 변경 요약\nADTF Reviewer pass\nchanged old rule\n## 1. 기능\n수량은 1~99이고 schemaVersion: 1이다.\n2026-02-30은 거부한다.';
@@ -45,13 +46,32 @@ test('frozen comparison inputs contain three new daily topics and exact checks b
   assert.equal(freeze.maxProviderCalls, Object.values(freeze.maxCallsBreakdown).reduce((a, b) => a + b, 0));
 });
 
-test('offline comparison reuses drafts, preserves primary state, seals before unblinding and detects tampering', async t => {
+test('archived comparison remains verifiable after production changes and copied-data tampering is detected', async t => {
+  const original = resolve('docs/acceptance/planning-comparison-20261109/local-20261109-162415');
+  assert.equal((await verifyArchive(original)).modelCalls, 0);
+  const temp = await mkdtemp(join(tmpdir(), 'adtf-archive-verify-'));
+  t.after(() => rm(temp, {recursive:true,force:true}));
+  const copy = join(temp,'copy'); await cp(original,copy,{recursive:true});
+  await writeFile(join(copy,'private/pairs/pair-001/initial.json'),'tampered');
+  await assert.rejects(verifyArchive(copy), /artifacts changed/);
+  assert.equal((await verifyArchive(original)).verified, true);
+});
+
+test('frozen comparison blocks changed production code; pinned code exercises sealing and tamper protection', async t => {
   const runId = `test-${randomUUID()}`;
   const out = resolve('docs/acceptance/planning-comparison-20261109', runId);
   const temp = await mkdtemp(join(tmpdir(), 'adtf-comparison-'));
   t.after(async () => {await rm(out, {recursive: true, force: true}); await rm(`${out}.tar.gz`, {force: true}); await rm(`${out}.archive.json`, {force: true}); await rm(temp, {recursive: true, force: true});});
   const run = (...args) => spawnSync(process.execPath, ['examples/planning-comparison/run.mjs', ...args, '--run-id', runId], {encoding: 'utf8', env: {...process.env, GOOGLE_APPLICATION_CREDENTIALS: '', GOOGLE_CLOUD_PROJECT: '', GOOGLE_CLOUD_LOCATION: ''}});
-  const dry = run('dry-run'); assert.equal(dry.status, 0, dry.stderr);
+  const freeze = JSON.parse(await readFile('examples/planning-comparison/freeze.json', 'utf8'));
+  const dry = run('dry-run');
+  if (JSON.stringify(await fileHashes(resolve('src'))) !== JSON.stringify(freeze.productionSourceHashes)) {
+    assert.notEqual(dry.status, 0, 'An observed frozen dataset must not run with tuned production code');
+    assert.match(dry.stderr, /Production code changed after freeze/);
+    assert.notEqual(run('generate', '--run-live').status, 0, 'Even an opt-in paid stage is blocked before any model call');
+    return;
+  }
+  assert.equal(dry.status, 0, dry.stderr);
   const index = JSON.parse(await readFile(join(out, 'blind/index.json'), 'utf8')); assert.equal(index.packets.length, 6);
   assert.notEqual(run('dry-run').status, 0, 'A started output directory cannot be reused');
   assert.notEqual(run('unblind').status, 0, 'No provenance exposure before scoring');

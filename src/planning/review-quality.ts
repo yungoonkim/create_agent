@@ -1,5 +1,5 @@
 import { REVIEW_CHECK_IDS, type PlanDraft, type PlanReview, type ReviewQualityAssessment,
-  type ReviewQualityItem, type ScopeContract } from "./contracts.js";
+  type ReviewQualityItem, type ScopeContract, type PlanEvidence, type RequirementBehaviorEvidence } from "./contracts.js";
 
 function record(value: unknown): Record<string, unknown> {
   if (typeof value !== "object" || value === null || Array.isArray(value)) throw new Error("Invalid quality assessment object.");
@@ -39,7 +39,13 @@ export function bindReviewEvidence(raw: unknown, plan: PlanDraft): unknown {
     return entries.map((entry: unknown) => {
       const row = record(entry);
       const evidence = evidenceFromLines(row.evidenceLines, plan);
-      return { ...row, evidence };
+      const behavior = row.behaviorEvidence === undefined ? undefined : record(row.behaviorEvidence);
+      return { ...row, evidence, ...(behavior === undefined ? {} : { behaviorEvidence: {
+        ...behavior, ...Object.fromEntries(["normal", "failure", "acceptance"].map(key => {
+          const source = record(behavior[key]);
+          return [key, { ...source, evidence: evidenceFromLines(source.evidenceLines, plan) }];
+        })),
+      } }) };
     });
   }
   return { ...quality, requirements: bind(quality.requirements), checks: bind(quality.checks) };
@@ -52,7 +58,8 @@ export function parseReviewQuality(raw: unknown): ReviewQualityAssessment {
       const row = record(rawRow);
       const parsed = item(row);
       if (parsed.status === "not_applicable") throw new Error("Required Scope features cannot be not_applicable.");
-      return { ...parsed, requirementId: text(row.requirementId) };
+      return { ...parsed, requirementId: text(row.requirementId),
+        ...(row.behaviorEvidence === undefined ? {} : { behaviorEvidence: parseBehaviorEvidence(row.behaviorEvidence) }) };
     }),
     checks: value.checks.map((rawRow) => {
       const row = record(rawRow);
@@ -66,6 +73,25 @@ export function parseReviewQuality(raw: unknown): ReviewQualityAssessment {
   };
 }
 const normalized = (value: string): string => value.replace(/\s+/g, " ").trim();
+
+export function parsePlanEvidence(raw: unknown): PlanEvidence {
+  const row = record(raw);
+  if (!Array.isArray(row.evidenceLines) || !Array.isArray(row.evidence) || row.evidenceLines.length !== row.evidence.length ||
+    row.evidenceLines.length > 8 || new Set(row.evidenceLines).size !== row.evidenceLines.length ||
+    row.evidenceLines.some(n => !Number.isSafeInteger(n) || n < 1)) throw new Error("Invalid behavioral evidence.");
+  return { evidenceLines: row.evidenceLines as number[], evidence: row.evidence.map(text) };
+}
+function parseBehaviorEvidence(raw: unknown): RequirementBehaviorEvidence {
+  const row = record(raw);
+  if (typeof row.failureNotApplicableReason !== "string") throw new Error("Invalid failure applicability rationale.");
+  const result = { normal: parsePlanEvidence(row.normal), failure: parsePlanEvidence(row.failure),
+    acceptance: parsePlanEvidence(row.acceptance), failureNotApplicableReason: row.failureNotApplicableReason };
+  if (result.failure.evidenceLines.length > 0 && result.failureNotApplicableReason.trim()) throw new Error("Failure evidence cannot also be not applicable.");
+  return result;
+}
+export function validatePlanEvidence(value: PlanEvidence, plan: PlanDraft): void {
+  if (JSON.stringify(evidenceFromLines(value.evidenceLines, plan)) !== JSON.stringify(value.evidence)) throw new Error("Evidence differs from current Plan lines.");
+}
 
 /** Checks coverage and literal evidence existence, never the semantic truth of the assessment. */
 export function validateReviewQuality(quality: ReviewQualityAssessment, plan: PlanDraft, scope: ScopeContract): void {
@@ -86,12 +112,21 @@ export function validateReviewQuality(quality: ReviewQualityAssessment, plan: Pl
       });
     }
   }
+  for (const entry of quality.requirements) if (entry.behaviorEvidence !== undefined) {
+    for (const part of [entry.behaviorEvidence.normal, entry.behaviorEvidence.failure, entry.behaviorEvidence.acceptance]) validatePlanEvidence(part, plan);
+  }
 }
 
 export function qualityFindings(review: PlanReview): readonly { readonly status: "missing" | "needs_user_input"; readonly message: string }[] {
   if (review.qualityAssessment === undefined) return [];
-  return [...review.qualityAssessment.requirements.map((entry) => ({ ...entry, key: entry.requirementId })),
+  const gaps = review.qualityAssessment.requirements.flatMap(entry => {
+    const b = entry.behaviorEvidence;
+    return b !== undefined && (b.normal.evidenceLines.length === 0 || b.acceptance.evidenceLines.length === 0 ||
+      b.failure.evidenceLines.length === 0 && !b.failureNotApplicableReason.trim())
+      ? [{ status: "missing" as const, message: `${entry.requirementId}: 정상 동작·실패 동작·확인 사례의 근거가 불충분하여 확인이 필요합니다. 누락을 보완하거나 중요한 제품 선택만 질문하십시오.` }] : [];
+  });
+  return [...gaps, ...[...review.qualityAssessment.requirements.map((entry) => ({ ...entry, key: entry.requirementId })),
     ...review.qualityAssessment.checks.map((entry) => ({ ...entry, key: entry.id }))]
     .flatMap((entry) => entry.status === "missing" || entry.status === "needs_user_input"
-      ? [{ status: entry.status, message: `${entry.key}: ${entry.rationale}` }] : []);
+      ? [{ status: entry.status, message: `${entry.key}: ${entry.rationale}` }] : [])];
 }

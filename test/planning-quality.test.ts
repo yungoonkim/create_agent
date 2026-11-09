@@ -22,7 +22,7 @@ const plan: PlanDraft = { id: "quality-test-plan", projectId: scope.projectId, v
   scopeVersion: 1, content: "Save a record. Failed saves preserve the previous record.", status: "ready_for_review", createdAt: scope.createdAt };
 function quality(): ReviewQualityAssessment {
   const item = { status: "satisfied" as const, evidence: ["Save a record."], rationale: "The rule is stated." };
-  return { version: 1, requirements: [{ ...item, requirementId: "REQ-1" }], checks: REVIEW_CHECK_IDS.map((id) => ({ ...item, id })) };
+  return { version: 1, requirements: [{ ...item, requirementId: "REQ-1", behaviorEvidence: { normal: { evidenceLines: [1], evidence: [plan.content] }, failure: { evidenceLines: [1], evidence: [plan.content] }, acceptance: { evidenceLines: [1], evidence: [plan.content] }, failureNotApplicableReason: "" } }], checks: REVIEW_CHECK_IDS.map((id) => ({ ...item, id })) };
 }
 function review(qualityAssessment: ReviewQualityAssessment | undefined = quality()): PlanReview {
   return { id: "review-1", projectId: scope.projectId, planId: plan.id, planVersion: 1, scopeContractId: scope.id, scopeVersion: 1,

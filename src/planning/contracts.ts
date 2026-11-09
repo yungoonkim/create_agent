@@ -69,6 +69,9 @@ export interface ReviewIssue {
   readonly description: string;
   readonly suggestedDirection: string;
   readonly relatedRequirementId?: string;
+  /** Missing only on legacy/fixture records. Correcting a draft need not change approved Scope. */
+  readonly scopeDisposition?: "not_applicable" | "revise_plan" | "change_scope" | "clarify";
+  readonly dispositionReason?: string;
 }
 
 export type PlanReviewOutcome = "pass" | "revise" | "needs_user_input" | "failed";
@@ -87,8 +90,20 @@ export interface ReviewQualityItem {
 }
 export interface ReviewQualityAssessment {
   readonly version: 1;
-  readonly requirements: readonly (ReviewQualityItem & { readonly requirementId: string })[];
+  readonly requirements: readonly (ReviewQualityItem & { readonly requirementId: string; readonly behaviorEvidence?: RequirementBehaviorEvidence })[];
   readonly checks: readonly (ReviewQualityItem & { readonly id: ReviewCheckId })[];
+}
+
+export interface PlanEvidence {
+  readonly evidenceLines: readonly number[];
+  readonly evidence: readonly string[];
+}
+export interface RequirementBehaviorEvidence {
+  readonly normal: PlanEvidence;
+  readonly failure: PlanEvidence;
+  readonly acceptance: PlanEvidence;
+  /** Empty except when failure behavior genuinely does not apply; never hides a missing rule. */
+  readonly failureNotApplicableReason: string;
 }
 
 export const STORAGE_AUDIT_STATES = ["absent", "present_empty", "invalid", "valid", "read_error"] as const;
@@ -105,6 +120,8 @@ export interface StorageAudit {
     readonly evidence: readonly string[];
     readonly authorizationScopeIds: readonly string[];
     readonly rationale: string;
+    /** Trigger and response evidence are separate; legacy audits have only response evidence. */
+    readonly trigger?: PlanEvidence;
   }[];
 }
 
@@ -276,6 +293,8 @@ export interface TokenUsageRecord {
   readonly outcome: "success" | "failure";
   readonly durationMs: number;
   readonly error?: string;
+  readonly finishReasons?: readonly string[];
+  readonly failureCode?: ModelOutputFailure["code"];
   readonly recordedAt: string;
 }
 
@@ -285,11 +304,21 @@ export interface PlanningErrorRecord {
   readonly operation: string;
   readonly message: string;
   readonly lastState?: PlanningLoopState;
+  readonly modelOutputFailure?: ModelOutputFailure;
+}
+
+export interface ModelOutputFailure {
+  readonly code: "MODEL_OUTPUT_LIMIT" | "MODEL_OUTPUT_INCOMPLETE";
+  readonly stage: "writer" | "assessment" | "challenge";
+  readonly finishReasons: readonly string[];
+  readonly partialText: string;
+  readonly nextAction: string;
 }
 
 /** Contract only; implementations must isolate projects and append immutable versions. */
 export interface PlanningMemoryStore {
   appendError(record: PlanningErrorRecord): Promise<void>;
+  getPlanningErrors(projectId: ProjectId): Promise<readonly PlanningErrorRecord[]>;
   getRequirements(projectId: ProjectId): Promise<string | undefined>;
   createRequirements(projectId: ProjectId, requirements: string): Promise<void>;
   getSettledDecisions(projectId: ProjectId): Promise<readonly string[]>;

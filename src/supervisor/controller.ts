@@ -11,6 +11,8 @@ import { FileSupervisorStore } from "./memory-store.js";
 import { parseOrders, same } from "./validation.js";
 import { PlanningContinuationController } from "./continuation.js";
 import { activeContinuation, assertNoPendingContinuation, continuationNextAction } from "./continuation-validation.js";
+import { buildUserReviewTable, type UserReviewTable } from "../planning/user-review.js";
+import type { PlanDraft } from "../planning/contracts.js";
 
 export interface SupervisorOptions {
   readonly config: LivePlanningConfig | OfflinePlanningConfig;
@@ -214,6 +216,7 @@ export class SupervisorController {
     const development = await this.options.developmentStore.get(this.projectId);
     const plan = planning?.currentPlanVersion === undefined ? undefined : await this.options.memory.getPlanDraft(this.projectId, this.planId(), planning.currentPlanVersion);
     const review = plan === undefined ? undefined : await this.options.memory.getPlanReview(this.projectId, plan.id, plan.version);
+    const planningErrors = await this.options.memory.getPlanningErrors(this.projectId);
     const scopeApproval = state.scopeApprovalId === undefined ? undefined : await this.options.memory.get(state.scopeApprovalId);
     const planApproval = planning?.status === "awaiting_approval" || planning?.status === "user_approved" ? await this.options.memory.get(planning.approvalId) : undefined;
     const scopeChangeRequest = planning?.status === "awaiting_scope_change_approval" ? await this.options.memory.getScopeChangeRequest(this.projectId, planning.changeRequestId) : undefined;
@@ -226,7 +229,8 @@ export class SupervisorController {
     }
     const counts = Object.fromEntries(["pending", "ready", "in_progress", "awaiting_review", "approved", "rework", "blocked", "cancelled"].map((status) => [status, tasks.filter((task) => task.status === status).length]));
     const exhausted = planning !== undefined && planning.iterationCount >= planning.maxIterations && ["awaiting_user_input", "awaiting_scope_change_approval"].includes(planning.status);
-    return { projectId: this.projectId, supervisor: state, scopeApproval, planning, plan, review, planApproval, scopeChangeRequest,
+    const userReview = plan === undefined ? undefined : (await this.reviewPlan()).table;
+    return { projectId: this.projectId, supervisor: state, scopeApproval, planning, plan, review, planApproval, scopeChangeRequest, planningErrors, userReview,
       nextAction: sourceCurrent ? exhausted ? "STOP: Planning iteration budget is exhausted." : continuationNextAction(state, planning) ?? this.nextAction(state, planning?.status) : "STOP: approved source changed or is unavailable.",
       progress: { counts, sourceCurrent, completed: sourceCurrent && tasks.length > 0 && tasks.every((task) => task.status === "approved"),
         evidencePassed: tasks.filter((task) => task.evidence?.outcome === "passed").length,
@@ -235,6 +239,26 @@ export class SupervisorController {
         note: "Evidence counts describe stored checks, not fresh verification. Manual approvals and objective evidence are separate." },
       tasks, workOrders: state.taskProposal?.orders.map((order) => ({ ...order, instruction: this.instruction(state, order.task.id, plan?.content) })),
       workerRuntimeConnected: false };
+  }
+
+  async reviewPlan(): Promise<{ readonly plan: PlanDraft; readonly table: UserReviewTable }> {
+    const memory = this.options.memory;
+    const supervisor = await this.options.store.get(this.projectId);
+    const planning = await memory.getPlanningLoopState(this.projectId);
+    if (planning?.currentPlanVersion === undefined) throw new Error("저장된 기획이 없습니다. report로 오류와 저장 상태를 확인하세요. 이 명령은 모델을 호출하지 않습니다.");
+    const plan = await memory.getPlanDraft(this.projectId, this.planId(), planning.currentPlanVersion);
+    if (plan === undefined) throw new Error("현재 버전의 저장 기획을 찾을 수 없습니다.");
+    const scope = await memory.getScopeContract(this.projectId, plan.scopeVersion);
+    if (scope === undefined) throw new Error("기획 출처 Scope를 찾을 수 없습니다.");
+    const review = await memory.getPlanReview(this.projectId, plan.id, plan.version);
+    const link = await memory.getScopeApprovalRecord(this.projectId, scope.id);
+    const scopeApproval = link === undefined ? undefined : await memory.get(link.approvalId);
+    const planApproval = "approvalId" in planning ? await memory.get(planning.approvalId) : undefined;
+    const errors = await memory.getPlanningErrors(this.projectId);
+    if (!same(planning, await memory.getPlanningLoopState(this.projectId)) || !same(supervisor, await this.options.store.get(this.projectId))) throw new Error("기획 상태가 읽는 동안 변경됐습니다. 완료 후 검토표를 다시 생성하세요.");
+    return { plan, table: buildUserReviewTable({ scope, plan, planning, errors, sourceCurrent: supervisor?.scope === undefined || same(supervisor.scope, scope),
+      ...(review === undefined ? {} : { review }), ...(scopeApproval === undefined ? {} : { scopeApproval }),
+      ...(planApproval === undefined ? {} : { planApproval }) }) };
   }
 
   development(): ManualDevelopmentController {
