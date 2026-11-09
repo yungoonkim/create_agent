@@ -1,0 +1,237 @@
+{
+  "id": "before-loan-valid-1",
+  "caseId": "loan-valid",
+  "split": "holdout",
+  "expected": "adequate",
+  "repeat": 1,
+  "variant": "before",
+  "inputSha256": "5dd3ae933401b8f3ecdf73607e38354b3fc5d9cbfe62656927c1c46fd11ff83a",
+  "status": "completed",
+  "review": {
+    "id": "review-1",
+    "projectId": "reviewer-reliability",
+    "planId": "reviewer-reliability-plan",
+    "planVersion": 1,
+    "scopeContractId": "scope-1",
+    "scopeVersion": 1,
+    "outcome": "pass",
+    "issues": [],
+    "suggestions": [],
+    "scopeViolation": false,
+    "userJudgmentRequired": false,
+    "reviewedAt": "2026-11-09T01:13:35.880Z",
+    "qualityAssessment": {
+      "version": 1,
+      "requirements": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "1. 제목 ‘우산’, 빌린 사람 ‘민수’를 적고 추가한다. 둘 다 공백 제거 후 비어 있으면 거부하며 입력과 기존 목록은 유지한다.",
+            "2. 같은 이름의 물건도 각각 다른 고유 번호를 부여한다. 우산을 민수와 지수에게 하나씩 빌려줘도 별개 기록이다.",
+            "R-1: 등록은 비공백 물건명/사람명, UUID 중복 검사, 영속 양의 안전 정수 순번으로 식별한다. 동일 이름 두 건 등록하면 서로 다른 번호 두 개가 나타난다."
+          ],
+          "rationale": "비공백 물건명과 빌린 사람 입력 검증 및 UUID와 고유 순번을 통해 동일한 물건명도 독립적인 항목으로 등록되도록 구체화되어 있습니다.",
+          "evidenceLines": [
+            3,
+            4,
+            8
+          ],
+          "requirementId": "R-1"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "3. 선택한 기록 한 건의 반환 버튼을 누르면 그 번호의 상태만 반환으로 바뀐다. 민수의 우산 반환이 지수 기록에 영향을 주지 않는다.",
+            "R-2: 상태는 대여/반환 두 값, 정확한 선택 ID만 반환한다. 대여 A/B 중 A 반환 후 A만 반환이고 B는 대여다. 같은 반환 요청 반복은 상태를 그대로 유지한다."
+          ],
+          "rationale": "정확한 대상 ID의 반환 버튼 선택 시 해당 항목만 대여에서 반환 상태로 변경되고 다른 항목에 영향을 주지 않으며 중복 요청 시 상태를 보존함을 명시했습니다.",
+          "evidenceLines": [
+            5,
+            9
+          ],
+          "requirementId": "R-2"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "4. 처음 등록한 순번대로 목록을 보여주고 수정/반환으로 순번을 바꾸지 않는다. 브라우저를 닫았다 같은 주소/프로필로 열면 기록이 유지된다.",
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "localStorage 단일 키에 전체 목록을 저장해 재접속 시 유지하고, 키 부재 시 빈 목록 초기화와 구별하여 빈 문자열·손상 JSON·스키마 위반 등 이상 데이터는 원본을 보존하고 쓰기를 차단합니다.",
+          "evidenceLines": [
+            6,
+            10
+          ],
+          "requirementId": "R-3"
+        }
+      ],
+      "checks": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "# 빌려준 물건 기록 기획 (미승인 제안)",
+            "사용자 결정 출처는 승인 Scope R-1~3과 제약이다. 키 이름과 데이터 표현은 위임된 설계 제안이며 사용자 직접 결정으로 주장하지 않는다. 쉬운 이용 예시를 먼저 두고 기술 사양을 뒤에 둔다. 고정 localhost 주소·같은 컴퓨터/브라우저/프로필의 일반 창 단일 탭 순차 사용, file://·시크릿/사이트 데이터 삭제/다른 기기 동기화/물리 장애 무손실·동시 탭 잠금은 보장하지 않는다. 텍스트는 textContent로만 표시한다.",
+            "향후 순서는 입력/모델→저장→두 상태 화면→전체 정상/실패 수락 검증이다. 초기 후보로 수정 요청은 없다. 실제 구현·검증 실행·사용자 승인 완료 주장은 없다. 로그인/알림/외부 전송/과금/물건 검색은 포함하지 않는다."
+          ],
+          "rationale": "사용자 결정 출처를 승인된 Scope와 제약조건으로 한정하고, 세부 스키마와 키 명칭 등은 위임된 기획 제안임을 명확히 구분하여 작성했습니다.",
+          "evidenceLines": [
+            1,
+            12,
+            13
+          ],
+          "id": "decision_provenance"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "사용자 결정 출처는 승인 Scope R-1~3과 제약이다. 키 이름과 데이터 표현은 위임된 설계 제안이며 사용자 직접 결정으로 주장하지 않는다. 쉬운 이용 예시를 먼저 두고 기술 사양을 뒤에 둔다. 고정 localhost 주소·같은 컴퓨터/브라우저/프로필의 일반 창 단일 탭 순차 사용, file://·시크릿/사이트 데이터 삭제/다른 기기 동기화/물리 장애 무손실·동시 탭 잠금은 보장하지 않는다. 텍스트는 textContent로만 표시한다.",
+            "향후 순서는 입력/모델→저장→두 상태 화면→전체 정상/실패 수락 검증이다. 초기 후보로 수정 요청은 없다. 실제 구현·검증 실행·사용자 승인 완료 주장은 없다. 로그인/알림/외부 전송/과금/물건 검색은 포함하지 않는다."
+          ],
+          "rationale": "로그인, 외부 전송, 알림, 과금, 검색 등 제외 대상을 배제하고 단일 탭 순차 사용 등 승인된 범위와 기술 제약을 준수하고 있습니다.",
+          "evidenceLines": [
+            12,
+            13
+          ],
+          "id": "scope_compliance"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "1. 제목 ‘우산’, 빌린 사람 ‘민수’를 적고 추가한다. 둘 다 공백 제거 후 비어 있으면 거부하며 입력과 기존 목록은 유지한다.",
+            "R-1: 등록은 비공백 물건명/사람명, UUID 중복 검사, 영속 양의 안전 정수 순번으로 식별한다. 동일 이름 두 건 등록하면 서로 다른 번호 두 개가 나타난다.",
+            "R-2: 상태는 대여/반환 두 값, 정확한 선택 ID만 반환한다. 대여 A/B 중 A 반환 후 A만 반환이고 B는 대여다. 같은 반환 요청 반복은 상태를 그대로 유지한다.",
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "공백 입력 거부, 중복 반환 요청 무변경, 저장 검증 실패 및 커밋 전후 실패에 대한 구체적인 처리와 피드백 방침이 일관되게 규정되어 있습니다.",
+          "evidenceLines": [
+            3,
+            8,
+            9,
+            10
+          ],
+          "id": "behavior_and_errors"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "2. 같은 이름의 물건도 각각 다른 고유 번호를 부여한다. 우산을 민수와 지수에게 하나씩 빌려줘도 별개 기록이다.",
+            "4. 처음 등록한 순번대로 목록을 보여주고 수정/반환으로 순번을 바꾸지 않는다. 브라우저를 닫았다 같은 주소/프로필로 열면 기록이 유지된다.",
+            "R-1: 등록은 비공백 물건명/사람명, UUID 중복 검사, 영속 양의 안전 정수 순번으로 식별한다. 동일 이름 두 건 등록하면 서로 다른 번호 두 개가 나타난다.",
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "단조 증가 순번과 UUID를 통한 식별, nextSequence 불변식 검증, 유효성 검증 후 setItem 호출 순서 및 커밋 실패 시 기존 값과 입력 보존 한계가 명시되어 있습니다.",
+          "evidenceLines": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "id": "data_integrity"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "1. 제목 ‘우산’, 빌린 사람 ‘민수’를 적고 추가한다. 둘 다 공백 제거 후 비어 있으면 거부하며 입력과 기존 목록은 유지한다.",
+            "2. 같은 이름의 물건도 각각 다른 고유 번호를 부여한다. 우산을 민수와 지수에게 하나씩 빌려줘도 별개 기록이다.",
+            "3. 선택한 기록 한 건의 반환 버튼을 누르면 그 번호의 상태만 반환으로 바뀐다. 민수의 우산 반환이 지수 기록에 영향을 주지 않는다.",
+            "R-1: 등록은 비공백 물건명/사람명, UUID 중복 검사, 영속 양의 안전 정수 순번으로 식별한다. 동일 이름 두 건 등록하면 서로 다른 번호 두 개가 나타난다.",
+            "R-2: 상태는 대여/반환 두 값, 정확한 선택 ID만 반환한다. 대여 A/B 중 A 반환 후 A만 반환이고 B는 대여다. 같은 반환 요청 반복은 상태를 그대로 유지한다.",
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "구체적인 입력값과 그에 따른 고유 번호 부여, 상태 전이, 저장 성공 및 오류 안내 등 관찰 가능한 수락 기준이 명확히 기술되어 있습니다.",
+          "evidenceLines": [
+            3,
+            4,
+            5,
+            8,
+            9,
+            10
+          ],
+          "id": "acceptance_criteria"
+        },
+        {
+          "status": "not_applicable",
+          "evidence": [
+            "향후 순서는 입력/모델→저장→두 상태 화면→전체 정상/실패 수락 검증이다. 초기 후보로 수정 요청은 없다. 실제 구현·검증 실행·사용자 승인 완료 주장은 없다. 로그인/알림/외부 전송/과금/물건 검색은 포함하지 않는다."
+          ],
+          "rationale": "settledDecisions에 이전 사용자 수정 요청 내역이 존재하지 않는 최초 검토 제안이므로 검토 대상 수정 요청이 없습니다.",
+          "evidenceLines": [
+            13
+          ],
+          "id": "revision_resolution"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "## 이렇게 사용한다",
+            "1. 제목 ‘우산’, 빌린 사람 ‘민수’를 적고 추가한다. 둘 다 공백 제거 후 비어 있으면 거부하며 입력과 기존 목록은 유지한다.",
+            "4. 처음 등록한 순번대로 목록을 보여주고 수정/반환으로 순번을 바꾸지 않는다. 브라우저를 닫았다 같은 주소/프로필로 열면 기록이 유지된다.",
+            "## 구현과 확인 기준",
+            "사용자 결정 출처는 승인 Scope R-1~3과 제약이다. 키 이름과 데이터 표현은 위임된 설계 제안이며 사용자 직접 결정으로 주장하지 않는다. 쉬운 이용 예시를 먼저 두고 기술 사양을 뒤에 둔다. 고정 localhost 주소·같은 컴퓨터/브라우저/프로필의 일반 창 단일 탭 순차 사용, file://·시크릿/사이트 데이터 삭제/다른 기기 동기화/물리 장애 무손실·동시 탭 잠금은 보장하지 않는다. 텍스트는 textContent로만 표시한다."
+          ],
+          "rationale": "쉬운 한국어 이용 예시를 선행 배치하고 기술 명세와 구현 제약을 후반부에 분리하여 명확하게 서술했습니다.",
+          "evidenceLines": [
+            2,
+            3,
+            6,
+            7,
+            12
+          ],
+          "id": "clarity"
+        }
+      ]
+    },
+    "challengeCompleted": true
+  },
+  "decision": {
+    "type": "REQUEST_USER_APPROVAL",
+    "planId": "reviewer-reliability-plan",
+    "version": 1
+  },
+  "usage": [
+    {
+      "projectId": "reviewer-reliability",
+      "planId": "reviewer-reliability-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "reviewStage": "assessment",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 3028,
+      "outputTokens": 986,
+      "reasoningTokens": 2188,
+      "outcome": "success",
+      "durationMs": 20509,
+      "recordedAt": "2026-11-09T01:13:24.019Z"
+    },
+    {
+      "projectId": "reviewer-reliability",
+      "planId": "reviewer-reliability-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "reviewStage": "challenge",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 1756,
+      "outputTokens": 15,
+      "reasoningTokens": 1637,
+      "outcome": "success",
+      "durationMs": 11862,
+      "recordedAt": "2026-11-09T01:13:35.881Z"
+    }
+  ],
+  "responses": [
+    {
+      "text": "{\n  \"outcome\": \"pass\",\n  \"issues\": [],\n  \"suggestions\": [],\n  \"scopeViolation\": false,\n  \"userJudgmentRequired\": false,\n  \"qualityAssessment\": {\n    \"version\": 1,\n    \"requirements\": [\n      {\n        \"requirementId\": \"R-1\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 4, 8],\n        \"rationale\": \"비공백 물건명과 빌린 사람 입력 검증 및 UUID와 고유 순번을 통해 동일한 물건명도 독립적인 항목으로 등록되도록 구체화되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"R-2\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [5, 9],\n        \"rationale\": \"정확한 대상 ID의 반환 버튼 선택 시 해당 항목만 대여에서 반환 상태로 변경되고 다른 항목에 영향을 주지 않으며 중복 요청 시 상태를 보존함을 명시했습니다.\"\n      },\n      {\n        \"requirementId\": \"R-3\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [6, 10],\n        \"rationale\": \"localStorage 단일 키에 전체 목록을 저장해 재접속 시 유지하고, 키 부재 시 빈 목록 초기화와 구별하여 빈 문자열·손상 JSON·스키마 위반 등 이상 데이터는 원본을 보존하고 쓰기를 차단합니다.\"\n      }\n    ],\n    \"checks\": [\n      {\n        \"id\": \"decision_provenance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [1, 12, 13],\n        \"rationale\": \"사용자 결정 출처를 승인된 Scope와 제약조건으로 한정하고, 세부 스키마와 키 명칭 등은 위임된 기획 제안임을 명확히 구분하여 작성했습니다.\"\n      },\n      {\n        \"id\": \"scope_compliance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [12, 13],\n        \"rationale\": \"로그인, 외부 전송, 알림, 과금, 검색 등 제외 대상을 배제하고 단일 탭 순차 사용 등 승인된 범위와 기술 제약을 준수하고 있습니다.\"\n      },\n      {\n        \"id\": \"behavior_and_errors\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 8, 9, 10],\n        \"rationale\": \"공백 입력 거부, 중복 반환 요청 무변경, 저장 검증 실패 및 커밋 전후 실패에 대한 구체적인 처리와 피드백 방침이 일관되게 규정되어 있습니다.\"\n      },\n      {\n        \"id\": \"data_integrity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [4, 6, 8, 10],\n        \"rationale\": \"단조 증가 순번과 UUID를 통한 식별, nextSequence 불변식 검증, 유효성 검증 후 setItem 호출 순서 및 커밋 실패 시 기존 값과 입력 보존 한계가 명시되어 있습니다.\"\n      },\n      {\n        \"id\": \"acceptance_criteria\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 4, 5, 8, 9, 10],\n        \"rationale\": \"구체적인 입력값과 그에 따른 고유 번호 부여, 상태 전이, 저장 성공 및 오류 안내 등 관찰 가능한 수락 기준이 명확히 기술되어 있습니다.\"\n      },\n      {\n        \"id\": \"revision_resolution\",\n        \"status\": \"not_applicable\",\n        \"evidenceLines\": [13],\n        \"rationale\": \"settledDecisions에 이전 사용자 수정 요청 내역이 존재하지 않는 최초 검토 제안이므로 검토 대상 수정 요청이 없습니다.\"\n      },\n      {\n        \"id\": \"clarity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [2, 3, 6, 7, 12],\n        \"rationale\": \"쉬운 한국어 이용 예시를 선행 배치하고 기술 명세와 구현 제약을 후반부에 분리하여 명확하게 서술했습니다.\"\n      }\n    ]\n  }\n}",
+      "finishReasons": [
+        "STOP"
+      ]
+    },
+    {
+      "text": "{\n  \"issues\": [],\n  \"questions\": []\n}",
+      "finishReasons": [
+        "STOP"
+      ]
+    }
+  ]
+}

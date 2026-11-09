@@ -1,0 +1,30 @@
+{
+  "phase": "regression-fixed",
+  "split": "regression",
+  "label": "TEST/STUB evaluation only",
+  "startedAt": "2026-11-09T01:11:06.513Z",
+  "baselineCommit": "f95fa75",
+  "baselineSourceHashes": {
+    "contracts.ts.txt": "8f5cbc022303b17c38396db78f93235b903120f2006ea88776524c07ad587cc9",
+    "policy.ts.txt": "3f9c8f2c2b5b9a2955a004c18f13fa07aeced45b663e62858ed87f0db64806c0",
+    "google-genai.ts.txt": "9d1c8b14e89e809b50a28fae919e9afae3d498d2071bb7e47329d8441e4f6419",
+    "prompts.ts.txt": "0ac373dea4c795f19f9a7de198a82a2eeb6d48a88d4feeb3b40aaeac66dbf217",
+    "review-quality.ts.txt": "56142c0c75d125da4b048a18ed55b5fa183b4c71720809288edb3e3c6d0c1772"
+  },
+  "datasetSha256": "3b611ba0fa4d9a311894f4f4841cbd2267881b02422ec5f4f61159391342e164",
+  "sourceHashes": {
+    "src/planning/contracts.ts": "460ceff8d0e22d8463b62ed064866deb321203908677cdc6a6e008e479771387",
+    "src/planning/google-genai.ts": "c9fe777692eebe80665873247dd2b90fc8526b40240ed4441372842ec928baaf",
+    "src/planning/policy.ts": "2400d11292ec6a3badd7d0626286902aa87d3b8f9286dc1cfc2375d7311b3229",
+    "src/planning/prompts.ts": "638f6909cb2efeb5c6f7df2279b0d16592f5a9417b7146334c79c2a95134954e",
+    "src/planning/review-quality.ts": "b6112f70e0d46b0e8e5ce63f656eb35e0511f923becc6214f78489dd00cbe39b",
+    "src/planning/storage-audit.ts": "4863b65712d492f536fabf8a0f65a74051c7f56e11c38c43ac3cfda565c77fa8"
+  },
+  "runnerSha256": "92229a57f49c1107cc5a1d6c66a6ec4f51589dfa014f198005ef5a335676a78d",
+  "repetitions": 3,
+  "model": "gemini-3.8-flash",
+  "identity": "Neutral project/plan IDs, case labels and expected decisions are not sent to models.",
+  "maxCallsPerReview": 2,
+  "holdoutRule": "Do not tune implementation after inspecting holdout model outcomes; any subsequent change requires a separately identified validation set/run.",
+  "primaryProjectWrites": false
+}

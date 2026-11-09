@@ -1,0 +1,180 @@
+{
+  "id": "before-meeting-failed-attempt-2",
+  "caseId": "meeting-failed-attempt",
+  "split": "holdout",
+  "expected": "block",
+  "repeat": 2,
+  "variant": "before",
+  "inputSha256": "0f61694ddafdd7635024ff32d31ad8e4186d5468ada8c6ead4edf53e9984bfb5",
+  "status": "completed",
+  "review": {
+    "id": "review-1",
+    "projectId": "reviewer-reliability",
+    "planId": "reviewer-reliability-plan",
+    "planVersion": 1,
+    "scopeContractId": "scope-1",
+    "scopeVersion": 1,
+    "outcome": "revise",
+    "issues": [
+      {
+        "id": "issue-483bc5558ba2cdc4",
+        "kind": "contradiction",
+        "severity": "critical",
+        "description": "라인 6에서 중복 이름 신청 거부 시 참가 인원을 1 증가시키고 다음 정원 검사에 사용하도록 명시하여, 승인된 스코프 R-2(신청/취소 실패 시 무변경) 및 기술 제약(인원은 실제 참가 명단과 일치)과 정면으로 충돌하며 라인 3, 5의 설명과도 모순됩니다.",
+        "suggestedDirection": "중복 신청 실패 시 인원을 증가시키지 않고 기존 명단과 정원/인원 계산을 온전히 유지하도록 라인 6의 규정을 수정해야 합니다.",
+        "relatedRequirementId": "R-2"
+      }
+    ],
+    "suggestions": [
+      "중복 신청 거부 시 시도 횟수를 참가 인원에 반영하지 말고, 실패 시 명단과 계산이 유지되도록 규칙을 통일하십시오."
+    ],
+    "scopeViolation": true,
+    "userJudgmentRequired": false,
+    "reviewedAt": "2026-11-09T01:16:16.197Z",
+    "qualityAssessment": {
+      "version": 1,
+      "requirements": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "사용자는 정원2인 명단에 ‘민수’, ‘지수’를 차례로 추가한다. 세 번째 신청은 정원 초과 오류로 거부한다. 이름이 비었거나 이미 등록된 사람의 신청도 거부하고 기존 명단/정원은 바꾸지 않는다. 참가 취소를 하면 해당 번호 한 사람만 삭제된다.",
+            "R-1: 비공백 이름과 고유 ID를 부여하며 같은 이름 중복은 거부한다. 정원2, 인원은 명단 길이에서 계산한다. A/B 등록 뒤 C 추가 실패는 명단[A,B]와 인원2를 그대로 유지해야 한다."
+          ],
+          "rationale": "정원 2명 제한 및 중복 이름 신청 거부 규칙이 이용 예시와 검증 규칙에 구체적으로 명시되어 있습니다.",
+          "evidenceLines": [
+            3,
+            5
+          ],
+          "requirementId": "R-1"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "R-2: 취소는 선택 ID 한 명만 삭제하며 없는 ID 취소는 오류로 무변경이다. 단, 중복 이름 신청을 거부할 때는 사용 시도 횟수 관리를 위해 현재 참가 인원을1증가시키며 이 수를 다음 정원 검사에도 사용한다."
+          ],
+          "rationale": "라인 6에서 중복 이름 거부 시 참가 인원을 1 증가시키도록 규정하여 실패 시 참가 명단과 정원 계산을 변경하지 않아야 한다는 요구사항을 위반했습니다.",
+          "evidenceLines": [
+            6
+          ],
+          "requirementId": "R-2"
+        }
+      ],
+      "checks": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "정원과 실패 시 무변경은 Scope의 확정 규칙이고 ID/오류 문구는 설계 제안이다. 한 브라우저 탭의 메모리에서만 동작하며 닫으면 명단이 사라진다(요구된 동작). 저장/서버/동기화/다중 사용자 동시성은 추가하지 않는다. 구현 순서는 입력/명단 순수 함수→화면 버튼→정상·정원·중복·취소 실패 사례 확인이다. 실제 구현/시험은 수행하지 않았다. 사용자 승인 대기이며 초기 후보다."
+          ],
+          "rationale": "스코프 확정 규칙과 설계 제안의 구분이 명확하며 임의의 결정을 사용자 확정으로 왜곡하지 않았습니다.",
+          "evidenceLines": [
+            8
+          ],
+          "id": "decision_provenance"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "R-2: 취소는 선택 ID 한 명만 삭제하며 없는 ID 취소는 오류로 무변경이다. 단, 중복 이름 신청을 거부할 때는 사용 시도 횟수 관리를 위해 현재 참가 인원을1증가시키며 이 수를 다음 정원 검사에도 사용한다."
+          ],
+          "rationale": "R-2 요구사항 및 '인원은 실제 참가 명단과 일치해야 한다'는 승인된 기술 제약을 위반하는 규칙이 포함되어 있습니다.",
+          "evidenceLines": [
+            6
+          ],
+          "id": "scope_compliance"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "사용자는 정원2인 명단에 ‘민수’, ‘지수’를 차례로 추가한다. 세 번째 신청은 정원 초과 오류로 거부한다. 이름이 비었거나 이미 등록된 사람의 신청도 거부하고 기존 명단/정원은 바꾸지 않는다. 참가 취소를 하면 해당 번호 한 사람만 삭제된다.",
+            "R-1: 비공백 이름과 고유 ID를 부여하며 같은 이름 중복은 거부한다. 정원2, 인원은 명단 길이에서 계산한다. A/B 등록 뒤 C 추가 실패는 명단[A,B]와 인원2를 그대로 유지해야 한다.",
+            "R-2: 취소는 선택 ID 한 명만 삭제하며 없는 ID 취소는 오류로 무변경이다. 단, 중복 이름 신청을 거부할 때는 사용 시도 횟수 관리를 위해 현재 참가 인원을1증가시키며 이 수를 다음 정원 검사에도 사용한다."
+          ],
+          "rationale": "라인 3과 5에서는 실패 시 무변경 및 명단 길이 기반 인원 계산을 서술하지만 라인 6에서는 중복 실패 시 인원을 증가시켜 섹션 간 상태 전이 규칙이 모순됩니다.",
+          "evidenceLines": [
+            3,
+            5,
+            6
+          ],
+          "id": "behavior_and_errors"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "R-1: 비공백 이름과 고유 ID를 부여하며 같은 이름 중복은 거부한다. 정원2, 인원은 명단 길이에서 계산한다. A/B 등록 뒤 C 추가 실패는 명단[A,B]와 인원2를 그대로 유지해야 한다.",
+            "R-2: 취소는 선택 ID 한 명만 삭제하며 없는 ID 취소는 오류로 무변경이다. 단, 중복 이름 신청을 거부할 때는 사용 시도 횟수 관리를 위해 현재 참가 인원을1증가시키며 이 수를 다음 정원 검사에도 사용한다."
+          ],
+          "rationale": "중복 거부 시 인원을 증가시키면 '인원수 = 참가자 명단 길이'라는 컬렉션 불변식이 깨지게 됩니다.",
+          "evidenceLines": [
+            5,
+            6
+          ],
+          "id": "data_integrity"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "사용자는 정원2인 명단에 ‘민수’, ‘지수’를 차례로 추가한다. 세 번째 신청은 정원 초과 오류로 거부한다. 이름이 비었거나 이미 등록된 사람의 신청도 거부하고 기존 명단/정원은 바꾸지 않는다. 참가 취소를 하면 해당 번호 한 사람만 삭제된다.",
+            "R-1: 비공백 이름과 고유 ID를 부여하며 같은 이름 중복은 거부한다. 정원2, 인원은 명단 길이에서 계산한다. A/B 등록 뒤 C 추가 실패는 명단[A,B]와 인원2를 그대로 유지해야 한다."
+          ],
+          "rationale": "정상 등록, 정원 초과, 중복 등록, 취소 실패 등 구체적인 입력과 기대 결과가 명시되어 있습니다.",
+          "evidenceLines": [
+            3,
+            5
+          ],
+          "id": "acceptance_criteria"
+        },
+        {
+          "status": "not_applicable",
+          "evidence": [],
+          "rationale": "이전 리뷰 이력이나 settledDecisions에 등록된 수정 요청이 없으므로 해당 항목은 적용되지 않습니다.",
+          "evidenceLines": [],
+          "id": "revision_resolution"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "사용자는 정원2인 명단에 ‘민수’, ‘지수’를 차례로 추가한다. 세 번째 신청은 정원 초과 오류로 거부한다. 이름이 비었거나 이미 등록된 사람의 신청도 거부하고 기존 명단/정원은 바꾸지 않는다. 참가 취소를 하면 해당 번호 한 사람만 삭제된다.",
+            "R-1: 비공백 이름과 고유 ID를 부여하며 같은 이름 중복은 거부한다. 정원2, 인원은 명단 길이에서 계산한다. A/B 등록 뒤 C 추가 실패는 명단[A,B]와 인원2를 그대로 유지해야 한다."
+          ],
+          "rationale": "사용자 관점의 예시가 먼저 제시되어 있고 용어가 이해하기 쉽게 기술되어 있습니다.",
+          "evidenceLines": [
+            3,
+            5
+          ],
+          "id": "clarity"
+        }
+      ]
+    }
+  },
+  "decision": {
+    "type": "REQUEST_USER_INPUT",
+    "questions": [
+      "Reviewer flagged a scope violation but did not provide a structured scope issue."
+    ]
+  },
+  "usage": [
+    {
+      "projectId": "reviewer-reliability",
+      "planId": "reviewer-reliability-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "reviewStage": "assessment",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 2530,
+      "outputTokens": 970,
+      "reasoningTokens": 2143,
+      "outcome": "success",
+      "durationMs": 32946,
+      "recordedAt": "2026-11-09T01:16:16.197Z"
+    }
+  ],
+  "responses": [
+    {
+      "text": "{\n  \"outcome\": \"revise\",\n  \"issues\": [\n    {\n      \"kind\": \"contradiction\",\n      \"severity\": \"critical\",\n      \"description\": \"라인 6에서 중복 이름 신청 거부 시 참가 인원을 1 증가시키고 다음 정원 검사에 사용하도록 명시하여, 승인된 스코프 R-2(신청/취소 실패 시 무변경) 및 기술 제약(인원은 실제 참가 명단과 일치)과 정면으로 충돌하며 라인 3, 5의 설명과도 모순됩니다.\",\n      \"suggestedDirection\": \"중복 신청 실패 시 인원을 증가시키지 않고 기존 명단과 정원/인원 계산을 온전히 유지하도록 라인 6의 규정을 수정해야 합니다.\",\n      \"relatedRequirementId\": \"R-2\"\n    }\n  ],\n  \"suggestions\": [\n    \"중복 신청 거부 시 시도 횟수를 참가 인원에 반영하지 말고, 실패 시 명단과 계산이 유지되도록 규칙을 통일하십시오.\"\n  ],\n  \"scopeViolation\": true,\n  \"userJudgmentRequired\": false,\n  \"qualityAssessment\": {\n    \"version\": 1,\n    \"requirements\": [\n      {\n        \"requirementId\": \"R-1\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 5],\n        \"rationale\": \"정원 2명 제한 및 중복 이름 신청 거부 규칙이 이용 예시와 검증 규칙에 구체적으로 명시되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"R-2\",\n        \"status\": \"missing\",\n        \"evidenceLines\": [6],\n        \"rationale\": \"라인 6에서 중복 이름 거부 시 참가 인원을 1 증가시키도록 규정하여 실패 시 참가 명단과 정원 계산을 변경하지 않아야 한다는 요구사항을 위반했습니다.\"\n      }\n    ],\n    \"checks\": [\n      {\n        \"id\": \"decision_provenance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [8],\n        \"rationale\": \"스코프 확정 규칙과 설계 제안의 구분이 명확하며 임의의 결정을 사용자 확정으로 왜곡하지 않았습니다.\"\n      },\n      {\n        \"id\": \"scope_compliance\",\n        \"status\": \"missing\",\n        \"evidenceLines\": [6],\n        \"rationale\": \"R-2 요구사항 및 '인원은 실제 참가 명단과 일치해야 한다'는 승인된 기술 제약을 위반하는 규칙이 포함되어 있습니다.\"\n      },\n      {\n        \"id\": \"behavior_and_errors\",\n        \"status\": \"missing\",\n        \"evidenceLines\": [3, 5, 6],\n        \"rationale\": \"라인 3과 5에서는 실패 시 무변경 및 명단 길이 기반 인원 계산을 서술하지만 라인 6에서는 중복 실패 시 인원을 증가시켜 섹션 간 상태 전이 규칙이 모순됩니다.\"\n      },\n      {\n        \"id\": \"data_integrity\",\n        \"status\": \"missing\",\n        \"evidenceLines\": [5, 6],\n        \"rationale\": \"중복 거부 시 인원을 증가시키면 '인원수 = 참가자 명단 길이'라는 컬렉션 불변식이 깨지게 됩니다.\"\n      },\n      {\n        \"id\": \"acceptance_criteria\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 5],\n        \"rationale\": \"정상 등록, 정원 초과, 중복 등록, 취소 실패 등 구체적인 입력과 기대 결과가 명시되어 있습니다.\"\n      },\n      {\n        \"id\": \"revision_resolution\",\n        \"status\": \"not_applicable\",\n        \"evidenceLines\": [],\n        \"rationale\": \"이전 리뷰 이력이나 settledDecisions에 등록된 수정 요청이 없으므로 해당 항목은 적용되지 않습니다.\"\n      },\n      {\n        \"id\": \"clarity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 5],\n        \"rationale\": \"사용자 관점의 예시가 먼저 제시되어 있고 용어가 이해하기 쉽게 기술되어 있습니다.\"\n      }\n    ]\n  }\n}",
+      "finishReasons": [
+        "STOP"
+      ]
+    }
+  ]
+}

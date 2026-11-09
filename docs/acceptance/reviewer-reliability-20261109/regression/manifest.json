@@ -1,0 +1,22 @@
+{
+  "phase": "regression",
+  "label": "TEST/STUB evaluation only",
+  "startedAt": "2026-11-09T01:07:30.913Z",
+  "baselineCommit": "f95fa75",
+  "datasetSha256": "3b611ba0fa4d9a311894f4f4841cbd2267881b02422ec5f4f61159391342e164",
+  "sourceHashes": {
+    "src/planning/contracts.ts": "460ceff8d0e22d8463b62ed064866deb321203908677cdc6a6e008e479771387",
+    "src/planning/google-genai.ts": "99abaf32f446cdc3b13a47c723f937666eba9ef357ea6480157a079a9538e999",
+    "src/planning/policy.ts": "2400d11292ec6a3badd7d0626286902aa87d3b8f9286dc1cfc2375d7311b3229",
+    "src/planning/prompts.ts": "85fa2fe92bf92223cfa1262f093381511f03994bc82a2f51bdd5f57256fda1c0",
+    "src/planning/review-quality.ts": "b6112f70e0d46b0e8e5ce63f656eb35e0511f923becc6214f78489dd00cbe39b",
+    "src/planning/storage-audit.ts": "4863b65712d492f536fabf8a0f65a74051c7f56e11c38c43ac3cfda565c77fa8"
+  },
+  "runnerSha256": "ec50e46cbe0cbc6caea5b57d5f6a261947862a4a757333546e6021b4b77732db",
+  "repetitions": 3,
+  "model": "gemini-3.8-flash",
+  "identity": "Neutral project/plan IDs, case labels and expected decisions are not sent to models.",
+  "maxCallsPerReview": 2,
+  "holdoutRule": "Do not tune implementation after inspecting holdout model outcomes; any subsequent change requires a separately identified validation set/run.",
+  "primaryProjectWrites": false
+}

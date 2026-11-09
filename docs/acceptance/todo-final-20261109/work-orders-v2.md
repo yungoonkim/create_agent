@@ -1,0 +1,109 @@
+# 최종 작업 지시 6개 — 할 일 관리
+
+**제안 데이터이며 실행/수락/완료한 작업이 아니다.** 실제 승인 Scope v6 / Plan v4에 연결된다. 모든 경로는 향후 별도 제품 프로젝트 루트 기준이며 ADTF 프레임워크를 덮어쓰는 지시가 아니다. [승인된 기획](../todo-20261108/plan-v4.md)의 규칙과 보장 한계를 함께 적용한다.
+
+## task-01-env-prereq — 독립 실행 웹 환경, 번들러 및 테스트 인프라 구성
+
+요구: REQ-06, REQ-07 · 선행: 없음
+
+외부 프레임워크(React 등)나 백엔드 서버 없이 브라우저 표준 기술(HTML/CSS/표준 JavaScript 모듈)로 동작하는 독립형 프로젝트 환경을 구성한다. 고정 로컬 Origin(http://127.0.0.1:3000, host: '127.0.0.1', port: 3000, strictPort: true)으로 Vite 정적 개발 서버를 설정하여 포트 점유 시 다른 포트로 자동 변경되지 않고 즉시 실패하도록 규정한다. Vitest+jsdom 기반의 단위/DOM 검증 환경과 Playwright 브라우저 E2E 검증 환경의 설정 파일 및 실행 스크립트(dev, build, test, test:e2e), 고정 저장소 설정 상수 모듈, 브라우저 저장소 제약 사항을 기술한 README 문서를 정의한다.
+
+산출물: `package.json`, `vite.config.js`, `vitest.config.js`, `playwright.config.js`, `index.html`, `src/config/storageConfig.js`, `tests/setup/testEnv.test.js`, `README.md`
+
+완료 조건:
+
+- package.json에 dev, build, test, test:e2e 스크립트가 선언되어 있고 외부 UI 프레임워크나 백엔드 라이브러리 의존성이 없어야 한다.
+- vite.config.js에 host가 127.0.0.1, port가 3000, strictPort가 true로 명시되어 포트 충돌 시 다른 포트로 임의 변경되지 않아야 한다.
+- src/config/storageConfig.js에 단일 고정 저장소 키 이름('todo_app_data_v1')과 스키마 버전 1이 상수로 정의되어야 한다.
+- README.md에 동일 고정 주소(http://127.0.0.1:3000) 접근 원칙과 file:// 프로토콜, 비공개 창, 사이트 데이터 삭제, 타 브라우저/기기 간 데이터 미동기화 한계가 쉬운 한국어로 명시되어야 한다.
+- tests/setup/testEnv.test.js를 통해 jsdom DOM 환경과 localStorage mock이 단위 테스트 환경에서 정상 동작함을 검증할 수 있어야 한다.
+
+향후 검증 방법: 프로젝트 설정 파일(vite, vitest, playwright) 구문 분석 및 테스트 환경 부트스트랩 단위 테스트 검증
+
+## task-02-domain-validation — 도메인 데이터 모델, 입력 검증 및 영속 순번 관리 모듈 구현
+
+요구: REQ-01, REQ-06 · 선행: task-01-env-prereq
+
+할 일 항목 모델 및 입력값 유효성 검사 순수 함수를 구현한다. 제목(공백 제거 후 1자 이상 필수), 마감일시(시간대 없는 YYYY-MM-DDTHH:mm 정규 형식, 연도 0001~9999, 윤년 포함 실존 달력 날짜, 시 00~23, 분 00~59 필수), 추가 메모(문자열, 빈 문자열 허용)를 검증한다. 과거 마감일시는 오류 없이 정상 허용하며 기한 경과 표시나 알림 로직은 포함하지 않는다. 신규 등록 시 고유 ID 생성 및 충돌 방지를 보장하고, nextSequence 배정 전 배정값과 증가 후 값이 모두 Number.isSafeInteger인지 검사한 후 신규 등록 성공 시에만 1 증가시킨다. 수정, 완료, 완료 취소, 삭제 시에는 기존 순번과 nextSequence를 절대 변경하지 않는 불변 원칙을 적용한다.
+
+산출물: `src/domain/todoModel.js`, `src/domain/validation.js`, `tests/domain/todoModel.test.js`, `tests/domain/validation.test.js`
+
+완료 조건:
+
+- 제목이 비어 있거나 공백만으로 구성된 경우, 또는 마감일시가 누락되거나 비정상 날짜(예: 2026-02-31T10:00)인 경우 검증 오류를 반환해야 한다.
+- 과거 마감일시(예: 2020-01-01T09:00)는 유효한 입력으로 통과해야 한다.
+- 동일한 제목과 내용의 항목이더라도 서로 다른 고유 ID와 sequenceNumber를 가진 독립된 항목으로 생성되어야 한다.
+- 신규 등록 시에만 nextSequence가 1 증가하고, safe integer 한계를 초과하면 등록 생성을 거부해야 한다.
+- 기존 항목의 수정, 완료/취소, 삭제 시 sequenceNumber와 nextSequence가 변경되지 않아야 하며 시계 역행이나 삭제 후 재등록 시에도 영속 순번 단조 증가 원칙이 유지되어야 한다.
+
+향후 검증 방법: 입력값 경계 조건(공백 제목, 윤년 2월 29일, 2월 30일, 과거 일시, safe integer 한계, 동일 시각/시계 역행 순번 불변성)을 포괄하는 Vitest 단위 테스트 실행
+
+## task-03-storage-repository — 로컬 저장소 원자적 단일 커밋 및 무결성 검증 저장소 모듈 구현
+
+요구: REQ-06 · 선행: task-02-domain-validation
+
+localStorage의 단일 고정 키('todo_app_data_v1')를 사용하는 저장소 모듈을 구현한다. 읽기 시 localStorage.getItem(KEY)이 null인 경우에만 정상 빈 목록({ schemaVersion: 1, nextSequence: 1, items: [] })을 반환한다. 빈 문자열(''), JSON 파싱 실패, JSON null, 알 수 없는 스키마 버전, 필수 필드 누락/타입 위반, 제목 공백, memo 타입 오류, isCompleted 불리언 위반, id 공백/중복, sequenceNumber 중복, nextSequence <= maxSequence(빈 목록 maxSequence=0) 위반 및 읽기 예외 발생 시 원본 데이터를 덮어쓰거나 자동 보정하지 않고 쓰기 차단 플래그와 오류를 반환한다. 저장은 전체 목록과 카운터를 단일 JSON 문자열로 직렬화하여 단일 setItem 호출로 원자적 커밋을 수행하며, QuotaExceededError 등 실패 시 기존 저장소 내용을 보존한다.
+
+산출물: `src/storage/todoRepository.js`, `tests/storage/todoRepository.test.js`
+
+완료 조건:
+
+- localStorage.getItem 결과가 null일 때만 정상 빈 목록({ schemaVersion: 1, nextSequence: 1, items: [] })을 반환해야 한다.
+- 손상된 JSON 문자열, 빈 문자열(''), 스키마 버전 불일치, 중복 ID 또는 중복 순번 데이터 발견 시 쓰기 차단 플래그를 반환하고 저장소를 초기화하지 않아야 한다.
+- 단일 setItem 호출 전 후보 검증을 수행하고, setItem 중 예외(용량 초과 등) 발생 시 기존 저장소 내용이 손상되지 않고 호출 실패를 반환해야 한다.
+- 단일 setItem이 성공적으로 완료되는 시점만을 커밋 완료 경계로 정의해야 한다.
+- 빈 items 배열의 maxSequence를 0으로 계산하여 nextSequence >= 1 불변식을 정상 통과해야 한다.
+
+향후 검증 방법: 정상 봉투, 손상 데이터, null 키, 읽기 접근 예외, 쓰기 용량 초과 모의 상황에 대한 단위 테스트 실행
+
+## task-04-ui-form-list — 입력 폼 및 미완료/완료 분리 목록 렌더링 컴포넌트 구현
+
+요구: REQ-01, REQ-02, REQ-07 · 선행: task-03-storage-repository
+
+제목(한 줄 텍스트), 추가 메모(여러 줄 텍스트), 마감일시(datetime-local 형식) 입력 폼과 '할 일(isCompleted === false)' 및 '완료한 일(isCompleted === true)' 목록을 분리 렌더링하는 UI 컴포넌트를 구현한다. 각 목록은 sequenceNumber 오름차순(등록순)으로만 정렬하여 표시한다. 후보 생성/검증/직렬화 -> 단일 setItem 성공 -> 확정 상태 UI 갱신의 단방향 계약을 준수하며 저장 전 임의 낙관적 화면 반영을 금지한다. 입력 검증 또는 저장 실패 시 사용자가 폼에 입력했던 텍스트를 보존한다. HTML 태그 문자열(예: <script>, <b> 등)이 입력되어도 이중 이스케이프 유틸리티 대신 textContent를 활용하여 브라우저에 안전한 일반 글자로만 출력되도록 보장한다.
+
+산출물: `src/ui/todoForm.js`, `src/ui/todoListView.js`, `tests/ui/todoForm.test.js`, `tests/ui/todoListView.test.js`
+
+완료 조건:
+
+- 제목과 마감일시를 입력받아 등록을 요청할 때 주입된 등록 콜백을 통해 검증 및 저장 성공 후에만 '할 일' 목록에 항목이 추가되고 폼이 초기화되어야 한다.
+- 입력 검증 실패 또는 저장 실패 시 폼에 입력했던 제목, 메모, 마감일시 내용이 지워지지 않고 그대로 유지되어야 한다.
+- 미완료 목록과 완료 목록이 화면상 분리된 독립 구역에 sequenceNumber 오름차순으로만 정렬되어 렌더링되어야 한다.
+- HTML 특수문자(<script>alert(1)</script>, <b>강조</b>)가 마크업이나 스크립트로 실행되지 않고 textContent를 통해 순수 글자로 안전하게 표시되어야 한다.
+
+향후 검증 방법: 가짜 콜백 및 가짜 저장소를 주입한 Vitest/jsdom 기반 폼 상태 유지, 목록 분리 렌더링, XSS 방어 DOM 단위 테스트 실행
+
+## task-05-item-interactions — 완료/취소 전환, 단일 항목 수정 격리 및 삭제 확인 인터랙션 컨트롤러 구현
+
+요구: REQ-03, REQ-04, REQ-05 · 선행: task-04-ui-form-list
+
+항목별 상태 변경(완료/완료 취소), 정보 수정 모달/인라인 폼, 삭제 확인 인터랙션 컨트롤러를 구현한다. 모든 상태 변경은 저장소 단일 커밋 성공 후에만 화면에 반영된다. 완료 및 완료 취소 시 항목의 isCompleted 상태만 토글되고 고유 sequenceNumber 및 nextSequence는 불변을 유지한다. 정보 수정 시 동일 제목의 다른 항목에 영향을 주지 않고 선택한 고유 ID 1건만 수정되며, 수정 중 제목 공백이나 마감일시 누락 시 저장을 거부하고 기존 상태를 보존한다. 삭제 버튼 클릭 시 window.confirm('정말 삭제할까요?')을 호출하여 취소 시 저장소 호출 없이 무변경을 보장하고, 확인 시에만 해당 고유 ID 항목 1건을 저장소에서 삭제하며 nextSequence는 감소하지 않고 보존된다.
+
+산출물: `src/ui/todoItemController.js`, `tests/ui/todoItemController.test.js`
+
+완료 조건:
+
+- 미완료 항목의 '완료' 클릭 시 '완료한 일' 구역으로 이동하고 '완료 취소' 클릭 시 '할 일' 구역으로 복귀하며 원래의 sequenceNumber가 유지되어야 한다.
+- 동일 제목 항목 중 1건을 수정할 때 선택된 고유 ID 항목만 변경되고 다른 동일 제목 항목의 내용과 순번은 변경되지 않아야 한다.
+- 삭제 클릭 시 '정말 삭제할까요?' 대화상자가 표시되고, 취소 선택 시 저장소 API가 호출되지 않고 화면과 데이터가 무변경 상태를 유지해야 한다.
+- 삭제 확인 시 선택된 고유 ID 항목 1건만 제거되고 nextSequence 값은 줄어들지 않고 유지되어야 한다.
+
+향후 검증 방법: 완료/취소 상태 전이, 동일 제목 항목 수정 격리, 삭제 confirm 분기 처리에 대한 jsdom 컴포넌트 인터랙션 테스트 실행
+
+## task-06-app-lifecycle-integration — 애플리케이션 라이프사이클 통합, 단일 탭 순차 제어 및 브라우저 수락 시나리오 검증
+
+요구: REQ-01, REQ-02, REQ-03, REQ-04, REQ-05, REQ-06, REQ-07 · 선행: task-05-item-interactions
+
+저장소, 유효성 검사, 폼, 목록 뷰, 아이템 컨트롤러를 통합한 애플리케이션 진입점(src/app.js)을 완성한다. 앱 초기화 시 저장소 로드 결과가 손상 상태이거나 읽기 실패인 경우 등록/수정/완료/취소/삭제 쓰기 동작을 전면 비활성화하고 손상 경고를 표시한다. setItem 호출 성공 전/호출 예외 발생 시 성공 문구를 띄우지 않고 입력을 보존하며, setItem 성공 후 화면 렌더링 실패 시 저장은 성공했음을 알리고 새로고침 복원을 안내한다. window storage 이벤트 감지 시 다중 탭 동시 편집으로 인한 충돌을 방지하기 위해 쓰기를 차단하고 새로고침 재검증을 안내하는 단일 탭 순차 편집 정책을 적용한다. Playwright를 활용해 동일 브라우저 프로필에서 브라우저 종료/재실행 또는 새로고침 시 데이터 복원 및 승인 계획의 7대 수락 기준(AC-01~AC-07)을 검증하는 E2E 시나리오를 작성한다.
+
+산출물: `src/app.js`, `tests/integration/appLifecycle.test.js`, `tests/e2e/todoAcceptance.spec.js`
+
+완료 조건:
+
+- 저장소 데이터 손상 또는 읽기 실패 감지 시 화면에 경고가 출력되고 추가/수정/완료/취소/삭제 등의 쓰기 동작이 모두 차단되어야 한다.
+- 저장소 setItem 호출 실패 시 성공 메시지를 표시하지 않고 기존 화면 상태와 사용자 폼 입력 내용을 온전히 보존해야 한다.
+- 단일 setItem 커밋 완료 후 DOM 갱신 실패 상황 발생 시 저장이 완료되었음을 알리고 새로고침 복원 안내를 제공해야 한다.
+- 다른 탭의 storage 이벤트 감지 시 화면 편집이 차단되고 새로고침 안내가 표시되어야 한다.
+- Playwright 수락 테스트에서 고정 로컬 Origin(http://127.0.0.1:3000)을 기준으로 장보기 등록 -> 중복 등록 -> 미완료/완료 분리 및 등록순 조회 -> 완료/완료 취소 -> 수정 격리 -> 삭제 취소 및 삭제 확인 -> 브라우저 종료 및 재실행 후 영속 복원의 전체 시나리오가 통과해야 한다.
+
+향후 검증 방법: Vitest 기반 라이프사이클/에러 격리 통합 테스트 및 Playwright 기반 E2E 브라우저 수락 시나리오 명세 검증

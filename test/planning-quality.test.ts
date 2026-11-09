@@ -11,6 +11,10 @@ import { FilePlanningMemoryStore } from "../src/planning/memory-store.js";
 import { PlanningLoopController } from "../src/planning/controller.js";
 import { parsePlanningConfig } from "../src/planning/config.js";
 import { bindReviewEvidence } from "../src/planning/review-quality.js";
+import { STORAGE_AUDIT_STATES, type StorageAudit } from "../src/planning/contracts.js";
+import { bindStorageAudit, parseStorageAudit } from "../src/planning/storage-audit.js";
+
+const noStorageAudit = { format: "none", evidenceLines: [], cases: [], rationale: "No JSON storage format is specified by this structural test fixture." };
 
 const scope: ScopeContract = { id: "scope-1", projectId: "quality-test", version: 1, goal: "A bounded plan",
   requiredFeatures: [{ id: "REQ-1", statement: "Save a record" }], excludedFeatures: [], technicalConstraints: [], createdAt: "2026-01-01T00:00:00Z" };
@@ -74,14 +78,15 @@ test("new Gemini reviews require the quality protocol; legacy review data still 
     const legacy = { ...review() }; delete (legacy as { qualityAssessment?: ReviewQualityAssessment }).qualityAssessment;
     assert.deepEqual(parsePlanReview(legacy), legacy);
     let response: unknown = legacy;
-    const client = { models: { generateContent: async () => ({ text: JSON.stringify(response) }) } } as unknown as GoogleGenAI;
+    const client = { models: { generateContent: async (input: { config: { responseJsonSchema: { properties: Record<string, unknown> } } }) =>
+      ({ text: JSON.stringify(input.config.responseJsonSchema.properties.storageAudit === undefined ? response : { issues: [], questions: [], storageAudit: noStorageAudit }) }) } } as unknown as GoogleGenAI;
     const adapter = new GeminiPlanningReviewer(client, memory);
     const context = { projectId: scope.projectId, currentPlan: plan, approvedScope: scope, originalRequirements: "Save a record", settledDecisions: [] };
     const role = { model: { providerId: "vertex-ai", modelId: "gemini-3.8-flash" }, personaId: "reviewer" };
     await assert.rejects(adapter.review(context, role), /mandatory quality/);
     const withLines = { ...quality(), requirements: quality().requirements.map((row) => ({ ...row, evidenceLines: [1] })),
       checks: quality().checks.map((row) => ({ ...row, evidenceLines: [1] })) };
-    response = { ...review(withLines), questions: [] };
+    response = review(withLines);
     assert.deepEqual((await adapter.review(context, role)).qualityAssessment, {
       ...withLines, requirements: withLines.requirements.map((row) => ({ ...row, evidence: [plan.content] })),
       checks: withLines.checks.map((row) => ({ ...row, evidence: [plan.content] })),
@@ -103,7 +108,7 @@ test("a final counterexample blocks an initially passing review, with separate u
     let calls = 0;
     const client = { models: { generateContent: async () => ({ text: JSON.stringify(++calls === 1 ? review(located) : {
       issues: [{ kind: "contradiction", severity: "major", description: "Failed writes overwrite the original in another section.",
-        suggestedDirection: "Preserve the original on failure.", relatedRequirementId: "REQ-1" }], questions: [],
+        suggestedDirection: "Preserve the original on failure.", relatedRequirementId: "REQ-1" }], questions: [], storageAudit: noStorageAudit,
     }) }) } } as unknown as GoogleGenAI;
     const result = await new GeminiPlanningReviewer(client, memory).review({ projectId: scope.projectId, currentPlan: plan,
       approvedScope: scope, originalRequirements: "Save a record", settledDecisions: [] },
@@ -113,6 +118,47 @@ test("a final counterexample blocks an initially passing review, with separate u
     assert.equal(decide(result).type, "REVISE");
     assert.deepEqual(records.map((row) => row.reviewStage), ["assessment", "challenge"]);
   } finally { await rm(root, { recursive: true, force: true }); }
+});
+
+function storageAudit(overrides: Partial<StorageAudit["cases"][number]> = {}): StorageAudit {
+  return parseStorageAudit(bindStorageAudit({ format: "json", evidenceLines: [1], rationale: "A declared JSON storage design.",
+    cases: STORAGE_AUDIT_STATES.map((state) => ({ state, action: state === "absent" ? "initialize" : state === "valid" ? "load" : "preserve_and_block",
+      verdict: "consistent", evidenceLines: [1], authorizationScopeIds: [], rationale: `Plan behavior for ${state}.`,
+      ...(state === "present_empty" ? overrides : {}) })) }, plan));
+}
+
+test("an existing empty JSON reset cannot pass merely because both model verdicts say consistent", () => {
+  const r = { ...review(), challengeCompleted: true, storageAudit: storageAudit({ action: "initialize" }) };
+  const decision = decide(r);
+  assert.equal(decision.type, "REVISE");
+  if (decision.type === "REVISE") assert.match(decision.feedback, /승인 Scope 근거가 없습니다/);
+  assert.equal(decide(r, 2).type, "STOP_LIMIT_REACHED");
+  assert.equal(decide({ ...review(), storageAudit: storageAudit() }).type, "REQUEST_USER_APPROVAL");
+});
+
+test("explicit Scope-authorized disposable JSON reset and valid empty non-JSON data are allowed", () => {
+  const authorized: ScopeContract = { ...scope, requiredFeatures: [{ id: "REQ-1", statement: "Discard invalid cache values and start an empty cache." }] };
+  const r = { ...review(), storageAudit: storageAudit({ action: "reset_or_overwrite", authorizationScopeIds: ["requirement:REQ-1"] }) };
+  assert.equal(decideAfterReview({ review: r, currentPlan: plan, approvedScope: authorized, iterationCount: 1, maxIterations: 2 }).type, "REQUEST_USER_APPROVAL");
+  const textAudit = parseStorageAudit(bindStorageAudit({ format: "other", evidenceLines: [1], rationale: "Plain text treats empty text as valid.", cases: [] }, plan));
+  assert.equal(decide({ ...review(), storageAudit: textAudit }).type, "REQUEST_USER_APPROVAL");
+});
+
+test("storage audits reject omitted/duplicate states, fabricated Scope authority and stale evidence", () => {
+  const audit = storageAudit();
+  for (const broken of [{ ...audit, cases: audit.cases.slice(1) }, { ...audit, cases: audit.cases.map(() => audit.cases[0]!) }]) {
+    assert.throws(() => parsePlanReview({ ...review(), storageAudit: broken }));
+  }
+  assert.throws(() => validatePlanReview({ ...review(), storageAudit: storageAudit({ authorizationScopeIds: ["invented-source"] }) }, plan, scope));
+  assert.throws(() => validatePlanReview({ ...review(), storageAudit: { ...audit, evidence: ["Invented storage guarantee"] } }, plan, scope));
+  assert.deepEqual(parsePlanReview({ ...review(), storageAudit: audit }).storageAudit, audit);
+});
+
+test("unspecified storage behavior is a revision and explicit unresolved product choice is a question", () => {
+  assert.equal(decide({ ...review(), storageAudit: storageAudit({ action: "unspecified" }) }).type, "REVISE");
+  const result = decide({ ...review(), storageAudit: storageAudit({ verdict: "needs_user_input", rationale: "Should this data be disposable?" }) });
+  assert.equal(result.type, "REQUEST_USER_INPUT");
+  if (result.type === "REQUEST_USER_INPUT") assert.match(result.questions.join("\n"), /disposable/);
 });
 
 test("challenge failure cannot return the earlier pass and retains provider-reported failure tokens", async () => {

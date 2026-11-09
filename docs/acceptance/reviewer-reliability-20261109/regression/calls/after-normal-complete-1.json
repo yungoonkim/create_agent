@@ -1,0 +1,403 @@
+{
+  "id": "after-normal-complete-1",
+  "caseId": "normal-complete",
+  "split": "regression",
+  "expected": "adequate",
+  "repeat": 1,
+  "variant": "after",
+  "inputSha256": "d28bc7936c2bee6992497b4909c4fb142c1ee8498a9d2177da0486e0ccc0071c",
+  "status": "completed",
+  "review": {
+    "id": "review-1",
+    "projectId": "reviewer-reliability",
+    "planId": "reviewer-reliability-plan",
+    "planVersion": 1,
+    "scopeContractId": "scope-v6",
+    "scopeVersion": 6,
+    "outcome": "pass",
+    "issues": [],
+    "suggestions": [],
+    "scopeViolation": false,
+    "userJudgmentRequired": false,
+    "reviewedAt": "2026-11-09T01:08:28.437Z",
+    "qualityAssessment": {
+      "version": 1,
+      "requirements": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "제목 ‘장보기’, 메모 ‘우유 1팩’, 마감일시 ‘2026-11-10 15:00’을 적고 추가한다. 제목과 마감 날짜·시간은 필수, 메모는 선택이다. 같은 제목도 별개로 등록한다. 미완료와 완료 목록을 분리하고 각각 처음 등록한 순서로 보여준다. 완료 버튼으로 완료 목록에 보내고 완료 취소로 원래 목록에 돌려놓는다. 수정은 제목·메모·마감일시를 바꾼다. 삭제는 ‘정말 삭제할까요?’ 확인 후 해당 항목만 지우며 취소하면 아무것도 바꾸지 않는다.",
+            "- REQ-01: 제목·마감일시 필수/메모 선택. 공백뿐인 제목, 빠진 날짜/시간, 2월30일, 24:00은 거부하고 입력과 기존 목록을 유지한다. ‘장보기’를 같은 내용으로 두 번 추가하면 별개 ID 두 개가 생긴다.",
+            "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다."
+          ],
+          "rationale": "제목·마감일시 필수 입력과 메모 선택 입력 규칙, 유효성 검증 실패 시 입력 보존, 동일 제목 중복 등록 시 별개 ID 및 순번 부여 규칙이 구체적으로 정의되어 있습니다.",
+          "evidenceLines": [
+            4,
+            12,
+            23
+          ],
+          "requirementId": "REQ-01"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "제목 ‘장보기’, 메모 ‘우유 1팩’, 마감일시 ‘2026-11-10 15:00’을 적고 추가한다. 제목과 마감 날짜·시간은 필수, 메모는 선택이다. 같은 제목도 별개로 등록한다. 미완료와 완료 목록을 분리하고 각각 처음 등록한 순서로 보여준다. 완료 버튼으로 완료 목록에 보내고 완료 취소로 원래 목록에 돌려놓는다. 수정은 제목·메모·마감일시를 바꾼다. 삭제는 ‘정말 삭제할까요?’ 확인 후 해당 항목만 지우며 취소하면 아무것도 바꾸지 않는다.",
+            "- REQ-02: 미완료와 완료 두 구역, 영속 등록 순번 오름차순. A(1),B(2) 등록 후 PC 시계를 뒤로 돌려 C를 등록해도 A,B,C 순서다. B 삭제 후 D 등록은 A(1),C(3),D(4)다. 수정/상태 변경/재시작으로 순번을 바꾸지 않는다.",
+            "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+            "정렬은 컴퓨터 시각을 사용하지 않고 오직 등록 성공 순번 오름차순이다."
+          ],
+          "rationale": "미완료와 완료 목록의 분리 표시 및 시계 조작과 무관한 고유 영속 등록 순번(sequenceNumber) 오름차순 정렬 규칙이 명시되어 있습니다.",
+          "evidenceLines": [
+            4,
+            13,
+            23,
+            25
+          ],
+          "requirementId": "REQ-02"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "제목 ‘장보기’, 메모 ‘우유 1팩’, 마감일시 ‘2026-11-10 15:00’을 적고 추가한다. 제목과 마감 날짜·시간은 필수, 메모는 선택이다. 같은 제목도 별개로 등록한다. 미완료와 완료 목록을 분리하고 각각 처음 등록한 순서로 보여준다. 완료 버튼으로 완료 목록에 보내고 완료 취소로 원래 목록에 돌려놓는다. 수정은 제목·메모·마감일시를 바꾼다. 삭제는 ‘정말 삭제할까요?’ 확인 후 해당 항목만 지우며 취소하면 아무것도 바꾸지 않는다.",
+            "- REQ-03: A만 완료하면 완료 구역에 A만 이동한다. 취소하면 미완료 구역의 원래 등록순 위치로 돌아온다. 저장 실패 시 상태가 이동하지 않는다."
+          ],
+          "rationale": "완료 전환 시 완료 구역으로 이동하고, 완료 취소 시 미완료 구역의 원래 등록 순번 위치로 복원되며, 저장 실패 시 상태가 변경되지 않음이 규정되어 있습니다.",
+          "evidenceLines": [
+            4,
+            14
+          ],
+          "requirementId": "REQ-03"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "제목 ‘장보기’, 메모 ‘우유 1팩’, 마감일시 ‘2026-11-10 15:00’을 적고 추가한다. 제목과 마감 날짜·시간은 필수, 메모는 선택이다. 같은 제목도 별개로 등록한다. 미완료와 완료 목록을 분리하고 각각 처음 등록한 순서로 보여준다. 완료 버튼으로 완료 목록에 보내고 완료 취소로 원래 목록에 돌려놓는다. 수정은 제목·메모·마감일시를 바꾼다. 삭제는 ‘정말 삭제할까요?’ 확인 후 해당 항목만 지우며 취소하면 아무것도 바꾸지 않는다.",
+            "- REQ-04: 동일 제목 두 항목 중 두 번째를 수정하면 두 번째만 바뀐다. 제목/마감일시 검증 실패 또는 저장 실패면 기존 목록을 유지하고 수정 입력을 보존한다. 수정 취소는 무변경이다."
+          ],
+          "rationale": "제목·메모·마감일시 수정 기능과 검증/저장 실패 시 기존 목록 유지 및 입력 보존, 수정 취소 시 무변경 동작이 정의되어 있습니다.",
+          "evidenceLines": [
+            4,
+            15
+          ],
+          "requirementId": "REQ-04"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "제목 ‘장보기’, 메모 ‘우유 1팩’, 마감일시 ‘2026-11-10 15:00’을 적고 추가한다. 제목과 마감 날짜·시간은 필수, 메모는 선택이다. 같은 제목도 별개로 등록한다. 미완료와 완료 목록을 분리하고 각각 처음 등록한 순서로 보여준다. 완료 버튼으로 완료 목록에 보내고 완료 취소로 원래 목록에 돌려놓는다. 수정은 제목·메모·마감일시를 바꾼다. 삭제는 ‘정말 삭제할까요?’ 확인 후 해당 항목만 지우며 취소하면 아무것도 바꾸지 않는다.",
+            "- REQ-05: 삭제 확인 취소는 무변경, 확인은 선택 ID 한 건만 삭제. 저장 실패 시 항목을 지우지 않고 오류를 표시한다."
+          ],
+          "rationale": "삭제 확인 대화창에서 취소 시 무변경, 확인 시 대상 항목만 단독 삭제하고 저장 실패 시 삭제되지 않는 규칙이 구체화되어 있습니다.",
+          "evidenceLines": [
+            4,
+            16
+          ],
+          "requirementId": "REQ-05"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "같은 제목 ‘장보기’ 두 개 중 두 번째 항목을 수정·완료·삭제해도 첫 번째는 그대로다. 상태 전환·정보 수정 후에도 원래 등록순을 유지한다. 같은 브라우저·프로필·일반 창에서 같은 고정 주소로 다시 열면 이전 목록이 복원된다. 저장 실패면 성공 표시나 목록 변경을 하지 않고 입력을 보존하며 오류를 알려 재시도하게 한다. 브라우저의 사이트 데이터를 직접 삭제하거나 비공개 창을 닫으면 기록을 잃을 수 있다. 다른 브라우저/기기와 공유하지 않는다. 한 탭에서 순서대로 사용한다.",
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다.",
+            "후보 객체를 검증·직렬화한 뒤 setItem 성공 반환을 커밋으로 보고 확정 목록/화면을 갱신한다. 커밋 전 또는 setItem 실패는 기존 저장값·확정 목록·입력을 보존한다. setItem 성공 뒤 표시가 실패하면 저장은 되었음을 안내하고 새로고침해 복원하며 저장을 되돌렸다고 주장하지 않는다.",
+            "같은 컴퓨터·브라우저·프로필·일반 창·origin(프로토콜/호스트/포트)의 고정 로컬 HTTP 주소로 제공한다. 직접 file:// 열기, 다른 기기/브라우저, 사이트 데이터 삭제, 비공개 창, 물리 장애·전원 단절 무손실은 보장하지 않는다. 단일 탭 순차 편집만 지원하며 다른 탭 변경 감지 시 편집 차단·새로고침 안내는 하되 동시 쓰기 잠금/다중 탭 안전성을 보장하지 않는다."
+          ],
+          "rationale": "로컬 브라우저 저장소를 통한 영속 보관, 재접속 시 복원, 저장 실패/데이터 손상 시 임의 초기화 방지 및 쓰기 차단 한계가 명확히 기술되어 있습니다.",
+          "evidenceLines": [
+            6,
+            17,
+            23,
+            26,
+            28,
+            30
+          ],
+          "requirementId": "REQ-06"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "제목 ‘장보기’, 메모 ‘우유 1팩’, 마감일시 ‘2026-11-10 15:00’을 적고 추가한다. 제목과 마감 날짜·시간은 필수, 메모는 선택이다. 같은 제목도 별개로 등록한다. 미완료와 완료 목록을 분리하고 각각 처음 등록한 순서로 보여준다. 완료 버튼으로 완료 목록에 보내고 완료 취소로 원래 목록에 돌려놓는다. 수정은 제목·메모·마감일시를 바꾼다. 삭제는 ‘정말 삭제할까요?’ 확인 후 해당 항목만 지우며 취소하면 아무것도 바꾸지 않는다.",
+            "- REQ-07: 모든 동작은 브라우저 입력창과 버튼으로 수행한다. 제목이나 메모의 '<b>장보기</b>'나 '<script>' 문자는 코드가 아닌 글자로 표시한다."
+          ],
+          "rationale": "웹 브라우저 화면의 폼과 버튼 조작 중심 UI 및 스크립트 태그 문자열의 안전한 텍스트 이스케이프 표시 기준이 포함되어 있습니다.",
+          "evidenceLines": [
+            4,
+            18
+          ],
+          "requirementId": "REQ-07"
+        }
+      ],
+      "checks": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "## 선택과 제안의 출처",
+            "Q-1~Q-7: 브라우저 버튼 사용, 제목·메모·마감일, 수정·삭제, 완료 취소, 분리 목록과 등록순, 동일 제목 허용, 내 컴퓨터 저장(세부 방식 위임). DETAIL-1: 제목·마감일 필수/메모 선택. DETAIL-2: 날짜+시간. DETAIL-3: 삭제 확인. 과거 마감일 허용은 사용자가 직접 확정한 것이 아닌 기획자의 승인 대기 제안이다. 과거 일시도 기록·표시만 하며 기한 경과 표시와 알림은 없다."
+          ],
+          "rationale": "사용자 확정 결정(Q-1~Q-7, DETAIL-1~3)과 기획자의 미승인 설계 제안(과거 마감일 허용 여부 등)을 명확히 구분하여 출처를 밝혔습니다.",
+          "evidenceLines": [
+            8,
+            9
+          ],
+          "id": "decision_provenance"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "같은 컴퓨터·브라우저·프로필·일반 창·origin(프로토콜/호스트/포트)의 고정 로컬 HTTP 주소로 제공한다. 직접 file:// 열기, 다른 기기/브라우저, 사이트 데이터 삭제, 비공개 창, 물리 장애·전원 단절 무손실은 보장하지 않는다. 단일 탭 순차 편집만 지원하며 다른 탭 변경 감지 시 편집 차단·새로고침 안내는 하되 동시 쓰기 잠금/다중 탭 안전성을 보장하지 않는다.",
+            "향후 작업 순서는 화면 흐름·입력 규칙 확정 → 검증/순번 모델 → 저장/실패 경계 → UI 연결 → 위 정상·실패 수락 사례 확인이다. 각각 산출물과 선행 관계를 작업 지시로 나눈다. 현재 세션은 기획·검토·지시 품질 시험이며 제품 구현·제품 테스트·팀원 실행을 하지 않는다. 로그인·계정·외부 서버 동기화·공유·검색·필터·태그·기한순 정렬을 추가하지 않는다. 실제 구현/시험을 마쳤다고 주장하지 않는다. 이 초기 후보에는 이전 버전 수정 요청이 없다."
+          ],
+          "rationale": "다중 계정, 클라우드 동기화, 고급 검색/필터 등의 제외 기능을 준수하였고, 현 세션에서의 실제 코드 구현 및 에이전트 실행 배제 경계를 명시했습니다.",
+          "evidenceLines": [
+            30,
+            33
+          ],
+          "id": "scope_compliance"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "- REQ-01: 제목·마감일시 필수/메모 선택. 공백뿐인 제목, 빠진 날짜/시간, 2월30일, 24:00은 거부하고 입력과 기존 목록을 유지한다. ‘장보기’를 같은 내용으로 두 번 추가하면 별개 ID 두 개가 생긴다.",
+            "- REQ-02: 미완료와 완료 두 구역, 영속 등록 순번 오름차순. A(1),B(2) 등록 후 PC 시계를 뒤로 돌려 C를 등록해도 A,B,C 순서다. B 삭제 후 D 등록은 A(1),C(3),D(4)다. 수정/상태 변경/재시작으로 순번을 바꾸지 않는다.",
+            "- REQ-03: A만 완료하면 완료 구역에 A만 이동한다. 취소하면 미완료 구역의 원래 등록순 위치로 돌아온다. 저장 실패 시 상태가 이동하지 않는다.",
+            "- REQ-04: 동일 제목 두 항목 중 두 번째를 수정하면 두 번째만 바뀐다. 제목/마감일시 검증 실패 또는 저장 실패면 기존 목록을 유지하고 수정 입력을 보존한다. 수정 취소는 무변경이다.",
+            "- REQ-05: 삭제 확인 취소는 무변경, 확인은 선택 ID 한 건만 삭제. 저장 실패 시 항목을 지우지 않고 오류를 표시한다.",
+            "후보 객체를 검증·직렬화한 뒤 setItem 성공 반환을 커밋으로 보고 확정 목록/화면을 갱신한다. 커밋 전 또는 setItem 실패는 기존 저장값·확정 목록·입력을 보존한다. setItem 성공 뒤 표시가 실패하면 저장은 되었음을 안내하고 새로고침해 복원하며 저장을 되돌렸다고 주장하지 않는다."
+          ],
+          "rationale": "정상 동작과 공백 제목/잘못된 날짜 등 무효 입력 거부, 삭제/수정 취소의 무변경 보존, 저장 실패 시 확정 목록 불변 정책이 일관되게 규정되어 있습니다.",
+          "evidenceLines": [
+            12,
+            13,
+            14,
+            15,
+            16,
+            28
+          ],
+          "id": "behavior_and_errors"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "- REQ-02: 미완료와 완료 두 구역, 영속 등록 순번 오름차순. A(1),B(2) 등록 후 PC 시계를 뒤로 돌려 C를 등록해도 A,B,C 순서다. B 삭제 후 D 등록은 A(1),C(3),D(4)다. 수정/상태 변경/재시작으로 순번을 바꾸지 않는다.",
+            "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+            "정렬은 컴퓨터 시각을 사용하지 않고 오직 등록 성공 순번 오름차순이다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다.",
+            "후보 객체를 검증·직렬화한 뒤 setItem 성공 반환을 커밋으로 보고 확정 목록/화면을 갱신한다. 커밋 전 또는 setItem 실패는 기존 저장값·확정 목록·입력을 보존한다. setItem 성공 뒤 표시가 실패하면 저장은 되었음을 안내하고 새로고침해 복원하며 저장을 되돌렸다고 주장하지 않는다.",
+            "같은 컴퓨터·브라우저·프로필·일반 창·origin(프로토콜/호스트/포트)의 고정 로컬 HTTP 주소로 제공한다. 직접 file:// 열기, 다른 기기/브라우저, 사이트 데이터 삭제, 비공개 창, 물리 장애·전원 단절 무손실은 보장하지 않는다. 단일 탭 순차 편집만 지원하며 다른 탭 변경 감지 시 편집 차단·새로고침 안내는 하되 동시 쓰기 잠금/다중 탭 안전성을 보장하지 않는다."
+          ],
+          "rationale": "단일 스토리지 키 원자적 저장, 고유 ID 및 단조 증가 nextSequence 불변식, 시스템 시계 역행 대응, 데이터 손상 시 덮어쓰기 방지 및 커밋 전후 실패 경계가 구체적입니다.",
+          "evidenceLines": [
+            13,
+            23,
+            25,
+            26,
+            28,
+            30
+          ],
+          "id": "data_integrity"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "- REQ-01: 제목·마감일시 필수/메모 선택. 공백뿐인 제목, 빠진 날짜/시간, 2월30일, 24:00은 거부하고 입력과 기존 목록을 유지한다. ‘장보기’를 같은 내용으로 두 번 추가하면 별개 ID 두 개가 생긴다.",
+            "- REQ-02: 미완료와 완료 두 구역, 영속 등록 순번 오름차순. A(1),B(2) 등록 후 PC 시계를 뒤로 돌려 C를 등록해도 A,B,C 순서다. B 삭제 후 D 등록은 A(1),C(3),D(4)다. 수정/상태 변경/재시작으로 순번을 바꾸지 않는다.",
+            "- REQ-03: A만 완료하면 완료 구역에 A만 이동한다. 취소하면 미완료 구역의 원래 등록순 위치로 돌아온다. 저장 실패 시 상태가 이동하지 않는다.",
+            "- REQ-04: 동일 제목 두 항목 중 두 번째를 수정하면 두 번째만 바뀐다. 제목/마감일시 검증 실패 또는 저장 실패면 기존 목록을 유지하고 수정 입력을 보존한다. 수정 취소는 무변경이다.",
+            "- REQ-05: 삭제 확인 취소는 무변경, 확인은 선택 ID 한 건만 삭제. 저장 실패 시 항목을 지우지 않고 오류를 표시한다.",
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "- REQ-07: 모든 동작은 브라우저 입력창과 버튼으로 수행한다. 제목이나 메모의 '<b>장보기</b>'나 '<script>' 문자는 코드가 아닌 글자로 표시한다."
+          ],
+          "rationale": "요구사항별 구체적 입력값, 유효성 실패 사례, 시계 변경 및 새로고침 검증 조건 등 관찰 가능한 수락 기준이 빠짐없이 서술되어 있습니다.",
+          "evidenceLines": [
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18
+          ],
+          "id": "acceptance_criteria"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "Q-1~Q-7: 브라우저 버튼 사용, 제목·메모·마감일, 수정·삭제, 완료 취소, 분리 목록과 등록순, 동일 제목 허용, 내 컴퓨터 저장(세부 방식 위임). DETAIL-1: 제목·마감일 필수/메모 선택. DETAIL-2: 날짜+시간. DETAIL-3: 삭제 확인. 과거 마감일 허용은 사용자가 직접 확정한 것이 아닌 기획자의 승인 대기 제안이다. 과거 일시도 기록·표시만 하며 기한 경과 표시와 알림은 없다.",
+            "향후 작업 순서는 화면 흐름·입력 규칙 확정 → 검증/순번 모델 → 저장/실패 경계 → UI 연결 → 위 정상·실패 수락 사례 확인이다. 각각 산출물과 선행 관계를 작업 지시로 나눈다. 현재 세션은 기획·검토·지시 품질 시험이며 제품 구현·제품 테스트·팀원 실행을 하지 않는다. 로그인·계정·외부 서버 동기화·공유·검색·필터·태그·기한순 정렬을 추가하지 않는다. 실제 구현/시험을 마쳤다고 주장하지 않는다. 이 초기 후보에는 이전 버전 수정 요청이 없다."
+          ],
+          "rationale": "선행 반려 및 수정 요청이 없는 첫 번째 기획안 후보이며, 기합의된 모든 결정 사항이 누락이나 왜곡 없이 충실히 반영되어 있습니다.",
+          "evidenceLines": [
+            9,
+            33
+          ],
+          "id": "revision_resolution"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "## 사용자 이용 예시",
+            "제목 ‘장보기’, 메모 ‘우유 1팩’, 마감일시 ‘2026-11-10 15:00’을 적고 추가한다. 제목과 마감 날짜·시간은 필수, 메모는 선택이다. 같은 제목도 별개로 등록한다. 미완료와 완료 목록을 분리하고 각각 처음 등록한 순서로 보여준다. 완료 버튼으로 완료 목록에 보내고 완료 취소로 원래 목록에 돌려놓는다. 수정은 제목·메모·마감일시를 바꾼다. 삭제는 ‘정말 삭제할까요?’ 확인 후 해당 항목만 지우며 취소하면 아무것도 바꾸지 않는다.",
+            "같은 제목 ‘장보기’ 두 개 중 두 번째 항목을 수정·완료·삭제해도 첫 번째는 그대로다. 상태 전환·정보 수정 후에도 원래 등록순을 유지한다. 같은 브라우저·프로필·일반 창에서 같은 고정 주소로 다시 열면 이전 목록이 복원된다. 저장 실패면 성공 표시나 목록 변경을 하지 않고 입력을 보존하며 오류를 알려 재시도하게 한다. 브라우저의 사이트 데이터를 직접 삭제하거나 비공개 창을 닫으면 기록을 잃을 수 있다. 다른 브라우저/기기와 공유하지 않는다. 한 탭에서 순서대로 사용한다.",
+            "## 기술 설계 제안 (아직 사용자 승인 전)"
+          ],
+          "rationale": "쉬운 한국어와 일상적 사용 예시를 전면에 배치하고, 스토리지 스키마 및 기술적 설계 제안은 별도 절로 분리하여 명확하게 작성되었습니다.",
+          "evidenceLines": [
+            3,
+            4,
+            6,
+            20
+          ],
+          "id": "clarity"
+        }
+      ]
+    },
+    "challengeCompleted": true,
+    "storageAudit": {
+      "format": "json",
+      "evidenceLines": [
+        23,
+        26
+      ],
+      "evidence": [
+        "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+        "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+      ],
+      "rationale": "Plan lines 23 and 26 define local persistence using browser localStorage with a JSON stringified object under key 'todo_app_data_v1', parsing schemaVersion, nextSequence, and items.",
+      "cases": [
+        {
+          "state": "absent",
+          "action": "initialize",
+          "verdict": "consistent",
+          "evidenceLines": [
+            23,
+            26
+          ],
+          "evidence": [
+            "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06",
+            "constraint:2"
+          ],
+          "rationale": "Line 26 treats getItem returning null (key absent) as the sole initial first-run state, creating initial empty state with sequence counter starting at zero without overwriting existing data."
+        },
+        {
+          "state": "present_empty",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Line 26 explicitly categorizes an empty string as an error rather than absent storage, blocking further writes and prohibiting automatic correction or overwriting."
+        },
+        {
+          "state": "invalid",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Lines 17 and 26 explicitly classify malformed JSON, schema mismatch, or broken invariants as data corruption, blocking write operations and strictly preserving stored data without arbitrary reinitialization."
+        },
+        {
+          "state": "valid",
+          "action": "load",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            23,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "Lines 17, 23, and 26 validate the stored JSON object, verifying schemaVersion, item properties, and sequence counters before loading existing todo records into the UI."
+        },
+        {
+          "state": "read_error",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Line 26 treats storage read access exceptions (such as security or quota exceptions) by blocking writes and preserving the original stored state without attempting to overwrite."
+        }
+      ]
+    }
+  },
+  "decision": {
+    "type": "REQUEST_USER_APPROVAL",
+    "planId": "reviewer-reliability-plan",
+    "version": 1
+  },
+  "usage": [
+    {
+      "projectId": "reviewer-reliability",
+      "planId": "reviewer-reliability-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "reviewStage": "assessment",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 5224,
+      "outputTokens": 1424,
+      "reasoningTokens": 1917,
+      "outcome": "success",
+      "durationMs": 21476,
+      "recordedAt": "2026-11-09T01:08:16.476Z"
+    },
+    {
+      "projectId": "reviewer-reliability",
+      "planId": "reviewer-reliability-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "reviewStage": "challenge",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 5384,
+      "outputTokens": 615,
+      "reasoningTokens": 1081,
+      "outcome": "success",
+      "durationMs": 11961,
+      "recordedAt": "2026-11-09T01:08:28.438Z"
+    }
+  ],
+  "responses": [
+    {
+      "text": "{\n  \"outcome\": \"pass\",\n  \"issues\": [],\n  \"suggestions\": [],\n  \"scopeViolation\": false,\n  \"userJudgmentRequired\": false,\n  \"qualityAssessment\": {\n    \"version\": 1,\n    \"requirements\": [\n      {\n        \"requirementId\": \"REQ-01\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [4, 12, 23],\n        \"rationale\": \"제목·마감일시 필수 입력과 메모 선택 입력 규칙, 유효성 검증 실패 시 입력 보존, 동일 제목 중복 등록 시 별개 ID 및 순번 부여 규칙이 구체적으로 정의되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-02\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [4, 13, 23, 25],\n        \"rationale\": \"미완료와 완료 목록의 분리 표시 및 시계 조작과 무관한 고유 영속 등록 순번(sequenceNumber) 오름차순 정렬 규칙이 명시되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-03\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [4, 14],\n        \"rationale\": \"완료 전환 시 완료 구역으로 이동하고, 완료 취소 시 미완료 구역의 원래 등록 순번 위치로 복원되며, 저장 실패 시 상태가 변경되지 않음이 규정되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-04\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [4, 15],\n        \"rationale\": \"제목·메모·마감일시 수정 기능과 검증/저장 실패 시 기존 목록 유지 및 입력 보존, 수정 취소 시 무변경 동작이 정의되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-05\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [4, 16],\n        \"rationale\": \"삭제 확인 대화창에서 취소 시 무변경, 확인 시 대상 항목만 단독 삭제하고 저장 실패 시 삭제되지 않는 규칙이 구체화되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-06\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [6, 17, 23, 26, 28, 30],\n        \"rationale\": \"로컬 브라우저 저장소를 통한 영속 보관, 재접속 시 복원, 저장 실패/데이터 손상 시 임의 초기화 방지 및 쓰기 차단 한계가 명확히 기술되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"REQ-07\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [4, 18],\n        \"rationale\": \"웹 브라우저 화면의 폼과 버튼 조작 중심 UI 및 스크립트 태그 문자열의 안전한 텍스트 이스케이프 표시 기준이 포함되어 있습니다.\"\n      }\n    ],\n    \"checks\": [\n      {\n        \"id\": \"decision_provenance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [8, 9],\n        \"rationale\": \"사용자 확정 결정(Q-1~Q-7, DETAIL-1~3)과 기획자의 미승인 설계 제안(과거 마감일 허용 여부 등)을 명확히 구분하여 출처를 밝혔습니다.\"\n      },\n      {\n        \"id\": \"scope_compliance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [30, 33],\n        \"rationale\": \"다중 계정, 클라우드 동기화, 고급 검색/필터 등의 제외 기능을 준수하였고, 현 세션에서의 실제 코드 구현 및 에이전트 실행 배제 경계를 명시했습니다.\"\n      },\n      {\n        \"id\": \"behavior_and_errors\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [12, 13, 14, 15, 16, 28],\n        \"rationale\": \"정상 동작과 공백 제목/잘못된 날짜 등 무효 입력 거부, 삭제/수정 취소의 무변경 보존, 저장 실패 시 확정 목록 불변 정책이 일관되게 규정되어 있습니다.\"\n      },\n      {\n        \"id\": \"data_integrity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [13, 23, 25, 26, 28, 30],\n        \"rationale\": \"단일 스토리지 키 원자적 저장, 고유 ID 및 단조 증가 nextSequence 불변식, 시스템 시계 역행 대응, 데이터 손상 시 덮어쓰기 방지 및 커밋 전후 실패 경계가 구체적입니다.\"\n      },\n      {\n        \"id\": \"acceptance_criteria\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [12, 13, 14, 15, 16, 17, 18],\n        \"rationale\": \"요구사항별 구체적 입력값, 유효성 실패 사례, 시계 변경 및 새로고침 검증 조건 등 관찰 가능한 수락 기준이 빠짐없이 서술되어 있습니다.\"\n      },\n      {\n        \"id\": \"revision_resolution\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [9, 33],\n        \"rationale\": \"선행 반려 및 수정 요청이 없는 첫 번째 기획안 후보이며, 기합의된 모든 결정 사항이 누락이나 왜곡 없이 충실히 반영되어 있습니다.\"\n      },\n      {\n        \"id\": \"clarity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 4, 6, 20],\n        \"rationale\": \"쉬운 한국어와 일상적 사용 예시를 전면에 배치하고, 스토리지 스키마 및 기술적 설계 제안은 별도 절로 분리하여 명확하게 작성되었습니다.\"\n      }\n    ]\n  }\n}",
+      "finishReasons": [
+        "STOP"
+      ]
+    },
+    {
+      "text": "{\n  \"issues\": [],\n  \"questions\": [],\n  \"storageAudit\": {\n    \"format\": \"json\",\n    \"evidenceLines\": [23, 26],\n    \"rationale\": \"Plan lines 23 and 26 define local persistence using browser localStorage with a JSON stringified object under key 'todo_app_data_v1', parsing schemaVersion, nextSequence, and items.\",\n    \"cases\": [\n      {\n        \"state\": \"absent\",\n        \"action\": \"initialize\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [23, 26],\n        \"authorizationScopeIds\": [\"requirement:REQ-06\", \"constraint:2\"],\n        \"rationale\": \"Line 26 treats getItem returning null (key absent) as the sole initial first-run state, creating initial empty state with sequence counter starting at zero without overwriting existing data.\"\n      },\n      {\n        \"state\": \"present_empty\",\n        \"action\": \"preserve_and_block\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [17, 26],\n        \"authorizationScopeIds\": [],\n        \"rationale\": \"Line 26 explicitly categorizes an empty string as an error rather than absent storage, blocking further writes and prohibiting automatic correction or overwriting.\"\n      },\n      {\n        \"state\": \"invalid\",\n        \"action\": \"preserve_and_block\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [17, 26],\n        \"authorizationScopeIds\": [],\n        \"rationale\": \"Lines 17 and 26 explicitly classify malformed JSON, schema mismatch, or broken invariants as data corruption, blocking write operations and strictly preserving stored data without arbitrary reinitialization.\"\n      },\n      {\n        \"state\": \"valid\",\n        \"action\": \"load\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [17, 23, 26],\n        \"authorizationScopeIds\": [\"requirement:REQ-06\"],\n        \"rationale\": \"Lines 17, 23, and 26 validate the stored JSON object, verifying schemaVersion, item properties, and sequence counters before loading existing todo records into the UI.\"\n      },\n      {\n        \"state\": \"read_error\",\n        \"action\": \"preserve_and_block\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [26],\n        \"authorizationScopeIds\": [],\n        \"rationale\": \"Line 26 treats storage read access exceptions (such as security or quota exceptions) by blocking writes and preserving the original stored state without attempting to overwrite.\"\n      }\n    ]\n  }\n}",
+      "finishReasons": [
+        "STOP"
+      ]
+    }
+  ]
+}

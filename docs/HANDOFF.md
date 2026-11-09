@@ -3,6 +3,31 @@
 마지막 정리: 2026-11-09 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 완료 — 저장 복구 검토·새 사례 평가·사용자 문서
+
+사용자가 요청한 지휘자 품질 보완·단독 검증과 문서를 완료했다. [최신 품질 보고서](reviewer-reliability-20261109.md), [계획 대비 구현 현황](plan-vs-implementation-20261109.md), [소스 다운로드/실행 가이드](local-run-guide.md)를 먼저 읽는다. 아래 단계별 승인 대기 문구는 과거 이력이다.
+
+- storageAudit: JSON 5상태의 실제 동작·원문 줄·허용 Scope 근거. 기존 JSON 초기화/덮어쓰기에 근거가 없으면 pass라도 수정. 명시 승인된 캐시 초기화·일반 텍스트의 정상 빈 값은 구분한다. 의미상 근거 적합성은 여전히 모델/사람 판단이다.
+- f95fa75 baseline 비교: 회귀 결함 기존3/3, 최종3/3 차단·정상 양쪽3/3. 새6종×2회는 양쪽 결함6/6 차단·정상6/6 승인 단계 도달·형식 실패0. 이번 표본에서 성능 향상을 주장하지 않는다. 최초 회귀1건 형식 실패는 보존하고 새 사례 평가 전에 ID 스키마를 보완했다. 새 사례 출력 확인 후 코드 조정 없음.
+- 전체 모델 요청72개/논리 리뷰42회, 중간 실패 포함. [집계](acceptance/reviewer-reliability-20261109/aggregate.json), [Reviewer 사유](acceptance/reviewer-reliability-20261109/reviewer-history.json). 예전 품질94요청·실제 todo13기록과 구분한다. 세 평가 디렉터리는 완료했으므로 재실행하지 않는다. 다음 변경은 별도 새 검증 세트가 필요하다.
+- typecheck/132개 테스트 통과. ADC·.adtf 없는 별도 소스 폴더에서 npm ci(쓰기 가능한 캐시), typecheck,132테스트, Fake Planning·Supervisor 입구 실행 성공. Windows 명령은 문서 검토했으나 실제 PowerShell 실행은 하지 않았다. [설치 시험](acceptance/local-guide-smoke-20261109.json).
+- 실제 todo 최신20파일·재고17파일 체크포인트 해시 일치. 현재 todo Scope v6/Plan v4 approved·iteration4/5·Supervisor r20 tasks_proposed/6작업, 재고 v4/v3 approved·3/5·r16/5작업 그대로다. 사용자 결정을 다시 실행하거나 과거 체크포인트를 덮어쓰지 않는다.
+- 모델/환경은 iceu-songpa11/global, gemini-3.8-flash 양 역할, ADC, Node24 --use-env-proxy. 인증 파일 내용·토큰은 출력하지 않는다. 제품 코드/제품 브라우저 시험·팀원 설계/연결/실행은 보류한다. 커밋 메시지는 한국어다.
+
+## 최신 상태 — 할 일 주제의 기획·작업 지시 단독 인수 완료
+
+사용자가 확인한 ‘v4 확정 → 작업 지시 시험 → 최종 정리’를 완료했다. [최종 인수 보고서](supervisor-todo-final-acceptance-20261109.md), [쉬운 작업 요약](acceptance/todo-final-20261109/work-orders-easy-summary.md)을 우선한다. **Git 커밋 메시지는 앞으로 한국어로 작성한다**(사용자 요청, AGENTS.md에도 반영).
+
+- 실제 todo 상태: Scope v6 approved / Plan v4 user_approved / 반복4/5 / Supervisor revision20 tasks_proposed / 작업6개 / taskRevisions1개. Plan 승인 ID `approval-a3422782-30f5-4fc9-a7bf-3971193373c5` approved. [실제 승인](acceptance/todo-final-20261109/plan-approval.json).
+- source hash `eb90453cab264d16c0fcbee44e200a804415ed656313a75b48ae3793ed06c3e1` 유지. Scope/Plan/Review 본문·과거 버전과 재고 프로젝트는 해시가 그대로다.
+- 작업 제안3요청: v1 정상 저장 → 첫 수정은 Unknown dependency로 Controller 거부/기존r19 보존 → 재시험 v2 정상 저장/r20. 최종6개 ID와 DAG, REQ-01~07, 테스트 산출물·고정 origin·실패 경계·복원 시나리오를 대조했다. [상세 지시](acceptance/todo-final-20261109/work-orders-v2.md), [진단](acceptance/todo-final-20261109/rejected-revision-attempt.json), [원응답](acceptance/todo-final-20261109/retry-raw-orders.json).
+- 검증은 실제 Gemini 생성+Controller 구조/출처 검증+진행자 내용 대조다. 작업 제안에 Planning Reviewer가 추가 호출된 것으로 기록하지 않는다. 첫 거부 응답 본문은 CLI가 저장하지 않아 없고, 재시험은 검증 전 원문을 보존했다. usage success는 JSON 파싱 성공이며 Controller 수락/실행을 뜻하지 않는다.
+- 제품 코드·제품 브라우저 테스트·팀원 실행·작업 수락/초기화 없음. report.nextAction=initialize-tasks는 기술적 안내이며 현재 승인 범위의 다음 자동 작업이 아니다. 여기서 멈춘다.
+- [최신 체크포인트](acceptance/todo-final-20261109/runtime-checkpoint.json), [report](acceptance/todo-final-20261109/report.json), [사용량](acceptance/todo-final-20261109/usage-summary.json). 이전 todo-20261108 체크포인트는 승인 전 역사 자료라 현재 데이터 위에 복원하지 않는다. retry receipt는 completed이므로 모델/결정을 재실행하지 않는다.
+- 프롬프트의 CLI 가정을 승인 제품 인터페이스 기준으로 일반화하고 수정 작업 ID/참조 일치를 명시했다. 최종 typecheck/128개 테스트 통과. 실제 본 실행 모델 기록13개, 작업 요청만3개. 별도 품질 평가94개 요청과 구분한다.
+
+이번 주제까지 대표 기획·지시 인수는 완료다. 남는 개선은 품질 평가의 의미 미검출·미지의 독립 사례다. 팀원/제품 구현은 사용자 재지시 전까지 보류한다. 아래는 앞선 시점의 품질 보완 및 승인 대기 이력이다.
+
 ## 최신 작업 완료 — Writer/Reviewer 품질 절차 보완·실제 비교
 
 사용자 요청에 따라 시스템 프롬프트·검토 형식·코드 통과 조건을 보완했다. [최종 보고서](planning-quality-hardening-20261108.md)를 우선한다. todo 기획 v4 최종 승인은 여전히 pending이며 제품 구현·팀원 Agent 작업은 보류다.

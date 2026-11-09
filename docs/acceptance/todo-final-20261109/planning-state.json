@@ -1,0 +1,11 @@
+{
+  "projectId": "supervisor-todo-acceptance-20261108",
+  "scopeContractId": "scope-v6",
+  "scopeVersion": 6,
+  "iterationCount": 4,
+  "maxIterations": 5,
+  "currentPlanVersion": 4,
+  "status": "user_approved",
+  "approvalId": "approval-a3422782-30f5-4fc9-a7bf-3971193373c5",
+  "continuationId": "continue-38a48e90-391f-41f5-949f-40208181544a"
+}

@@ -40,3 +40,7 @@ Writer와 Reviewer는 현재 Agent의 내부 기획 역할이다. 기존 수동 
 - 단계별 CLI이며 중단된 모델 실행의 자동 재호출, 이미 초기화된 작업의 변경·이관을 지원하지 않는다. 팀원 확장은 보류한다.
 
 실행 이력은 [Gemini 인수 기록](gemini-acceptance-status.md), Cloud 준비는 [인증·접속 설정](cloud-gcp-setup.md), 명령은 [사용법](supervisor-workflow.md)에 정리했다.
+
+## 두 번째 대표 주제의 완료 근거
+
+[할 일 관리 최종 인수](supervisor-todo-final-acceptance-20261109.md)에서 사용자 질문/답변·Scope 승인·기획 수정/검토·최종 승인·작업 지시 생성/수정·보고까지 확인했다. 실제 생성·Controller 검증·진행자 내용 점검을 구분하며 제품 구현이나 제품 브라우저 테스트 결과로 확대하지 않는다. 최신 프레임워크 검사는 typecheck/128개 테스트 통과다.

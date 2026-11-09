@@ -1,0 +1,304 @@
+{
+  "id": "after-loan-valid-2",
+  "caseId": "loan-valid",
+  "split": "holdout",
+  "expected": "adequate",
+  "repeat": 2,
+  "variant": "after",
+  "inputSha256": "5dd3ae933401b8f3ecdf73607e38354b3fc5d9cbfe62656927c1c46fd11ff83a",
+  "status": "completed",
+  "review": {
+    "id": "review-1",
+    "projectId": "reviewer-reliability",
+    "planId": "reviewer-reliability-plan",
+    "planVersion": 1,
+    "scopeContractId": "scope-1",
+    "scopeVersion": 1,
+    "outcome": "pass",
+    "issues": [],
+    "suggestions": [],
+    "scopeViolation": false,
+    "userJudgmentRequired": false,
+    "reviewedAt": "2026-11-09T01:15:22.984Z",
+    "qualityAssessment": {
+      "version": 1,
+      "requirements": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "1. 제목 ‘우산’, 빌린 사람 ‘민수’를 적고 추가한다. 둘 다 공백 제거 후 비어 있으면 거부하며 입력과 기존 목록은 유지한다.",
+            "2. 같은 이름의 물건도 각각 다른 고유 번호를 부여한다. 우산을 민수와 지수에게 하나씩 빌려줘도 별개 기록이다.",
+            "R-1: 등록은 비공백 물건명/사람명, UUID 중복 검사, 영속 양의 안전 정수 순번으로 식별한다. 동일 이름 두 건 등록하면 서로 다른 번호 두 개가 나타난다."
+          ],
+          "rationale": "물건명과 빌린 사람 등록, 공백 검증, 동일 물건명에 대한 별도 고유 번호 부여 및 순번 관리 규칙이 구체적으로 명시되어 있습니다.",
+          "evidenceLines": [
+            3,
+            4,
+            8
+          ],
+          "requirementId": "R-1"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "3. 선택한 기록 한 건의 반환 버튼을 누르면 그 번호의 상태만 반환으로 바뀐다. 민수의 우산 반환이 지수 기록에 영향을 주지 않는다.",
+            "R-2: 상태는 대여/반환 두 값, 정확한 선택 ID만 반환한다. 대여 A/B 중 A 반환 후 A만 반환이고 B는 대여다. 같은 반환 요청 반복은 상태를 그대로 유지한다."
+          ],
+          "rationale": "선택한 대상 한 건만 반환 상태로 변경하며 다른 기록에 영향을 주지 않고 반복 요청 시 상태가 보존되는 동작이 명시되어 있습니다.",
+          "evidenceLines": [
+            5,
+            9
+          ],
+          "requirementId": "R-2"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "4. 처음 등록한 순번대로 목록을 보여주고 수정/반환으로 순번을 바꾸지 않는다. 브라우저를 닫았다 같은 주소/프로필로 열면 기록이 유지된다.",
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "localStorage 영속화, 키 부재와 손상 데이터의 구분 처리, 손상 시 원본 보존 및 쓰기 차단, 커밋 전후 실패 대응이 구체적으로 수립되어 있습니다.",
+          "evidenceLines": [
+            6,
+            10
+          ],
+          "requirementId": "R-3"
+        }
+      ],
+      "checks": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "# 빌려준 물건 기록 기획 (미승인 제안)",
+            "사용자 결정 출처는 승인 Scope R-1~3과 제약이다. 키 이름과 데이터 표현은 위임된 설계 제안이며 사용자 직접 결정으로 주장하지 않는다. 쉬운 이용 예시를 먼저 두고 기술 사양을 뒤에 둔다. 고정 localhost 주소·같은 컴퓨터/브라우저/프로필의 일반 창 단일 탭 순차 사용, file://·시크릿/사이트 데이터 삭제/다른 기기 동기화/물리 장애 무손실·동시 탭 잠금은 보장하지 않는다. 텍스트는 textContent로만 표시한다."
+          ],
+          "rationale": "승인된 Scope 요구사항과 위임된 설계 제안의 출처 구분이 명확하며 사용자가 직접 결정하지 않은 사항을 임의 확정으로 주장하지 않습니다.",
+          "evidenceLines": [
+            1,
+            12
+          ],
+          "id": "decision_provenance"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "사용자 결정 출처는 승인 Scope R-1~3과 제약이다. 키 이름과 데이터 표현은 위임된 설계 제안이며 사용자 직접 결정으로 주장하지 않는다. 쉬운 이용 예시를 먼저 두고 기술 사양을 뒤에 둔다. 고정 localhost 주소·같은 컴퓨터/브라우저/프로필의 일반 창 단일 탭 순차 사용, file://·시크릿/사이트 데이터 삭제/다른 기기 동기화/물리 장애 무손실·동시 탭 잠금은 보장하지 않는다. 텍스트는 textContent로만 표시한다.",
+            "향후 순서는 입력/모델→저장→두 상태 화면→전체 정상/실패 수락 검증이다. 초기 후보로 수정 요청은 없다. 실제 구현·검증 실행·사용자 승인 완료 주장은 없다. 로그인/알림/외부 전송/과금/물건 검색은 포함하지 않는다."
+          ],
+          "rationale": "단일 탭 순차 사용 및 제외 항목(로그인, 검색, 알림 등)을 준수하고 승인되지 않은 부가 기능을 추가하지 않았습니다.",
+          "evidenceLines": [
+            12,
+            13
+          ],
+          "id": "scope_compliance"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "1. 제목 ‘우산’, 빌린 사람 ‘민수’를 적고 추가한다. 둘 다 공백 제거 후 비어 있으면 거부하며 입력과 기존 목록은 유지한다.",
+            "R-1: 등록은 비공백 물건명/사람명, UUID 중복 검사, 영속 양의 안전 정수 순번으로 식별한다. 동일 이름 두 건 등록하면 서로 다른 번호 두 개가 나타난다.",
+            "R-2: 상태는 대여/반환 두 값, 정확한 선택 ID만 반환한다. 대여 A/B 중 A 반환 후 A만 반환이고 B는 대여다. 같은 반환 요청 반복은 상태를 그대로 유지한다.",
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "빈 입력 거절, 중복 반환 요청 무변경, 저장소 읽기/쓰기 실패 및 커밋 후 화면 렌더링 실패에 대한 동작이 일관되게 규정되어 있습니다.",
+          "evidenceLines": [
+            3,
+            8,
+            9,
+            10
+          ],
+          "id": "behavior_and_errors"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "R-1: 등록은 비공백 물건명/사람명, UUID 중복 검사, 영속 양의 안전 정수 순번으로 식별한다. 동일 이름 두 건 등록하면 서로 다른 번호 두 개가 나타난다.",
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "스키마 검증, 고유성 보장, nextSequence 정합성, 키 부재 시 빈 목록 초기화와 데이터 오염 시 덮어쓰기 방지 등 데이터 무결성 규칙이 완결되어 있습니다.",
+          "evidenceLines": [
+            8,
+            10
+          ],
+          "id": "data_integrity"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "R-1: 등록은 비공백 물건명/사람명, UUID 중복 검사, 영속 양의 안전 정수 순번으로 식별한다. 동일 이름 두 건 등록하면 서로 다른 번호 두 개가 나타난다.",
+            "R-2: 상태는 대여/반환 두 값, 정확한 선택 ID만 반환한다. 대여 A/B 중 A 반환 후 A만 반환이고 B는 대여다. 같은 반환 요청 반복은 상태를 그대로 유지한다.",
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "동일 이름 등록 시 번호 분리, 특정 항목만 반환 전환, 커밋 단계별 오류 처리 등 구체적인 입력과 관찰 가능한 기대 결과가 제시되었습니다.",
+          "evidenceLines": [
+            8,
+            9,
+            10
+          ],
+          "id": "acceptance_criteria"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "향후 순서는 입력/모델→저장→두 상태 화면→전체 정상/실패 수락 검증이다. 초기 후보로 수정 요청은 없다. 실제 구현·검증 실행·사용자 승인 완료 주장은 없다. 로그인/알림/외부 전송/과금/물건 검색은 포함하지 않는다."
+          ],
+          "rationale": "초기 제안 상태로 미해결된 사용자 수정 요청이 없으며 계획의 연속성이 유지됩니다.",
+          "evidenceLines": [
+            13
+          ],
+          "id": "revision_resolution"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "## 이렇게 사용한다",
+            "1. 제목 ‘우산’, 빌린 사람 ‘민수’를 적고 추가한다. 둘 다 공백 제거 후 비어 있으면 거부하며 입력과 기존 목록은 유지한다.",
+            "2. 같은 이름의 물건도 각각 다른 고유 번호를 부여한다. 우산을 민수와 지수에게 하나씩 빌려줘도 별개 기록이다.",
+            "3. 선택한 기록 한 건의 반환 버튼을 누르면 그 번호의 상태만 반환으로 바뀐다. 민수의 우산 반환이 지수 기록에 영향을 주지 않는다.",
+            "4. 처음 등록한 순번대로 목록을 보여주고 수정/반환으로 순번을 바꾸지 않는다. 브라우저를 닫았다 같은 주소/프로필로 열면 기록이 유지된다.",
+            "## 구현과 확인 기준"
+          ],
+          "rationale": "쉬운 한국어 이용 예시를 선행 배치하고 기술 명세와 제약 조건을 명확히 분리하여 기술했습니다.",
+          "evidenceLines": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "id": "clarity"
+        }
+      ]
+    },
+    "challengeCompleted": true,
+    "storageAudit": {
+      "format": "json",
+      "evidenceLines": [
+        10
+      ],
+      "evidence": [
+        "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+      ],
+      "rationale": "10행에서 localStorage 단일 키에 {version:1,nextSequence,items} 구조의 JSON을 저장하고 유효성을 검증한다고 명시하고 있습니다.",
+      "cases": [
+        {
+          "state": "absent",
+          "action": "initialize",
+          "verdict": "consistent",
+          "evidenceLines": [
+            10
+          ],
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "10행에서 키 부재(null)인 경우에만 빈 목록으로 초기화하도록 규정하고 있습니다."
+        },
+        {
+          "state": "present_empty",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            10
+          ],
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "10행에서 빈 문자열이 저장되어 있는 경우 원본을 보존하고 쓰기를 차단하도록 규정하고 있습니다."
+        },
+        {
+          "state": "invalid",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            10
+          ],
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "10행에서 깨진 JSON이나 타입 및 스키마 위반 데이터가 발견되면 기존 원본을 보존하고 쓰기를 차단하도록 규정하고 있습니다."
+        },
+        {
+          "state": "valid",
+          "action": "load",
+          "verdict": "consistent",
+          "evidenceLines": [
+            10
+          ],
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "10행에서 유효한 스키마와 무결성 검증을 통과한 JSON 데이터만 정상 로드하여 확정 목록 및 UI에 반영하도록 명시하고 있습니다."
+        },
+        {
+          "state": "read_error",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            10
+          ],
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "10행에서 읽기 예외 발생 시 원본 데이터를 보존하고 추가 쓰기를 차단하도록 명시하고 있습니다."
+        }
+      ]
+    }
+  },
+  "decision": {
+    "type": "REQUEST_USER_APPROVAL",
+    "planId": "reviewer-reliability-plan",
+    "version": 1
+  },
+  "usage": [
+    {
+      "projectId": "reviewer-reliability",
+      "planId": "reviewer-reliability-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "reviewStage": "assessment",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 3056,
+      "outputTokens": 916,
+      "reasoningTokens": 530,
+      "outcome": "success",
+      "durationMs": 10535,
+      "recordedAt": "2026-11-09T01:15:02.175Z"
+    },
+    {
+      "projectId": "reviewer-reliability",
+      "planId": "reviewer-reliability-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "reviewStage": "challenge",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 2863,
+      "outputTokens": 548,
+      "reasoningTokens": 2666,
+      "outcome": "success",
+      "durationMs": 20810,
+      "recordedAt": "2026-11-09T01:15:22.985Z"
+    }
+  ],
+  "responses": [
+    {
+      "text": "{\n  \"outcome\": \"pass\",\n  \"issues\": [],\n  \"suggestions\": [],\n  \"scopeViolation\": false,\n  \"userJudgmentRequired\": false,\n  \"qualityAssessment\": {\n    \"version\": 1,\n    \"requirements\": [\n      {\n        \"requirementId\": \"R-1\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 4, 8],\n        \"rationale\": \"물건명과 빌린 사람 등록, 공백 검증, 동일 물건명에 대한 별도 고유 번호 부여 및 순번 관리 규칙이 구체적으로 명시되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"R-2\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [5, 9],\n        \"rationale\": \"선택한 대상 한 건만 반환 상태로 변경하며 다른 기록에 영향을 주지 않고 반복 요청 시 상태가 보존되는 동작이 명시되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"R-3\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [6, 10],\n        \"rationale\": \"localStorage 영속화, 키 부재와 손상 데이터의 구분 처리, 손상 시 원본 보존 및 쓰기 차단, 커밋 전후 실패 대응이 구체적으로 수립되어 있습니다.\"\n      }\n    ],\n    \"checks\": [\n      {\n        \"id\": \"decision_provenance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [1, 12],\n        \"rationale\": \"승인된 Scope 요구사항과 위임된 설계 제안의 출처 구분이 명확하며 사용자가 직접 결정하지 않은 사항을 임의 확정으로 주장하지 않습니다.\"\n      },\n      {\n        \"id\": \"scope_compliance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [12, 13],\n        \"rationale\": \"단일 탭 순차 사용 및 제외 항목(로그인, 검색, 알림 등)을 준수하고 승인되지 않은 부가 기능을 추가하지 않았습니다.\"\n      },\n      {\n        \"id\": \"behavior_and_errors\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 8, 9, 10],\n        \"rationale\": \"빈 입력 거절, 중복 반환 요청 무변경, 저장소 읽기/쓰기 실패 및 커밋 후 화면 렌더링 실패에 대한 동작이 일관되게 규정되어 있습니다.\"\n      },\n      {\n        \"id\": \"data_integrity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [8, 10],\n        \"rationale\": \"스키마 검증, 고유성 보장, nextSequence 정합성, 키 부재 시 빈 목록 초기화와 데이터 오염 시 덮어쓰기 방지 등 데이터 무결성 규칙이 완결되어 있습니다.\"\n      },\n      {\n        \"id\": \"acceptance_criteria\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [8, 9, 10],\n        \"rationale\": \"동일 이름 등록 시 번호 분리, 특정 항목만 반환 전환, 커밋 단계별 오류 처리 등 구체적인 입력과 관찰 가능한 기대 결과가 제시되었습니다.\"\n      },\n      {\n        \"id\": \"revision_resolution\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [13],\n        \"rationale\": \"초기 제안 상태로 미해결된 사용자 수정 요청이 없으며 계획의 연속성이 유지됩니다.\"\n      },\n      {\n        \"id\": \"clarity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [2, 3, 4, 5, 6, 7],\n        \"rationale\": \"쉬운 한국어 이용 예시를 선행 배치하고 기술 명세와 제약 조건을 명확히 분리하여 기술했습니다.\"\n      }\n    ]\n  }\n}",
+      "finishReasons": [
+        "STOP"
+      ]
+    },
+    {
+      "text": "{\n  \"issues\": [],\n  \"questions\": [],\n  \"storageAudit\": {\n    \"format\": \"json\",\n    \"evidenceLines\": [10],\n    \"rationale\": \"10행에서 localStorage 단일 키에 {version:1,nextSequence,items} 구조의 JSON을 저장하고 유효성을 검증한다고 명시하고 있습니다.\",\n    \"cases\": [\n      {\n        \"state\": \"absent\",\n        \"action\": \"initialize\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [10],\n        \"authorizationScopeIds\": [],\n        \"rationale\": \"10행에서 키 부재(null)인 경우에만 빈 목록으로 초기화하도록 규정하고 있습니다.\"\n      },\n      {\n        \"state\": \"present_empty\",\n        \"action\": \"preserve_and_block\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [10],\n        \"authorizationScopeIds\": [],\n        \"rationale\": \"10행에서 빈 문자열이 저장되어 있는 경우 원본을 보존하고 쓰기를 차단하도록 규정하고 있습니다.\"\n      },\n      {\n        \"state\": \"invalid\",\n        \"action\": \"preserve_and_block\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [10],\n        \"authorizationScopeIds\": [],\n        \"rationale\": \"10행에서 깨진 JSON이나 타입 및 스키마 위반 데이터가 발견되면 기존 원본을 보존하고 쓰기를 차단하도록 규정하고 있습니다.\"\n      },\n      {\n        \"state\": \"valid\",\n        \"action\": \"load\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [10],\n        \"authorizationScopeIds\": [],\n        \"rationale\": \"10행에서 유효한 스키마와 무결성 검증을 통과한 JSON 데이터만 정상 로드하여 확정 목록 및 UI에 반영하도록 명시하고 있습니다.\"\n      },\n      {\n        \"state\": \"read_error\",\n        \"action\": \"preserve_and_block\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [10],\n        \"authorizationScopeIds\": [],\n        \"rationale\": \"10행에서 읽기 예외 발생 시 원본 데이터를 보존하고 추가 쓰기를 차단하도록 명시하고 있습니다.\"\n      }\n    ]\n  }\n}",
+      "finishReasons": [
+        "STOP"
+      ]
+    }
+  ]
+}

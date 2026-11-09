@@ -1,0 +1,206 @@
+{
+  "id": "before-reading-empty-text-valid-2",
+  "caseId": "reading-empty-text-valid",
+  "split": "holdout",
+  "expected": "adequate",
+  "repeat": 2,
+  "variant": "before",
+  "inputSha256": "10f2ac04f8d56764f55807e3cd3e279afbb6edd32d322fcb2547d4d5ca2bacde",
+  "status": "completed",
+  "review": {
+    "id": "review-1",
+    "projectId": "reviewer-reliability",
+    "planId": "reviewer-reliability-plan",
+    "planVersion": 1,
+    "scopeContractId": "scope-1",
+    "scopeVersion": 1,
+    "outcome": "pass",
+    "issues": [],
+    "suggestions": [],
+    "scopeViolation": false,
+    "userJudgmentRequired": false,
+    "reviewedAt": "2026-11-09T01:16:29.206Z",
+    "qualityAssessment": {
+      "version": 1,
+      "requirements": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "R-1: UTF-8 일반 텍스트를 localStorage 하나의 키에 보관한다. JSON을 사용하지 않는다. 각 줄은 비공백 제목 하나이며, 빈 문자열은 정상적인 책0권 상태다. 키가 없거나 내용이 빈 문자열이면0권으로 읽는다. 제목의 줄바꿈을 거부하여 저장 형식과 구분한다."
+          ],
+          "rationale": "UTF-8 일반 텍스트 단일 키 저장, JSON 배제, 각 줄 단일 제목 처리 및 빈 문자열/키 부재 시 0권 처리 규칙이 명시되어 있습니다.",
+          "evidenceLines": [
+            5
+          ],
+          "requirementId": "R-1"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "‘어린 왕자’를 적고 추가하면 한 줄이 생긴다. 같은 제목도 서로 다른 등록 순번으로 보관한다. 제목을 비우거나 줄바꿈을 넣으면 저장하지 않고 입력을 유지한다. 삭제는 선택 줄 번호 한 개만 지우며 취소하면 무변경이다.",
+            "R-2: 중복 제목을 두 번 적고 두 번째 줄을 삭제하면 첫 번째 줄만 남는다. 후보 문자열을 만든 뒤 setItem 성공 반환 후 화면에 반영한다. 쓰기/읽기 접근 오류는 기존 저장값·입력 보존 및 변경 차단 안내다. 성공 후 UI 실패는 저장이 됐음을 안내하고 새로고침한다."
+          ],
+          "rationale": "동일 제목 허용, 특정 줄 단일 삭제, 저장 성공 후 UI 반영 및 실패 시 기존 저장값과 입력값 보존 규칙이 구체적으로 기술되어 있습니다.",
+          "evidenceLines": [
+            3,
+            6
+          ],
+          "requirementId": "R-2"
+        }
+      ],
+      "checks": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "빈 텍스트가 정상이라는 규칙은 승인 Scope R-1에 명시됐다. 키 이름과 표시 방식은 기획 제안이다. 같은 브라우저/프로필/고정 주소의 일반 창 한 탭에서만 사용한다. 사이트 데이터 삭제·시크릿·다른 기기·물리 장애 복원은 보장하지 않는다. 태그는 글자로 표시한다. 입력/텍스트 포맷→저장→목록/삭제→빈 파일/중복/쓰기 실패 확인 순서로 구현한다. 로그인/외부 연동/검색/날짜 기능은 제외하며 실제 구현·시험·사용자 승인을 주장하지 않는다. 초기 후보로 과거 수정은 없다."
+          ],
+          "rationale": "승인된 요구사항과 기획자 제안 영역을 명확히 구분하여 사용자 결정을 오인하지 않도록 기술했습니다.",
+          "evidenceLines": [
+            8
+          ],
+          "id": "decision_provenance"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "R-1: UTF-8 일반 텍스트를 localStorage 하나의 키에 보관한다. JSON을 사용하지 않는다. 각 줄은 비공백 제목 하나이며, 빈 문자열은 정상적인 책0권 상태다. 키가 없거나 내용이 빈 문자열이면0권으로 읽는다. 제목의 줄바꿈을 거부하여 저장 형식과 구분한다.",
+            "R-2: 중복 제목을 두 번 적고 두 번째 줄을 삭제하면 첫 번째 줄만 남는다. 후보 문자열을 만든 뒤 setItem 성공 반환 후 화면에 반영한다. 쓰기/읽기 접근 오류는 기존 저장값·입력 보존 및 변경 차단 안내다. 성공 후 UI 실패는 저장이 됐음을 안내하고 새로고침한다.",
+            "빈 텍스트가 정상이라는 규칙은 승인 Scope R-1에 명시됐다. 키 이름과 표시 방식은 기획 제안이다. 같은 브라우저/프로필/고정 주소의 일반 창 한 탭에서만 사용한다. 사이트 데이터 삭제·시크릿·다른 기기·물리 장애 복원은 보장하지 않는다. 태그는 글자로 표시한다. 입력/텍스트 포맷→저장→목록/삭제→빈 파일/중복/쓰기 실패 확인 순서로 구현한다. 로그인/외부 연동/검색/날짜 기능은 제외하며 실제 구현·시험·사용자 승인을 주장하지 않는다. 초기 후보로 과거 수정은 없다."
+          ],
+          "rationale": "승인된 R-1, R-2 요구사항과 단일 탭 제약을 준수하고 제외 대상 기능(JSON, 로그인, 검색 등)을 배제했습니다.",
+          "evidenceLines": [
+            5,
+            6,
+            8
+          ],
+          "id": "scope_compliance"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "‘어린 왕자’를 적고 추가하면 한 줄이 생긴다. 같은 제목도 서로 다른 등록 순번으로 보관한다. 제목을 비우거나 줄바꿈을 넣으면 저장하지 않고 입력을 유지한다. 삭제는 선택 줄 번호 한 개만 지우며 취소하면 무변경이다.",
+            "R-1: UTF-8 일반 텍스트를 localStorage 하나의 키에 보관한다. JSON을 사용하지 않는다. 각 줄은 비공백 제목 하나이며, 빈 문자열은 정상적인 책0권 상태다. 키가 없거나 내용이 빈 문자열이면0권으로 읽는다. 제목의 줄바꿈을 거부하여 저장 형식과 구분한다.",
+            "R-2: 중복 제목을 두 번 적고 두 번째 줄을 삭제하면 첫 번째 줄만 남는다. 후보 문자열을 만든 뒤 setItem 성공 반환 후 화면에 반영한다. 쓰기/읽기 접근 오류는 기존 저장값·입력 보존 및 변경 차단 안내다. 성공 후 UI 실패는 저장이 됐음을 안내하고 새로고침한다."
+          ],
+          "rationale": "공백/줄바꿈 입력 거부, 삭제 취소 시 무변경, 읽기/쓰기 오류 시 데이터 보존 및 성공 후 UI 실패 시 새로고침 안내 등 상태별 예외 처리가 명확합니다.",
+          "evidenceLines": [
+            3,
+            5,
+            6
+          ],
+          "id": "behavior_and_errors"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "R-1: UTF-8 일반 텍스트를 localStorage 하나의 키에 보관한다. JSON을 사용하지 않는다. 각 줄은 비공백 제목 하나이며, 빈 문자열은 정상적인 책0권 상태다. 키가 없거나 내용이 빈 문자열이면0권으로 읽는다. 제목의 줄바꿈을 거부하여 저장 형식과 구분한다.",
+            "R-2: 중복 제목을 두 번 적고 두 번째 줄을 삭제하면 첫 번째 줄만 남는다. 후보 문자열을 만든 뒤 setItem 성공 반환 후 화면에 반영한다. 쓰기/읽기 접근 오류는 기존 저장값·입력 보존 및 변경 차단 안내다. 성공 후 UI 실패는 저장이 됐음을 안내하고 새로고침한다.",
+            "빈 텍스트가 정상이라는 규칙은 승인 Scope R-1에 명시됐다. 키 이름과 표시 방식은 기획 제안이다. 같은 브라우저/프로필/고정 주소의 일반 창 한 탭에서만 사용한다. 사이트 데이터 삭제·시크릿·다른 기기·물리 장애 복원은 보장하지 않는다. 태그는 글자로 표시한다. 입력/텍스트 포맷→저장→목록/삭제→빈 파일/중복/쓰기 실패 확인 순서로 구현한다. 로그인/외부 연동/검색/날짜 기능은 제외하며 실제 구현·시험·사용자 승인을 주장하지 않는다. 초기 후보로 과거 수정은 없다."
+          ],
+          "rationale": "빈 문자열 불변식, 쓰기 성공 확인 후 화면 반영 순서 및 물리 장애/시크릿 모드 복원 한계선이 명시되었습니다.",
+          "evidenceLines": [
+            5,
+            6,
+            8
+          ],
+          "id": "data_integrity"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "‘어린 왕자’를 적고 추가하면 한 줄이 생긴다. 같은 제목도 서로 다른 등록 순번으로 보관한다. 제목을 비우거나 줄바꿈을 넣으면 저장하지 않고 입력을 유지한다. 삭제는 선택 줄 번호 한 개만 지우며 취소하면 무변경이다.",
+            "R-1: UTF-8 일반 텍스트를 localStorage 하나의 키에 보관한다. JSON을 사용하지 않는다. 각 줄은 비공백 제목 하나이며, 빈 문자열은 정상적인 책0권 상태다. 키가 없거나 내용이 빈 문자열이면0권으로 읽는다. 제목의 줄바꿈을 거부하여 저장 형식과 구분한다.",
+            "R-2: 중복 제목을 두 번 적고 두 번째 줄을 삭제하면 첫 번째 줄만 남는다. 후보 문자열을 만든 뒤 setItem 성공 반환 후 화면에 반영한다. 쓰기/읽기 접근 오류는 기존 저장값·입력 보존 및 변경 차단 안내다. 성공 후 UI 실패는 저장이 됐음을 안내하고 새로고침한다."
+          ],
+          "rationale": "구체적인 입력 시나리오와 삭제/실패 시 관찰 가능한 예상 동작이 명확한 수락 기준으로 제공되었습니다.",
+          "evidenceLines": [
+            3,
+            5,
+            6
+          ],
+          "id": "acceptance_criteria"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "빈 텍스트가 정상이라는 규칙은 승인 Scope R-1에 명시됐다. 키 이름과 표시 방식은 기획 제안이다. 같은 브라우저/프로필/고정 주소의 일반 창 한 탭에서만 사용한다. 사이트 데이터 삭제·시크릿·다른 기기·물리 장애 복원은 보장하지 않는다. 태그는 글자로 표시한다. 입력/텍스트 포맷→저장→목록/삭제→빈 파일/중복/쓰기 실패 확인 순서로 구현한다. 로그인/외부 연동/검색/날짜 기능은 제외하며 실제 구현·시험·사용자 승인을 주장하지 않는다. 초기 후보로 과거 수정은 없다."
+          ],
+          "rationale": "초기 기획안으로 미해결된 사용자 수정 요청이 없음을 확인했습니다.",
+          "evidenceLines": [
+            8
+          ],
+          "id": "revision_resolution"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "‘어린 왕자’를 적고 추가하면 한 줄이 생긴다. 같은 제목도 서로 다른 등록 순번으로 보관한다. 제목을 비우거나 줄바꿈을 넣으면 저장하지 않고 입력을 유지한다. 삭제는 선택 줄 번호 한 개만 지우며 취소하면 무변경이다.",
+            "R-1: UTF-8 일반 텍스트를 localStorage 하나의 키에 보관한다. JSON을 사용하지 않는다. 각 줄은 비공백 제목 하나이며, 빈 문자열은 정상적인 책0권 상태다. 키가 없거나 내용이 빈 문자열이면0권으로 읽는다. 제목의 줄바꿈을 거부하여 저장 형식과 구분한다.",
+            "R-2: 중복 제목을 두 번 적고 두 번째 줄을 삭제하면 첫 번째 줄만 남는다. 후보 문자열을 만든 뒤 setItem 성공 반환 후 화면에 반영한다. 쓰기/읽기 접근 오류는 기존 저장값·입력 보존 및 변경 차단 안내다. 성공 후 UI 실패는 저장이 됐음을 안내하고 새로고침한다.",
+            "빈 텍스트가 정상이라는 규칙은 승인 Scope R-1에 명시됐다. 키 이름과 표시 방식은 기획 제안이다. 같은 브라우저/프로필/고정 주소의 일반 창 한 탭에서만 사용한다. 사이트 데이터 삭제·시크릿·다른 기기·물리 장애 복원은 보장하지 않는다. 태그는 글자로 표시한다. 입력/텍스트 포맷→저장→목록/삭제→빈 파일/중복/쓰기 실패 확인 순서로 구현한다. 로그인/외부 연동/검색/날짜 기능은 제외하며 실제 구현·시험·사용자 승인을 주장하지 않는다. 초기 후보로 과거 수정은 없다."
+          ],
+          "rationale": "구체적인 사용 예시를 우선 제시하고 데이터 규칙과 제약사항을 상충 없이 분리하여 명확하게 작성했습니다.",
+          "evidenceLines": [
+            3,
+            5,
+            6,
+            8
+          ],
+          "id": "clarity"
+        }
+      ]
+    },
+    "challengeCompleted": true
+  },
+  "decision": {
+    "type": "REQUEST_USER_APPROVAL",
+    "planId": "reviewer-reliability-plan",
+    "version": 1
+  },
+  "usage": [
+    {
+      "projectId": "reviewer-reliability",
+      "planId": "reviewer-reliability-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "reviewStage": "assessment",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 2574,
+      "outputTokens": 781,
+      "reasoningTokens": 1016,
+      "outcome": "success",
+      "durationMs": 11965,
+      "recordedAt": "2026-11-09T01:16:11.428Z"
+    },
+    {
+      "projectId": "reviewer-reliability",
+      "planId": "reviewer-reliability-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "reviewStage": "challenge",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 1340,
+      "outputTokens": 15,
+      "reasoningTokens": 3372,
+      "outcome": "success",
+      "durationMs": 17778,
+      "recordedAt": "2026-11-09T01:16:29.206Z"
+    }
+  ],
+  "responses": [
+    {
+      "text": "{\n  \"outcome\": \"pass\",\n  \"issues\": [],\n  \"suggestions\": [],\n  \"scopeViolation\": false,\n  \"userJudgmentRequired\": false,\n  \"qualityAssessment\": {\n    \"version\": 1,\n    \"requirements\": [\n      {\n        \"requirementId\": \"R-1\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [5],\n        \"rationale\": \"UTF-8 일반 텍스트 단일 키 저장, JSON 배제, 각 줄 단일 제목 처리 및 빈 문자열/키 부재 시 0권 처리 규칙이 명시되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"R-2\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 6],\n        \"rationale\": \"동일 제목 허용, 특정 줄 단일 삭제, 저장 성공 후 UI 반영 및 실패 시 기존 저장값과 입력값 보존 규칙이 구체적으로 기술되어 있습니다.\"\n      }\n    ],\n    \"checks\": [\n      {\n        \"id\": \"decision_provenance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [8],\n        \"rationale\": \"승인된 요구사항과 기획자 제안 영역을 명확히 구분하여 사용자 결정을 오인하지 않도록 기술했습니다.\"\n      },\n      {\n        \"id\": \"scope_compliance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [5, 6, 8],\n        \"rationale\": \"승인된 R-1, R-2 요구사항과 단일 탭 제약을 준수하고 제외 대상 기능(JSON, 로그인, 검색 등)을 배제했습니다.\"\n      },\n      {\n        \"id\": \"behavior_and_errors\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 5, 6],\n        \"rationale\": \"공백/줄바꿈 입력 거부, 삭제 취소 시 무변경, 읽기/쓰기 오류 시 데이터 보존 및 성공 후 UI 실패 시 새로고침 안내 등 상태별 예외 처리가 명확합니다.\"\n      },\n      {\n        \"id\": \"data_integrity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [5, 6, 8],\n        \"rationale\": \"빈 문자열 불변식, 쓰기 성공 확인 후 화면 반영 순서 및 물리 장애/시크릿 모드 복원 한계선이 명시되었습니다.\"\n      },\n      {\n        \"id\": \"acceptance_criteria\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 5, 6],\n        \"rationale\": \"구체적인 입력 시나리오와 삭제/실패 시 관찰 가능한 예상 동작이 명확한 수락 기준으로 제공되었습니다.\"\n      },\n      {\n        \"id\": \"revision_resolution\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [8],\n        \"rationale\": \"초기 기획안으로 미해결된 사용자 수정 요청이 없음을 확인했습니다.\"\n      },\n      {\n        \"id\": \"clarity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 5, 6, 8],\n        \"rationale\": \"구체적인 사용 예시를 우선 제시하고 데이터 규칙과 제약사항을 상충 없이 분리하여 명확하게 작성했습니다.\"\n      }\n    ]\n  }\n}",
+      "finishReasons": [
+        "STOP"
+      ]
+    },
+    {
+      "text": "{\n  \"issues\": [],\n  \"questions\": []\n}",
+      "finishReasons": [
+        "STOP"
+      ]
+    }
+  ]
+}

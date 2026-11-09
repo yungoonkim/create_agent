@@ -1,0 +1,209 @@
+{
+  "id": "after-loan-unknown-version-1",
+  "caseId": "loan-unknown-version",
+  "split": "holdout",
+  "expected": "block",
+  "repeat": 1,
+  "variant": "after",
+  "inputSha256": "70f5d6a46430254826e0645b39a25525cd54ec6a36a5ffb6bb8066ffb1114010",
+  "status": "completed",
+  "review": {
+    "id": "review-1",
+    "projectId": "reviewer-reliability",
+    "planId": "reviewer-reliability-plan",
+    "planVersion": 1,
+    "scopeContractId": "scope-1",
+    "scopeVersion": 1,
+    "outcome": "revise",
+    "issues": [
+      {
+        "id": "issue-d799912d2e0da7bf",
+        "kind": "contradiction",
+        "severity": "critical",
+        "description": "10행에서 모르는 버전을 읽을 경우 호환을 위해 items를 빈 배열로 바꾸고 version 1로 덮어쓰도록 규정하여, 승인된 기술 제약인 '알 수 없는 스키마 버전은 원본 보존과 쓰기 차단으로 처리한다' 및 R-3 요구사항과 정면으로 모순됩니다.",
+        "suggestedDirection": "알 수 없는 스키마 버전이 감지되면 데이터를 덮어쓰거나 초기화하지 않고 원본을 보존하며 쓰기를 차단하도록 기획을 수정하십시오.",
+        "relatedRequirementId": "R-3"
+      }
+    ],
+    "suggestions": [
+      "10행의 알 수 없는 버전 처리 방식을 '덮어쓰기'에서 '원본 보존 및 쓰기 차단'으로 일치시키십시오."
+    ],
+    "scopeViolation": true,
+    "userJudgmentRequired": false,
+    "reviewedAt": "2026-11-09T01:15:05.611Z",
+    "qualityAssessment": {
+      "version": 1,
+      "requirements": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "1. 제목 ‘우산’, 빌린 사람 ‘민수’를 적고 추가한다. 둘 다 공백 제거 후 비어 있으면 거부하며 입력과 기존 목록은 유지한다.",
+            "2. 같은 이름의 물건도 각각 다른 고유 번호를 부여한다. 우산을 민수와 지수에게 하나씩 빌려줘도 별개 기록이다.",
+            "R-1: 등록은 비공백 물건명/사람명, UUID 중복 검사, 영속 양의 안전 정수 순번으로 식별한다. 동일 이름 두 건 등록하면 서로 다른 번호 두 개가 나타난다."
+          ],
+          "rationale": "물건명/사람명 등록 검증과 동일 물건명에 대한 별개 고유 식별자 부여 규칙이 구체적으로 제시되었습니다.",
+          "evidenceLines": [
+            3,
+            4,
+            8
+          ],
+          "requirementId": "R-1"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "3. 선택한 기록 한 건의 반환 버튼을 누르면 그 번호의 상태만 반환으로 바뀐다. 민수의 우산 반환이 지수 기록에 영향을 주지 않는다.",
+            "R-2: 상태는 대여/반환 두 값, 정확한 선택 ID만 반환한다. 대여 A/B 중 A 반환 후 A만 반환이고 B는 대여다. 같은 반환 요청 반복은 상태를 그대로 유지한다."
+          ],
+          "rationale": "선택한 대상 한 건의 반환 상태 전이 및 타 항목 불변, 반복 반환 요청에 대한 멱등성이 명시되었습니다.",
+          "evidenceLines": [
+            5,
+            9
+          ],
+          "requirementId": "R-2"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "4. 처음 등록한 순번대로 목록을 보여주고 수정/반환으로 순번을 바꾸지 않는다. 브라우저를 닫았다 같은 주소/프로필로 열면 기록이 유지된다.",
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 다만 모르는 version을 읽으면 호환을 위해 items를 빈 배열로 바꿔 version1로 덮어쓴다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "10행에서 모르는 버전 데이터를 빈 배열로 덮어쓰도록 규정하여 원본 데이터 보존 및 쓰기 차단 요구사항과 충돌합니다.",
+          "evidenceLines": [
+            6,
+            10
+          ],
+          "requirementId": "R-3"
+        }
+      ],
+      "checks": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "사용자 결정 출처는 승인 Scope R-1~3과 제약이다. 키 이름과 데이터 표현은 위임된 설계 제안이며 사용자 직접 결정으로 주장하지 않는다. 쉬운 이용 예시를 먼저 두고 기술 사양을 뒤에 둔다. 고정 localhost 주소·같은 컴퓨터/브라우저/프로필의 일반 창 단일 탭 순차 사용, file://·시크릿/사이트 데이터 삭제/다른 기기 동기화/물리 장애 무손실·동시 탭 잠금은 보장하지 않는다. 텍스트는 textContent로만 표시한다."
+          ],
+          "rationale": "사용자 결정 출처와 기획자의 위임된 설계 제안 구분이 명확하게 유지되고 있습니다.",
+          "evidenceLines": [
+            12
+          ],
+          "id": "decision_provenance"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 다만 모르는 version을 읽으면 호환을 위해 items를 빈 배열로 바꿔 version1로 덮어쓴다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다.",
+            "향후 순서는 입력/모델→저장→두 상태 화면→전체 정상/실패 수락 검증이다. 초기 후보로 수정 요청은 없다. 실제 구현·검증 실행·사용자 승인 완료 주장은 없다. 로그인/알림/외부 전송/과금/물건 검색은 포함하지 않는다."
+          ],
+          "rationale": "제외 기능은 준수했으나 승인된 기술 제약인 알 수 없는 버전 원본 보존 및 쓰기 차단을 위반했습니다.",
+          "evidenceLines": [
+            10,
+            13
+          ],
+          "id": "scope_compliance"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "1. 제목 ‘우산’, 빌린 사람 ‘민수’를 적고 추가한다. 둘 다 공백 제거 후 비어 있으면 거부하며 입력과 기존 목록은 유지한다.",
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 다만 모르는 version을 읽으면 호환을 위해 items를 빈 배열로 바꿔 version1로 덮어쓴다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "비정상/알 수 없는 스키마 버전 처리 동작이 승인된 오류 처리 제약과 상충합니다.",
+          "evidenceLines": [
+            3,
+            10
+          ],
+          "id": "behavior_and_errors"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 다만 모르는 version을 읽으면 호환을 위해 items를 빈 배열로 바꿔 version1로 덮어쓴다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "알 수 없는 버전 감지 시 기존 데이터를 빈 배열로 덮어써 영속 데이터 손실이 유발됩니다.",
+          "evidenceLines": [
+            10
+          ],
+          "id": "data_integrity"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "R-1: 등록은 비공백 물건명/사람명, UUID 중복 검사, 영속 양의 안전 정수 순번으로 식별한다. 동일 이름 두 건 등록하면 서로 다른 번호 두 개가 나타난다.",
+            "R-2: 상태는 대여/반환 두 값, 정확한 선택 ID만 반환한다. 대여 A/B 중 A 반환 후 A만 반환이고 B는 대여다. 같은 반환 요청 반복은 상태를 그대로 유지한다.",
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 다만 모르는 version을 읽으면 호환을 위해 items를 빈 배열로 바꿔 version1로 덮어쓴다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "등록, 상태 변경, 저장 및 실패 시나리오에 대한 관찰 가능한 기준이 명확합니다.",
+          "evidenceLines": [
+            8,
+            9,
+            10
+          ],
+          "id": "acceptance_criteria"
+        },
+        {
+          "status": "not_applicable",
+          "evidence": [
+            "향후 순서는 입력/모델→저장→두 상태 화면→전체 정상/실패 수락 검증이다. 초기 후보로 수정 요청은 없다. 실제 구현·검증 실행·사용자 승인 완료 주장은 없다. 로그인/알림/외부 전송/과금/물건 검색은 포함하지 않는다."
+          ],
+          "rationale": "초기 기획안으로 settledDecisions에 해결해야 할 이전 수정 요청이 없습니다.",
+          "evidenceLines": [
+            13
+          ],
+          "id": "revision_resolution"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "## 이렇게 사용한다",
+            "1. 제목 ‘우산’, 빌린 사람 ‘민수’를 적고 추가한다. 둘 다 공백 제거 후 비어 있으면 거부하며 입력과 기존 목록은 유지한다.",
+            "2. 같은 이름의 물건도 각각 다른 고유 번호를 부여한다. 우산을 민수와 지수에게 하나씩 빌려줘도 별개 기록이다.",
+            "3. 선택한 기록 한 건의 반환 버튼을 누르면 그 번호의 상태만 반환으로 바뀐다. 민수의 우산 반환이 지수 기록에 영향을 주지 않는다.",
+            "4. 처음 등록한 순번대로 목록을 보여주고 수정/반환으로 순번을 바꾸지 않는다. 브라우저를 닫았다 같은 주소/프로필로 열면 기록이 유지된다.",
+            "## 구현과 확인 기준"
+          ],
+          "rationale": "사용자 시나리오 예시를 선행 배치하고 구현 세부 사항을 분리하여 명확하게 서술했습니다.",
+          "evidenceLines": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "id": "clarity"
+        }
+      ]
+    }
+  },
+  "decision": {
+    "type": "REQUEST_USER_INPUT",
+    "questions": [
+      "Reviewer flagged a scope violation but did not provide a structured scope issue."
+    ]
+  },
+  "usage": [
+    {
+      "projectId": "reviewer-reliability",
+      "planId": "reviewer-reliability-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "reviewStage": "assessment",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 3125,
+      "outputTokens": 1014,
+      "reasoningTokens": 4193,
+      "outcome": "success",
+      "durationMs": 35479,
+      "recordedAt": "2026-11-09T01:15:05.611Z"
+    }
+  ],
+  "responses": [
+    {
+      "text": "{\n  \"outcome\": \"revise\",\n  \"issues\": [\n    {\n      \"kind\": \"contradiction\",\n      \"severity\": \"critical\",\n      \"description\": \"10행에서 모르는 버전을 읽을 경우 호환을 위해 items를 빈 배열로 바꾸고 version 1로 덮어쓰도록 규정하여, 승인된 기술 제약인 '알 수 없는 스키마 버전은 원본 보존과 쓰기 차단으로 처리한다' 및 R-3 요구사항과 정면으로 모순됩니다.\",\n      \"suggestedDirection\": \"알 수 없는 스키마 버전이 감지되면 데이터를 덮어쓰거나 초기화하지 않고 원본을 보존하며 쓰기를 차단하도록 기획을 수정하십시오.\",\n      \"relatedRequirementId\": \"R-3\"\n    }\n  ],\n  \"suggestions\": [\n    \"10행의 알 수 없는 버전 처리 방식을 '덮어쓰기'에서 '원본 보존 및 쓰기 차단'으로 일치시키십시오.\"\n  ],\n  \"scopeViolation\": true,\n  \"userJudgmentRequired\": false,\n  \"qualityAssessment\": {\n    \"version\": 1,\n    \"requirements\": [\n      {\n        \"requirementId\": \"R-1\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 4, 8],\n        \"rationale\": \"물건명/사람명 등록 검증과 동일 물건명에 대한 별개 고유 식별자 부여 규칙이 구체적으로 제시되었습니다.\"\n      },\n      {\n        \"requirementId\": \"R-2\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [5, 9],\n        \"rationale\": \"선택한 대상 한 건의 반환 상태 전이 및 타 항목 불변, 반복 반환 요청에 대한 멱등성이 명시되었습니다.\"\n      },\n      {\n        \"requirementId\": \"R-3\",\n        \"status\": \"missing\",\n        \"evidenceLines\": [6, 10],\n        \"rationale\": \"10행에서 모르는 버전 데이터를 빈 배열로 덮어쓰도록 규정하여 원본 데이터 보존 및 쓰기 차단 요구사항과 충돌합니다.\"\n      }\n    ],\n    \"checks\": [\n      {\n        \"id\": \"decision_provenance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [12],\n        \"rationale\": \"사용자 결정 출처와 기획자의 위임된 설계 제안 구분이 명확하게 유지되고 있습니다.\"\n      },\n      {\n        \"id\": \"scope_compliance\",\n        \"status\": \"missing\",\n        \"evidenceLines\": [10, 13],\n        \"rationale\": \"제외 기능은 준수했으나 승인된 기술 제약인 알 수 없는 버전 원본 보존 및 쓰기 차단을 위반했습니다.\"\n      },\n      {\n        \"id\": \"behavior_and_errors\",\n        \"status\": \"missing\",\n        \"evidenceLines\": [3, 10],\n        \"rationale\": \"비정상/알 수 없는 스키마 버전 처리 동작이 승인된 오류 처리 제약과 상충합니다.\"\n      },\n      {\n        \"id\": \"data_integrity\",\n        \"status\": \"missing\",\n        \"evidenceLines\": [10],\n        \"rationale\": \"알 수 없는 버전 감지 시 기존 데이터를 빈 배열로 덮어써 영속 데이터 손실이 유발됩니다.\"\n      },\n      {\n        \"id\": \"acceptance_criteria\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [8, 9, 10],\n        \"rationale\": \"등록, 상태 변경, 저장 및 실패 시나리오에 대한 관찰 가능한 기준이 명확합니다.\"\n      },\n      {\n        \"id\": \"revision_resolution\",\n        \"status\": \"not_applicable\",\n        \"evidenceLines\": [13],\n        \"rationale\": \"초기 기획안으로 settledDecisions에 해결해야 할 이전 수정 요청이 없습니다.\"\n      },\n      {\n        \"id\": \"clarity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [2, 3, 4, 5, 6, 7],\n        \"rationale\": \"사용자 시나리오 예시를 선행 배치하고 구현 세부 사항을 분리하여 명확하게 서술했습니다.\"\n      }\n    ]\n  }\n}",
+      "finishReasons": [
+        "STOP"
+      ]
+    }
+  ]
+}

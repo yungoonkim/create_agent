@@ -4,7 +4,7 @@
 
 Core는 도메인 계약과 정책을 소유한다. Runtime SDK, 모델 Provider, 파일 저장소, 검증 도구는 어댑터 뒤에 둔다. Agent Runtime과 LLM Provider/Model은 별도로 선택하며, 호환성이 확인된 조합만 사용한다. 이 계약은 확인되지 않은 SDK 기능을 가정하지 않는다.
 
-현재는 Fake/Gemini Planning, 최종 Plan 승인, 수동 Development Loop, 선택형 파일·명령 검증, 지휘자 통합 및 기획 중 추가 답변·변경 승인 후 명시적 재개를 구현한다. 실제 모델 품질 인수와 Worker Runtime 실행은 후속 단계다.
+현재는 Fake/Gemini Planning, 최종 Plan 승인, 수동 Development Loop, 선택형 파일·명령 검증, 지휘자 통합 및 기획 중 추가 답변·변경 승인 후 명시적 재개를 구현한다. 재고·할 일 두 주제의 실제 Gemini 단독 인수와 품질 보완을 완료했다. 전체 계획 대비 현재 경계는 [구현 현황](plan-vs-implementation-20261109.md), 최신 비교와 한계는 [Reviewer 평가](reviewer-reliability-20261109.md)를 따른다. Worker Runtime 실행은 보류다.
 
 ## 논리 모듈
 
@@ -68,7 +68,7 @@ Core와 Planning 계약은 SDK, HTTP 클라이언트, DB, 특정 Provider에 의
 
 ## 수동 Development 경계
 
-`src/development/`는 승인 참조·작업·최종 승인·Controller·파일 저장소로 구성된다. Controller는 Core TaskStateManager를 구현한다. `src/verification/LocalVerificationEngine`은 Core VerificationEngine을 구현하고 선언 파일·운영자 명령으로 객관적 근거를 수집한다. Controller는 현재 작업·기획·시도와 연결하고, 품질 실패·환경 차단·재작업 한도를 판단한다. 파일 저장소는 상태와 변경 전후 근거를 단일 revision으로 기록하고 검사 중 프로젝트 쓰기를 잠근다. 최종 완료 조건은 별도 수동 검수하며 실제 Runtime은 아직 연결하지 않는다.
+`src/development/`는 승인 참조·작업·최종 승인·Controller·파일 저장소로 구성된다. Controller는 Core TaskStateManager를 구현한다. `src/verification/engine.ts`의 `LocalVerificationEngine`은 Core VerificationEngine을 구현하고 선언 파일·운영자 명령으로 객관적 근거를 수집한다. Controller는 현재 작업·기획·시도와 연결하고, 품질 실패·환경 차단·재작업 한도를 판단한다. 파일 저장소는 상태와 변경 전후 근거를 단일 revision으로 기록하고 검사 중 프로젝트 쓰기를 잠근다. 최종 완료 조건은 별도 수동 검수하며 실제 Runtime은 아직 연결하지 않는다.
 
 ## 지휘자 기본 통합 경계 (STEP 5A)
 

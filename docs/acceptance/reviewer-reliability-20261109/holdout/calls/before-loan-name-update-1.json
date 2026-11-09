@@ -1,0 +1,214 @@
+{
+  "id": "before-loan-name-update-1",
+  "caseId": "loan-name-update",
+  "split": "holdout",
+  "expected": "block",
+  "repeat": 1,
+  "variant": "before",
+  "inputSha256": "dbf05f2b23ccdfa0eb0a66520b2ef7fc720b3fcd43dde1b6cb65a8d325f2cb69",
+  "status": "completed",
+  "review": {
+    "id": "review-1",
+    "projectId": "reviewer-reliability",
+    "planId": "reviewer-reliability-plan",
+    "planVersion": 1,
+    "scopeContractId": "scope-1",
+    "scopeVersion": 1,
+    "outcome": "revise",
+    "issues": [
+      {
+        "id": "issue-f4f940a298b426e1",
+        "kind": "contradiction",
+        "severity": "critical",
+        "description": "5행에서는 선택한 기록 한 건만 반환 상태로 변경된다고 명시했으나, 9행에서는 선택 항목의 물건명과 같은 모든 기록을 일괄 반환한다고 서술하여 계획 내 동작 설명이 상호 모순됩니다.",
+        "suggestedDirection": "9행의 일괄 반환 문구를 삭제하고 5행 및 R-2에 맞추어 선택된 고유 식별자 1건만 반환 상태로 전환되도록 일관되게 수정하십시오.",
+        "relatedRequirementId": "R-2"
+      },
+      {
+        "id": "issue-60c71f9d8703907c",
+        "kind": "scope_violation",
+        "severity": "critical",
+        "description": "승인된 Scope R-2는 '고른 기록 한 건만 반환 상태로 바꾼다'로 한정되어 있으나, 9행에서 동일 물건명을 가진 모든 기록을 일괄 반환하도록 확장 정의하여 승인 범위를 위배했습니다.",
+        "suggestedDirection": "동일 물건명 일괄 변경 로직을 배제하고 오직 사용자가 지정한 단일 기록의 상태만 갱신되도록 규정하십시오.",
+        "relatedRequirementId": "R-2"
+      }
+    ],
+    "suggestions": [
+      "9행의 일괄 반환 문구를 단일 고유 ID 기반 반환 처리로 일원화하십시오."
+    ],
+    "scopeViolation": true,
+    "userJudgmentRequired": false,
+    "reviewedAt": "2026-11-09T01:13:28.259Z",
+    "qualityAssessment": {
+      "version": 1,
+      "requirements": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "1. 제목 ‘우산’, 빌린 사람 ‘민수’를 적고 추가한다. 둘 다 공백 제거 후 비어 있으면 거부하며 입력과 기존 목록은 유지한다.",
+            "2. 같은 이름의 물건도 각각 다른 고유 번호를 부여한다. 우산을 민수와 지수에게 하나씩 빌려줘도 별개 기록이다.",
+            "R-1: 등록은 비공백 물건명/사람명, UUID 중복 검사, 영속 양의 안전 정수 순번으로 식별한다. 동일 이름 두 건 등록하면 서로 다른 번호 두 개가 나타난다."
+          ],
+          "rationale": "공백 제거 검증, 동일 물건명의 개별 등록 허용 및 고유 식별자 부여 규칙이 구체적으로 정의되어 있습니다.",
+          "evidenceLines": [
+            3,
+            4,
+            8
+          ],
+          "requirementId": "R-1"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "3. 선택한 기록 한 건의 반환 버튼을 누르면 그 번호의 상태만 반환으로 바뀐다. 민수의 우산 반환이 지수 기록에 영향을 주지 않는다.",
+            "R-2: 상태는 대여/반환 두 값, 선택 항목의 물건명과 같은 모든 기록을 찾아 일괄 반환한다. 대여 A/B 중 A 반환 후 A만 반환이고 B는 대여다. 같은 반환 요청 반복은 상태를 그대로 유지한다."
+          ],
+          "rationale": "승인 요구사항(한 건만 반환)과 달리 9행에서 동일 물건명 일괄 반환 규칙을 혼용하여 동작 모순 및 범위 위배가 발생했습니다.",
+          "evidenceLines": [
+            5,
+            9
+          ],
+          "requirementId": "R-2"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "4. 처음 등록한 순번대로 목록을 보여주고 수정/반환으로 순번을 바꾸지 않는다. 브라우저를 닫았다 같은 주소/프로필로 열면 기록이 유지된다.",
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "localStorage 단일 키 직렬화, 깨진 JSON 원본 보존, commit 전후 예외 처리 및 복구 한계가 구체적으로 명시되어 있습니다.",
+          "evidenceLines": [
+            6,
+            10
+          ],
+          "requirementId": "R-3"
+        }
+      ],
+      "checks": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "사용자 결정 출처는 승인 Scope R-1~3과 제약이다. 키 이름과 데이터 표현은 위임된 설계 제안이며 사용자 직접 결정으로 주장하지 않는다. 쉬운 이용 예시를 먼저 두고 기술 사양을 뒤에 둔다. 고정 localhost 주소·같은 컴퓨터/브라우저/프로필의 일반 창 단일 탭 순차 사용, file://·시크릿/사이트 데이터 삭제/다른 기기 동기화/물리 장애 무손실·동시 탭 잠금은 보장하지 않는다. 텍스트는 textContent로만 표시한다."
+          ],
+          "rationale": "사용자 결정 출처를 승인 Scope와 제약으로 한정하고 키 이름 등 기술 선택을 위임된 제안으로 명확히 구분했습니다.",
+          "evidenceLines": [
+            12
+          ],
+          "id": "decision_provenance"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "3. 선택한 기록 한 건의 반환 버튼을 누르면 그 번호의 상태만 반환으로 바뀐다. 민수의 우산 반환이 지수 기록에 영향을 주지 않는다.",
+            "R-2: 상태는 대여/반환 두 값, 선택 항목의 물건명과 같은 모든 기록을 찾아 일괄 반환한다. 대여 A/B 중 A 반환 후 A만 반환이고 B는 대여다. 같은 반환 요청 반복은 상태를 그대로 유지한다."
+          ],
+          "rationale": "R-2에서 단일 기록 반환 범위를 벗어나 동일 물건명 일괄 반환 사양이 포함되어 승인 범위를 위반했습니다.",
+          "evidenceLines": [
+            5,
+            9
+          ],
+          "id": "scope_compliance"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "3. 선택한 기록 한 건의 반환 버튼을 누르면 그 번호의 상태만 반환으로 바뀐다. 민수의 우산 반환이 지수 기록에 영향을 주지 않는다.",
+            "R-2: 상태는 대여/반환 두 값, 선택 항목의 물건명과 같은 모든 기록을 찾아 일괄 반환한다. 대여 A/B 중 A 반환 후 A만 반환이고 B는 대여다. 같은 반환 요청 반복은 상태를 그대로 유지한다."
+          ],
+          "rationale": "5행의 '한 건만 반환'과 9행의 '동일 물건명 전체 일괄 반환'이 직접적으로 충돌하여 상태 전이 동작이 불일치합니다.",
+          "evidenceLines": [
+            5,
+            9
+          ],
+          "id": "behavior_and_errors"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "스키마 검증, 키 부재와 손상 데이터 구분 보존, 쓰기 실패 시 롤백 및 기존 데이터 불변 규칙이 충실히 기술되었습니다.",
+          "evidenceLines": [
+            10
+          ],
+          "id": "data_integrity"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "R-1: 등록은 비공백 물건명/사람명, UUID 중복 검사, 영속 양의 안전 정수 순번으로 식별한다. 동일 이름 두 건 등록하면 서로 다른 번호 두 개가 나타난다.",
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "등록, 저장 실패, 검증 거부 등 구체적인 입력 조건과 기대 결과가 검증 가능한 형태로 제시되어 있습니다.",
+          "evidenceLines": [
+            8,
+            10
+          ],
+          "id": "acceptance_criteria"
+        },
+        {
+          "status": "not_applicable",
+          "evidence": [
+            "향후 순서는 입력/모델→저장→두 상태 화면→전체 정상/실패 수락 검증이다. 초기 후보로 수정 요청은 없다. 실제 구현·검증 실행·사용자 승인 완료 주장은 없다. 로그인/알림/외부 전송/과금/물건 검색은 포함하지 않는다."
+          ],
+          "rationale": "초기 기획안 검토 단계로 settledDecisions에 해결해야 할 이전 사용자 수정 요청이 존재하지 않습니다.",
+          "evidenceLines": [
+            13
+          ],
+          "id": "revision_resolution"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "## 이렇게 사용한다",
+            "1. 제목 ‘우산’, 빌린 사람 ‘민수’를 적고 추가한다. 둘 다 공백 제거 후 비어 있으면 거부하며 입력과 기존 목록은 유지한다.",
+            "3. 선택한 기록 한 건의 반환 버튼을 누르면 그 번호의 상태만 반환으로 바뀐다. 민수의 우산 반환이 지수 기록에 영향을 주지 않는다.",
+            "## 구현과 확인 기준"
+          ],
+          "rationale": "쉬운 한국어 사용자 관점의 예시가 문서 전면에 선행 배치되어 대상 독자 기준을 충족합니다.",
+          "evidenceLines": [
+            2,
+            3,
+            5,
+            7
+          ],
+          "id": "clarity"
+        }
+      ]
+    }
+  },
+  "decision": {
+    "type": "REQUEST_SCOPE_CHANGE_APPROVAL",
+    "planId": "reviewer-reliability-plan",
+    "version": 1,
+    "issueIds": [
+      "issue-60c71f9d8703907c"
+    ],
+    "reason": "Reviewer identified a scope violation that requires a separate approved change."
+  },
+  "usage": [
+    {
+      "projectId": "reviewer-reliability",
+      "planId": "reviewer-reliability-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "reviewStage": "assessment",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 3037,
+      "outputTokens": 1179,
+      "reasoningTokens": 3283,
+      "outcome": "success",
+      "durationMs": 24744,
+      "recordedAt": "2026-11-09T01:13:28.259Z"
+    }
+  ],
+  "responses": [
+    {
+      "text": "{\n  \"outcome\": \"revise\",\n  \"issues\": [\n    {\n      \"kind\": \"contradiction\",\n      \"severity\": \"critical\",\n      \"description\": \"5행에서는 선택한 기록 한 건만 반환 상태로 변경된다고 명시했으나, 9행에서는 선택 항목의 물건명과 같은 모든 기록을 일괄 반환한다고 서술하여 계획 내 동작 설명이 상호 모순됩니다.\",\n      \"suggestedDirection\": \"9행의 일괄 반환 문구를 삭제하고 5행 및 R-2에 맞추어 선택된 고유 식별자 1건만 반환 상태로 전환되도록 일관되게 수정하십시오.\",\n      \"relatedRequirementId\": \"R-2\"\n    },\n    {\n      \"kind\": \"scope_violation\",\n      \"severity\": \"critical\",\n      \"description\": \"승인된 Scope R-2는 '고른 기록 한 건만 반환 상태로 바꾼다'로 한정되어 있으나, 9행에서 동일 물건명을 가진 모든 기록을 일괄 반환하도록 확장 정의하여 승인 범위를 위배했습니다.\",\n      \"suggestedDirection\": \"동일 물건명 일괄 변경 로직을 배제하고 오직 사용자가 지정한 단일 기록의 상태만 갱신되도록 규정하십시오.\",\n      \"relatedRequirementId\": \"R-2\"\n    }\n  ],\n  \"suggestions\": [\n    \"9행의 일괄 반환 문구를 단일 고유 ID 기반 반환 처리로 일원화하십시오.\"\n  ],\n  \"scopeViolation\": true,\n  \"userJudgmentRequired\": false,\n  \"qualityAssessment\": {\n    \"version\": 1,\n    \"requirements\": [\n      {\n        \"requirementId\": \"R-1\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 4, 8],\n        \"rationale\": \"공백 제거 검증, 동일 물건명의 개별 등록 허용 및 고유 식별자 부여 규칙이 구체적으로 정의되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"R-2\",\n        \"status\": \"missing\",\n        \"evidenceLines\": [5, 9],\n        \"rationale\": \"승인 요구사항(한 건만 반환)과 달리 9행에서 동일 물건명 일괄 반환 규칙을 혼용하여 동작 모순 및 범위 위배가 발생했습니다.\"\n      },\n      {\n        \"requirementId\": \"R-3\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [6, 10],\n        \"rationale\": \"localStorage 단일 키 직렬화, 깨진 JSON 원본 보존, commit 전후 예외 처리 및 복구 한계가 구체적으로 명시되어 있습니다.\"\n      }\n    ],\n    \"checks\": [\n      {\n        \"id\": \"decision_provenance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [12],\n        \"rationale\": \"사용자 결정 출처를 승인 Scope와 제약으로 한정하고 키 이름 등 기술 선택을 위임된 제안으로 명확히 구분했습니다.\"\n      },\n      {\n        \"id\": \"scope_compliance\",\n        \"status\": \"missing\",\n        \"evidenceLines\": [5, 9],\n        \"rationale\": \"R-2에서 단일 기록 반환 범위를 벗어나 동일 물건명 일괄 반환 사양이 포함되어 승인 범위를 위반했습니다.\"\n      },\n      {\n        \"id\": \"behavior_and_errors\",\n        \"status\": \"missing\",\n        \"evidenceLines\": [5, 9],\n        \"rationale\": \"5행의 '한 건만 반환'과 9행의 '동일 물건명 전체 일괄 반환'이 직접적으로 충돌하여 상태 전이 동작이 불일치합니다.\"\n      },\n      {\n        \"id\": \"data_integrity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [10],\n        \"rationale\": \"스키마 검증, 키 부재와 손상 데이터 구분 보존, 쓰기 실패 시 롤백 및 기존 데이터 불변 규칙이 충실히 기술되었습니다.\"\n      },\n      {\n        \"id\": \"acceptance_criteria\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [8, 10],\n        \"rationale\": \"등록, 저장 실패, 검증 거부 등 구체적인 입력 조건과 기대 결과가 검증 가능한 형태로 제시되어 있습니다.\"\n      },\n      {\n        \"id\": \"revision_resolution\",\n        \"status\": \"not_applicable\",\n        \"evidenceLines\": [13],\n        \"rationale\": \"초기 기획안 검토 단계로 settledDecisions에 해결해야 할 이전 사용자 수정 요청이 존재하지 않습니다.\"\n      },\n      {\n        \"id\": \"clarity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [2, 3, 5, 7],\n        \"rationale\": \"쉬운 한국어 사용자 관점의 예시가 문서 전면에 선행 배치되어 대상 독자 기준을 충족합니다.\"\n      }\n    ]\n  }\n}",
+      "finishReasons": [
+        "STOP"
+      ]
+    }
+  ]
+}

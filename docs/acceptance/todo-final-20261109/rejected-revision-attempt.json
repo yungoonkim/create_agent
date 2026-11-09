@@ -1,0 +1,9 @@
+{
+  "kind": "controller_validation_rejection",
+  "message": "Unknown dependency: task-02-domain-validation.",
+  "supervisorRevisionAfter": 19,
+  "previousProposalPreserved": true,
+  "usageNote": "Supervisor tasks usage success means provider JSON parsed; Controller rejected graph, so no new task proposal or approval was committed.",
+  "rawRejectedProposalRetained": false,
+  "reasonRawUnavailable": "Original CLI records safe usage/error only; rejected task response was not persisted."
+}

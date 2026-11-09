@@ -1,0 +1,2063 @@
+[
+  {
+    "phase": "regression",
+    "id": "after-empty-corrupt-storage-1",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REVISE",
+    "issues": [
+      {
+        "id": "issue-a0f29d0c7a27acfb",
+        "kind": "contradiction",
+        "severity": "major",
+        "description": "Plan line 26 specifies that if localStorage getItem returns an empty string (''), it is treated as a first run and immediately overwritten with an empty list ('이 경우 바로 빈 목록으로 덮어쓴다'). An empty string is not an absent key but an existing malformed JSON value. Overwriting it violates the data-preservation rule declared in line 17 ('데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다') as well as REQ-06.",
+        "suggestedDirection": "Distinguish between null (absent) and an empty string (present_empty). Treat null as the only condition for clean initialization, and treat an existing empty string as corrupted/invalid data that blocks write operations and preserves existing storage.",
+        "relatedRequirementId": "REQ-06"
+      }
+    ],
+    "questions": [],
+    "storageAudit": {
+      "format": "json",
+      "evidenceLines": [
+        23,
+        26
+      ],
+      "evidence": [
+        "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+        "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+      ],
+      "rationale": "Data is serialized and stored in browser localStorage under key 'todo_app_data_v1' as a JSON object containing schemaVersion, nextSequence, and items.",
+      "cases": [
+        {
+          "state": "absent",
+          "action": "initialize",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "Line 26 treats getItem returning null as initial execution and writes a fresh empty list structure."
+        },
+        {
+          "state": "present_empty",
+          "action": "reset_or_overwrite",
+          "verdict": "unsafe",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Line 26 treats an empty string as initial execution and immediately overwrites it with an empty list without scope authorization to reset existing stored content."
+        },
+        {
+          "state": "invalid",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "Lines 17 and 26 state that malformed JSON, schema violations, or invariant failures raise an error, block writing, and never arbitrarily overwrite or patch raw data."
+        },
+        {
+          "state": "valid",
+          "action": "load",
+          "verdict": "consistent",
+          "evidenceLines": [
+            6,
+            17,
+            23
+          ],
+          "evidence": [
+            "같은 제목 ‘장보기’ 두 개 중 두 번째 항목을 수정·완료·삭제해도 첫 번째는 그대로다. 상태 전환·정보 수정 후에도 원래 등록순을 유지한다. 같은 브라우저·프로필·일반 창에서 같은 고정 주소로 다시 열면 이전 목록이 복원된다. 저장 실패면 성공 표시나 목록 변경을 하지 않고 입력을 보존하며 오류를 알려 재시도하게 한다. 브라우저의 사이트 데이터를 직접 삭제하거나 비공개 창을 닫으면 기록을 잃을 수 있다. 다른 브라우저/기기와 공유하지 않는다. 한 탭에서 순서대로 사용한다.",
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "Valid JSON satisfying schemaVersion 1 and data invariants is read and restored into memory and displayed on screen."
+        },
+        {
+          "state": "read_error",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "Line 26 specifies that storage read access exceptions block write access and avoid modifying existing storage."
+        }
+      ]
+    }
+  },
+  {
+    "phase": "regression",
+    "id": "after-empty-corrupt-storage-2",
+    "status": "failed",
+    "expected": "block",
+    "decision": null,
+    "issues": [],
+    "questions": [],
+    "storageAudit": null
+  },
+  {
+    "phase": "regression",
+    "id": "after-empty-corrupt-storage-3",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REVISE",
+    "issues": [
+      {
+        "id": "issue-6e11c5679c872b8b",
+        "kind": "contradiction",
+        "severity": "major",
+        "description": "26행에서 getItem 결과가 빈 문자열(present_empty)인 경우를 최초 실행(null)과 동일하게 취급하여 즉시 빈 목록으로 덮어쓰도록 선언하고 있습니다. 이는 17행의 '데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다'는 규칙 및 REQ-06의 데이터 영속성 보존 범위와 충돌하며, 저장된 키에 빈 문자열이 존재하는 비정상 상태에서 기존 값을 무단 덮어쓰는 위험을 초래합니다.",
+        "suggestedDirection": "26행의 최초 실행 판단 조건을 'null'에 한정하고, 빈 문자열('')이 존재하는 경우는 비정상/손상 데이터로 분류하여 덮어쓰지 않고 쓰기를 차단(preserve_and_block)하도록 기획안을 수정해야 합니다.",
+        "relatedRequirementId": "REQ-06"
+      }
+    ],
+    "questions": [],
+    "storageAudit": {
+      "format": "json",
+      "evidenceLines": [
+        17,
+        23,
+        26,
+        28
+      ],
+      "evidence": [
+        "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+        "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+        "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다.",
+        "후보 객체를 검증·직렬화한 뒤 setItem 성공 반환을 커밋으로 보고 확정 목록/화면을 갱신한다. 커밋 전 또는 setItem 실패는 기존 저장값·확정 목록·입력을 보존한다. setItem 성공 뒤 표시가 실패하면 저장은 되었음을 안내하고 새로고침해 복원하며 저장을 되돌렸다고 주장하지 않는다."
+      ],
+      "rationale": "23행과 26행에 명시된 바와 같이 전체 데이터를 JSON 형식({schemaVersion:1,nextSequence,items})으로 직렬화하여 로컬 저장소 단일 키(todo_app_data_v1)에 보관 및 검증합니다.",
+      "cases": [
+        {
+          "state": "absent",
+          "action": "initialize",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "26행에서 getItem 결과가 null인 경우 최초 실행으로 보고 빈 목록으로 초기화합니다."
+        },
+        {
+          "state": "present_empty",
+          "action": "reset_or_overwrite",
+          "verdict": "unsafe",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "26행에서 빈 문자열('') 값을 최초 실행으로 간주하여 즉시 빈 목록으로 덮어쓰도록 처리하고 있으나, 기존 저장 데이터 폐기를 허용하는 Scope 근거가 없으며 17행의 보존 원칙과 충돌합니다."
+        },
+        {
+          "state": "invalid",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "26행에서 잘못된 JSON, 스키마 누락, 불변식 위반 시 임의 보정 및 덮어쓰기를 하지 않고 쓰기를 차단합니다."
+        },
+        {
+          "state": "valid",
+          "action": "load",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            23,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "23행의 스키마와 불변식을 만족하는 정상 JSON 데이터를 파싱하여 목록을 복원합니다."
+        },
+        {
+          "state": "read_error",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "26행에서 읽기 접근 예외 발생 시 쓰기를 차단하고 기존 데이터를 임의로 변경하지 않도록 명시하고 있습니다."
+        }
+      ]
+    }
+  },
+  {
+    "phase": "regression",
+    "id": "after-normal-complete-1",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": {
+      "format": "json",
+      "evidenceLines": [
+        23,
+        26
+      ],
+      "evidence": [
+        "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+        "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+      ],
+      "rationale": "Plan lines 23 and 26 define local persistence using browser localStorage with a JSON stringified object under key 'todo_app_data_v1', parsing schemaVersion, nextSequence, and items.",
+      "cases": [
+        {
+          "state": "absent",
+          "action": "initialize",
+          "verdict": "consistent",
+          "evidenceLines": [
+            23,
+            26
+          ],
+          "evidence": [
+            "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06",
+            "constraint:2"
+          ],
+          "rationale": "Line 26 treats getItem returning null (key absent) as the sole initial first-run state, creating initial empty state with sequence counter starting at zero without overwriting existing data."
+        },
+        {
+          "state": "present_empty",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Line 26 explicitly categorizes an empty string as an error rather than absent storage, blocking further writes and prohibiting automatic correction or overwriting."
+        },
+        {
+          "state": "invalid",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Lines 17 and 26 explicitly classify malformed JSON, schema mismatch, or broken invariants as data corruption, blocking write operations and strictly preserving stored data without arbitrary reinitialization."
+        },
+        {
+          "state": "valid",
+          "action": "load",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            23,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "Lines 17, 23, and 26 validate the stored JSON object, verifying schemaVersion, item properties, and sequence counters before loading existing todo records into the UI."
+        },
+        {
+          "state": "read_error",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Line 26 treats storage read access exceptions (such as security or quota exceptions) by blocking writes and preserving the original stored state without attempting to overwrite."
+        }
+      ]
+    }
+  },
+  {
+    "phase": "regression",
+    "id": "after-normal-complete-2",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": {
+      "format": "json",
+      "evidenceLines": [
+        17,
+        23,
+        26,
+        28
+      ],
+      "evidence": [
+        "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+        "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+        "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다.",
+        "후보 객체를 검증·직렬화한 뒤 setItem 성공 반환을 커밋으로 보고 확정 목록/화면을 갱신한다. 커밋 전 또는 setItem 실패는 기존 저장값·확정 목록·입력을 보존한다. setItem 성공 뒤 표시가 실패하면 저장은 되었음을 안내하고 새로고침해 복원하며 저장을 되돌렸다고 주장하지 않는다."
+      ],
+      "rationale": "기획안 23행과 26행에 고정 키(todo_app_data_v1)에 JSON 스키마 객체를 직렬화하여 저장하고, 키 부재/빈 문자열/잘못된 JSON/불변식 위반을 구분하여 처리하는 JSON 기반 로컬 스토리지를 명시하고 있습니다.",
+      "cases": [
+        {
+          "state": "absent",
+          "action": "initialize",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06",
+            "constraint:2"
+          ],
+          "rationale": "26행에서 getItem 결과가 null(키 부재)인 경우에만 최초 실행으로 판별하여 초기 빈 상태로 안전하게 시작하도록 규정하였습니다."
+        },
+        {
+          "state": "present_empty",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "26행에서 빈 문자열 저장값은 초기 실행(부재)과 구분하여 오류로 처리하고 쓰기를 차단하며 원본을 임의로 덮어쓰지 않도록 규정하였습니다."
+        },
+        {
+          "state": "invalid",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "17행과 26행에서 잘못된 JSON, 스키마/불변식 위반 데이터 발견 시 임의 초기화나 보정 없이 즉시 쓰기를 차단하고 기존 원본 데이터를 보존하도록 규정하였습니다."
+        },
+        {
+          "state": "valid",
+          "action": "load",
+          "verdict": "consistent",
+          "evidenceLines": [
+            6,
+            17,
+            23,
+            26
+          ],
+          "evidence": [
+            "같은 제목 ‘장보기’ 두 개 중 두 번째 항목을 수정·완료·삭제해도 첫 번째는 그대로다. 상태 전환·정보 수정 후에도 원래 등록순을 유지한다. 같은 브라우저·프로필·일반 창에서 같은 고정 주소로 다시 열면 이전 목록이 복원된다. 저장 실패면 성공 표시나 목록 변경을 하지 않고 입력을 보존하며 오류를 알려 재시도하게 한다. 브라우저의 사이트 데이터를 직접 삭제하거나 비공개 창을 닫으면 기록을 잃을 수 있다. 다른 브라우저/기기와 공유하지 않는다. 한 탭에서 순서대로 사용한다.",
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "유효한 스키마 및 정수 순번 불변식을 만족하는 정상 JSON 데이터는 원래 상태 그대로 역직렬화하여 확정 목록으로 로드합니다."
+        },
+        {
+          "state": "read_error",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "26행에서 스토리지 읽기 접근 예외 발생 시 쓰기를 차단하여 기존 저장 공간의 파괴나 덮어쓰기를 방지하도록 명시하였습니다."
+        }
+      ]
+    }
+  },
+  {
+    "phase": "regression",
+    "id": "after-normal-complete-3",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": {
+      "format": "json",
+      "evidenceLines": [
+        23,
+        26,
+        28
+      ],
+      "evidence": [
+        "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+        "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다.",
+        "후보 객체를 검증·직렬화한 뒤 setItem 성공 반환을 커밋으로 보고 확정 목록/화면을 갱신한다. 커밋 전 또는 setItem 실패는 기존 저장값·확정 목록·입력을 보존한다. setItem 성공 뒤 표시가 실패하면 저장은 되었음을 안내하고 새로고침해 복원하며 저장을 되돌렸다고 주장하지 않는다."
+      ],
+      "rationale": "데이터는 todo_app_data_v1 키에 단일 JSON 객체({schemaVersion:1,nextSequence,items})로 직렬화하여 저장하고 역직렬화하여 읽습니다.",
+      "cases": [
+        {
+          "state": "absent",
+          "action": "initialize",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "goal",
+            "requirement:REQ-06",
+            "constraint:2"
+          ],
+          "rationale": "키 부재(getItem 반환값이 null)인 경우에만 최초 실행으로 판단하여 초기 상태를 구성합니다."
+        },
+        {
+          "state": "present_empty",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06",
+            "constraint:2"
+          ],
+          "rationale": "빈 문자열 저장값은 오류로 취급하여 임의 초기화나 덮어쓰기 없이 쓰기를 차단하고 기존 원본을 보존합니다."
+        },
+        {
+          "state": "invalid",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06",
+            "constraint:2"
+          ],
+          "rationale": "잘못된 JSON, null JSON, 스키마/불변식 위반 데이터는 오류로 간주하여 쓰기를 차단하고 기존 원본을 보존합니다."
+        },
+        {
+          "state": "valid",
+          "action": "load",
+          "verdict": "consistent",
+          "evidenceLines": [
+            6,
+            17,
+            23,
+            26
+          ],
+          "evidence": [
+            "같은 제목 ‘장보기’ 두 개 중 두 번째 항목을 수정·완료·삭제해도 첫 번째는 그대로다. 상태 전환·정보 수정 후에도 원래 등록순을 유지한다. 같은 브라우저·프로필·일반 창에서 같은 고정 주소로 다시 열면 이전 목록이 복원된다. 저장 실패면 성공 표시나 목록 변경을 하지 않고 입력을 보존하며 오류를 알려 재시도하게 한다. 브라우저의 사이트 데이터를 직접 삭제하거나 비공개 창을 닫으면 기록을 잃을 수 있다. 다른 브라우저/기기와 공유하지 않는다. 한 탭에서 순서대로 사용한다.",
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06",
+            "constraint:2"
+          ],
+          "rationale": "스키마 및 불변식을 만족하는 유효한 JSON 데이터는 정상적으로 복원하여 미완료/완료 목록에 반영합니다."
+        },
+        {
+          "state": "read_error",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06",
+            "constraint:2"
+          ],
+          "rationale": "저장소 읽기 접근 시 예외가 발생하면 쓰기를 차단하고 원본 저장값을 보존합니다."
+        }
+      ]
+    }
+  },
+  {
+    "phase": "regression",
+    "id": "before-empty-corrupt-storage-1",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REVISE",
+    "issues": [
+      {
+        "id": "issue-6df15d9998a2d155",
+        "kind": "contradiction",
+        "severity": "major",
+        "description": "Plan line 26 specifies that a first run occurs when `getItem` returns `null` or an empty string (`\"\"`), and in this case immediately overwrites storage with an empty list ('처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다.'). An empty string is an existing malformed value rather than an absent key (`null`). Overwriting on `\"\"` contradicts the subsequent rule in line 26 that malformed JSON must cause an error and prevent arbitrary overwriting or correction ('잘못된 JSON... 은 오류이며... 원본 저장값을 임의 보정하거나 덮어쓰지 않는다'). Under the data-preservation rule, 'otherwise preserve data' cannot cure this destructive exception.",
+        "suggestedDirection": "Distinguish absent (`null`), empty (`\"\"`), and malformed stored values. Only treat `null` (key absent) as uninitialized, and treat an empty string `\"\"` as malformed data that preserves the existing value and blocks writes without overwriting.",
+        "relatedRequirementId": "REQ-06"
+      }
+    ],
+    "questions": [],
+    "storageAudit": null
+  },
+  {
+    "phase": "regression",
+    "id": "before-empty-corrupt-storage-2",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REVISE",
+    "issues": [
+      {
+        "id": "issue-4e44996131c71eb9",
+        "kind": "contradiction",
+        "severity": "major",
+        "description": "Plan 26행은 '처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다'라고 명시하여 키 부재(null)와 빈 저장값(빈 문자열 \"\")을 구분하지 않고 즉시 덮어쓰도록 예외를 두고 있습니다. 그러나 로컬 저장소에 이미 존재하는 빈 문자열은 비어 있는 비정상(malformed) JSON 데이터이므로, 동일한 26행의 '잘못된 JSON, null JSON ... 위반은 오류이며 ... 원본 저장값을 임의 보정하거나 덮어쓰지 않는다'는 데이터 보존 규칙과 정면으로 충돌합니다. 실제로 저장 키에 빈 문자열이 저장되어 있는 상태에서 페이지를 열기만 해도 손상 감지 및 쓰기 차단 대신 빈 목록으로 덮어써 기존 비정상 저장 상태를 파괴하는 구체적 반례가 발생합니다.",
+        "suggestedDirection": "최초 실행(신규 상태) 판단 대상을 오직 키가 아예 존재하지 않는 'null' 상태로만 한정하고, '빈 문자열(\"\")'은 잘못된 JSON 형식(malformed)으로 취급하여 덮어쓰지 않고 쓰기를 차단하도록 규칙을 분리하십시오. 또한 키가 부재(null)할 때도 화면 로드 즉시 저장소에 빈 목록을 덮어쓰는 대신 메모리상 빈 목록으로 유지하다가 첫 항목 등록 시점에 저장하도록 설계하는 것을 권장합니다.",
+        "relatedRequirementId": "REQ-06"
+      }
+    ],
+    "questions": [],
+    "storageAudit": null
+  },
+  {
+    "phase": "regression",
+    "id": "before-empty-corrupt-storage-3",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REVISE",
+    "issues": [
+      {
+        "id": "issue-9568e065d69a6d1a",
+        "kind": "implementation_risk",
+        "severity": "major",
+        "description": "26행에서 '처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다'라고 명시하여, 저장소에 키가 없는 부재(null) 상태와 빈 문자열(\"\")로 저장된 비정상/손상 값을 구분하지 않고 동일하게 취급하며, 읽기/초기화 시점에 즉시 저장소를 빈 목록으로 덮어쓰도록 예외를 두고 있습니다. 이는 빈 문자열 등의 손상된 기존 저장값을 확인 없이 파괴적으로 덮어쓸 위험이 있고 데이터 보존 원칙에 위배됩니다.",
+        "suggestedDirection": "부재(null)와 빈 문자열(\"\") 및 유효하지 않은 JSON 등 손상된 값을 명확히 분리하십시오. 키가 부재(null)인 최초 실행 시에는 메모리상에서 빈 목록으로 시작하고 실제 사용자의 등록/변경 커밋 시점에만 저장을 수행하도록 하며, 빈 문자열(\"\")이 저장되어 있는 경우에는 임의 초기화나 덮어쓰기를 하지 말고 데이터 손상 오류로 감지하여 쓰기를 차단하도록 계획을 보완해야 합니다.",
+        "relatedRequirementId": "REQ-06"
+      }
+    ],
+    "questions": [],
+    "storageAudit": null
+  },
+  {
+    "phase": "regression",
+    "id": "before-normal-complete-1",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": null
+  },
+  {
+    "phase": "regression",
+    "id": "before-normal-complete-2",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": null
+  },
+  {
+    "phase": "regression",
+    "id": "before-normal-complete-3",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": null
+  },
+  {
+    "phase": "regression-fixed",
+    "id": "after-empty-corrupt-storage-1",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REVISE",
+    "issues": [
+      {
+        "id": "issue-3a4c17d008787809",
+        "kind": "contradiction",
+        "severity": "major",
+        "description": "Plan Line 26 defines first execution as getItem returning null OR an empty string ('빈 문자열') and directly overwrites it with an empty list ('이 경우 바로 빈 목록으로 덮어쓴다'). However, a present empty string is stored data that is malformed JSON, not an absent key. Overwriting it contradicts Plan Line 17 ('데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다') and REQ-06.",
+        "suggestedDirection": "Distinguish absent (null) from present empty string (''). Restrict initial empty list creation to null only, and treat a present empty string as corrupted data that blocks writes to protect existing stored data.",
+        "relatedRequirementId": "REQ-06"
+      }
+    ],
+    "questions": [],
+    "storageAudit": {
+      "format": "json",
+      "evidenceLines": [
+        23,
+        26,
+        28
+      ],
+      "evidence": [
+        "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+        "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다.",
+        "후보 객체를 검증·직렬화한 뒤 setItem 성공 반환을 커밋으로 보고 확정 목록/화면을 갱신한다. 커밋 전 또는 setItem 실패는 기존 저장값·확정 목록·입력을 보존한다. setItem 성공 뒤 표시가 실패하면 저장은 되었음을 안내하고 새로고침해 복원하며 저장을 되돌렸다고 주장하지 않는다."
+      ],
+      "rationale": "Line 23 specifies serializing the full dataset as JSON ({schemaVersion:1, nextSequence, items}) under key todo_app_data_v1, and Line 26/28 govern parsing, schema validation, and setItem.",
+      "cases": [
+        {
+          "state": "absent",
+          "action": "initialize",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "When getItem returns null, the plan treats it as the first execution and initializes an empty todo list."
+        },
+        {
+          "state": "present_empty",
+          "action": "reset_or_overwrite",
+          "verdict": "unsafe",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Line 26 treats an empty string as a first run and directly overwrites it with an empty list, which contradicts Line 17 and REQ-06 data preservation rules against overwriting corrupted data without explicit authorization."
+        },
+        {
+          "state": "invalid",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "Malformed JSON, unknown version/fields, or schema/invariant violations cause an error, block writing, and forbid arbitrary recovery or overwriting."
+        },
+        {
+          "state": "valid",
+          "action": "load",
+          "verdict": "consistent",
+          "evidenceLines": [
+            23,
+            26,
+            28
+          ],
+          "evidence": [
+            "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다.",
+            "후보 객체를 검증·직렬화한 뒤 setItem 성공 반환을 커밋으로 보고 확정 목록/화면을 갱신한다. 커밋 전 또는 setItem 실패는 기존 저장값·확정 목록·입력을 보존한다. setItem 성공 뒤 표시가 실패하면 저장은 되었음을 안내하고 새로고침해 복원하며 저장을 되돌렸다고 주장하지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "Valid JSON matching schemaVersion:1 and sequence invariants is loaded and rendered in registered sequence order."
+        },
+        {
+          "state": "read_error",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "Read access exceptions are handled by blocking writes, preserving stored data and preventing data loss."
+        }
+      ]
+    }
+  },
+  {
+    "phase": "regression-fixed",
+    "id": "after-empty-corrupt-storage-2",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REVISE",
+    "issues": [
+      {
+        "id": "issue-9602a92d53fe0c17",
+        "kind": "contradiction",
+        "severity": "major",
+        "description": "26행에서는 localStorage의 getItem 결과가 빈 문자열(\"\")인 경우를 최초 실행으로 간주하여 빈 목록으로 즉시 덮어쓰도록 선언하고 있습니다. 그러나 빈 문자열은 키가 없는 부재(null) 상태가 아니라 이미 존재하는 비정상/손상 데이터이며, 이는 17행의 '데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다'는 영속성 보존 원칙과 정면으로 충돌하고 기존 데이터를 파괴할 위험이 있습니다.",
+        "suggestedDirection": "26행에서 getItem 결과가 null인 경우(키 부재)에만 신규 초기화를 허용하고, 존재하는 빈 문자열(\"\")은 유효하지 않은 데이터로 취급하여 임의 덮어쓰기 없이 쓰기를 차단하고 기존 저장값을 보존하도록 수정해야 합니다.",
+        "relatedRequirementId": "REQ-06"
+      }
+    ],
+    "questions": [],
+    "storageAudit": {
+      "format": "json",
+      "evidenceLines": [
+        17,
+        23,
+        26,
+        28
+      ],
+      "evidence": [
+        "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+        "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+        "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다.",
+        "후보 객체를 검증·직렬화한 뒤 setItem 성공 반환을 커밋으로 보고 확정 목록/화면을 갱신한다. 커밋 전 또는 setItem 실패는 기존 저장값·확정 목록·입력을 보존한다. setItem 성공 뒤 표시가 실패하면 저장은 되었음을 안내하고 새로고침해 복원하며 저장을 되돌렸다고 주장하지 않는다."
+      ],
+      "rationale": "기획안 23행과 26행에서 브라우저 로컬 저장소의 단일 고정 키(todo_app_data_v1)에 JSON 형태의 객체({schemaVersion:1,nextSequence,items})를 직렬화하여 저장하고 검증하는 방식을 명시하고 있습니다.",
+      "cases": [
+        {
+          "state": "absent",
+          "action": "initialize",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "getItem 결과가 null인 경우 최초 실행으로 판단하여 빈 목록 상태를 초기화하는 것은 데이터 유실 위험이 없으며 REQ-06에 부합합니다."
+        },
+        {
+          "state": "present_empty",
+          "action": "reset_or_overwrite",
+          "verdict": "unsafe",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "26행에서 빈 문자열(\"\")을 null과 동일시하여 빈 목록으로 덮어쓰도록 정의했습니다. 승인된 Scope 어디에도 기존 빈 문자열 데이터를 임의 초기화/덮어쓰기할 수 있는 권한이 없으므로 데이터 보존상 안전하지 않습니다."
+        },
+        {
+          "state": "invalid",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "잘못된 JSON, 버전 불일치, 스키마 불변식 위반 시 임의 보정이나 덮어쓰기를 하지 않고 쓰기를 차단하여 기존 손상 데이터를 보존합니다."
+        },
+        {
+          "state": "valid",
+          "action": "load",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            23,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "schemaVersion:1 및 무결성 제약 조건을 만족하는 유효한 JSON 데이터를 성공적으로 불러와 기존 상태를 복원합니다."
+        },
+        {
+          "state": "read_error",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "읽기 접근 예외 발생 시 쓰기를 차단하고 원본 저장값을 유지하므로 안전합니다."
+        }
+      ]
+    }
+  },
+  {
+    "phase": "regression-fixed",
+    "id": "after-empty-corrupt-storage-3",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REVISE",
+    "issues": [
+      {
+        "id": "issue-1d307494811be5d1",
+        "kind": "contradiction",
+        "severity": "major",
+        "description": "Plan Line 26은 getItem 결과가 빈 문자열(\"\")일 때 처음 실행으로 간주하여 바로 빈 목록으로 덮어쓰도록(초기화) 규정하고 있으나, 이는 Line 17의 '데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다'는 선언 및 REQ-06 데이터 영속성 요구와 충돌합니다. 이미 존재하는 빈 문자열 키는 키가 아예 없는 상태(null)가 아니라 비정상 또는 손상된 저장 데이터이므로, Scope의 명시적 권한 없이 덮어쓸 경우 기존 데이터를 유실시킬 위험이 있습니다.",
+        "suggestedDirection": "Line 26의 최초 실행 및 초기화 조건을 getItem 결과가 null인 경우로만 한정하고, 빈 문자열(\"\")인 경우는 유효하지 않은 데이터 손상 사례로 분류하여 덮어쓰지 않고 쓰기를 차단(preserve_and_block)하도록 수정하십시오.",
+        "relatedRequirementId": "REQ-06"
+      }
+    ],
+    "questions": [],
+    "storageAudit": {
+      "format": "json",
+      "evidenceLines": [
+        23,
+        26
+      ],
+      "evidence": [
+        "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+        "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+      ],
+      "rationale": "Line 23 및 Line 26에서 브라우저 로컬 저장소의 단일 고정 키(todo_app_data_v1)에 JSON 직렬화 객체({schemaVersion:1,nextSequence,items})를 저장하고 파싱하여 복원하는 구조임을 명시하고 있습니다.",
+      "cases": [
+        {
+          "state": "absent",
+          "action": "initialize",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "Line 26에서 getItem 결과가 null인 경우를 처음 실행으로 판정하고 빈 목록 스키마로 초기화하도록 규정하고 있어 REQ-06과 일치합니다."
+        },
+        {
+          "state": "present_empty",
+          "action": "reset_or_overwrite",
+          "verdict": "unsafe",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Line 26은 getItem 결과가 빈 문자열(\"\")인 경우에도 처음 실행으로 보아 빈 목록으로 바로 덮어쓰도록 선언했습니다. 그러나 빈 문자열은 키 부재(null)가 아닌 저장값 손상 상태이며, Scope에 비어있는 기존 데이터를 임의 덮어쓰도록 허용한 권한이 없어 데이터 유실 위험이 있습니다."
+        },
+        {
+          "state": "invalid",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Line 26에서 잘못된 JSON, null JSON, 스키마/불변식 위반 데이터에 대해 원본 저장값을 임의 보정하거나 덮어쓰지 않고 쓰기를 차단하도록 규정하여 안전합니다."
+        },
+        {
+          "state": "valid",
+          "action": "load",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            23,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Line 17, 23, 26에 따라 스키마 버전과 불변식을 만족하는 정상 JSON 데이터를 로드하여 할 일 목록을 그대로 복원합니다."
+        },
+        {
+          "state": "read_error",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null 또는 빈 문자열일 때이다. 이 경우 바로 빈 목록으로 덮어쓴다. 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Line 26에서 읽기 접근 예외 발생 시 원본 저장값을 보존하고 쓰기 차단으로 처리하도록 명시했습니다."
+        }
+      ]
+    }
+  },
+  {
+    "phase": "regression-fixed",
+    "id": "after-normal-complete-1",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": {
+      "format": "json",
+      "evidenceLines": [
+        23,
+        26,
+        28
+      ],
+      "evidence": [
+        "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+        "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다.",
+        "후보 객체를 검증·직렬화한 뒤 setItem 성공 반환을 커밋으로 보고 확정 목록/화면을 갱신한다. 커밋 전 또는 setItem 실패는 기존 저장값·확정 목록·입력을 보존한다. setItem 성공 뒤 표시가 실패하면 저장은 되었음을 안내하고 새로고침해 복원하며 저장을 되돌렸다고 주장하지 않는다."
+      ],
+      "rationale": "Line 23 defines storing the application data as a serialized JSON object under key 'todo_app_data_v1', and Line 26 details reading and parsing JSON with schema validation.",
+      "cases": [
+        {
+          "state": "absent",
+          "action": "initialize",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06",
+            "constraint:2"
+          ],
+          "rationale": "Line 26 states that first-time execution occurs strictly when getItem returns null (key absent), safely initializing fresh state without data loss."
+        },
+        {
+          "state": "present_empty",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Line 26 classifies an empty string as an error, blocking writes and preserving raw storage rather than resetting it."
+        },
+        {
+          "state": "invalid",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Lines 17 and 26 declare that malformed JSON or invariant/schema violations block writes without arbitrary initialization or overwriting."
+        },
+        {
+          "state": "valid",
+          "action": "load",
+          "verdict": "consistent",
+          "evidenceLines": [
+            6,
+            17,
+            26
+          ],
+          "evidence": [
+            "같은 제목 ‘장보기’ 두 개 중 두 번째 항목을 수정·완료·삭제해도 첫 번째는 그대로다. 상태 전환·정보 수정 후에도 원래 등록순을 유지한다. 같은 브라우저·프로필·일반 창에서 같은 고정 주소로 다시 열면 이전 목록이 복원된다. 저장 실패면 성공 표시나 목록 변경을 하지 않고 입력을 보존하며 오류를 알려 재시도하게 한다. 브라우저의 사이트 데이터를 직접 삭제하거나 비공개 창을 닫으면 기록을 잃을 수 있다. 다른 브라우저/기기와 공유하지 않는다. 한 탭에서 순서대로 사용한다.",
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "Lines 6, 17, and 26 specify that valid data conforming to schemaVersion 1 is restored across reloads."
+        },
+        {
+          "state": "read_error",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Line 26 treats storage read access exceptions as write-blocked errors, protecting existing data from being overwritten."
+        }
+      ]
+    }
+  },
+  {
+    "phase": "regression-fixed",
+    "id": "after-normal-complete-2",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": {
+      "format": "json",
+      "evidenceLines": [
+        17,
+        23,
+        26,
+        28
+      ],
+      "evidence": [
+        "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+        "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+        "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다.",
+        "후보 객체를 검증·직렬화한 뒤 setItem 성공 반환을 커밋으로 보고 확정 목록/화면을 갱신한다. 커밋 전 또는 setItem 실패는 기존 저장값·확정 목록·입력을 보존한다. setItem 성공 뒤 표시가 실패하면 저장은 되었음을 안내하고 새로고침해 복원하며 저장을 되돌렸다고 주장하지 않는다."
+      ],
+      "rationale": "기획안 23행과 26행에서 고정 키 todo_app_data_v1에 {schemaVersion:1,nextSequence,items} 구조의 JSON 객체를 직렬화하여 저장하고 검증 및 파싱함을 명시하고 있습니다.",
+      "cases": [
+        {
+          "state": "absent",
+          "action": "initialize",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "26행에서 저장소에 키가 없는 null 상태일 때에만 처음 실행으로 판정하고 초기 상태를 생성하도록 명시했습니다."
+        },
+        {
+          "state": "present_empty",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "17행과 26행에서 빈 문자열 저장값을 비정상 손상 오류로 분류하고, 임의 초기화나 덮어쓰기 없이 쓰기를 차단하며 기존 값을 보존하도록 정의했습니다."
+        },
+        {
+          "state": "invalid",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "26행에서 잘못된 JSON, null JSON, 알 수 없는 버전/필드, 스키마 및 불변식 위반을 오류로 판정하고 원본 값을 덮어쓰거나 임의 보정하지 않고 쓰기를 차단하도록 규정했습니다."
+        },
+        {
+          "state": "valid",
+          "action": "load",
+          "verdict": "consistent",
+          "evidenceLines": [
+            6,
+            17,
+            26,
+            28
+          ],
+          "evidence": [
+            "같은 제목 ‘장보기’ 두 개 중 두 번째 항목을 수정·완료·삭제해도 첫 번째는 그대로다. 상태 전환·정보 수정 후에도 원래 등록순을 유지한다. 같은 브라우저·프로필·일반 창에서 같은 고정 주소로 다시 열면 이전 목록이 복원된다. 저장 실패면 성공 표시나 목록 변경을 하지 않고 입력을 보존하며 오류를 알려 재시도하게 한다. 브라우저의 사이트 데이터를 직접 삭제하거나 비공개 창을 닫으면 기록을 잃을 수 있다. 다른 브라우저/기기와 공유하지 않는다. 한 탭에서 순서대로 사용한다.",
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다.",
+            "후보 객체를 검증·직렬화한 뒤 setItem 성공 반환을 커밋으로 보고 확정 목록/화면을 갱신한다. 커밋 전 또는 setItem 실패는 기존 저장값·확정 목록·입력을 보존한다. setItem 성공 뒤 표시가 실패하면 저장은 되었음을 안내하고 새로고침해 복원하며 저장을 되돌렸다고 주장하지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06"
+          ],
+          "rationale": "6행과 17행, 28행에서 유효한 데이터 구조가 확인되면 이전 목록과 순번 상태를 그대로 복원하여 화면에 표시하도록 명시했습니다."
+        },
+        {
+          "state": "read_error",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "26행에서 저장소 읽기 접근 예외 발생 시에도 쓰기 차단으로 처리하여 기존 저장 공간의 데이터를 보존하도록 규정했습니다."
+        }
+      ]
+    }
+  },
+  {
+    "phase": "regression-fixed",
+    "id": "after-normal-complete-3",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": {
+      "format": "json",
+      "evidenceLines": [
+        17,
+        23,
+        26,
+        28
+      ],
+      "evidence": [
+        "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+        "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+        "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다.",
+        "후보 객체를 검증·직렬화한 뒤 setItem 성공 반환을 커밋으로 보고 확정 목록/화면을 갱신한다. 커밋 전 또는 setItem 실패는 기존 저장값·확정 목록·입력을 보존한다. setItem 성공 뒤 표시가 실패하면 저장은 되었음을 안내하고 새로고침해 복원하며 저장을 되돌렸다고 주장하지 않는다."
+      ],
+      "rationale": "기획안 23행과 26행에서 웹 브라우저 localStorage 고정 키(todo_app_data_v1)에 JSON 직렬화 객체({schemaVersion:1, nextSequence, items})를 단일 저장 단위로 관리하도록 명시하고 있습니다.",
+      "cases": [
+        {
+          "state": "absent",
+          "action": "initialize",
+          "verdict": "consistent",
+          "evidenceLines": [
+            26
+          ],
+          "evidence": [
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06",
+            "constraint:2"
+          ],
+          "rationale": "26행에서 getItem 결과가 null(키 부재)인 경우에만 처음 실행으로 판정하여 기본 스키마로 초기화하도록 규정하여 안전합니다."
+        },
+        {
+          "state": "present_empty",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "26행에서 빈 문자열을 오류로 규정하고 임의 보정이나 덮어쓰기 없이 쓰기를 차단하여 기존 저장 상태를 보존합니다."
+        },
+        {
+          "state": "invalid",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "17행 및 26행에서 잘못된 JSON, null JSON, 스키마 불변식 위반에 대해 임의 초기화나 덮어쓰기를 금지하고 쓰기 차단 및 기존 데이터를 보존하도록 명시했습니다."
+        },
+        {
+          "state": "valid",
+          "action": "load",
+          "verdict": "consistent",
+          "evidenceLines": [
+            6,
+            17,
+            23,
+            26
+          ],
+          "evidence": [
+            "같은 제목 ‘장보기’ 두 개 중 두 번째 항목을 수정·완료·삭제해도 첫 번째는 그대로다. 상태 전환·정보 수정 후에도 원래 등록순을 유지한다. 같은 브라우저·프로필·일반 창에서 같은 고정 주소로 다시 열면 이전 목록이 복원된다. 저장 실패면 성공 표시나 목록 변경을 하지 않고 입력을 보존하며 오류를 알려 재시도하게 한다. 브라우저의 사이트 데이터를 직접 삭제하거나 비공개 창을 닫으면 기록을 잃을 수 있다. 다른 브라우저/기기와 공유하지 않는다. 한 탭에서 순서대로 사용한다.",
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "전체 데이터를 {schemaVersion:1,nextSequence,items}로 한 고정 키 todo_app_data_v1에 한 번 setItem한다. 각 항목은 고유 비공백 문자열 id, 공백 제거 후 비어 있지 않은 title, 문자열 memo(빈 값 허용), 유효한 dueDateTime, 실제 boolean isCompleted, 양의 안전 정수 sequenceNumber다. id와 순번은 중복 불가이고 nextSequence는 양의 안전 정수이며 모든 항목 순번보다 크다. 빈 목록의 최대 순번은0이다. 신규 등록 성공 시에만 순번 배정과 카운터1증가를 함께 저장한다. 다른 변경에서 카운터/순번을 재계산하지 않는다. 증가 전후 안전 정수 한도를 넘으면 무변경 오류다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:REQ-06",
+            "constraint:2"
+          ],
+          "rationale": "유효한 스키마와 데이터 정합성이 확인된 경우 저장된 항목 및 순번 상태를 그대로 복원하여 화면에 반영합니다."
+        },
+        {
+          "state": "read_error",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            17,
+            26
+          ],
+          "evidence": [
+            "- REQ-06: 한 건 미완료·한 건 완료인 목록을 창을 닫고 같은 주소로 다시 열어 동일하게 복원한다. 저장 거부를 유발하면 성공 표시 없이 기존 저장값·목록과 입력을 유지한다. 데이터 손상이면 쓰기를 막고 임의 초기화/덮어쓰기하지 않는다.",
+            "처음 실행은 getItem 결과가 null(키 부재)일 때뿐이다. 빈 문자열, 잘못된 JSON, null JSON, 모르는 버전/필드, 필드 누락·타입·값·배열·ID/순번 불변식 위반은 오류이며 읽기 접근 예외도 쓰기 차단으로 처리한다. 원본 저장값을 임의 보정하거나 덮어쓰지 않는다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "26행에서 읽기 접근 예외 발생 시 쓰기 차단으로 처리하고 원본 저장값을 덮어쓰지 않도록 규정했습니다."
+        }
+      ]
+    }
+  },
+  {
+    "phase": "holdout",
+    "id": "after-cache-reset-authorized-1",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": {
+      "format": "json",
+      "evidenceLines": [
+        5,
+        6
+      ],
+      "evidence": [
+        "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+        "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+      ],
+      "rationale": "5행과 6행에 걸쳐 단일 localStorage 키에 JSON 배열 형태로 직렬화하여 저장하고 검증/로드하는 구조를 명시했습니다.",
+      "cases": [
+        {
+          "state": "absent",
+          "action": "initialize",
+          "verdict": "consistent",
+          "evidenceLines": [
+            5,
+            6
+          ],
+          "evidence": [
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+            "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "키가 없는 경우 빈 목록 []를 기본값으로 취급하여 표시 및 저장하도록 정의했습니다."
+        },
+        {
+          "state": "present_empty",
+          "action": "reset_or_overwrite",
+          "verdict": "consistent",
+          "evidenceLines": [
+            5,
+            6
+          ],
+          "evidence": [
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+            "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:R-1"
+          ],
+          "rationale": "기존 키에 빈 문자열이 저장된 경우 Scope R-1의 명시적 캐시 폐기 규칙에 따라 지우고 []로 재저장합니다."
+        },
+        {
+          "state": "invalid",
+          "action": "reset_or_overwrite",
+          "verdict": "consistent",
+          "evidenceLines": [
+            5,
+            6
+          ],
+          "evidence": [
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+            "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:R-1"
+          ],
+          "rationale": "깨진 JSON이나 형식 오류 데이터는 Scope R-1의 명시적 폐기 정책에 따라 캐시를 비우고 []로 재저장합니다."
+        },
+        {
+          "state": "valid",
+          "action": "load",
+          "verdict": "consistent",
+          "evidenceLines": [
+            5,
+            6
+          ],
+          "evidence": [
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+            "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "유효한 JSON 배열은 변형 없이 그대로 로드하여 화면에 표시합니다."
+        },
+        {
+          "state": "read_error",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            5
+          ],
+          "evidence": [
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "읽기 권한 오류 발생 시 불필요한 쓰기 시도 없이 오류를 안내하고 작업을 중단합니다."
+        }
+      ]
+    }
+  },
+  {
+    "phase": "holdout",
+    "id": "after-cache-reset-authorized-2",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": {
+      "format": "json",
+      "evidenceLines": [
+        5,
+        6
+      ],
+      "evidence": [
+        "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+        "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+      ],
+      "rationale": "Plan lines 5 and 6 explicitly specify storing the cache as a serialized JSON array in a single localStorage key.",
+      "cases": [
+        {
+          "state": "absent",
+          "action": "initialize",
+          "verdict": "consistent",
+          "evidenceLines": [
+            5,
+            6
+          ],
+          "evidence": [
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+            "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:R-1",
+            "goal"
+          ],
+          "rationale": "Lines 5 and 6 define an absent key as an empty list and initialize it to an empty JSON array []."
+        },
+        {
+          "state": "present_empty",
+          "action": "reset_or_overwrite",
+          "verdict": "consistent",
+          "evidenceLines": [
+            5,
+            6
+          ],
+          "evidence": [
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+            "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:R-1"
+          ],
+          "rationale": "Line 5 and 6 explicitly discard an empty string key and resave it as [] per approved Scope requirement R-1."
+        },
+        {
+          "state": "invalid",
+          "action": "reset_or_overwrite",
+          "verdict": "consistent",
+          "evidenceLines": [
+            5,
+            6
+          ],
+          "evidence": [
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+            "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:R-1"
+          ],
+          "rationale": "Lines 5 and 6 clear malformed JSON or schema-invalid data and overwrite with [] under explicit R-1 cache discard authorization."
+        },
+        {
+          "state": "valid",
+          "action": "load",
+          "verdict": "consistent",
+          "evidenceLines": [
+            5,
+            6
+          ],
+          "evidence": [
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+            "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Line 5 declares that valid JSON arrays are loaded directly without modification, preserving existing data."
+        },
+        {
+          "state": "read_error",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            5
+          ],
+          "evidence": [
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Line 5 stops operation and alerts the user upon read permission errors without attempting any write."
+        }
+      ]
+    }
+  },
+  {
+    "phase": "holdout",
+    "id": "after-loan-name-update-1",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REQUEST_SCOPE_CHANGE_APPROVAL",
+    "issues": [
+      {
+        "id": "issue-ecff36555d350ec7",
+        "kind": "contradiction",
+        "severity": "critical",
+        "description": "9행에서 '선택 항목의 물건명과 같은 모든 기록을 찾아 일괄 반환한다'고 명시하여 승인된 요구사항 R-2('고른 기록 한 건만 반환 상태로 바꾼다') 및 5행의 설명('선택한 기록 한 건의 반환 버튼을 누르면 그 번호의 상태만 반환으로 바뀐다')과 정면으로 모순됩니다.",
+        "suggestedDirection": "9행의 동일 물건명 일괄 반환 내용을 삭제하고, 고른 단일 기록의 고유 식별자만 반환 상태로 변경되도록 일관되게 수정하십시오.",
+        "relatedRequirementId": "R-2"
+      },
+      {
+        "id": "issue-6c2e00d916b94e51",
+        "kind": "scope_violation",
+        "severity": "major",
+        "description": "승인된 Scope R-2는 단일 기록 반환으로 제한되어 있으나, 9행에서 동일 물건명 일괄 반환 규칙을 도입하여 승인 범위를 벗어납니다.",
+        "suggestedDirection": "승인된 요구사항 R-2에 맞추어 선택한 개별 고유 기록 1건만 상태가 전이되도록 구현 및 확인 기준을 정정하십시오.",
+        "relatedRequirementId": "R-2"
+      }
+    ],
+    "questions": [],
+    "storageAudit": null
+  },
+  {
+    "phase": "holdout",
+    "id": "after-loan-name-update-2",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REQUEST_SCOPE_CHANGE_APPROVAL",
+    "issues": [
+      {
+        "id": "issue-19cf59928f32269c",
+        "kind": "contradiction",
+        "severity": "critical",
+        "description": "9행의 R-2 확인 기준에서 '선택 항목의 물건명과 같은 모든 기록을 찾아 일괄 반환한다'고 기술되어 5행의 '선택한 기록 한 건의 상태만 반환' 및 9행 후반의 'A 반환 후 A만 반환이고 B는 대여'라는 설명과 정면으로 모순됩니다.",
+        "suggestedDirection": "일괄 반환 문구를 삭제하고 승인된 R-2 범위에 맞게 선택한 식별 번호 1건만 반환 상태로 변경되도록 일관되게 수정하십시오.",
+        "relatedRequirementId": "R-2"
+      },
+      {
+        "id": "issue-4b68e5c16eedbe38",
+        "kind": "scope_violation",
+        "severity": "major",
+        "description": "승인된 Scope R-2는 '고른 기록 한 건만 반환 상태로 바꾼다'이나 9행에서 동일 물건명 일괄 반환 규칙을 포함하고 있습니다.",
+        "suggestedDirection": "선택된 개별 기록 1건만 갱신하도록 범위를 바로잡으십시오.",
+        "relatedRequirementId": "R-2"
+      }
+    ],
+    "questions": [],
+    "storageAudit": null
+  },
+  {
+    "phase": "holdout",
+    "id": "after-loan-unknown-version-1",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REQUEST_USER_INPUT",
+    "issues": [
+      {
+        "id": "issue-d799912d2e0da7bf",
+        "kind": "contradiction",
+        "severity": "critical",
+        "description": "10행에서 모르는 버전을 읽을 경우 호환을 위해 items를 빈 배열로 바꾸고 version 1로 덮어쓰도록 규정하여, 승인된 기술 제약인 '알 수 없는 스키마 버전은 원본 보존과 쓰기 차단으로 처리한다' 및 R-3 요구사항과 정면으로 모순됩니다.",
+        "suggestedDirection": "알 수 없는 스키마 버전이 감지되면 데이터를 덮어쓰거나 초기화하지 않고 원본을 보존하며 쓰기를 차단하도록 기획을 수정하십시오.",
+        "relatedRequirementId": "R-3"
+      }
+    ],
+    "questions": [
+      "Reviewer flagged a scope violation but did not provide a structured scope issue."
+    ],
+    "storageAudit": null
+  },
+  {
+    "phase": "holdout",
+    "id": "after-loan-unknown-version-2",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REQUEST_USER_INPUT",
+    "issues": [
+      {
+        "id": "issue-598debc2f286fbae",
+        "kind": "contradiction",
+        "severity": "critical",
+        "description": "10번 줄에서 알 수 없는 스키마 버전을 읽었을 때 items를 빈 배열로 바꾸고 version 1로 덮어쓰도록 규정하여, 승인된 기술 제약인 '알 수 없는 스키마 버전은 원본 보존과 쓰기 차단으로 처리한다' 및 잘못된 저장 데이터 원본 보존 요구(R-3)와 정면으로 충돌합니다.",
+        "suggestedDirection": "알 수 없는 스키마 버전 발견 시 빈 배열로 덮어쓰는 예외 규칙을 삭제하고, 승인 제약대로 기존 저장 데이터를 그대로 보존하며 추가 쓰기를 차단하도록 수정해야 합니다.",
+        "relatedRequirementId": "R-3"
+      }
+    ],
+    "questions": [
+      "Reviewer flagged a scope violation but did not provide a structured scope issue."
+    ],
+    "storageAudit": null
+  },
+  {
+    "phase": "holdout",
+    "id": "after-loan-valid-1",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": {
+      "format": "json",
+      "evidenceLines": [
+        10
+      ],
+      "evidence": [
+        "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+      ],
+      "rationale": "10번 줄에서 localStorage 단일 키에 {version:1,nextSequence,items} 구조의 JSON 문자열로 저장하고 로드/검증/직렬화를 수행함을 명시하고 있습니다.",
+      "cases": [
+        {
+          "state": "absent",
+          "action": "initialize",
+          "verdict": "consistent",
+          "evidenceLines": [
+            10
+          ],
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:R-3"
+          ],
+          "rationale": "10번 줄에서 키가 존재하지 않는 null 상태일 때만 빈 목록으로 초기화하도록 규정하여 요구사항 R-3과 일치합니다."
+        },
+        {
+          "state": "present_empty",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            10
+          ],
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:R-3",
+            "constraint:2"
+          ],
+          "rationale": "10번 줄에서 빈 문자열 데이터가 저장되어 있는 경우 원본을 보존하고 신규 쓰기를 차단하도록 처리합니다."
+        },
+        {
+          "state": "invalid",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            10
+          ],
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:R-3",
+            "constraint:2"
+          ],
+          "rationale": "10번 줄에서 깨진 JSON 또는 스키마/타입 위반 데이터 발견 시 기존 값을 덮어쓰거나 폐기하지 않고 원본 보존 및 쓰기 차단으로 규정했습니다."
+        },
+        {
+          "state": "valid",
+          "action": "load",
+          "verdict": "consistent",
+          "evidenceLines": [
+            10
+          ],
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:R-3"
+          ],
+          "rationale": "10번 줄에서 필수 문자열, 상태, 번호 고유성, 시퀀스 유효성을 검증한 정상 데이터를 로드하여 확정 목록으로 반영합니다."
+        },
+        {
+          "state": "read_error",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            10
+          ],
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:R-3",
+            "constraint:2"
+          ],
+          "rationale": "10번 줄에서 스토리지 읽기 예외 발생 시 임의 초기화 없이 원본 보존 및 쓰기 차단으로 안전하게 처리합니다."
+        }
+      ]
+    }
+  },
+  {
+    "phase": "holdout",
+    "id": "after-loan-valid-2",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": {
+      "format": "json",
+      "evidenceLines": [
+        10
+      ],
+      "evidence": [
+        "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+      ],
+      "rationale": "10행에서 localStorage 단일 키에 {version:1,nextSequence,items} 구조의 JSON을 저장하고 유효성을 검증한다고 명시하고 있습니다.",
+      "cases": [
+        {
+          "state": "absent",
+          "action": "initialize",
+          "verdict": "consistent",
+          "evidenceLines": [
+            10
+          ],
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "10행에서 키 부재(null)인 경우에만 빈 목록으로 초기화하도록 규정하고 있습니다."
+        },
+        {
+          "state": "present_empty",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            10
+          ],
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "10행에서 빈 문자열이 저장되어 있는 경우 원본을 보존하고 쓰기를 차단하도록 규정하고 있습니다."
+        },
+        {
+          "state": "invalid",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            10
+          ],
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "10행에서 깨진 JSON이나 타입 및 스키마 위반 데이터가 발견되면 기존 원본을 보존하고 쓰기를 차단하도록 규정하고 있습니다."
+        },
+        {
+          "state": "valid",
+          "action": "load",
+          "verdict": "consistent",
+          "evidenceLines": [
+            10
+          ],
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "10행에서 유효한 스키마와 무결성 검증을 통과한 JSON 데이터만 정상 로드하여 확정 목록 및 UI에 반영하도록 명시하고 있습니다."
+        },
+        {
+          "state": "read_error",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            10
+          ],
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "10행에서 읽기 예외 발생 시 원본 데이터를 보존하고 추가 쓰기를 차단하도록 명시하고 있습니다."
+        }
+      ]
+    }
+  },
+  {
+    "phase": "holdout",
+    "id": "after-meeting-failed-attempt-1",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REQUEST_USER_INPUT",
+    "issues": [
+      {
+        "id": "issue-bee4aad77b180892",
+        "kind": "contradiction",
+        "severity": "critical",
+        "description": "6행에서 중복 이름 신청 거부 시 참가 인원을 1 증가시키고 정원 검사에 반영하도록 규정하여, 실패 시 명단과 정원 계산을 변경하지 않는다는 R-2 및 인원이 실제 참가 명단과 일치해야 한다는 기술 제약과 모순됩니다.",
+        "suggestedDirection": "6행의 중복 신청 시 인원 증가 규칙을 삭제하고, 중복 신청 거부를 포함한 모든 실패 시 참가 명단과 계산 인원이 변경되지 않도록 통일하십시오.",
+        "relatedRequirementId": "R-2"
+      }
+    ],
+    "questions": [
+      "Reviewer flagged a scope violation but did not provide a structured scope issue."
+    ],
+    "storageAudit": null
+  },
+  {
+    "phase": "holdout",
+    "id": "after-meeting-failed-attempt-2",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REQUEST_USER_INPUT",
+    "issues": [
+      {
+        "id": "issue-40552d49d8b8188a",
+        "kind": "contradiction",
+        "severity": "critical",
+        "description": "6번 줄에서 중복 이름 신청을 거부할 때 참가 인원을 1 증가시키고 다음 정원 검사에 반영하도록 규정하여, R-2(신청/취소 실패 시 참가 명단 및 정원 계산 무변경) 및 승인된 제약 조건(인원은 실제 참가 명단과 일치)과 정면으로 모순됩니다.",
+        "suggestedDirection": "중복 신청 거부 시 참가 인원을 증가시키는 예외 규칙을 삭제하고, 모든 신청/취소 실패 시 명단과 인원 계산이 전혀 변경되지 않도록 단일화하십시오.",
+        "relatedRequirementId": "R-2"
+      }
+    ],
+    "questions": [
+      "Reviewer flagged a scope violation but did not provide a structured scope issue."
+    ],
+    "storageAudit": null
+  },
+  {
+    "phase": "holdout",
+    "id": "after-reading-empty-text-valid-1",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": {
+      "format": "other",
+      "evidenceLines": [
+        5
+      ],
+      "evidence": [
+        "R-1: UTF-8 일반 텍스트를 localStorage 하나의 키에 보관한다. JSON을 사용하지 않는다. 각 줄은 비공백 제목 하나이며, 빈 문자열은 정상적인 책0권 상태다. 키가 없거나 내용이 빈 문자열이면0권으로 읽는다. 제목의 줄바꿈을 거부하여 저장 형식과 구분한다."
+      ],
+      "rationale": "5번 줄에 명시된 바와 같이 JSON을 사용하지 않고 한 줄에 제목 하나씩 줄바꿈으로 구분하는 일반 UTF-8 텍스트 형식을 localStorage 단일 키에 보관합니다. 스코프 R-1 및 X-1에 부합하는 일반 텍스트 포맷이므로 JSON 전용 케이스 감사는 생략합니다.",
+      "cases": []
+    }
+  },
+  {
+    "phase": "holdout",
+    "id": "after-reading-empty-text-valid-2",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": {
+      "format": "other",
+      "evidenceLines": [
+        5
+      ],
+      "evidence": [
+        "R-1: UTF-8 일반 텍스트를 localStorage 하나의 키에 보관한다. JSON을 사용하지 않는다. 각 줄은 비공백 제목 하나이며, 빈 문자열은 정상적인 책0권 상태다. 키가 없거나 내용이 빈 문자열이면0권으로 읽는다. 제목의 줄바꿈을 거부하여 저장 형식과 구분한다."
+      ],
+      "rationale": "Plan line 5 explicitly specifies storing entries as a newline-delimited UTF-8 plain text string in a single localStorage key without using JSON, directly adhering to requirement R-1.",
+      "cases": []
+    }
+  },
+  {
+    "phase": "holdout",
+    "id": "before-cache-reset-authorized-1",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": null
+  },
+  {
+    "phase": "holdout",
+    "id": "before-cache-reset-authorized-2",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": null
+  },
+  {
+    "phase": "holdout",
+    "id": "before-loan-name-update-1",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REQUEST_SCOPE_CHANGE_APPROVAL",
+    "issues": [
+      {
+        "id": "issue-f4f940a298b426e1",
+        "kind": "contradiction",
+        "severity": "critical",
+        "description": "5행에서는 선택한 기록 한 건만 반환 상태로 변경된다고 명시했으나, 9행에서는 선택 항목의 물건명과 같은 모든 기록을 일괄 반환한다고 서술하여 계획 내 동작 설명이 상호 모순됩니다.",
+        "suggestedDirection": "9행의 일괄 반환 문구를 삭제하고 5행 및 R-2에 맞추어 선택된 고유 식별자 1건만 반환 상태로 전환되도록 일관되게 수정하십시오.",
+        "relatedRequirementId": "R-2"
+      },
+      {
+        "id": "issue-60c71f9d8703907c",
+        "kind": "scope_violation",
+        "severity": "critical",
+        "description": "승인된 Scope R-2는 '고른 기록 한 건만 반환 상태로 바꾼다'로 한정되어 있으나, 9행에서 동일 물건명을 가진 모든 기록을 일괄 반환하도록 확장 정의하여 승인 범위를 위배했습니다.",
+        "suggestedDirection": "동일 물건명 일괄 변경 로직을 배제하고 오직 사용자가 지정한 단일 기록의 상태만 갱신되도록 규정하십시오.",
+        "relatedRequirementId": "R-2"
+      }
+    ],
+    "questions": [],
+    "storageAudit": null
+  },
+  {
+    "phase": "holdout",
+    "id": "before-loan-name-update-2",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REQUEST_USER_INPUT",
+    "issues": [
+      {
+        "id": "issue-af24fe37a2dab002",
+        "kind": "contradiction",
+        "severity": "critical",
+        "description": "9행에서 '선택 항목의 물건명과 같은 모든 기록을 찾아 일괄 반환한다'고 명시하여 승인된 범위 R-2('고른 기록 한 건만 반환 상태로 바꾼다') 및 5행('선택한 기록 한 건의 반환 버튼을 누르면 그 번호의 상태만 반환으로 바뀐다')과 정면으로 모순됩니다.",
+        "suggestedDirection": "9행의 동일 물건명 일괄 반환 문구를 삭제하고, 5행 및 R-2에 맞추어 선택된 고유 번호(ID)에 해당하는 단일 기록 1건만 반환 상태로 변경되도록 수정하십시오.",
+        "relatedRequirementId": "R-2"
+      }
+    ],
+    "questions": [
+      "Reviewer flagged a scope violation but did not provide a structured scope issue."
+    ],
+    "storageAudit": null
+  },
+  {
+    "phase": "holdout",
+    "id": "before-loan-unknown-version-1",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REQUEST_USER_INPUT",
+    "issues": [
+      {
+        "id": "issue-257b24f00beccc90",
+        "kind": "contradiction",
+        "severity": "critical",
+        "description": "10번 줄에서 모르는 스키마 버전을 읽었을 때 items를 빈 배열로 바꾸어 version 1로 덮어쓰도록 규정하고 있어, 승인된 기술 제약인 '알 수 없는 스키마 버전은 원본 보존과 쓰기 차단으로 처리한다' 및 R-3 요구사항과 정면으로 모순되며 기존 데이터가 유실됩니다.",
+        "suggestedDirection": "알 수 없는 스키마 버전 발견 시 빈 배열로 덮어쓰는 예외 규칙을 삭제하고, 승인 제약에 명시된 대로 원본 데이터를 그대로 보존하며 추가 쓰기를 차단하도록 수정해야 합니다.",
+        "relatedRequirementId": "R-3"
+      }
+    ],
+    "questions": [
+      "Reviewer flagged a scope violation but did not provide a structured scope issue."
+    ],
+    "storageAudit": null
+  },
+  {
+    "phase": "holdout",
+    "id": "before-loan-unknown-version-2",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REQUEST_USER_INPUT",
+    "issues": [
+      {
+        "id": "issue-3f43224e45543f97",
+        "kind": "contradiction",
+        "severity": "critical",
+        "description": "승인된 기술 제약인 '알 수 없는 스키마 버전은 원본 보존과 쓰기 차단으로 처리한다'와 정면으로 배치되게, 10번 줄에서 모르는 version을 읽었을 때 items를 빈 배열로 바꾸어 version 1로 덮어쓰도록 명시되어 있어 영속 데이터가 손실됩니다.",
+        "suggestedDirection": "알 수 없는 스키마 버전을 만났을 때 데이터를 덮어쓰지 않고, 다른 스키마 위반과 동일하게 원본 데이터를 보존한 채 신규 쓰기를 차단하도록 계획을 수정해야 합니다.",
+        "relatedRequirementId": "R-3"
+      }
+    ],
+    "questions": [
+      "Reviewer flagged a scope violation but did not provide a structured scope issue."
+    ],
+    "storageAudit": null
+  },
+  {
+    "phase": "holdout",
+    "id": "before-loan-valid-1",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": null
+  },
+  {
+    "phase": "holdout",
+    "id": "before-loan-valid-2",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": null
+  },
+  {
+    "phase": "holdout",
+    "id": "before-meeting-failed-attempt-1",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REQUEST_USER_INPUT",
+    "issues": [
+      {
+        "id": "issue-dd4475974aaeafd1",
+        "kind": "contradiction",
+        "severity": "critical",
+        "description": "6행에서 중복 이름 신청 거부 시 참가 인원을 1 증가시키도록 규정하여, Scope R-2(신청/취소 실패 시 명단과 정원 계산 무변경), 기술 제약(인원과 실제 명단 일치), 그리고 3행·5행의 무변경 및 명단 길이 기반 계산 규칙과 정면으로 모순됩니다.",
+        "suggestedDirection": "중복 신청 실패 시 참가 인원을 증가시키는 예외 규칙을 제거하고, 모든 신청/취소 실패 시 명단과 인원 수가 일절 변경되지 않도록 일관되게 명시하십시오.",
+        "relatedRequirementId": "R-2"
+      }
+    ],
+    "questions": [
+      "Reviewer flagged a scope violation but did not provide a structured scope issue."
+    ],
+    "storageAudit": null
+  },
+  {
+    "phase": "holdout",
+    "id": "before-meeting-failed-attempt-2",
+    "status": "completed",
+    "expected": "block",
+    "decision": "REQUEST_USER_INPUT",
+    "issues": [
+      {
+        "id": "issue-483bc5558ba2cdc4",
+        "kind": "contradiction",
+        "severity": "critical",
+        "description": "라인 6에서 중복 이름 신청 거부 시 참가 인원을 1 증가시키고 다음 정원 검사에 사용하도록 명시하여, 승인된 스코프 R-2(신청/취소 실패 시 무변경) 및 기술 제약(인원은 실제 참가 명단과 일치)과 정면으로 충돌하며 라인 3, 5의 설명과도 모순됩니다.",
+        "suggestedDirection": "중복 신청 실패 시 인원을 증가시키지 않고 기존 명단과 정원/인원 계산을 온전히 유지하도록 라인 6의 규정을 수정해야 합니다.",
+        "relatedRequirementId": "R-2"
+      }
+    ],
+    "questions": [
+      "Reviewer flagged a scope violation but did not provide a structured scope issue."
+    ],
+    "storageAudit": null
+  },
+  {
+    "phase": "holdout",
+    "id": "before-reading-empty-text-valid-1",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": null
+  },
+  {
+    "phase": "holdout",
+    "id": "before-reading-empty-text-valid-2",
+    "status": "completed",
+    "expected": "adequate",
+    "decision": "REQUEST_USER_APPROVAL",
+    "issues": [],
+    "questions": [],
+    "storageAudit": null
+  }
+]
