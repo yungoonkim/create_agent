@@ -1,0 +1,108 @@
+{
+  "recordedAt": "2026-11-09T01:24:36.878549+00:00",
+  "environment": {
+    "os": "Linux",
+    "node": "24.22.1",
+    "npm": "11.9.0",
+    "powershellExecuted": false
+  },
+  "method": "Fresh source-only export without .git, .adtf, node_modules or credential files; source/test/package bytes verified against final working tree.",
+  "setupFailure": {
+    "command": "npm ci --no-audit --no-fund",
+    "cause": "Default /home/agent/.npm/_cacache path unavailable (ENOENT).",
+    "resolution": "Use per-command writable cache; no lockfile, TLS or integrity bypass."
+  },
+  "successfulCommands": [
+    {
+      "command": "npm ci --cache /workspace/scratch/adtf-guide-npm-cache --no-audit --no-fund",
+      "exitCode": 0,
+      "installedPackages": 42
+    },
+    {
+      "command": "npm run typecheck",
+      "exitCode": 0
+    },
+    {
+      "command": "npm test",
+      "exitCode": 0,
+      "tests": 132,
+      "passed": 132,
+      "failed": 0
+    },
+    {
+      "command": "npm run planning:demo",
+      "environmentVariablesRemoved": [
+        "GOOGLE_APPLICATION_CREDENTIALS",
+        "GOOGLE_CLOUD_PROJECT",
+        "GOOGLE_CLOUD_LOCATION"
+      ],
+      "exitCode": 0,
+      "finalDecision": "REQUEST_USER_APPROVAL"
+    },
+    {
+      "command": "Supervisor start -> fixture questions -> fixture answer -> fixture propose-scope -> report",
+      "environmentVariablesRemoved": [
+        "GOOGLE_APPLICATION_CREDENTIALS",
+        "GOOGLE_CLOUD_PROJECT",
+        "GOOGLE_CLOUD_LOCATION"
+      ],
+      "exitCode": 0,
+      "phase": "scope_proposed",
+      "nextAction": "approve-scope or reject-scope",
+      "workerRuntimeConnected": false
+    }
+  ],
+  "sourceSha256": {
+    "src/cli/development.ts": "f5171b2de85e17c2b9402d13d8a157bd246c1c01f84d5f5659c0f5fe52a9916d",
+    "src/cli/planning-gemini.ts": "dc08122dbdd55c504381a6b654c8730bde7aa3336b944c259d97a976b66b6158",
+    "src/cli/planning.ts": "f59592e050d3ca35d45d11dbe0df1f2ef6511234b36b372acc8b969299f442fe",
+    "src/cli/supervisor.ts": "305f1c0b6405918297475191c85b0ac8fa0d24d6cd602bea7dd32869acc26eaa",
+    "src/core/index.ts": "311da0273d2dea281d14ae34e6feada1de6574f448aa9c7a6068f5a0f2f8d697",
+    "src/core/types.ts": "1f4b1459c02891657afdab2ae7d1caac7be17a382a46ec1c61faa9113c46c3a8",
+    "src/development/contracts.ts": "0b9f4da18935e5a70f33d0bad99d6e66566911705930fd04712adcf60a61898e",
+    "src/development/controller.ts": "b9e2b77c2d0fa95445b269e7d9035cf5b0664045b1f51b031b06575e4b540cec",
+    "src/development/index.ts": "17e894a449c3eb7a4dbc1325dce1f571db171dd93ae0bb6fbd3896c8fd8812f0",
+    "src/development/memory-store.ts": "83755fd6e85742798a9d50711a15fcfb75c3504d30f265793eb43afbfa718762",
+    "src/development/plan-approval.ts": "e05f6cd44471b6164bcd57ff46bc7f8e638f0a5968d2e185d1e92a1e34bd310d",
+    "src/development/validation.ts": "d9b2745beba9c87ba42e3ba942c8e2d01b7211f84445015ae33e02a60f6535bf",
+    "src/planning/config.ts": "d1e8f5c84aebe4c28b63b1776dd5024c6463c96daa3bfed4cba33bcac6c6a4b5",
+    "src/planning/contracts.ts": "460ceff8d0e22d8463b62ed064866deb321203908677cdc6a6e008e479771387",
+    "src/planning/controller.ts": "78cb8e3bfaad35d8ac04a096a913718659523ab9a56c038c4640faa00e703d01",
+    "src/planning/fake-reviewer.ts": "b3d6a0f75848eeedf6eced022d2d64524faf140375702991e2924d3a117e24a7",
+    "src/planning/fake-writer.ts": "8785ff3551d2b31e65aa37d05361b3d59c77d6724dbe1096f0e72384fc68b459",
+    "src/planning/google-genai.ts": "c9fe777692eebe80665873247dd2b90fc8526b40240ed4441372842ec928baaf",
+    "src/planning/index.ts": "d9ea41c1a9144536bc7bb34a85e8b1b6f5e2f7b77be35c3e85dda46b139d8331",
+    "src/planning/memory-store.ts": "e484f36362d3c0c38fec881fa8a5c8389757b5408a7a106a0ef1271f72956315",
+    "src/planning/policy.ts": "2400d11292ec6a3badd7d0626286902aa87d3b8f9286dc1cfc2375d7311b3229",
+    "src/planning/review-quality.ts": "b6112f70e0d46b0e8e5ce63f656eb35e0511f923becc6214f78489dd00cbe39b",
+    "src/planning/storage-audit.ts": "4863b65712d492f536fabf8a0f65a74051c7f56e11c38c43ac3cfda565c77fa8",
+    "src/planning/prompts.ts": "638f6909cb2efeb5c6f7df2279b0d16592f5a9417b7146334c79c2a95134954e",
+    "src/supervisor/continuation-validation.ts": "f4bb7dadc0ad8718e5fd56e4c2c602bf87fe59a06dd3293b958d63ba1efb1cfa",
+    "src/supervisor/continuation.ts": "bcaffc10a385de8ad11c01460df7cb603e691156628a2f10dfd5723d9f8fe838",
+    "src/supervisor/contracts.ts": "9aab52d6b9b9d6d3e44b251db7b2658603b54cca1026e3cc40987998a3a1f8bb",
+    "src/supervisor/controller.ts": "319e846f38c75a7ace806197d3a04b320b2d1ad641abdf2e200bedd33166012c",
+    "src/supervisor/google-genai.ts": "07b34723019b2dfbd9bdc298c5d2f787650199b780a73305f4fac2720d482885",
+    "src/supervisor/index.ts": "f103937d38f3590105759b4ff917b68d4eb3a28940c1cb8520283d164a704f6d",
+    "src/supervisor/memory-store.ts": "00253aab1fd4b9c124b39c954268ad9e2cda5e12a117b7c572156fcdc94f092c",
+    "src/supervisor/validation.ts": "ab487ba16f2feea92dfe2715f6f1ce143bade2f36e8224bd0af9dae90c48d887",
+    "src/verification/command.ts": "e9dbaaa2a66ac7ab8b6a073be1a7eb8de4ed412e42d01b95c5e62db017d9a625",
+    "src/verification/contracts.ts": "69cf34b39833e34eb6554571b0bdebb0eecf1aadeb2cdfe4d96c816fb334eaa8",
+    "src/verification/engine.ts": "52221174b1e73e626fb1ebeeeb27b53c4ffe361a4fbf566c814e0411286f9bef",
+    "src/verification/files.ts": "4af01af751c50513e2b7f330cf4db7f9ca72b4349e8ffb6a3a311c23a7a7ae9e",
+    "src/verification/index.ts": "fea60c535020494d83948652cd1dd16164ae514e0506bc60bf9b6fe3eede9074",
+    "src/verification/validation.ts": "d09ce2020d85f0ddc9794a7905749111648dd8804a3081afd8dfc78275511901",
+    "test/continuation.test.ts": "56c566b305f08fb5db8105a4eabd83c9331278c24994eb88d86d940b124e52f1",
+    "test/contracts.test.ts": "4a26c077ff3fa2c89b4e285f2e31a3c56f8607422b55201bccb80c426d466e84",
+    "test/development-loop.test.ts": "0fdf5665d111ebd58beb95608ee255216f29fb013c165d0e3a87446294ab51fb",
+    "test/planning-contracts.test.ts": "b9ebab607b22820d9a14f22830b3d5fbb17c5b2ea9cd1c3e03d2982228248c95",
+    "test/planning-loop.test.ts": "a56e356ce802b4804d38ff53102b566fe7ee5609097d87eda006af977c997e3a",
+    "test/supervisor.test.ts": "b1eecf9d49eeab9ba55f804a05186ae8e09e3bc3f86e395d47795e324f3115b7",
+    "test/verification.test.ts": "f58d6471c78b14cb63d39bcb0dbdc5350f0e80cf4617937d9d002bf315e63d24",
+    "test/planning-quality.test.ts": "4afe5cd53f7e0b4592f44b210a5127f0a2733330ecec52beeceea9405c81dec1"
+  },
+  "limits": [
+    "Windows PowerShell commands reviewed, not executed on Windows.",
+    "No fresh local-PC Google login or additional live model call in installation smoke test.",
+    "Actual inventory/todo projects and approvals were not modified."
+  ]
+}

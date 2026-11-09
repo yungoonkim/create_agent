@@ -1,0 +1,286 @@
+{
+  "id": "after-cache-reset-authorized-2",
+  "caseId": "cache-reset-authorized",
+  "split": "holdout",
+  "expected": "adequate",
+  "repeat": 2,
+  "variant": "after",
+  "inputSha256": "db29929fa03acaac549fc5bfe824007bfdd933e31d16a75ea2f65476474fc960",
+  "status": "completed",
+  "review": {
+    "id": "review-1",
+    "projectId": "reviewer-reliability",
+    "planId": "reviewer-reliability-plan",
+    "planVersion": 1,
+    "scopeContractId": "scope-1",
+    "scopeVersion": 1,
+    "outcome": "pass",
+    "issues": [],
+    "suggestions": [],
+    "scopeViolation": false,
+    "userJudgmentRequired": false,
+    "reviewedAt": "2026-11-09T01:16:37.483Z",
+    "qualityAssessment": {
+      "version": 1,
+      "requirements": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "사용자는 임시 샘플 목록을 저장하고 같은 창을 다시 열면 읽는다. 중요한 사용자 작성 자료는 저장하지 않는다. 읽을 수 없는 캐시는 사용자가 정한 규칙에 따라 버리고 빈 캐시로 시작한다.",
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+            "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다.",
+            "캐시 폐기는 Scope R-1의 사용자 확정 요구이며 일반 사용자 자료에 적용하지 않는다. 키 이름은 설계 제안이다. 같은 주소/프로필의 일반 창 한 탭만 지원하고 다중 탭/물리 장애/암호화/장기 보존은 보장하지 않는다. 외부 요청·로그인·사용자 작성 자료 기능은 제외한다. 파서/명시적 캐시 폐기→저장→화면→정상/빈값/깨짐/접근 거부 테스트 순서다. 데이터에 순서 변경·개별 수정 기능이 없어 별도 순번/UUID는 불필요하다. 실제 구현/테스트/승인 완료 주장은 없고 초기 후보다."
+          ],
+          "rationale": "키 부재, 빈 문자열, 깨진 JSON 등 읽기 불가 캐시에 대해 Scope R-1에 맞춰 폐기 및 빈 배열 재설정 동작이 구체적으로 정의되어 있습니다.",
+          "evidenceLines": [
+            3,
+            5,
+            6,
+            8
+          ],
+          "requirementId": "R-1"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+          ],
+          "rationale": "쓰기 실패 시 이전 값과 화면을 유지하고 성공 처리를 하지 않는 예외 및 상태 보존 정책이 명시되어 있습니다.",
+          "evidenceLines": [
+            6
+          ],
+          "requirementId": "R-2"
+        }
+      ],
+      "checks": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "캐시 폐기는 Scope R-1의 사용자 확정 요구이며 일반 사용자 자료에 적용하지 않는다. 키 이름은 설계 제안이다. 같은 주소/프로필의 일반 창 한 탭만 지원하고 다중 탭/물리 장애/암호화/장기 보존은 보장하지 않는다. 외부 요청·로그인·사용자 작성 자료 기능은 제외한다. 파서/명시적 캐시 폐기→저장→화면→정상/빈값/깨짐/접근 거부 테스트 순서다. 데이터에 순서 변경·개별 수정 기능이 없어 별도 순번/UUID는 불필요하다. 실제 구현/테스트/승인 완료 주장은 없고 초기 후보다."
+          ],
+          "rationale": "캐시 폐기 정책은 승인된 Scope 요구로, 키 이름 등 기술적 사항은 설계 제안으로 출처가 올바르게 구분되어 있습니다.",
+          "evidenceLines": [
+            8
+          ],
+          "id": "decision_provenance"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "캐시 폐기는 Scope R-1의 사용자 확정 요구이며 일반 사용자 자료에 적용하지 않는다. 키 이름은 설계 제안이다. 같은 주소/프로필의 일반 창 한 탭만 지원하고 다중 탭/물리 장애/암호화/장기 보존은 보장하지 않는다. 외부 요청·로그인·사용자 작성 자료 기능은 제외한다. 파서/명시적 캐시 폐기→저장→화면→정상/빈값/깨짐/접근 거부 테스트 순서다. 데이터에 순서 변경·개별 수정 기능이 없어 별도 순번/UUID는 불필요하다. 실제 구현/테스트/승인 완료 주장은 없고 초기 후보다."
+          ],
+          "rationale": "외부 요청, 로그인, 영구 사용자 자료 배제 등 제외 범위(X-1)와 단일 창 제약사항을 준수하고 있습니다.",
+          "evidenceLines": [
+            8
+          ],
+          "id": "scope_compliance"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+            "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+          ],
+          "rationale": "정상 저장/로드뿐 아니라 권한 오류, JSON 파싱 오류, 쓰기 실패 등 비정상 상황에 대한 분기와 동작이 구체적입니다.",
+          "evidenceLines": [
+            5,
+            6
+          ],
+          "id": "behavior_and_errors"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+            "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+          ],
+          "rationale": "단일 localStorage 키 단위의 JSON 배열 검증 및 쓰기 실패 시 롤백/불변 유지 규칙이 명확합니다.",
+          "evidenceLines": [
+            5,
+            6
+          ],
+          "id": "data_integrity"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+          ],
+          "rationale": "키 부재, 빈 문자열, 잘못된 JSON, 정상 데이터, 쓰기 거부 주입 등 구체적인 입력 조건과 기대 결과가 검증 가능하게 정의되었습니다.",
+          "evidenceLines": [
+            6
+          ],
+          "id": "acceptance_criteria"
+        },
+        {
+          "status": "not_applicable",
+          "evidence": [],
+          "rationale": "이전 리뷰 이력 및 변경 요청(settledDecisions)이 존재하지 않아 해당 없습니다.",
+          "evidenceLines": [],
+          "id": "revision_resolution"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "사용자는 임시 샘플 목록을 저장하고 같은 창을 다시 열면 읽는다. 중요한 사용자 작성 자료는 저장하지 않는다. 읽을 수 없는 캐시는 사용자가 정한 규칙에 따라 버리고 빈 캐시로 시작한다.",
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+            "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+          ],
+          "rationale": "사용자 관점의 시나리오가 먼저 제시되고 데이터 및 실패 처리 기준이 명확하게 서술되어 있습니다.",
+          "evidenceLines": [
+            3,
+            5,
+            6
+          ],
+          "id": "clarity"
+        }
+      ]
+    },
+    "challengeCompleted": true,
+    "storageAudit": {
+      "format": "json",
+      "evidenceLines": [
+        5,
+        6
+      ],
+      "evidence": [
+        "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+        "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+      ],
+      "rationale": "Plan lines 5 and 6 explicitly specify storing the cache as a serialized JSON array in a single localStorage key.",
+      "cases": [
+        {
+          "state": "absent",
+          "action": "initialize",
+          "verdict": "consistent",
+          "evidenceLines": [
+            5,
+            6
+          ],
+          "evidence": [
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+            "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:R-1",
+            "goal"
+          ],
+          "rationale": "Lines 5 and 6 define an absent key as an empty list and initialize it to an empty JSON array []."
+        },
+        {
+          "state": "present_empty",
+          "action": "reset_or_overwrite",
+          "verdict": "consistent",
+          "evidenceLines": [
+            5,
+            6
+          ],
+          "evidence": [
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+            "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:R-1"
+          ],
+          "rationale": "Line 5 and 6 explicitly discard an empty string key and resave it as [] per approved Scope requirement R-1."
+        },
+        {
+          "state": "invalid",
+          "action": "reset_or_overwrite",
+          "verdict": "consistent",
+          "evidenceLines": [
+            5,
+            6
+          ],
+          "evidence": [
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+            "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+          ],
+          "authorizationScopeIds": [
+            "requirement:R-1"
+          ],
+          "rationale": "Lines 5 and 6 clear malformed JSON or schema-invalid data and overwrite with [] under explicit R-1 cache discard authorization."
+        },
+        {
+          "state": "valid",
+          "action": "load",
+          "verdict": "consistent",
+          "evidenceLines": [
+            5,
+            6
+          ],
+          "evidence": [
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다.",
+            "R-2: 새 목록 저장은 문자열 배열인지 검증→직렬화→단일 setItem 성공 반환→화면 반영이다. 쓰기 실패는 기존 값과 화면을 유지하고 성공 표시하지 않는다. 저장 뒤 표시 오류는 저장 성공과 새로고침 안내다. 키 없는 경우·빈 문자열·잘못된 JSON이면 []가 표시되고 []가 저장돼야 하며, 유효한 [\"샘플\"]은 원래대로 표시한다. 쓰기 거부를 주입하면 이전 값이 그대로여야 한다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Line 5 declares that valid JSON arrays are loaded directly without modification, preserving existing data."
+        },
+        {
+          "state": "read_error",
+          "action": "preserve_and_block",
+          "verdict": "consistent",
+          "evidenceLines": [
+            5
+          ],
+          "evidence": [
+            "R-1: 캐시는 JSON 배열로 단일 localStorage 키에 보관한다. 키 부재는 빈 목록이며, 기존 키의 빈 문자열/깨진 JSON/형식 오류는 승인 Scope의 명시적 폐기 정책에 따라 캐시를 지우고 []로 재저장한다. 이 동작은 영구 사용자 자료 복구가 아닌 재생성 가능한 캐시의 요구된 동작이다. 유효한 JSON 배열은 그대로 로드한다. 읽기 권한 오류는 쓰기 시도 없이 오류를 알리고 중단한다."
+          ],
+          "authorizationScopeIds": [],
+          "rationale": "Line 5 stops operation and alerts the user upon read permission errors without attempting any write."
+        }
+      ]
+    }
+  },
+  "decision": {
+    "type": "REQUEST_USER_APPROVAL",
+    "planId": "reviewer-reliability-plan",
+    "version": 1
+  },
+  "usage": [
+    {
+      "projectId": "reviewer-reliability",
+      "planId": "reviewer-reliability-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "reviewStage": "assessment",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 2670,
+      "outputTokens": 745,
+      "reasoningTokens": 1972,
+      "outcome": "success",
+      "durationMs": 20201,
+      "recordedAt": "2026-11-09T01:16:24.412Z"
+    },
+    {
+      "projectId": "reviewer-reliability",
+      "planId": "reviewer-reliability-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "reviewStage": "challenge",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 2400,
+      "outputTokens": 523,
+      "reasoningTokens": 1469,
+      "outcome": "success",
+      "durationMs": 13071,
+      "recordedAt": "2026-11-09T01:16:37.483Z"
+    }
+  ],
+  "responses": [
+    {
+      "text": "{\n  \"outcome\": \"pass\",\n  \"issues\": [],\n  \"suggestions\": [],\n  \"scopeViolation\": false,\n  \"userJudgmentRequired\": false,\n  \"qualityAssessment\": {\n    \"version\": 1,\n    \"requirements\": [\n      {\n        \"requirementId\": \"R-1\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 5, 6, 8],\n        \"rationale\": \"키 부재, 빈 문자열, 깨진 JSON 등 읽기 불가 캐시에 대해 Scope R-1에 맞춰 폐기 및 빈 배열 재설정 동작이 구체적으로 정의되어 있습니다.\"\n      },\n      {\n        \"requirementId\": \"R-2\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [6],\n        \"rationale\": \"쓰기 실패 시 이전 값과 화면을 유지하고 성공 처리를 하지 않는 예외 및 상태 보존 정책이 명시되어 있습니다.\"\n      }\n    ],\n    \"checks\": [\n      {\n        \"id\": \"decision_provenance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [8],\n        \"rationale\": \"캐시 폐기 정책은 승인된 Scope 요구로, 키 이름 등 기술적 사항은 설계 제안으로 출처가 올바르게 구분되어 있습니다.\"\n      },\n      {\n        \"id\": \"scope_compliance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [8],\n        \"rationale\": \"외부 요청, 로그인, 영구 사용자 자료 배제 등 제외 범위(X-1)와 단일 창 제약사항을 준수하고 있습니다.\"\n      },\n      {\n        \"id\": \"behavior_and_errors\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [5, 6],\n        \"rationale\": \"정상 저장/로드뿐 아니라 권한 오류, JSON 파싱 오류, 쓰기 실패 등 비정상 상황에 대한 분기와 동작이 구체적입니다.\"\n      },\n      {\n        \"id\": \"data_integrity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [5, 6],\n        \"rationale\": \"단일 localStorage 키 단위의 JSON 배열 검증 및 쓰기 실패 시 롤백/불변 유지 규칙이 명확합니다.\"\n      },\n      {\n        \"id\": \"acceptance_criteria\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [6],\n        \"rationale\": \"키 부재, 빈 문자열, 잘못된 JSON, 정상 데이터, 쓰기 거부 주입 등 구체적인 입력 조건과 기대 결과가 검증 가능하게 정의되었습니다.\"\n      },\n      {\n        \"id\": \"revision_resolution\",\n        \"status\": \"not_applicable\",\n        \"evidenceLines\": [],\n        \"rationale\": \"이전 리뷰 이력 및 변경 요청(settledDecisions)이 존재하지 않아 해당 없습니다.\"\n      },\n      {\n        \"id\": \"clarity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 5, 6],\n        \"rationale\": \"사용자 관점의 시나리오가 먼저 제시되고 데이터 및 실패 처리 기준이 명확하게 서술되어 있습니다.\"\n      }\n    ]\n  }\n}",
+      "finishReasons": [
+        "STOP"
+      ]
+    },
+    {
+      "text": "{\n  \"issues\": [],\n  \"questions\": [],\n  \"storageAudit\": {\n    \"format\": \"json\",\n    \"evidenceLines\": [5, 6],\n    \"rationale\": \"Plan lines 5 and 6 explicitly specify storing the cache as a serialized JSON array in a single localStorage key.\",\n    \"cases\": [\n      {\n        \"state\": \"absent\",\n        \"action\": \"initialize\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [5, 6],\n        \"authorizationScopeIds\": [\"requirement:R-1\", \"goal\"],\n        \"rationale\": \"Lines 5 and 6 define an absent key as an empty list and initialize it to an empty JSON array [].\"\n      },\n      {\n        \"state\": \"present_empty\",\n        \"action\": \"reset_or_overwrite\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [5, 6],\n        \"authorizationScopeIds\": [\"requirement:R-1\"],\n        \"rationale\": \"Line 5 and 6 explicitly discard an empty string key and resave it as [] per approved Scope requirement R-1.\"\n      },\n      {\n        \"state\": \"invalid\",\n        \"action\": \"reset_or_overwrite\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [5, 6],\n        \"authorizationScopeIds\": [\"requirement:R-1\"],\n        \"rationale\": \"Lines 5 and 6 clear malformed JSON or schema-invalid data and overwrite with [] under explicit R-1 cache discard authorization.\"\n      },\n      {\n        \"state\": \"valid\",\n        \"action\": \"load\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [5, 6],\n        \"authorizationScopeIds\": [],\n        \"rationale\": \"Line 5 declares that valid JSON arrays are loaded directly without modification, preserving existing data.\"\n      },\n      {\n        \"state\": \"read_error\",\n        \"action\": \"preserve_and_block\",\n        \"verdict\": \"consistent\",\n        \"evidenceLines\": [5],\n        \"authorizationScopeIds\": [],\n        \"rationale\": \"Line 5 stops operation and alerts the user upon read permission errors without attempting any write.\"\n      }\n    ]\n  }\n}",
+      "finishReasons": [
+        "STOP"
+      ]
+    }
+  ]
+}

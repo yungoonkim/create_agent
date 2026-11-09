@@ -1,0 +1,35 @@
+{
+  "phase": "holdout",
+  "summary": {
+    "before": {
+      "logicalReviews": 12,
+      "defectiveCandidates": 6,
+      "blockedDefective": 6,
+      "unsafeAdvanced": 0,
+      "adequateCandidates": 6,
+      "adequateAdvanced": 6,
+      "adequateBlocked": 0,
+      "invalidOrFailed": 0
+    },
+    "after": {
+      "logicalReviews": 12,
+      "defectiveCandidates": 6,
+      "blockedDefective": 6,
+      "unsafeAdvanced": 0,
+      "adequateCandidates": 6,
+      "adequateAdvanced": 6,
+      "adequateBlocked": 0,
+      "invalidOrFailed": 0
+    }
+  },
+  "requests": 36,
+  "providedTokens": {
+    "inputTokens": 92152,
+    "outputTokens": 24594,
+    "reasoningTokens": 81261
+  },
+  "durationMs": 692344,
+  "protectedProjectAndApprovalFilesUnchanged": true,
+  "completedAt": "2026-11-09T01:17:03.778Z",
+  "note": "Small pre-labeled synthetic evaluation; protocol failures are not defect detections. Holdout outcomes must not be used to retune this same run."
+}

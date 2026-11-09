@@ -3,6 +3,17 @@
 마지막 정리: 2026-11-09 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 완료 — 저장 복구 검토·새 사례 평가·사용자 문서
+
+사용자가 요청한 지휘자 품질 보완·단독 검증과 문서를 완료했다. [최신 품질 보고서](reviewer-reliability-20261109.md), [계획 대비 구현 현황](plan-vs-implementation-20261109.md), [소스 다운로드/실행 가이드](local-run-guide.md)를 먼저 읽는다. 아래 단계별 승인 대기 문구는 과거 이력이다.
+
+- storageAudit: JSON 5상태의 실제 동작·원문 줄·허용 Scope 근거. 기존 JSON 초기화/덮어쓰기에 근거가 없으면 pass라도 수정. 명시 승인된 캐시 초기화·일반 텍스트의 정상 빈 값은 구분한다. 의미상 근거 적합성은 여전히 모델/사람 판단이다.
+- f95fa75 baseline 비교: 회귀 결함 기존3/3, 최종3/3 차단·정상 양쪽3/3. 새6종×2회는 양쪽 결함6/6 차단·정상6/6 승인 단계 도달·형식 실패0. 이번 표본에서 성능 향상을 주장하지 않는다. 최초 회귀1건 형식 실패는 보존하고 새 사례 평가 전에 ID 스키마를 보완했다. 새 사례 출력 확인 후 코드 조정 없음.
+- 전체 모델 요청72개/논리 리뷰42회, 중간 실패 포함. [집계](acceptance/reviewer-reliability-20261109/aggregate.json), [Reviewer 사유](acceptance/reviewer-reliability-20261109/reviewer-history.json). 예전 품질94요청·실제 todo13기록과 구분한다. 세 평가 디렉터리는 완료했으므로 재실행하지 않는다. 다음 변경은 별도 새 검증 세트가 필요하다.
+- typecheck/132개 테스트 통과. ADC·.adtf 없는 별도 소스 폴더에서 npm ci(쓰기 가능한 캐시), typecheck,132테스트, Fake Planning·Supervisor 입구 실행 성공. Windows 명령은 문서 검토했으나 실제 PowerShell 실행은 하지 않았다. [설치 시험](acceptance/local-guide-smoke-20261109.json).
+- 실제 todo 최신20파일·재고17파일 체크포인트 해시 일치. 현재 todo Scope v6/Plan v4 approved·iteration4/5·Supervisor r20 tasks_proposed/6작업, 재고 v4/v3 approved·3/5·r16/5작업 그대로다. 사용자 결정을 다시 실행하거나 과거 체크포인트를 덮어쓰지 않는다.
+- 모델/환경은 iceu-songpa11/global, gemini-3.8-flash 양 역할, ADC, Node24 --use-env-proxy. 인증 파일 내용·토큰은 출력하지 않는다. 제품 코드/제품 브라우저 시험·팀원 설계/연결/실행은 보류한다. 커밋 메시지는 한국어다.
+
 ## 최신 상태 — 할 일 주제의 기획·작업 지시 단독 인수 완료
 
 사용자가 확인한 ‘v4 확정 → 작업 지시 시험 → 최종 정리’를 완료했다. [최종 인수 보고서](supervisor-todo-final-acceptance-20261109.md), [쉬운 작업 요약](acceptance/todo-final-20261109/work-orders-easy-summary.md)을 우선한다. **Git 커밋 메시지는 앞으로 한국어로 작성한다**(사용자 요청, AGENTS.md에도 반영).

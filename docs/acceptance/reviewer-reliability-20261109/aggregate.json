@@ -1,0 +1,29 @@
+{
+  "kind": "reviewer reliability evaluation, not user approvals",
+  "phases": [
+    "regression",
+    "regression-fixed",
+    "holdout"
+  ],
+  "logicalReviews": 42,
+  "requests": 72,
+  "providedTokens": {
+    "inputTokens": 274972,
+    "outputTokens": 59180,
+    "reasoningTokens": 145785
+  },
+  "sumRequestDurationMs": 1364703,
+  "sourceMatchesHoldoutAndFixedRegression": true,
+  "protectedCheckpoints": [
+    {
+      "checkpoint": "docs/acceptance/todo-final-20261109/runtime-checkpoint.json",
+      "matchingFiles": 20
+    },
+    {
+      "checkpoint": "docs/acceptance/2026-11-08/primary-runtime-checkpoint.json",
+      "matchingFiles": 17
+    }
+  ],
+  "scopeAndPlanUnchanged": true,
+  "holdoutResultNotUsedToRetune": true
+}

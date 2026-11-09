@@ -1,0 +1,205 @@
+{
+  "id": "before-loan-unknown-version-1",
+  "caseId": "loan-unknown-version",
+  "split": "holdout",
+  "expected": "block",
+  "repeat": 1,
+  "variant": "before",
+  "inputSha256": "70f5d6a46430254826e0645b39a25525cd54ec6a36a5ffb6bb8066ffb1114010",
+  "status": "completed",
+  "review": {
+    "id": "review-1",
+    "projectId": "reviewer-reliability",
+    "planId": "reviewer-reliability-plan",
+    "planVersion": 1,
+    "scopeContractId": "scope-1",
+    "scopeVersion": 1,
+    "outcome": "revise",
+    "issues": [
+      {
+        "id": "issue-257b24f00beccc90",
+        "kind": "contradiction",
+        "severity": "critical",
+        "description": "10번 줄에서 모르는 스키마 버전을 읽었을 때 items를 빈 배열로 바꾸어 version 1로 덮어쓰도록 규정하고 있어, 승인된 기술 제약인 '알 수 없는 스키마 버전은 원본 보존과 쓰기 차단으로 처리한다' 및 R-3 요구사항과 정면으로 모순되며 기존 데이터가 유실됩니다.",
+        "suggestedDirection": "알 수 없는 스키마 버전 발견 시 빈 배열로 덮어쓰는 예외 규칙을 삭제하고, 승인 제약에 명시된 대로 원본 데이터를 그대로 보존하며 추가 쓰기를 차단하도록 수정해야 합니다.",
+        "relatedRequirementId": "R-3"
+      }
+    ],
+    "suggestions": [
+      "10번 줄의 영속화 스키마 검증 부분에서 알 수 없는 버전(unknown version)을 읽었을 때도 스키마 위반과 동일하게 쓰기 차단 및 원본 보존 원칙을 일관되게 적용하십시오."
+    ],
+    "scopeViolation": true,
+    "userJudgmentRequired": false,
+    "reviewedAt": "2026-11-09T01:14:51.638Z",
+    "qualityAssessment": {
+      "version": 1,
+      "requirements": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "1. 제목 ‘우산’, 빌린 사람 ‘민수’를 적고 추가한다. 둘 다 공백 제거 후 비어 있으면 거부하며 입력과 기존 목록은 유지한다.",
+            "2. 같은 이름의 물건도 각각 다른 고유 번호를 부여한다. 우산을 민수와 지수에게 하나씩 빌려줘도 별개 기록이다.",
+            "R-1: 등록은 비공백 물건명/사람명, UUID 중복 검사, 영속 양의 안전 정수 순번으로 식별한다. 동일 이름 두 건 등록하면 서로 다른 번호 두 개가 나타난다."
+          ],
+          "rationale": "물건명과 대여자를 비공백 문자열로 등록하고, 동명 물건도 독립된 고유 식별자 및 양의 정수 순번을 부여하여 별개로 관리함을 명시했습니다.",
+          "evidenceLines": [
+            3,
+            4,
+            8
+          ],
+          "requirementId": "R-1"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "3. 선택한 기록 한 건의 반환 버튼을 누르면 그 번호의 상태만 반환으로 바뀐다. 민수의 우산 반환이 지수 기록에 영향을 주지 않는다.",
+            "R-2: 상태는 대여/반환 두 값, 정확한 선택 ID만 반환한다. 대여 A/B 중 A 반환 후 A만 반환이고 B는 대여다. 같은 반환 요청 반복은 상태를 그대로 유지한다."
+          ],
+          "rationale": "선택한 단일 ID의 상태만 대여에서 반환으로 전이시키며, 다른 항목이나 동일 요청 반복 시 영향이 없도록 명확히 규정했습니다.",
+          "evidenceLines": [
+            5,
+            9
+          ],
+          "requirementId": "R-2"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "4. 처음 등록한 순번대로 목록을 보여주고 수정/반환으로 순번을 바꾸지 않는다. 브라우저를 닫았다 같은 주소/프로필로 열면 기록이 유지된다.",
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 다만 모르는 version을 읽으면 호환을 위해 items를 빈 배열로 바꿔 version1로 덮어쓴다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "10번 줄에서 알 수 없는 버전을 빈 배열로 덮어쓰도록 하여, '잘못된 저장 데이터 원본 보존' 및 '알 수 없는 스키마 버전 원본 보존과 쓰기 차단' 제약과 상충되어 요구사항을 온전히 충족하지 못합니다.",
+          "evidenceLines": [
+            6,
+            10
+          ],
+          "requirementId": "R-3"
+        }
+      ],
+      "checks": [
+        {
+          "status": "satisfied",
+          "evidence": [
+            "사용자 결정 출처는 승인 Scope R-1~3과 제약이다. 키 이름과 데이터 표현은 위임된 설계 제안이며 사용자 직접 결정으로 주장하지 않는다. 쉬운 이용 예시를 먼저 두고 기술 사양을 뒤에 둔다. 고정 localhost 주소·같은 컴퓨터/브라우저/프로필의 일반 창 단일 탭 순차 사용, file://·시크릿/사이트 데이터 삭제/다른 기기 동기화/물리 장애 무손실·동시 탭 잠금은 보장하지 않는다. 텍스트는 textContent로만 표시한다."
+          ],
+          "rationale": "승인 Scope 및 제약에서 유래한 결정과 기획자의 위임된 설계 제안(키 이름, 세부 데이터 표현)을 명확히 구분하여 기술했습니다.",
+          "evidenceLines": [
+            12
+          ],
+          "id": "decision_provenance"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 다만 모르는 version을 읽으면 호환을 위해 items를 빈 배열로 바꿔 version1로 덮어쓴다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "승인된 기술 제약인 '알 수 없는 스키마 버전은 원본 보존과 쓰기 차단으로 처리한다'를 위반하여 미지의 버전을 빈 배열로 덮어쓰도록 기획했습니다.",
+          "evidenceLines": [
+            10
+          ],
+          "id": "scope_compliance"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 다만 모르는 version을 읽으면 호환을 위해 items를 빈 배열로 바꿔 version1로 덮어쓴다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "스키마 위반 시 원본 보존과 쓰기 차단을 명시하면서도, 같은 줄에서 모르는 버전일 때 덮어쓰기를 수행한다는 상반된 오류 처리 동작을 기술했습니다.",
+          "evidenceLines": [
+            10
+          ],
+          "id": "behavior_and_errors"
+        },
+        {
+          "status": "missing",
+          "evidence": [
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 다만 모르는 version을 읽으면 호환을 위해 items를 빈 배열로 바꿔 version1로 덮어쓴다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "미지의 스키마 버전 데이터 유입 시 데이터를 덮어써서 파괴하는 결함이 존재하므로 무결성 및 보존 규칙을 만족하지 못합니다.",
+          "evidenceLines": [
+            10
+          ],
+          "id": "data_integrity"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "R-1: 등록은 비공백 물건명/사람명, UUID 중복 검사, 영속 양의 안전 정수 순번으로 식별한다. 동일 이름 두 건 등록하면 서로 다른 번호 두 개가 나타난다.",
+            "R-2: 상태는 대여/반환 두 값, 정확한 선택 ID만 반환한다. 대여 A/B 중 A 반환 후 A만 반환이고 B는 대여다. 같은 반환 요청 반복은 상태를 그대로 유지한다.",
+            "R-3: 전체 기록을 {version:1,nextSequence,items} 형태 JSON으로 localStorage 단일 키에 저장한다. 필수 문자열/상태/번호·순번 고유성·nextSequence>최대순번을 로드/쓰기 전 검증한다. 등록 성공에만 순번1증가, 한도 초과는 거부한다. 키 부재(null)만 빈 목록, 빈 문자열/깨진 JSON/타입·스키마 위반/읽기 예외는 원본 보존과 쓰기 차단이다. 다만 모르는 version을 읽으면 호환을 위해 items를 빈 배열로 바꿔 version1로 덮어쓴다. 후보 검증/직렬화→setItem 정상 반환→확정 목록/UI 반영 순서다. 쓰기 실패는 기존 값·화면·입력 보존 및 오류 안내, commit 뒤 화면 실패는 저장 성공과 새로고침 안내다."
+          ],
+          "rationale": "등록, 상태 변경, 저장 및 오류 시나리오에 대해 구체적인 입력값과 관찰 가능한 기대 결과가 명시되어 있습니다.",
+          "evidenceLines": [
+            8,
+            9,
+            10
+          ],
+          "id": "acceptance_criteria"
+        },
+        {
+          "status": "not_applicable",
+          "evidence": [
+            "향후 순서는 입력/모델→저장→두 상태 화면→전체 정상/실패 수락 검증이다. 초기 후보로 수정 요청은 없다. 실제 구현·검증 실행·사용자 승인 완료 주장은 없다. 로그인/알림/외부 전송/과금/물건 검색은 포함하지 않는다."
+          ],
+          "rationale": "이전 합의된 사용자 수정 요청(settledDecisions)이 존재하지 않는 최초 계획안입니다.",
+          "evidenceLines": [
+            13
+          ],
+          "id": "revision_resolution"
+        },
+        {
+          "status": "satisfied",
+          "evidence": [
+            "## 이렇게 사용한다",
+            "1. 제목 ‘우산’, 빌린 사람 ‘민수’를 적고 추가한다. 둘 다 공백 제거 후 비어 있으면 거부하며 입력과 기존 목록은 유지한다.",
+            "2. 같은 이름의 물건도 각각 다른 고유 번호를 부여한다. 우산을 민수와 지수에게 하나씩 빌려줘도 별개 기록이다.",
+            "3. 선택한 기록 한 건의 반환 버튼을 누르면 그 번호의 상태만 반환으로 바뀐다. 민수의 우산 반환이 지수 기록에 영향을 주지 않는다.",
+            "4. 처음 등록한 순번대로 목록을 보여주고 수정/반환으로 순번을 바꾸지 않는다. 브라우저를 닫았다 같은 주소/프로필로 열면 기록이 유지된다.",
+            "## 구현과 확인 기준"
+          ],
+          "rationale": "쉬운 한국어 이용 예시를 먼저 제시한 후 세부 기술 사양을 분리하여 모호함 없이 설명했습니다.",
+          "evidenceLines": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "id": "clarity"
+        }
+      ]
+    }
+  },
+  "decision": {
+    "type": "REQUEST_USER_INPUT",
+    "questions": [
+      "Reviewer flagged a scope violation but did not provide a structured scope issue."
+    ]
+  },
+  "usage": [
+    {
+      "projectId": "reviewer-reliability",
+      "planId": "reviewer-reliability-plan",
+      "iteration": 1,
+      "role": "reviewer",
+      "reviewStage": "assessment",
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash",
+      "inputTokens": 3097,
+      "outputTokens": 1176,
+      "reasoningTokens": 3544,
+      "outcome": "success",
+      "durationMs": 30635,
+      "recordedAt": "2026-11-09T01:14:51.638Z"
+    }
+  ],
+  "responses": [
+    {
+      "text": "{\n  \"outcome\": \"revise\",\n  \"issues\": [\n    {\n      \"kind\": \"contradiction\",\n      \"severity\": \"critical\",\n      \"description\": \"10번 줄에서 모르는 스키마 버전을 읽었을 때 items를 빈 배열로 바꾸어 version 1로 덮어쓰도록 규정하고 있어, 승인된 기술 제약인 '알 수 없는 스키마 버전은 원본 보존과 쓰기 차단으로 처리한다' 및 R-3 요구사항과 정면으로 모순되며 기존 데이터가 유실됩니다.\",\n      \"suggestedDirection\": \"알 수 없는 스키마 버전 발견 시 빈 배열로 덮어쓰는 예외 규칙을 삭제하고, 승인 제약에 명시된 대로 원본 데이터를 그대로 보존하며 추가 쓰기를 차단하도록 수정해야 합니다.\",\n      \"relatedRequirementId\": \"R-3\"\n    }\n  ],\n  \"suggestions\": [\n    \"10번 줄의 영속화 스키마 검증 부분에서 알 수 없는 버전(unknown version)을 읽었을 때도 스키마 위반과 동일하게 쓰기 차단 및 원본 보존 원칙을 일관되게 적용하십시오.\"\n  ],\n  \"scopeViolation\": true,\n  \"userJudgmentRequired\": false,\n  \"qualityAssessment\": {\n    \"version\": 1,\n    \"requirements\": [\n      {\n        \"requirementId\": \"R-1\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [3, 4, 8],\n        \"rationale\": \"물건명과 대여자를 비공백 문자열로 등록하고, 동명 물건도 독립된 고유 식별자 및 양의 정수 순번을 부여하여 별개로 관리함을 명시했습니다.\"\n      },\n      {\n        \"requirementId\": \"R-2\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [5, 9],\n        \"rationale\": \"선택한 단일 ID의 상태만 대여에서 반환으로 전이시키며, 다른 항목이나 동일 요청 반복 시 영향이 없도록 명확히 규정했습니다.\"\n      },\n      {\n        \"requirementId\": \"R-3\",\n        \"status\": \"missing\",\n        \"evidenceLines\": [6, 10],\n        \"rationale\": \"10번 줄에서 알 수 없는 버전을 빈 배열로 덮어쓰도록 하여, '잘못된 저장 데이터 원본 보존' 및 '알 수 없는 스키마 버전 원본 보존과 쓰기 차단' 제약과 상충되어 요구사항을 온전히 충족하지 못합니다.\"\n      }\n    ],\n    \"checks\": [\n      {\n        \"id\": \"decision_provenance\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [12],\n        \"rationale\": \"승인 Scope 및 제약에서 유래한 결정과 기획자의 위임된 설계 제안(키 이름, 세부 데이터 표현)을 명확히 구분하여 기술했습니다.\"\n      },\n      {\n        \"id\": \"scope_compliance\",\n        \"status\": \"missing\",\n        \"evidenceLines\": [10],\n        \"rationale\": \"승인된 기술 제약인 '알 수 없는 스키마 버전은 원본 보존과 쓰기 차단으로 처리한다'를 위반하여 미지의 버전을 빈 배열로 덮어쓰도록 기획했습니다.\"\n      },\n      {\n        \"id\": \"behavior_and_errors\",\n        \"status\": \"missing\",\n        \"evidenceLines\": [10],\n        \"rationale\": \"스키마 위반 시 원본 보존과 쓰기 차단을 명시하면서도, 같은 줄에서 모르는 버전일 때 덮어쓰기를 수행한다는 상반된 오류 처리 동작을 기술했습니다.\"\n      },\n      {\n        \"id\": \"data_integrity\",\n        \"status\": \"missing\",\n        \"evidenceLines\": [10],\n        \"rationale\": \"미지의 스키마 버전 데이터 유입 시 데이터를 덮어써서 파괴하는 결함이 존재하므로 무결성 및 보존 규칙을 만족하지 못합니다.\"\n      },\n      {\n        \"id\": \"acceptance_criteria\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [8, 9, 10],\n        \"rationale\": \"등록, 상태 변경, 저장 및 오류 시나리오에 대해 구체적인 입력값과 관찰 가능한 기대 결과가 명시되어 있습니다.\"\n      },\n      {\n        \"id\": \"revision_resolution\",\n        \"status\": \"not_applicable\",\n        \"evidenceLines\": [13],\n        \"rationale\": \"이전 합의된 사용자 수정 요청(settledDecisions)이 존재하지 않는 최초 계획안입니다.\"\n      },\n      {\n        \"id\": \"clarity\",\n        \"status\": \"satisfied\",\n        \"evidenceLines\": [2, 3, 4, 5, 6, 7],\n        \"rationale\": \"쉬운 한국어 이용 예시를 먼저 제시한 후 세부 기술 사양을 분리하여 모호함 없이 설명했습니다.\"\n      }\n    ]\n  }\n}",
+      "finishReasons": [
+        "STOP"
+      ]
+    }
+  ]
+}

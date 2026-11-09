@@ -91,6 +91,23 @@ export interface ReviewQualityAssessment {
   readonly checks: readonly (ReviewQualityItem & { readonly id: ReviewCheckId })[];
 }
 
+export const STORAGE_AUDIT_STATES = ["absent", "present_empty", "invalid", "valid", "read_error"] as const;
+export interface StorageAudit {
+  readonly format: "json" | "other" | "none" | "unclear";
+  readonly evidenceLines: readonly number[];
+  readonly evidence: readonly string[];
+  readonly rationale: string;
+  readonly cases: readonly {
+    readonly state: typeof STORAGE_AUDIT_STATES[number];
+    readonly action: "initialize" | "load" | "preserve_and_block" | "reset_or_overwrite" | "unspecified";
+    readonly verdict: "consistent" | "unsafe" | "needs_user_input";
+    readonly evidenceLines: readonly number[];
+    readonly evidence: readonly string[];
+    readonly authorizationScopeIds: readonly string[];
+    readonly rationale: string;
+  }[];
+}
+
 export interface PlanReview {
   readonly id: PlanReviewId;
   readonly projectId: ProjectId;
@@ -107,6 +124,8 @@ export interface PlanReview {
   /** Absent only for legacy reviews and offline fixtures; mandatory for new Gemini reviews. */
   readonly qualityAssessment?: ReviewQualityAssessment;
   readonly challengeCompleted?: boolean;
+  /** Present for new challenge reviews; older immutable reviews remain readable. */
+  readonly storageAudit?: StorageAudit;
 }
 
 export interface PlanningWriterContext {

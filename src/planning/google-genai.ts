@@ -9,11 +9,14 @@ import type {
   PlanningRoleConfig,
   PlanningWriter,
   PlanningWriterContext,
+  ScopeContract,
 } from "./contracts.js";
 import { decideAfterReview, validatePlanReview } from "./policy.js";
 import { REVIEW_CHECK_IDS } from "./contracts.js";
 import { WRITER_SYSTEM_INSTRUCTION, REVIEWER_SYSTEM_INSTRUCTION, REVIEW_CHALLENGE_SYSTEM_INSTRUCTION } from "./prompts.js";
 import { bindReviewEvidence } from "./review-quality.js";
+import { bindStorageAudit, scopeAuthorizationSources } from "./storage-audit.js";
+import { STORAGE_AUDIT_STATES } from "./contracts.js";
 
 export interface VertexAiClientOptions {
   readonly project?: string;
@@ -184,7 +187,7 @@ export class GeminiPlanningReviewer implements PlanningReviewer {
       const response = await this.client.models.generateContent({
         model: role.model.modelId, contents: prompt,
         config: { systemInstruction: REVIEWER_SYSTEM_INSTRUCTION, responseMimeType: "application/json",
-          responseJsonSchema: reviewSchemaFor(context.currentPlan), maxOutputTokens: 8_000, thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM } },
+          responseJsonSchema: reviewSchemaFor(context.currentPlan, context.approvedScope), maxOutputTokens: 8_000, thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM } },
       });
       capture(response.usageMetadata);
       const raw = parseJsonResponse(response.text);
@@ -205,9 +208,10 @@ export class GeminiPlanningReviewer implements PlanningReviewer {
       const challenge = await this.client.models.generateContent({ model: role.model.modelId,
         contents: JSON.stringify({ projectId: context.projectId, originalRequirements: context.originalRequirements,
           approvedScope: context.approvedScope, settledDecisions: context.settledDecisions,
+          approvedScopeSources: scopeAuthorizationSources(context.approvedScope),
           currentPlanLines: context.currentPlan.content.split("\n").map((text, index) => ({ line: index + 1, text })) }),
         config: { systemInstruction: REVIEW_CHALLENGE_SYSTEM_INSTRUCTION, responseMimeType: "application/json",
-          responseJsonSchema: CHALLENGE_SCHEMA, maxOutputTokens: 8_000, thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM } },
+          responseJsonSchema: challengeSchemaFor(context.currentPlan, context.approvedScope), maxOutputTokens: 8_000, thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM } },
       });
       capture(challenge.usageMetadata);
       const counterexamples = parseJsonResponse(challenge.text);
@@ -222,6 +226,7 @@ export class GeminiPlanningReviewer implements PlanningReviewer {
         outcome: counterexamples.questions.length > 0 ? "needs_user_input"
           : issues.some((issue: { severity?: unknown }) => issue.severity === "major" || issue.severity === "critical") ? "revise" : result.outcome,
         challengeCompleted: true, reviewedAt: this.now(),
+        storageAudit: bindStorageAudit(counterexamples.storageAudit, context.currentPlan),
       }, context.currentPlan, context.approvedScope);
       await log("success");
       return combined;
@@ -273,20 +278,39 @@ const REVIEW_SCHEMA = {
   required: ["outcome", "issues", "suggestions", "scopeViolation", "userJudgmentRequired", "qualityAssessment"],
 } as const;
 
-const CHALLENGE_SCHEMA = {
-  type: "object", properties: {
-    issues: REVIEW_SCHEMA.properties.issues,
-    questions: { type: "array", items: { type: "string" } },
-  }, required: ["issues", "questions"],
-} as const;
-
-/** Constrained decoding can choose only actual nonblank source lines; validation still checks the response. */
-function reviewSchemaFor(plan: PlanDraft): object {
+function sourceLineRefsFor(plan: PlanDraft): object {
   const validLines = plan.content.split("\n").flatMap((text, index) => text.trim().length > 0 ? [index + 1] : []);
   if (validLines.length === 0) throw new Error("Cannot review a Plan without nonblank content.");
-  const evidenceLines = { ...QUALITY_ITEM_PROPERTIES.evidenceLines, items: { type: "integer", enum: validLines } };
+  return { ...QUALITY_ITEM_PROPERTIES.evidenceLines, items: { type: "integer", enum: validLines } };
+}
+function issueSchemaFor(scope: ScopeContract): object {
+  const properties = { ...REVIEW_SCHEMA.properties.issues.items.properties };
+  const ids = scope.requiredFeatures.map((feature) => feature.id);
+  return { ...REVIEW_SCHEMA.properties.issues, items: { ...REVIEW_SCHEMA.properties.issues.items,
+    properties: { ...properties, ...(ids.length === 0 ? {} : { relatedRequirementId: { type: "string", enum: ids } }) } } };
+}
+function challengeSchemaFor(plan: PlanDraft, scope: ScopeContract): object {
+  const evidenceLines = sourceLineRefsFor(plan);
+  return { type: "object", properties: {
+    issues: issueSchemaFor(scope), questions: { type: "array", items: { type: "string" } },
+    storageAudit: { type: "object", properties: {
+      format: { type: "string", enum: ["json", "other", "none", "unclear"] }, evidenceLines, rationale: { type: "string" },
+      cases: { type: "array", maxItems: 5, items: { type: "object", properties: {
+        state: { type: "string", enum: [...STORAGE_AUDIT_STATES] },
+        action: { type: "string", enum: ["initialize", "load", "preserve_and_block", "reset_or_overwrite", "unspecified"] },
+        verdict: { type: "string", enum: ["consistent", "unsafe", "needs_user_input"] }, evidenceLines,
+        authorizationScopeIds: { type: "array", items: { type: "string", enum: Object.keys(scopeAuthorizationSources(scope)) } },
+        rationale: { type: "string" },
+      }, required: ["state", "action", "verdict", "evidenceLines", "authorizationScopeIds", "rationale"] } },
+    }, required: ["format", "evidenceLines", "rationale", "cases"] },
+  }, required: ["issues", "questions", "storageAudit"] };
+}
+
+/** Constrained decoding can choose only actual nonblank source lines; validation still checks the response. */
+function reviewSchemaFor(plan: PlanDraft, scope: ScopeContract): object {
+  const evidenceLines = sourceLineRefsFor(plan);
   const quality = REVIEW_SCHEMA.properties.qualityAssessment;
-  return { ...REVIEW_SCHEMA, properties: { ...REVIEW_SCHEMA.properties, qualityAssessment: { ...quality,
+  return { ...REVIEW_SCHEMA, properties: { ...REVIEW_SCHEMA.properties, issues: issueSchemaFor(scope), qualityAssessment: { ...quality,
     properties: { ...quality.properties,
       requirements: { ...quality.properties.requirements, items: { ...quality.properties.requirements.items,
         properties: { ...quality.properties.requirements.items.properties, evidenceLines } } },

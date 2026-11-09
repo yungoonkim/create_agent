@@ -23,19 +23,22 @@ function item(value: unknown): ReviewQualityItem {
   return { status: row.status as ReviewQualityItem["status"], evidence, rationale: text(row.rationale),
     ...(evidenceLines === undefined ? {} : { evidenceLines: evidenceLines as number[] }) };
 }
+export function evidenceFromLines(value: unknown, plan: PlanDraft): readonly string[] {
+  if (!Array.isArray(value) || value.length > 8 || new Set(value).size !== value.length) throw new Error("Invalid evidence line references.");
+  const lines = plan.content.split("\n");
+  return value.map((line: unknown) => {
+    if (typeof line !== "number" || !Number.isSafeInteger(line) || line < 1 || line > lines.length) throw new Error("Evidence line is outside the current Plan.");
+    return text(lines[line - 1]);
+  });
+}
 /** The model selects source locations; only the adapter supplies literal Plan excerpts. */
 export function bindReviewEvidence(raw: unknown, plan: PlanDraft): unknown {
   const quality = record(raw);
-  const lines = plan.content.split("\n");
   function bind(entries: unknown): unknown[] {
     if (!Array.isArray(entries)) throw new Error("Missing evidence assessment rows.");
     return entries.map((entry: unknown) => {
       const row = record(entry);
-      if (!Array.isArray(row.evidenceLines) || row.evidenceLines.length > 8) throw new Error("Missing or excessive evidence line references.");
-      const evidence = row.evidenceLines.map((line: unknown) => {
-        if (typeof line !== "number" || !Number.isSafeInteger(line) || line < 1 || line > lines.length) throw new Error("Evidence line is outside the current Plan.");
-        return text(lines[line - 1]);
-      });
+      const evidence = evidenceFromLines(row.evidenceLines, plan);
       return { ...row, evidence };
     });
   }
