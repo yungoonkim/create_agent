@@ -1,0 +1,8 @@
+{
+  "id": "approval-a3422782-30f5-4fc9-a7bf-3971193373c5",
+  "projectId": "supervisor-todo-acceptance-20261108",
+  "subject": "Approve plan supervisor-todo-acceptance-20261108-plan v4",
+  "status": "approved",
+  "decidedAt": "2026-11-09T00:34:17.494Z",
+  "rationale": "사용자가 기획 v4 쉬운 요약과 설계 제안을 검토할 수 있는 상태에서 v4 확정 → 작업 지시 시험 → 최종 정리의 진행 순서를 확인하고 '응 작업 진행해줘.'라고 승인했다. 최종 기획 v4와 그 설계 제안을 승인하고 작업 지시 품질 시험을 허용한다. 실제 제품 구현·팀원 실행·작업 초기화는 보류한다."
+}

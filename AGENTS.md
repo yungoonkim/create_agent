@@ -19,6 +19,8 @@
 
 ## 변경 및 검증
 
+- Git 커밋 메시지는 사용자의 요청에 따라 한국어로 작성한다.
+
 - 구현 범위는 `docs/roadmap.md`를 따른다. 제외된 기능을 선행 구현하지 않는다.
 - 공통 모델은 `src/core/`, Planning은 `src/planning/`, 작업 관리는 `src/development/`, 파일·명령 검증은 `src/verification/`, 지휘자 통합은 `src/supervisor/`에 둔다. 구체 어댑터와 저장소는 별도 모듈로 둔다.
 - 변경 후 `npm run typecheck`와 `npm test`를 실행하고 결과를 보고한다.

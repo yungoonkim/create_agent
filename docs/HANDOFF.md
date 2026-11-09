@@ -3,6 +3,20 @@
 마지막 정리: 2026-11-09 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 상태 — 할 일 주제의 기획·작업 지시 단독 인수 완료
+
+사용자가 확인한 ‘v4 확정 → 작업 지시 시험 → 최종 정리’를 완료했다. [최종 인수 보고서](supervisor-todo-final-acceptance-20261109.md), [쉬운 작업 요약](acceptance/todo-final-20261109/work-orders-easy-summary.md)을 우선한다. **Git 커밋 메시지는 앞으로 한국어로 작성한다**(사용자 요청, AGENTS.md에도 반영).
+
+- 실제 todo 상태: Scope v6 approved / Plan v4 user_approved / 반복4/5 / Supervisor revision20 tasks_proposed / 작업6개 / taskRevisions1개. Plan 승인 ID `approval-a3422782-30f5-4fc9-a7bf-3971193373c5` approved. [실제 승인](acceptance/todo-final-20261109/plan-approval.json).
+- source hash `eb90453cab264d16c0fcbee44e200a804415ed656313a75b48ae3793ed06c3e1` 유지. Scope/Plan/Review 본문·과거 버전과 재고 프로젝트는 해시가 그대로다.
+- 작업 제안3요청: v1 정상 저장 → 첫 수정은 Unknown dependency로 Controller 거부/기존r19 보존 → 재시험 v2 정상 저장/r20. 최종6개 ID와 DAG, REQ-01~07, 테스트 산출물·고정 origin·실패 경계·복원 시나리오를 대조했다. [상세 지시](acceptance/todo-final-20261109/work-orders-v2.md), [진단](acceptance/todo-final-20261109/rejected-revision-attempt.json), [원응답](acceptance/todo-final-20261109/retry-raw-orders.json).
+- 검증은 실제 Gemini 생성+Controller 구조/출처 검증+진행자 내용 대조다. 작업 제안에 Planning Reviewer가 추가 호출된 것으로 기록하지 않는다. 첫 거부 응답 본문은 CLI가 저장하지 않아 없고, 재시험은 검증 전 원문을 보존했다. usage success는 JSON 파싱 성공이며 Controller 수락/실행을 뜻하지 않는다.
+- 제품 코드·제품 브라우저 테스트·팀원 실행·작업 수락/초기화 없음. report.nextAction=initialize-tasks는 기술적 안내이며 현재 승인 범위의 다음 자동 작업이 아니다. 여기서 멈춘다.
+- [최신 체크포인트](acceptance/todo-final-20261109/runtime-checkpoint.json), [report](acceptance/todo-final-20261109/report.json), [사용량](acceptance/todo-final-20261109/usage-summary.json). 이전 todo-20261108 체크포인트는 승인 전 역사 자료라 현재 데이터 위에 복원하지 않는다. retry receipt는 completed이므로 모델/결정을 재실행하지 않는다.
+- 프롬프트의 CLI 가정을 승인 제품 인터페이스 기준으로 일반화하고 수정 작업 ID/참조 일치를 명시했다. 최종 typecheck/128개 테스트 통과. 실제 본 실행 모델 기록13개, 작업 요청만3개. 별도 품질 평가94개 요청과 구분한다.
+
+이번 주제까지 대표 기획·지시 인수는 완료다. 남는 개선은 품질 평가의 의미 미검출·미지의 독립 사례다. 팀원/제품 구현은 사용자 재지시 전까지 보류한다. 아래는 앞선 시점의 품질 보완 및 승인 대기 이력이다.
+
 ## 최신 작업 완료 — Writer/Reviewer 품질 절차 보완·실제 비교
 
 사용자 요청에 따라 시스템 프롬프트·검토 형식·코드 통과 조건을 보완했다. [최종 보고서](planning-quality-hardening-20261108.md)를 우선한다. todo 기획 v4 최종 승인은 여전히 pending이며 제품 구현·팀원 Agent 작업은 보류다.

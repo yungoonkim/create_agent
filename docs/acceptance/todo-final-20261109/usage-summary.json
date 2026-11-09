@@ -1,0 +1,21 @@
+{
+  "primaryProjectModelRequestRecords": 13,
+  "taskProposalRequests": 3,
+  "acceptedTaskProposalVersions": 2,
+  "controllerRejectedProposals": 1,
+  "taskRevisions": 1,
+  "proposalUsageOutcomeNote": "success records JSON parsing; one generated candidate failed Controller DAG validation and was never committed.",
+  "providedTokens": {
+    "inputTokens": 123485,
+    "outputTokens": 32220,
+    "reasoningTokens": 13914
+  },
+  "taskRequestProvidedTokens": {
+    "inputTokens": 63378,
+    "outputTokens": 10724,
+    "reasoningTokens": 3206
+  },
+  "durationMs": 389797,
+  "taskRequestDurationMs": 161746,
+  "note": "Quality benchmark 94 request records are separate; missing token fields are not estimated; no billing/HTTP-retry count."
+}

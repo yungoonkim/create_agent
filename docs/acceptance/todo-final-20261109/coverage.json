@@ -1,0 +1,34 @@
+{
+  "REQ-04": [
+    "task-05-item-interactions",
+    "task-06-app-lifecycle-integration"
+  ],
+  "REQ-03": [
+    "task-05-item-interactions",
+    "task-06-app-lifecycle-integration"
+  ],
+  "REQ-01": [
+    "task-02-domain-validation",
+    "task-04-ui-form-list",
+    "task-06-app-lifecycle-integration"
+  ],
+  "REQ-06": [
+    "task-01-env-prereq",
+    "task-02-domain-validation",
+    "task-03-storage-repository",
+    "task-06-app-lifecycle-integration"
+  ],
+  "REQ-07": [
+    "task-01-env-prereq",
+    "task-04-ui-form-list",
+    "task-06-app-lifecycle-integration"
+  ],
+  "REQ-02": [
+    "task-04-ui-form-list",
+    "task-06-app-lifecycle-integration"
+  ],
+  "REQ-05": [
+    "task-05-item-interactions",
+    "task-06-app-lifecycle-integration"
+  ]
+}
