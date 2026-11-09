@@ -39,12 +39,15 @@ export function revisionIssueSources(review: PlanReview | undefined): Readonly<R
   for (const r of review.qualityAssessment?.requirements ?? []) {
     const b = r.behaviorEvidence;
     if (r.status === "missing" || r.status === "needs_user_input" || b &&
-      (!b.normal.evidence.length || !b.acceptance.evidence.length || !b.failure.evidence.length && !b.failureNotApplicableReason.trim())) {
+      (!b.normal.evidence.length || !b.acceptance.evidence.length || !b.failure.evidence.length && !b.failureNotApplicableReason.trim() ||
+        review.revisionAudit !== undefined && [b.normal, b.failure, b.acceptance].some(e => onlyHeadings(e.evidence)))) {
       result[`quality:requirement:${r.requirementId}`] = r.rationale;
     }
   }
   for (const c of review.qualityAssessment?.checks ?? []) if (c.status === "missing" || c.status === "needs_user_input") result[`quality:check:${c.id}`] = c.rationale;
   for (const i of storageAuditFindings(review.storageAudit).issues) result[i.id] = `${i.description} / ${i.suggestedDirection}`;
+  for (const c of review.storageAudit?.cases ?? []) if (c.verdict === "needs_user_input") result[`storage:question:${c.state}`] = c.rationale;
+  if (review.userJudgmentRequired || review.outcome === "needs_user_input") review.suggestions.forEach((s, i) => { result[`question:${i + 1}`] = s; });
   for (const r of review.revisionAudit?.preservation ?? []) if (r.status === "missing" || r.status === "unclear" || onlyHeadings(r.before.evidence) || onlyHeadings(r.after.evidence)) result[`preservation:${r.sourceId}`] = r.rationale;
   for (const r of review.revisionAudit?.resolutions ?? []) if (r.status !== "resolved" || onlyHeadings(r.current.evidence)) result[r.issueId] = r.rationale;
   return result;

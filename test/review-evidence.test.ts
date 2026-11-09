@@ -169,6 +169,9 @@ test("headings alone cannot support new behavior roles, while explicit shared lo
   const changed = { ...r, qualityAssessment: { ...q, requirements: q.requirements.map((x, i) => i ? x : { ...x,
     behaviorEvidence: { ...x.behaviorEvidence!, acceptance: { evidenceLines: [1], evidence: [content.split('\n')[0]!] } } }) } };
   assert.equal(decide(changed, plan()).type, "REVISE");
+  assert.ok(Object.keys(revisionIssueSources(changed)).includes("quality:requirement:LEND-1"));
+  const questions = revisionIssueSources({ ...r, userJudgmentRequired: true, suggestions: ["동일 물건을 별도 기록할까요?"] });
+  assert.equal(questions["question:1"], "동일 물건을 별도 기록할까요?");
   const shared = storage(); shared.validation.rules[0]!.candidate = at(8, 9);
   assert.equal(decide({ ...r, storageAudit: parseStorageAudit(bindStorageAudit(shared, plan())) }, plan()).type, "REQUEST_USER_APPROVAL");
 });
