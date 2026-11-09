@@ -3,6 +3,17 @@
 마지막 정리: 2026-11-09 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 작업 — 새 실모델 재시험 준비 완료, 인증된 PC 생성 대기
+
+사용자의 다음 작업 지시로 검토표/신뢰성 보완의 실제 Gemini 시험을 준비했다. [새 시험 계획](planning-review-live-protocol-20261109.md), [실행 안내](../examples/planning-review-live/README.md), [준비 기록](acceptance/planning-review-live-20261109/preflight.json)을 우선한다. **실제 모델 호출0회, 실모델 합격/품질 결과는 아직 없다.**
+
+- 이번 Cloud ADC refresh는 reauthentication_required였고, 공유 브라우저의 공식 Google HTTPS 첫 호출도 `Browser Use could not read requirements`로 실패했다. CUA 종료를 기록했고 새 로그인 프로세스/코드 흐름은 시작하지 않았다. 토큰 출력·채팅 인증 코드/토큰 요구·네트워크/TLS 우회는 없다. 현재 호스트에는 cloud-desktop 열기 target도 없다. 과거의 추측성 Desktop 메뉴 안내를 반복하지 않는다.
+- 새 두 사례: 식물 물주기 기록은 실제 Writer부터 시작, 운동 기록은 고의로 공개 서버 전송을 넣은 고정 초안에서 Scope 유지 교정을 시험한다. 운동 최초 초안은 모델 생성 결과가 아니다. 참고 답안/검사표를 live Writer에게 정답 지시로 보내지 않는다. 입력/기준/생산 소스/실행기/요금표는 생성 전에 고정했다.
+- 각2회 반복·전체 최대11 SDK 요청(6+5), SDK1시도, 추가 유료 채점 없음, 실제 사용자 승인/제품/팀원 실행 없음. Scope 승인 fixture만 격리한다. 체크아웃당 고정 trial live 시작1회를 먼저 예약하고 같은 ID/새 ID 자동 재생을 막는다. 인증/권한 실패는 남은 사례를 건너뛴다.
+- `npm.cmd run eval:planning-review -- generate --run-live --bundle` 한 번으로 실행명 자동 생성·고정 project/location·진행 로그·결과 압축을 제공한다. CMD/PowerShell 변수 설정은 필요 없다. 실패/대기 종료코드2라도 압축을 전달하며 유료 실행을 반복하지 않는다. 압축만 실패하면 기존 ID의 pack만 수행한다.
+- 타입 검사/158개 테스트 통과(기존155+새3). 고정 응답으로두 사례 흐름·범위 내 교정·내보내기·압축·변조/재생 차단을 확인했지만 이는 실모델 증거가 아니다. 전체 준비 dry-run은 `/workspace/scratch/planning-review-live-preparation`에 따로 보존했고 Git에는 명확한 TEST/STUB 요약만 둔다. primary50파일·승인37파일·이전 비교162파일이 보존됐다.
+- 다음: 인증된 PC의 실제 결과 압축 하나를 받아 경로/링크/해시를 검사하고 원문 근거·완료/중단·Scope 교정·기존 요구 보존·검토표·사용량을 감사한다. 모델 pass/사례 상태만으로 합격을 단정하지 않는다. 기존6쌍 비교나 실제 승인 프로젝트를 재실행하지 않는다. 이번 trial용 생산 코드 수정은 없다.
+
 ## 최신 완료 — 사용자 검토표 1차·신뢰성 보완·재개 자료
 
 중단된 `feature/planning-review-table` 작업을 재개해 코드 점검·사용 안내·검증 기록·문서 갱신을 마무리했다. [사용 안내](user-planning-review.md), [구현 보고서](planning-review-table-report-20261109.md), [검증 기록](acceptance/planning-review-table-20261109/validation.json), [읽기용 예시](acceptance/planning-review-table-20261109/demo-bundle/review.md)를 먼저 읽는다. 아래 재개 당시 점검은 완료 전 이력이다.
