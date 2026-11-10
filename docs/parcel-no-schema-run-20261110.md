@@ -6,4 +6,4 @@
 
 전송 스키마가 없어지면 모델 출력이 기존 형식을 어길 수 있다. 기존 production Reviewer의 JSON 파싱, 필수 필드, 정확한 줄·출처·저장 사례 검증, 정책 판단은 유지한다. 실패는 응답/허용목록 오류와 요약을 보존하고 멈춘다. 유효한 Review도 **분리한 DEMO FIXTURE 복사본**에만 저장하고 최종 사용자의 승인은 자동 생성하지 않는다. Writer·Scope·원본 프로젝트를 변경하지 않는다. 성공/품질은 사용자 실실행 결과를 보기 전까지 미확정이다.
 
-[Windows 실행 안내](../examples/parcel-challenge/README-no-schema.md). 전체186개 오프라인 검사와 타입 검사 통과. 실행용 ZIP은 소스 커밋·파일 해시를 manifest로 고정하고 기록 의존 테스트를 제외한다. ZIP 패키지의 검사 수와 dry-run 결과는 별도 검증 기록에 남긴다.
+[Windows 실행 안내](../examples/parcel-challenge/README-no-schema.md). 전체186개 오프라인 검사와 타입 검사 통과. 실행용 ZIP은 소스 커밋·파일 해시를 manifest로 고정하고 기록 의존 테스트를 제외한다. 해제 패키지176개 검사를 통과했고, dry-run은 예상대로 `limit_reached`·추가 유료 호출0회로 정지했다. [검증 기록](parcel-no-schema-validation-20261110.json).
