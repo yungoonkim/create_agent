@@ -174,10 +174,14 @@ export async function exportPlanningSession(directory: string): Promise<string> 
       const plan = await memory.getPlanDraft(data.config.projectId, `${data.config.projectId}-plan`, state.currentPlanVersion);
       if (plan) {
         const review = await memory.getPlanReview(data.config.projectId, plan.id, plan.version);
+        const previousPlan = plan.version > 1 ? await memory.getPlanDraft(data.config.projectId, plan.id, plan.version - 1) : undefined;
+        const previousScope = previousPlan ? await memory.getScopeContract(data.config.projectId, previousPlan.scopeVersion) : undefined;
+        const previousReview = previousPlan ? await memory.getPlanReview(data.config.projectId, plan.id, previousPlan.version) : undefined;
         const link = await memory.getScopeApprovalRecord(data.config.projectId, data.scope.id);
         const approval = link === undefined ? undefined : await memory.get(link.approvalId);
         const pending = state.status === "awaiting_approval" ? await memory.get(state.approvalId) : undefined;
         await exportUserReviewBundle(join(output, "review"), plan, buildUserReviewTable({ scope: data.scope, plan, planning: state,
+          includeChangeImpact: true, ...(previousPlan ? { previousPlan } : {}), ...(previousScope ? { previousScope } : {}), ...(previousReview ? { previousReview } : {}),
           ...(review ? { review } : {}), ...(approval ? { scopeApproval: approval } : {}), ...(pending ? { planApproval: pending } : {}) }));
       }
     }

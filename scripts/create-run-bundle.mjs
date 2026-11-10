@@ -7,7 +7,7 @@ import {dirname,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
-const excludedTests = ['test/review-consistency-replay.test.mjs','test/common-challenge.test.mjs','test/planning-comparison.test.mjs','test/run-bundle.test.mjs','test/parcel-compatibility.test.mjs','test/parcel-no-schema-replay.test.mjs'];
+const excludedTests = ['test/change-impact-replay.test.mjs','test/review-consistency-replay.test.mjs','test/common-challenge.test.mjs','test/planning-comparison.test.mjs','test/run-bundle.test.mjs','test/parcel-compatibility.test.mjs','test/parcel-no-schema-replay.test.mjs'];
 function git(repo,...args) { return execFileSync('git',args,{cwd:repo,maxBuffer:32*1024*1024}); }
 function crc32(bytes) {
   let value=0xffffffff;
