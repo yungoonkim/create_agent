@@ -1,0 +1,52 @@
+{
+  "archiveSha256": "1f94b450510e7c1dcad3d7e7799db4a7b0b8c0d1e45cac2defbbb7340d6c10b4",
+  "fileSha256": {
+    "challenge-request.json": "6866e0d20d3e7f185e07a70f6f010b6816d57f3ac43a54d1d0ec33f230b4fc39",
+    "challenge-response.json": "ee376e731af43d2d76199287730542b9ac355f11970800a9c032f73f8caa5f53",
+    "summary.json": "713425dd327ec8ed8cb387a2ec918b1ae1d84fa6307ea23daa9e51d389b4b180",
+    "failure.json": "3e70d79205f642596e8f85f951ce8560fbff8b63ee5685f0416c4dfdff7ac7d1"
+  },
+  "observations": {
+    "finishReasons": [
+      "STOP"
+    ],
+    "validTriggerEvidenceLines": [
+      58,
+      60,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70
+    ],
+    "validTriggerEvidenceCount": 11,
+    "localMaximum": 8,
+    "formalReviewSaved": false,
+    "finalApprovalCreated": false,
+    "newSdkAttempts": 1,
+    "cumulativeTrialAttempts": 8,
+    "usage": {
+      "promptTokenCount": 6357,
+      "candidatesTokenCount": 2139,
+      "totalTokenCount": 9775,
+      "trafficType": "ON_DEMAND",
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 6357
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 2139
+        }
+      ],
+      "thoughtsTokenCount": 1279
+    }
+  }
+}

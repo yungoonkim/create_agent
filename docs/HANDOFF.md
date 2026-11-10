@@ -3,6 +3,10 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 관찰 — 프롬프트 후보 실응답은 인용 배열 11개로 실패
+
+사용자 `prompt-1794283531575-fc89d831.tar.gz`는 STOP/새 요청1회·총9,775토큰. `valid.trigger.evidenceLines` 11개가 코드 최대8개를 위반해 정식 Review/승인 없음. 수정 복사본의 8개 라인 오프라인 가정 시험은 `REQUEST_USER_APPROVAL`까지 통과했지만 실제 승인/품질 근거는 아니다. 관련8시도(최초 인증 실패 별도), 새 상한 소진, 재실행 금지. 원본 SHA-256 `1f94b450510e7c1dcad3d7e7799db4a7b0b8c0d1e45cac2defbbb7340d6c10b4`. [분석](parcel-prompt-result-20261110.md). 이번 분석 새 모델 호출0회.
+
 ## 최신 준비 — 보완 프롬프트의 단일 실제 반례 도구
 
 사용자 다음 작업 지시로 고정 프롬프트 후보를 새 최대1회 요청하는 별도 CLI/Windows ZIP을 준비했다. 해제 ZIP178개 검사/CRC/해시·dry-run도 통과했다. 과거 성공 assessment 재사용, 원래 실패 요청 해시와 후보 전체 값 확인, 별도 시작 예약을 적용한다. 관련 과거7시도(최초 인증 실패 별도) 및 새1회 상한을 구분한다. 타입 검사·전체190개 오프라인 검사 통과, 실제 Gemini/OAuth0회. 이전 폴더·기획·승인·원자료 보존. [설계와 한계](parcel-prompt-run-20261110.md).
