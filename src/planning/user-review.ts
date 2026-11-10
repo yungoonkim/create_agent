@@ -6,6 +6,7 @@ import { qualityFindings } from "./review-quality.js";
 import { storageAuditFindings, storageValidationChecks } from "./storage-audit.js";
 import { reviewAssuranceFindings } from "./revision-audit.js";
 import type { RevisionAudit, StorageValidation } from "./contracts.js";
+import { buildChangeImpactTable, ChangeImpactSourceError, type ChangeImpactTable } from "./change-impact.js";
 
 export type UserReviewStatus = "reflected" | "missing" | "conflicting" | "needs_check";
 export const USER_REVIEW_LABELS: Readonly<Record<UserReviewStatus, string>> = {
@@ -41,6 +42,8 @@ export interface UserReviewTable {
   readonly storageValidation?: StorageValidation;
   readonly localReviewIssues?: readonly { readonly id: string; readonly description: string }[];
   readonly technicalStop?: string;
+  readonly changeImpact?: ChangeImpactTable;
+  readonly changeImpactWarning?: string;
 }
 export interface UserReviewInput {
   readonly scope: ScopeContract;
@@ -51,6 +54,10 @@ export interface UserReviewInput {
   readonly planApproval?: ApprovalRecord;
   readonly errors?: readonly PlanningErrorRecord[];
   readonly sourceCurrent?: boolean;
+  readonly includeChangeImpact?: boolean;
+  readonly previousPlan?: PlanDraft;
+  readonly previousScope?: ScopeContract;
+  readonly previousReview?: PlanReview;
 }
 const digest = (value: unknown): string => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 const empty = (): PlanEvidence => ({ evidenceLines: [], evidence: [] });
@@ -69,6 +76,18 @@ export function buildUserReviewTable(input: UserReviewInput): UserReviewTable {
     catch { warnings.push("검토 출처/버전/근거가 현재 기획과 맞지 않아 해당 검토를 사용하지 않았습니다."); }
   }
   if (review === undefined) warnings.push("현재 기획의 완료된 검토가 없습니다. 이전 버전의 pass를 재사용하지 않습니다.");
+  let changeImpact: ChangeImpactTable | undefined;
+  let changeImpactWarning: string | undefined;
+  if (input.includeChangeImpact) {
+    try {
+      changeImpact = buildChangeImpactTable({ plan, scope, ...(review ? { review } : {}),
+        ...(input.previousPlan ? { previousPlan: input.previousPlan } : {}), ...(input.previousScope ? { previousScope: input.previousScope } : {}),
+        ...(input.previousReview ? { previousReview: input.previousReview } : {}) });
+    } catch (error) {
+      changeImpactWarning = error instanceof ChangeImpactSourceError ? error.message : "변경 영향표의 출처를 검증할 수 없습니다.";
+      warnings.push(`변경 영향표를 생성하지 않았습니다: ${changeImpactWarning}`);
+    }
+  }
   const findings = review === undefined ? [] : [...qualityFindings(review), ...reviewAssuranceFindings(review)];
   const storage = storageAuditFindings(review?.storageAudit);
   const localReviewIssues = [...(review?.issues ?? []), ...storage.issues].filter(i => i.severity === "major" || i.severity === "critical")
@@ -96,7 +115,7 @@ export function buildUserReviewTable(input: UserReviewInput): UserReviewTable {
   const hasGlobalIssues = unboundIssues.length > 0;
   warnings.push(...unboundIssues.map(i => `특정 요구에 연결되지 않은 지적: ${i.description}`));
   const globalUncertainty = unfinished || scopeApproval === "unconfirmed" || review === undefined || review.outcome === "failed" ||
-    findings.length > 0 || storage.issues.length > 0 || storage.questions.length > 0 || hasGlobalIssues;
+    findings.length > 0 || storage.issues.length > 0 || storage.questions.length > 0 || hasGlobalIssues || changeImpactWarning !== undefined;
   const rows = scope.requiredFeatures.map((requirement): UserReviewRow => {
     const assessment = review?.qualityAssessment?.requirements.find(r => r.requirementId === requirement.id);
     const behavior = assessment?.behaviorEvidence;
@@ -120,6 +139,7 @@ export function buildUserReviewTable(input: UserReviewInput): UserReviewTable {
     evidenceAuthority: "model_reported_source_references", rows, warnings,
     questions, suggestions: review?.suggestions ?? [], failures, localReviewIssues,
     ...(technicalStop ? { technicalStop } : {}),
+    ...(changeImpact ? { changeImpact } : {}), ...(changeImpactWarning ? { changeImpactWarning } : {}),
     ...(review?.revisionAudit === undefined ? {} : { revisionAudit: review.revisionAudit }),
     ...(review?.storageAudit?.validation === undefined ? {} : { storageValidation: review.storageAudit.validation }) };
 }
@@ -182,6 +202,7 @@ export function renderUserReviewTable(table: UserReviewTable): string {
     "| --- | --- | --- | --- | --- | --- |",
     ...table.rows.map(r => `| ${escape(r.requirementId)}: ${escape(r.approvedCondition)} | ${USER_REVIEW_LABELS[r.status]} | ${cite(r.normal)} | ${cite(r.failure)}${r.failureNotApplicableReason ? `<br>해당 없음: ${escape(r.failureNotApplicableReason)}` : ""} | ${cite(r.acceptance)} | ${escape([r.reason, ...r.issues].join("\n"))} |`),
     ...assuranceSections(table),
+    ...(table.changeImpact ? ["", "## 변경 영향 확인", "", `[별도 변경 영향표](change-impact.md): 원문 변경 ${table.changeImpact.changes.length}개, 영향 확인 후보 ${table.changeImpact.rows.filter(r => r.status === "candidate").length}개. 연결 근거만 표시하며 승인이나 의미 검증을 대체하지 않습니다.`] : []),
     "", "## 사용자 확인이 필요한 질문", "", ...(table.questions.length ? table.questions.map(q => `- ${escape(q)}`) : ["- 기록된 질문 없음. 미해결 경고가 없다는 뜻은 아닙니다."]),
     "", "## Reviewer의 별도 제안", "", ...(table.suggestions.length ? table.suggestions.map(q => `- ${escape(q)}`) : ["- 없음"]),
     "", "## 같은 기획 버전에 기록된 중단/오류", "", ...(table.failures.length ? table.failures.map(f => `- ${escape(f.operation)}: ${escape(f.message)}${f.modelOutputFailure ? ` — ${escape(f.modelOutputFailure.nextAction)}` : ""}`) : ["- 기록된 오류 없음. 새 검증을 실행했다는 뜻은 아닙니다."]), "",

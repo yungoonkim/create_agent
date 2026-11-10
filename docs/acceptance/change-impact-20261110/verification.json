@@ -1,0 +1,69 @@
+{
+  "sourceArchiveSha256": "a7d7aea9d3fac4b70f7b9a1265465b3bbe31ca09e9c21082512dacc1921c6385",
+  "source": {
+    "projectId": "parking-planning-trial",
+    "planId": "parking-planning-trial-plan",
+    "currentPlanVersion": 2,
+    "currentPlanSha256": "a3478c48427998935a7b082c5a2ff288fb54f4fa6f1ec980e36abe6e0bb857e2",
+    "previousPlanVersion": 1,
+    "previousPlanSha256": "bf78ef9f697f41b4bca28bf0e5eed87932a7ba14aaf706ff8421a1e2c121c6f4",
+    "currentScopeSha256": "f7ac52caab104c312a2a5a8ca447b0d617078763c95676afab240d289a9b6bb4",
+    "previousScopeSha256": "f7ac52caab104c312a2a5a8ca447b0d617078763c95676afab240d289a9b6bb4",
+    "currentScopeId": "parking-scope",
+    "currentScopeVersion": 1,
+    "previousScopeId": "parking-scope",
+    "previousScopeVersion": 1,
+    "currentReviewSha256": "d5aef3331c301d3362419a8ee8922034935c5ee6688e9138b7fa97311a5f69cb",
+    "previousReviewSha256": "417f0446e79b2b9a14c59454365461c62e092a9211488e1545685ae68fcd386e"
+  },
+  "mode": "same_scope",
+  "diffMethod": "exact_lcs",
+  "changeBlocks": 29,
+  "impactCandidates": 26,
+  "unassessedRows": 0,
+  "unmappedOrPartiallyMappedBlocks": 13,
+  "categories": [
+    "requirement",
+    "acceptance",
+    "constraint",
+    "storage_rule"
+  ],
+  "blockers": [
+    {
+      "id": "issue-storage-validation-6",
+      "description": "공통 검증 createdAt: 생성 시점의 유효한 ISO 8601 날짜 시각 문자열: 개별·공유 확인 사례에 이 규칙을 뒷받침하는 연결 근거 없음 (모델의 supported 주장과 근거가 일치하지 않음). 모델 설명: 로드 및 후보 검증 공통 테이블에 필수 유효 날짜 형식으로 규정되어 있으며 acceptanceGroups[0]에서 포괄 검증된다."
+    }
+  ],
+  "sessionStatus": {
+    "projectId": "parking-planning-trial",
+    "planning": {
+      "projectId": "parking-planning-trial",
+      "scopeContractId": "parking-scope",
+      "scopeVersion": 1,
+      "iterationCount": 2,
+      "maxIterations": 2,
+      "status": "awaiting_user_input",
+      "currentPlanVersion": 2,
+      "reviewId": "review-2",
+      "reason": "The same issue remains at the same or higher severity: issue-storage-validation-6."
+    },
+    "budget": {
+      "maxCalls": 7,
+      "priorCalls": 4,
+      "originalMaxCalls": 6,
+      "usedCalls": 7,
+      "remainingCalls": 0,
+      "unknownOutcomes": 0,
+      "knownTokens": 77323,
+      "priorUsageIncluded": false,
+      "responsesWithoutUsage": 0
+    },
+    "nextAction": "review_correction",
+    "additionalCallsForCompleteIteration": 3,
+    "finalApprovalAutomatic": false
+  },
+  "newModelCalls": 0,
+  "originalFilesUnchanged": true,
+  "automaticApproval": false,
+  "semanticImpactCertification": false
+}

@@ -1,0 +1,23 @@
+{
+  "sourceCommit": "d01d021fdc9078447faeb22a9ec512d7544df6c9",
+  "zipSha256": "731ef0aef5c8c31bdbcf0b5e2dea0e15ec2a345ae552120716c0fd68d284984c",
+  "bundleFiles": 177,
+  "maxZipPathLength": 73,
+  "manifestFileHashesVerified": 176,
+  "typecheck": "passed",
+  "repositoryTests": 216,
+  "runtimeTests": 198,
+  "cliStatus": "passed",
+  "cliExport": "passed",
+  "exportHashesVerified": [
+    "plan.md",
+    "review.json",
+    "review.md",
+    "change-impact.json",
+    "change-impact.md"
+  ],
+  "originalSessionFilesPreservedInCopy": true,
+  "usedCalls": 7,
+  "newModelCalls": 0,
+  "automaticApproval": false
+}

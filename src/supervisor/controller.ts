@@ -251,12 +251,16 @@ export class SupervisorController {
     const scope = await memory.getScopeContract(this.projectId, plan.scopeVersion);
     if (scope === undefined) throw new Error("기획 출처 Scope를 찾을 수 없습니다.");
     const review = await memory.getPlanReview(this.projectId, plan.id, plan.version);
+    const previousPlan = plan.version > 1 ? await memory.getPlanDraft(this.projectId, plan.id, plan.version - 1) : undefined;
+    const previousScope = previousPlan ? await memory.getScopeContract(this.projectId, previousPlan.scopeVersion) : undefined;
+    const previousReview = previousPlan ? await memory.getPlanReview(this.projectId, plan.id, previousPlan.version) : undefined;
     const link = await memory.getScopeApprovalRecord(this.projectId, scope.id);
     const scopeApproval = link === undefined ? undefined : await memory.get(link.approvalId);
     const planApproval = "approvalId" in planning ? await memory.get(planning.approvalId) : undefined;
     const errors = await memory.getPlanningErrors(this.projectId);
     if (!same(planning, await memory.getPlanningLoopState(this.projectId)) || !same(supervisor, await this.options.store.get(this.projectId))) throw new Error("기획 상태가 읽는 동안 변경됐습니다. 완료 후 검토표를 다시 생성하세요.");
     return { plan, table: buildUserReviewTable({ scope, plan, planning, errors, sourceCurrent: supervisor?.scope === undefined || same(supervisor.scope, scope),
+      includeChangeImpact: true, ...(previousPlan ? { previousPlan } : {}), ...(previousScope ? { previousScope } : {}), ...(previousReview ? { previousReview } : {}),
       ...(review === undefined ? {} : { review }), ...(scopeApproval === undefined ? {} : { scopeApproval }),
       ...(planApproval === undefined ? {} : { planApproval }) }) };
   }

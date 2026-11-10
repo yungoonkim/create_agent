@@ -43,6 +43,8 @@ export type { VertexAiClientOptions } from "./google-genai.js";
 export { buildUserReviewTable, renderUserReviewTable } from "./user-review.js";
 export type { UserReviewInput, UserReviewTable, UserReviewRow, UserReviewStatus } from "./user-review.js";
 export { exportUserReviewBundle } from "./review-export.js";
+export { buildChangeImpactTable, renderChangeImpactTable, diffPlanText, ChangeImpactSourceError } from "./change-impact.js";
+export type { ChangeImpactTable, ChangeImpactRow, ChangeImpactInput, PlanTextChange } from "./change-impact.js";
 export {
   assertSafeProjectId,
   assertSafeStorageId,
