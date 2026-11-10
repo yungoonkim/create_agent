@@ -19,3 +19,5 @@ npm.cmd run eval:triage-shadow -- --output C:\adtf-data\triage-shadow-01
 출력: input/context/proposal/cases/report JSON과 파일 해시 manifest. 주차의 수동 재검토 예시1개 및 거부 예시6개를 함께 보존한다. 지적 누락, 오래된 입력, 잘못된 줄, 취향 질문으로의 격하, 승인 권한 추가, 근거 없는 Scope 요구를 시험한다. 테스트에는 정상 질문·Scope 요청·반복/한도·품질/보존 지적 누락도 포함한다. 공개 고정 사례이므로 미공개 검증 세트나 독립 정답 데이터가 아니다.
 
 이후 별도 실모델 평가를 한다면 모델/프롬프트·새 호출 상한·실패 예약·입력 해시·응답 원문·토큰/시간을 먼저 고정해야 한다. 새로운 주제의 독립 사례에 대해 사람이 정한 기대 분류와 비교하고, 잘못된 재작업·불필요한 질문·Scope 확장·중요 결함 누락·인용의 관련성·추가 비용을 측정한다. 같은 모델의 자기 채점이나 Policy 일치율만으로 도입하지 않는다. 현재 소진된 주차7회 예산을 재사용하거나 정식 Review를 덮어쓰지 않는다.
+
+입력 보완: 선택적 직전 Plan을 제공하면 같은 Scope의 직전 버전과 이전 Review의 출처를 검증한다. `previous-plan:L번호`, `previous-review:issue:ID`, `iteration:state`를 인용할 수 있다. 이전 Review만 있는 경우 원문 부재를 `history:availability`에 표시한다. [v2 점검](../../docs/triage-semantic-audit-20261110.md).

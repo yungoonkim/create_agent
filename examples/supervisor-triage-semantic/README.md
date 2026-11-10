@@ -8,8 +8,10 @@
 npm.cmd run eval:triage-semantic -- --output C:\adtf-data\triage-semantic-01
 ```
 
-존재하지 않는 새 출력 폴더를 지정한다. 모델/API 호출은 없다. 8개 폴더마다 `input.json`(기준 Policy 계산 입력), `userRequest.json`(별도 사용자 요청 또는 null), `context.json`(향후 제안 생성 입력), `gold.json`(평가자용 잠정 정답)이 나온다. `gold.json`이나 원래 `cases.json`을 제안 생성 모델에 넣지 않는다. `scorecard-blank.json`은 사람의 미채점 기록 양식이고 `manifest.json`은 각 파일의 SHA-256을 담는다.
+존재하지 않는 새 출력 폴더를 지정한다. 모델/API 호출은 없다. 8개 폴더마다 `input.json`(기준 Policy 계산 입력), `userRequest.json`(별도 사용자 요청 또는 null), `context.json`(향후 제안 생성 입력), `gold.json`(AI가 작성한 평가자용 잠정 기대 답)이 나온다. `gold.json`이나 원래 `cases.json`을 제안 생성 모델에 넣지 않는다. `scorecard-blank.json`은 사람의 미채점 기록 양식이고 `manifest.json`은 각 파일의 SHA-256을 담는다.
 
 반복 결함 사례는 직전 Review를 별도 스냅샷으로 포함하고 한도 사례는 반복 수를 명시한다. 모든 Scope/Plan/Review는 `buildShadowContext()`에서 검증되고 기존 Policy 결정이 계산된다. 수동 정답의 예시 인용은 구조 검사만 통과한다. 인용이 주장을 실제로 입증하는지는 사람이 [평가 기준](../../docs/triage-semantic-evaluation-protocol-20261110.md)에 따라 확인해야 한다.
+
+v2는 반복 사례의 직전 기획/Review와 실제 반복 한도를 인용할 수 있다. 기존 v1 자료는 보존하고 [v2 점검 기록](../../docs/triage-semantic-audit-20261110.md)을 따른다. 빈 채점표의 errorFlags=null은 미채점이다.
 
 현재 합성 입력에는 진짜 승인 레코드, 전체 품질/저장 감사, 독립 두 사람의 채점, 유료 모델의 응답이 없다. 이는 의미 평가의 **준비 자료**이며 성능 결과가 아니다. 저장된 주차 세션과 공식 승인/Review 자료는 사용하지 않는다.

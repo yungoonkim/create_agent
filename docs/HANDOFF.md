@@ -3,6 +3,10 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 작업 — 병렬 보류, 중재 평가 입력 점검/v2
+
+사용자가 병렬 운영은 나중에 검토하고 기존 개발을 이어가도록 지시했다. #32가 main에 병합된 것을 확인하고 기존 Codex 폴더에서 후속 작업했다. [사례8개 점검과 v2](triage-semantic-audit-20261110.md): 직전 기획 누락·기대 답 암시·사람 작성으로 잘못 표기한 문제를 보완했다. Shadow에 선택적 직전 Plan 출처 검증과 과거 지적/반복 한도 인용을 추가했다. 기존 Policy는 유지한다. v1 원본은 보존하고 별도v2 archive/해시/빈 채점표를 저장했다. typecheck/전체224개 통과, 추가 호출0회. 사람 검수와 실모델 평가는 아직 없다. Gemini 브랜치/worktree는 만들지 않았다.
+
 ## 최신 작업 — 중재 의미 평가 합성 입력 8개 준비
 
 사용자가 #31 병합 후 진행을 지시했다. [합성 입력 생성기](../examples/supervisor-triage-semantic/README.md)로 기존8개 공개 카드를 Shadow API가 읽는 Scope·Plan·Review 스냅샷으로 변환했다. 입력과 정답을 분리하고 사람용 [빈 채점표](acceptance/triage-semantic-evaluation-20261110/scorecard-blank.json), 파일별 해시와 archive를 저장했다. 기준 Policy는 REVISE·REQUEST_USER_INPUT·REQUEST_SCOPE_CHANGE_APPROVAL·STOP_REPEATED_REVIEW_ISSUES·STOP_LIMIT_REACHED 분기를 포함한다. 실제 사용자 승인/실모델 Review가 아닌 합성 과거 형식이며 품질/저장 감사 전체는 없다. 사람의 의미 검수와 실모델 호출 상한 결정은 다음 단계다. 추가 모델 호출0회, 원래 주차 세션 변경 없음. [평가 설계](triage-semantic-evaluation-protocol-20261110.md).

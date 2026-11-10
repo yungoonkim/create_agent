@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import type { PlanningDecision, PlanningDecisionInput } from "../planning/contracts.js";
+import type { PlanDraft, PlanningDecision, PlanningDecisionInput } from "../planning/contracts.js";
 import { parseScopeContract } from "../planning/config.js";
 import { decideAfterReview, parsePlanReview, validatePlanReview } from "../planning/policy.js";
 import { qualityFindings } from "../planning/review-quality.js";
@@ -8,6 +8,10 @@ import { storageAuditFindings } from "../planning/storage-audit.js";
 
 export const TRIAGE_CATEGORIES = ["WRITER_REWORK", "USER_CLARIFICATION", "SCOPE_CHANGE_REQUIRED", "REVIEWER_RECHECK", "ESCALATE_OR_STOP"] as const;
 export type TriageCategory = typeof TRIAGE_CATEGORIES[number];
+export interface ShadowContextInput extends PlanningDecisionInput {
+  /** Optional same-Scope history. Legacy callers may provide only a previous Review. */
+  readonly previousPlan?: PlanDraft;
+}
 export interface ShadowFinding {
   readonly id: string;
   readonly origin: "review" | "storage" | "quality" | "assurance" | "suggestion";
@@ -50,13 +54,19 @@ export interface ShadowValidation {
 const hash = (value: unknown): string => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 
 /** Offline only: no Controller, store, SDK or execution port. Approval is an input precondition, not inferred here. */
-export function buildShadowContext(input: PlanningDecisionInput, userRequest?: string): ShadowContext {
+export function buildShadowContext(input: ShadowContextInput, userRequest?: string): ShadowContext {
   const { currentPlan: plan, approvedScope: scope, review } = input;
   parseScopeContract(scope, scope.projectId);
   validatePlanReview(review, plan, scope);
   if (input.previousReview) {
     const r = parsePlanReview(input.previousReview);
     if (r.projectId !== plan.projectId || r.planId !== plan.id || r.planVersion >= plan.version || r.planVersion < 1) throw new Error("Invalid shadow previous-review source.");
+  }
+  if (input.previousPlan) {
+    const p = input.previousPlan;
+    if (!input.previousReview || p.projectId !== plan.projectId || p.id !== plan.id || p.version !== plan.version - 1 ||
+      !p.content.trim() || p.scopeContractId !== scope.id || p.scopeVersion !== scope.version) throw new Error("Invalid shadow previous-plan source.");
+    validatePlanReview(input.previousReview, p, scope);
   }
   if (!Number.isSafeInteger(input.iterationCount) || !Number.isSafeInteger(input.maxIterations) || input.iterationCount < 0 || input.maxIterations < 1 || input.iterationCount > input.maxIterations) throw new Error("Invalid shadow iteration limits.");
   if (userRequest !== undefined && !userRequest.trim()) throw new Error("Empty shadow user request.");
@@ -68,6 +78,13 @@ export function buildShadowContext(input: PlanningDecisionInput, userRequest?: s
   scope.excludedFeatures.forEach((r, i) => { references[`scope:excluded:${i + 1}`] = r.statement; });
   references["scope:goal"] = scope.goal;
   references["policy:baseline"] = JSON.stringify(baseline);
+  references["iteration:state"] = JSON.stringify({ iterationCount: input.iterationCount, maxIterations: input.maxIterations });
+  references["history:availability"] = input.previousPlan ? "previous_plan_and_review" : input.previousReview ? "previous_review_only" : "none";
+  if (input.previousReview) {
+    references["previous-review:source"] = JSON.stringify({ id: input.previousReview.id, planId: input.previousReview.planId, planVersion: input.previousReview.planVersion });
+    for (const i of input.previousReview.issues) references[`previous-review:issue:${i.id}`] = `${i.description} — ${i.suggestedDirection}`;
+  }
+  if (input.previousPlan) input.previousPlan.content.split("\n").forEach((line, i) => { references[`previous-plan:L${i + 1}`] = line; });
   if (userRequest !== undefined) references["user:request"] = userRequest;
   const add = (origin: ShadowFinding["origin"], key: string, description: string, technicalBlocker: boolean): void => {
     const id = `${origin}:${key}`;

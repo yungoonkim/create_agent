@@ -513,3 +513,9 @@
 - 공개 카드8개를 실제 사용자 승인이나 새 Gemini 공식 Review로 표시하지 않고 `synthetic_offline_review_legacy_compatible`로 구분한다. 현재 Shadow API가 허용하는 Scope·Plan·Review 구조를 사용하고 기존 Policy 결과를 함께 보존한다.
 - 모델에 줄 `context.json`과 사람의 잠정 정답 `gold.json`을 분리한다. 예상 행동을 Review의 suggestedDirection에 복사해 답을 누설하지 않는다. 빈 채점표와 모든 입력 해시를 기록한다.
 - 이 자료는 의미 평가 준비용이며 수동 검수·새 호출 상한·실모델 점수는 다음 단계다. 저장된 주차 세션, 공식 승인/Review와 기존 유료 호출 기록을 변경하지 않는다. [생성 방법](../examples/supervisor-triage-semantic/README.md).
+
+## D-076 — 평가 입력의 이력·정답 출처를 보완하고 v1 보존
+
+- 사용자 지시로 병렬 개발은 보류하고 기존 Codex 흐름에서 자료 점검을 진행한다. 반복 사례의 과거 원문 누락, 기대 답 암시, 사람 작성 정답으로 잘못 표시한 부분을 보완한다.
+- Shadow에 선택적 같은 Scope의 직전 Plan 출처 검증을 추가하고 과거 지적과 실제 반복 수를 인용 가능하게 한다. 기존 Policy와 승인 권한은 변경하지 않는다.
+- 기대 답은 AI 작성 잠정안이며 독립 사람 검수가 없다. v1 기록은 보존하고 v2 archive와 해시를 별도 저장한다. 전체224개 테스트와 typecheck 통과, 추가 모델 호출0회다. [점검 결과](triage-semantic-audit-20261110.md).

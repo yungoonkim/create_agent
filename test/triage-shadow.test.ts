@@ -63,3 +63,22 @@ test("invalid input sources and malformed proposals fail without broadening the 
   const context = buildShadowContext(input());
   for (const raw of [undefined, null, [], {}, { ...proposal(context), author: { kind: "live", version: "unknown" } }]) assert.equal(validateShadowProposal(context, raw).status, "rejected");
 });
+test("shadow history citations bind the actual preceding plan and review without changing policy", () => {
+  const old = input(), currentPlan = { ...old.currentPlan, version: 2, content: "Still overwrites before validating" };
+  const currentReview = { ...review, id: "review2", planVersion: 2 };
+  const source = { ...old, currentPlan, review: currentReview, previousReview: review, previousPlan: old.currentPlan };
+  const c = buildShadowContext(source);
+  assert.equal(c.references["previous-plan:L1"], old.currentPlan.content.split("\n")[0]);
+  assert.match(c.references["previous-review:issue:loss"]!, /Invalid input/);
+  assert.equal(c.references["history:availability"], "previous_plan_and_review");
+  assert.equal(c.baseline.type, "STOP_REPEATED_REVIEW_ISSUES");
+  const legacy = buildShadowContext({ ...old, currentPlan, review: currentReview, previousReview: review });
+  assert.equal(legacy.references["history:availability"], "previous_review_only");
+  assert.equal(legacy.references["previous-plan:L1"], undefined);
+  assert.deepEqual(legacy.baseline, c.baseline);
+  assert.throws(() => buildShadowContext({ ...source, previousPlan: { ...old.currentPlan, version: 2 } }), /previous-plan source/);
+  assert.throws(() => buildShadowContext({ ...old, previousPlan: old.currentPlan }), /previous-plan source/);
+  const changed = buildShadowContext({ ...source, previousPlan: { ...old.currentPlan, content: "Different previous text" } });
+  assert.notEqual(changed.source.inputSha256, c.source.inputSha256);
+  assert.notEqual(changed.contextSha256, c.contextSha256);
+});
