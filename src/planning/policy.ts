@@ -185,6 +185,7 @@ export function decideAfterReview(input: PlanningDecisionInput): PlanningDecisio
   const storageFindings = storageAuditFindings(review.storageAudit);
   const questions = collectReviewQuestions(review);
   if (review.outcome === "needs_user_input" || review.userJudgmentRequired || questions.length > 0) {
+    if (questions.length === 0) return { type: "FAILED", reason: "Reviewer requested user input without an actionable question." };
     return { type: "REQUEST_USER_INPUT", questions };
   }
 
