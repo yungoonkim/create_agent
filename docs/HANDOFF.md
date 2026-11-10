@@ -3,6 +3,10 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 관찰 — 반례 요청 INVALID_ARGUMENT, 정식 Review 없음
+
+사용자 `challenge-1794276238394-8d70bb56.tar.gz`를 안전하게 확인했다. 일반 검토 재사용 1회, 새 반례 SDK 시도 1회, `INVALID_ARGUMENT`(HTTP 상태 미기록), 모델 응답/새 usage/정식 Review/최종 승인 없음. 원래 프로젝트 변경 없음. 후속/진단 이력 합계 6시도(최초 인증 실패 별도)이며 이번 허용 상한 1회를 소진했다. 특정 거부 필드와 원인은 불명이다. 재실행을 안내하지 않는다. 원본 SHA-256 `ccbd8cfae6a45fa00165c20c169964383766873d904c23e37f1f7514e9744b09`, [분석](parcel-challenge-result-20261110.md), [원자료](acceptance/parcel-challenge-20261110/manifest.json). 이번 보존·분석 추가 모델 호출 0회.
+
 ## 최신 작업 — 기록된 assessment 재사용·추가 challenge 최대1회 준비
 
 사용자가 다음 작업 진행을 지시했다. Sol·medium을 착수 전에 안내했다. `examples/parcel-challenge`는 실제 후보 assessment를 재사용해 일반 검토 과금을 반복하지 않고 반례만 새 최대1회 요청한다. 기존5회는 소진 이력이며 새1회를 더하면6이다(최초 인증 실패 별도). 기존 원문/승인/자료는 변경하지 않으며 분리한 시험 복사본에만 정식 Review·pending 승인을 기록할 수 있다. 최종 승인은 자동 생성하지 않는다. 이번 실제 Gemini/OAuth0회.

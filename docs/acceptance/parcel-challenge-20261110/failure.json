@@ -1,0 +1,9 @@
+{
+  "stage": "challenge",
+  "httpStatus": null,
+  "providerCode": "INVALID_ARGUMENT",
+  "messageTags": [
+    "invalid_argument"
+  ],
+  "rawMessageOmitted": true
+}

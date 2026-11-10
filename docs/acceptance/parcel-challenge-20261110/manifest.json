@@ -1,0 +1,33 @@
+{
+  "archiveSha256": "ccbd8cfae6a45fa00165c20c169964383766873d904c23e37f1f7514e9744b09",
+  "archiveBytes": 29636,
+  "archiveMemberCount": 24,
+  "files": {
+    "summary.json": "cb8e50ce81c83bd2d72becad7703adff015dc3f6a30397e8cc7ba92f51062fa6",
+    "failure.json": "e2fe3b514999544a38b0c6135c8db637530a01fdefc2f9b7ef15f67b9738d928",
+    "challenge-request.json": "8571e457784ea18bcd5ecd89bdcd70ae4ca2b439830f93f216d1f6c119fd7a28"
+  },
+  "observations": {
+    "assessmentReused": true,
+    "challengeSdkAttempts": 1,
+    "providerCode": "INVALID_ARGUMENT",
+    "httpStatusRecorded": null,
+    "modelResponseReceived": false,
+    "newUsageRecorded": false,
+    "formalReviewSaved": false,
+    "finalApprovalCreated": false,
+    "originalProjectChanged": false
+  },
+  "requestFacts": {
+    "model": "gemini-3.8-flash",
+    "challengeContentsBytes": 18340,
+    "challengeSchemaBytes": 2793,
+    "assessmentContentsBytes": 37071,
+    "assessmentSchemaBytes": 3898,
+    "challengeMaxOutputTokens": 16000,
+    "challengeThinking": {
+      "thinkingLevel": "MEDIUM"
+    },
+    "challengeRetryAttempts": 1
+  }
+}
