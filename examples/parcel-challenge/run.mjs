@@ -36,7 +36,14 @@ export async function completeChallenge({directory,inputs,api,mode,transformChal
     if(request.config.systemInstruction===prompts.REVIEWER_SYSTEM_INSTRUCTION){
       assert.equal(reused,0,'Assessment may be reused once');
       const wire=withTimeout(request);
-      assert.deepEqual(wire,inputs.request,'Generated assessment differs from recorded request');reused++;
+      // Compare the new compact history representation, then reuse the unchanged recorded response.
+      const {compactReviewContext}=await import('../../dist/src/planning/review-context.js');
+      const expected=structuredClone(inputs.request),marker='DATA:\n\n';
+      const at=expected.contents.lastIndexOf(marker)+marker.length;
+      const data=JSON.parse(expected.contents.slice(at));
+      data.previousReviews=(data.previousReviews??[]).map(r=>compactReviewContext(r));
+      expected.contents=expected.contents.slice(0,at)+JSON.stringify(data);
+      assert.deepEqual(wire,expected,'Generated assessment differs beyond compact history');reused++;
       // Do not repeat historical input/output/thinking tokens in the new usage ledger.
       return {text:assessment.text,candidates:assessment.candidates};
     }

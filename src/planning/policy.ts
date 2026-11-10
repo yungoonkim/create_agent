@@ -196,10 +196,9 @@ export function decideAfterReview(input: PlanningDecisionInput): PlanningDecisio
   const repeatedIssues = findUnresolvedRepeatedIssues(review, input.previousReview);
   if (repeatedIssues.length > 0) {
     return {
-      type: "REQUEST_USER_INPUT",
-      questions: [
-        `The same issue remains at the same or higher severity: ${repeatedIssues.map((issue) => issue.id).join(", ")}.`,
-      ],
+      type: "STOP_REPEATED_REVIEW_ISSUES",
+      issueIds: repeatedIssues.map(issue => issue.id),
+      reason: `REVIEW_REPEAT: 같은 차단 지적이 반복돼 자동 실행을 중단했습니다. 사용자 취향 질문이 아니라 기획·검토 근거 보완이 필요합니다. ${repeatedIssues.map(issue => `${issue.id}: ${issue.description}`).join(" / ")}`,
     };
   }
 
@@ -241,9 +240,17 @@ function findUnresolvedRepeatedIssues(
   if (previous === undefined) return [];
 
   return [...current.issues, ...storageAuditFindings(current.storageAudit).issues].filter((issue) => {
+    if (issue.severity !== "major" && issue.severity !== "critical") return false;
     const earlier = [...previous.issues, ...storageAuditFindings(previous.storageAudit).issues].find((candidate) => candidate.id === issue.id);
     if (earlier === undefined || earlier.kind !== issue.kind) return false;
     if (earlier.relatedRequirementId !== issue.relatedRequirementId) return false;
+    const ordinal = /^issue-storage-validation-(\d+)$/.exec(issue.id);
+    if (ordinal) {
+      const index = Number(ordinal[1]) - 1;
+      const rule = current.storageAudit?.validation?.rules[index]?.rule;
+      // Legacy IDs encode array position, not meaning. Reordered/different rules cannot prove recurrence.
+      if (rule === undefined || rule !== previous.storageAudit?.validation?.rules[index]?.rule) return false;
+    }
     return severityRank[issue.severity] >= severityRank[earlier.severity];
   });
 }

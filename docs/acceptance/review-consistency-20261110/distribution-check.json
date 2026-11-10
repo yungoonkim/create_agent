@@ -1,0 +1,10 @@
+{
+  "sourceCommit": "cc2e2e4c48a8a4fd4ea26e440c11ef44c1e8abc3",
+  "repositoryTests": 211,
+  "runtimeBundleTests": 194,
+  "zipSha256": "cbbf6521ccf5fae7ad731d3397182952de3492295c90eb885426ff7e42e56d00",
+  "maxZipPathLength": 73,
+  "restoredExportHashesVerified": true,
+  "newModelCalls": 0,
+  "existingSessionBudget": "7/7 unchanged"
+}

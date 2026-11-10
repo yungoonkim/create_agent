@@ -19,6 +19,7 @@ import { compactReviewSchema } from "./wire-schema.js";
 import { bindStorageAudit, scopeAuthorizationSources } from "./storage-audit.js";
 import { assertCompleteOutput, modelOutputFailure } from "./model-output.js";
 import { assertRevisionContext, bindRevisionAudit, preservationSources, revisionIssueSources, revisionMode } from "./revision-audit.js";
+import { compactReviewContext } from "./review-context.js";
 
 export interface VertexAiClientOptions {
   readonly project?: string;
@@ -55,7 +56,9 @@ export class GeminiPlanningWriter implements PlanningWriter {
       "Make acceptance criteria observable and testable. Keep unknown decisions explicit instead of guessing.",
       "Keep checks concise: related field rules may share an explicit invalid-payload/rejection/no-change scenario. Do not repeat a separate example for every field when one source-bound scenario covers them. Keep actual loaded-state and before-write rules explicit.",
       "When multiple tabs/writers share storage and the Scope requires no lost updates, explain the serialization/transaction boundary and unsupported-environment behavior. Check-then-write and change events alone do not serialize concurrent writers. Test the interleaving where both writers read/check the same version before either writes. Treat implementation choices as planner proposals, not user decisions.",
+      "A message channel name is not an atomic lock. Specify the actual exclusion mechanism and its limits. Do not permit lost writes in an unsupported fallback if the approved Scope requires preservation; propose blocking unsafe mutations instead of silently weakening an approved requirement. A valid field value inside a payload invalid for another reason is not a rejection test of that field.",
       "Apply explicit user revision requests in settledDecisions within the unchanged approved Scope. Preserve unaffected requirements and include a concise change summary with verifiable checks for each requested correction.",
+      "reviewFeedback is a compact view of the stored review. Its requiredCorrections includes outstanding local evidence checks as well as model issues; address every applicable item within the approved Scope even if the stored headline outcome was pass. A source hash is provenance, not proof that a model's conclusions are correct. The full currentDraft and approvedScope are supplied; do not invent absent sources.",
       `Persona: ${role.personaId}`,
       `Return only the plan body, without a preamble. This is plan version ${version}.`,
       "DATA:",
@@ -65,7 +68,7 @@ export class GeminiPlanningWriter implements PlanningWriter {
         approvedScope: context.approvedScope,
         settledDecisions: context.settledDecisions,
         currentDraft: context.currentDraft,
-        reviewFeedback: context.reviewFeedback,
+        reviewFeedback: context.reviewFeedback === undefined ? undefined : compactReviewContext(context.reviewFeedback, true),
       }),
     ].join("\n\n");
     const startedAt = Date.now();
@@ -181,7 +184,7 @@ export class GeminiPlanningReviewer implements PlanningReviewer {
         currentPlan: { ...context.currentPlan, content: undefined },
         currentPlanLines: sourceLinesFor(context.currentPlan),
         settledDecisions: context.settledDecisions,
-        previousReviews: context.previousReviews ?? [],
+        previousReviews: (context.previousReviews ?? []).map(r => compactReviewContext(r)),
         revisionMode: mode,
         previousPlan: context.previousPlan === undefined ? null : { id: context.previousPlan.id, version: context.previousPlan.version,
           scopeContractId: context.previousPlan.scopeContractId, scopeVersion: context.previousPlan.scopeVersion },
