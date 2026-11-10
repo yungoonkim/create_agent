@@ -22,6 +22,7 @@
 - 사용자가 토큰 절약을 위해 요청한 선호: 다음 작업 착수 전에 권장 Codex 모델과 thinking level을 짧게 안내한다. 일반 구현/검증은 GPT-6.1 Sol·medium, 단순 문서는 low, 복잡한 원인 분석은 필요할 때 high를 권장한다. 현재 대화 설정을 직접 바꿀 수 있다고 주장하지 않으며 실제 변경은 사용자 UI에서 한다. 이 선호는 별도 과금되는 ADTF Writer/Reviewer API 설정의 변경 지시가 아니다.
 
 - Git 커밋 메시지는 사용자의 요청에 따라 한국어로 작성한다.
+- 결과 파일/로그 업로드를 요청할 때 다음 분석에 권장하는 모델과 thinking level을 함께 먼저 안내한다. 파일을 받은 뒤나 사용자가 질문한 뒤로 미루지 않는다. 단순 인증/실행 로그는 Sol·low, 기획 원문/수정 효과/원인 분석은 Sol·medium을 기본 권장한다.
 
 - 구현 범위는 `docs/roadmap.md`를 따른다. 제외된 기능을 선행 구현하지 않는다.
 - 공통 모델은 `src/core/`, Planning은 `src/planning/`, 작업 관리는 `src/development/`, 파일·명령 검증은 `src/verification/`, 지휘자 통합은 `src/supervisor/`에 둔다. 구체 어댑터와 저장소는 별도 모듈로 둔다.

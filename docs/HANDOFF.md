@@ -3,6 +3,14 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 작업 — 택배 v2 실패 요청의 단일 진단 준비
+
+사용자는 권장 모델/thinking을 작업 시작 및 파일 요청 전에 먼저 안내하도록 재차 요청했다. AGENTS에 저장했으며 이번 및 다음 진단 분석은 GPT-6.1 Sol·medium을 권장한다. 현재 설정을 직접 바꿀 수 있다고 주장하지 않는다.
+
+첫 택배 실행은 인증 실패1시도/응답0, ADC 후 후속은3시도/응답2로 v1 지적→Writer v2까지 성공했다. v2 일반 검토는 provider_or_network_failure이며 정확한 HTTP 상태는 없어 원인 미확정이다. [분석과 단일 진단](parcel-review-diagnostic-20261110.md)을 우선한다. 원압축2개를 보존하며 기존 기획/Scope/승인/실패 기록을 재작성하지 않는다.
+
+examples/reviewer-diagnostic는 원래 실패한 call-003 요청을 해시로 고정해 최대1회만 재전송한다. Writer 재작성/정식 Review 저장/자동 승인 없이 응답 또는 허용목록 HTTP 상태/오류코드/고정 분류만 기록한다. raw 예외/헤더/스택은 생략해 비밀 유출을 줄이며 상세 메시지가 없으면 원인 확정은 계속 불가능할 수 있다. 응답이 성공해도 품질 합격이 아니다. 새 ZIP의 diagnose:review -- --run-live --bundle을 명시 실행할 때만 과금 가능 요청1회다. 현재 준비 중 실제 Gemini/OAuth 호출0회다.
+
 ## 최신 작업 — Windows 긴 경로 오류용 실행 ZIP
 
 사용자가 main ZIP 해제 중0x80010135/긴 대상 경로 오류를 보고했고 C:\adtf 안내 후에도 실패했다. 단순 길이 계산만으로 탐색기 성공을 단정한 안내를 정정했다. [별도 ZIP 안내](../downloads/README.md), [구성/검증/한계](windows-run-bundle-20261110.md)를 우선한다. 원본 전체 ZIP과 별도 실행 ZIP을 혼동하지 않는다.
