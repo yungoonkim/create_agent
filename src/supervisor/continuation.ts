@@ -20,7 +20,7 @@ export class PlanningContinuationController {
 
   async collectFeedback(): Promise<SupervisorState> {
     return this.change("collect-feedback", async (state) => {
-      await this.beforeRequest(state);
+      await this.beforeRequest(state, false);
       const base = await this.current();
       if (base.status !== "awaiting_user_input") throw new Error("Planning is not awaiting user input.");
       const snapshots = await this.snapshots(base);
@@ -73,6 +73,7 @@ export class PlanningContinuationController {
     return this.change("propose-scope-change", async (state) => {
       const item = this.pending(state);
       if (item.kind !== "scope_change" || item.status !== "requested") throw new Error("Scope change is not awaiting a proposal.");
+      if (item.base.iterationCount >= item.base.maxIterations) throw new Error("Planning iteration budget is exhausted; no Scope proposal model call was made.");
       await this.assertBase(item);
       const request = await this.options.memory.getScopeChangeRequest(this.projectId, item.scopeChangeRequestId!);
       if (request === undefined) throw new Error("Change request missing.");
@@ -141,11 +142,11 @@ export class PlanningContinuationController {
     });
   }
 
-  private async beforeRequest(state: SupervisorState): Promise<void> {
+  private async beforeRequest(state: SupervisorState, requiresModelCapacity = true): Promise<void> {
     if (state.phase !== "scope_approved" || state.taskProposal !== undefined || await this.options.developmentStore.get(this.projectId) !== undefined) throw new Error("Continuation requires the planning phase before task proposal/initialization.");
     assertNoPendingContinuation(state);
     const planning = await this.current();
-    if (planning.iterationCount >= planning.maxIterations) throw new Error("Planning iteration budget is exhausted; no model call was made.");
+    if (requiresModelCapacity && planning.iterationCount >= planning.maxIterations) throw new Error("Planning iteration budget is exhausted; no model call was made.");
     if (!isDeepStrictEqual(state.scope, (await this.snapshots(planning)).scope)) throw new Error("Supervisor Scope differs from the current approved Planning source.");
   }
   private async current(): Promise<PlanningLoopState> {

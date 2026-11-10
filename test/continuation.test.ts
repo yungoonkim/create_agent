@@ -22,10 +22,10 @@ const body = { goal: "TEST/STUB 재고 CLI", requiredFeatures: [{ id: "REQ-1", s
 const changed = { ...body, requiredFeatures: [...body.requiredFeatures, { id: "REQ-2", statement: "승인된 만료 날짜 경계" }] };
 const task = { requirementIds: ["REQ-1"], task: { id: "storage", title: "TEST/STUB", description: "TEST isolated artifact", dependsOn: [], expectedArtifacts: ["result.txt"], acceptanceCriteria: ["Result matches"], verificationMethod: "Manual" } };
 
-async function harness(t: { after(fn: () => Promise<void>): void }, first: "answers" | "scope" | "pass" = "answers", alwaysAsk = false) {
+async function harness(t: { after(fn: () => Promise<void>): void }, first: "answers" | "scope" | "pass" = "answers", alwaysAsk = false, maxIterations = 3) {
   const root = await mkdtemp(join(tmpdir(), "adtf-continuation-"));
   t.after(() => rm(root, { recursive: true, force: true }));
-  const config = parsePlanningConfig(rawConfig, root), memory = new FilePlanningMemoryStore(config.memory.directory);
+  const config = parsePlanningConfig({ ...rawConfig, planning: { ...rawConfig.planning, maxIterations } }, root), memory = new FilePlanningMemoryStore(config.memory.directory);
   const store = new FileSupervisorStore(config.memory.directory), developmentStore = new FileDevelopmentStore(config.memory.directory);
   let calls = 0;
   const writerContexts: unknown[] = [];
@@ -268,8 +268,29 @@ test("continuations preserve the total review budget and reject configuration re
   await h.controller.continuation().resumePlan();
   await h.controller.continuation().collectFeedback(); await h.controller.answer({ "Q-3": "today", "Q-4": "lot" }); await h.controller.continuation().resumePlan();
   assert.equal((await h.memory.getPlanningLoopState(h.config.projectId))!.iterationCount, 3);
-  await assert.rejects(h.controller.continuation().collectFeedback(), /budget/); assert.equal(h.calls(), 3);
+  await h.controller.continuation().collectFeedback();
+  await h.controller.answer({ "Q-5": "today", "Q-6": "lot" });
+  await assert.rejects(h.controller.continuation().resumePlan(), /budget/); assert.equal(h.calls(), 3);
   assert.match(String(record(await h.controller.report()).nextAction), /STOP.*budget/);
+});
+
+test("exhausted final Review permits answer recording but no resumed model call", async t => {
+  const h = await harness(t, "answers", false, 1);
+  const before = await h.memory.getPlanningLoopState(h.config.projectId);
+  await h.controller.continuation().collectFeedback();
+  await h.controller.answer({ "Q-1": "오늘", "Q-2": "개" });
+  assert.equal(h.calls(), 1);
+  assert.deepEqual(await h.memory.getPlanningLoopState(h.config.projectId), before);
+  await assert.rejects(h.controller.continuation().resumePlan(), /budget/);
+  assert.equal(h.calls(), 1);
+});
+
+test("exhausted Scope request cannot generate a new model proposal", async t => {
+  const h = await harness(t, "scope", false, 1);
+  const before = await h.memory.getPlanningLoopState(h.config.projectId);
+  await assert.rejects(h.controller.continuation().requestScopeChange(), /budget/);
+  assert.deepEqual(await h.memory.getPlanningLoopState(h.config.projectId), before);
+  assert.equal(h.calls(), 1);
 });
 
 test("stale continuation source is rejected before proposal, decision or new model execution", async (t) => {
