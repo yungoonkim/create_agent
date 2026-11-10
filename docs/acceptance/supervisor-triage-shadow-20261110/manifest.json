@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "archive": "offline-evaluation.tar.gz",
+  "sha256": "2815f7126e13ce98932c4c1c7aab8a97a015c7d743023db4761671e5885ea40c",
+  "containedFiles": {
+    "input.json": "b735113a8e47ae5f1033e42c3a6c1f85584557e973295ec0531dc86284bb25f3",
+    "context.json": "6f4e7f68105ec508bf66f1de6558dc448c1898a865cae473a5f67b3bd95466bf",
+    "proposal.json": "5c67431baea1c537903d81bfb7c30be5feba8219ff49a4244b2b9d9190e72a09",
+    "cases.json": "3a9fbeb75e282c9b3e47dfe0938141ccf4dd128225f6c612620697b3bd167084",
+    "report.json": "324e03606616dba2c3bc01cf11532ba8fd1e5291bc9517ab7b7eb80a7245413a"
+  },
+  "originalSourceUnchanged": true,
+  "newModelCalls": 0
+}
