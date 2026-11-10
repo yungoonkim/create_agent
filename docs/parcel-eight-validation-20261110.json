@@ -1,0 +1,52 @@
+{
+  "date": "2026-11-10",
+  "kind": "offline_eight_line_distribution_validation",
+  "sourceCommit": "698ceb404bcebdd8df6cf9d4e7efe8623f0d6d55",
+  "zipSha256": "427e3aa3b7449862592f795fb495ec4c5e2a4263c4e6b7953d4394faaeab6109",
+  "zipCRC": "pass",
+  "files": 156,
+  "maxPathLength": 73,
+  "fullRepositoryTests": {
+    "total": 193,
+    "pass": 193,
+    "fail": 0
+  },
+  "extractedPackageTests": {
+    "total": 181,
+    "pass": 181,
+    "fail": 0
+  },
+  "typecheck": {
+    "full": "pass",
+    "extracted": "pass"
+  },
+  "extractedDependencies": "Used symlink to unchanged installed node_modules; Windows npm ci remains to be observed",
+  "drySummary": {
+    "mode": "dry",
+    "outcome": "review_recorded_in_isolated_copy",
+    "decision": "STOP_LIMIT_REACHED",
+    "planningStatus": "limit_reached",
+    "challengeCompleted": true,
+    "formalReviewSaved": true,
+    "finalApprovalCreated": false,
+    "pendingApprovalCreated": false,
+    "reusedAssessmentCount": 1,
+    "reusedAssessmentBilledAgain": false,
+    "newSdkAttempts": 0,
+    "stubAttempts": 1,
+    "newUsage": null,
+    "priorAttempts": 8,
+    "cumulativeTrialAttempts": 8,
+    "originalProjectChanged": false
+  },
+  "newPaidModelCalls": 0,
+  "newOAuthCalls": 0,
+  "windowsExecution": "not_observed",
+  "logSha256": {
+    "parcel-eight-type.log": "217470e9f13c88e9e0c494820a02efffa5cb4c84a75f080ecde627e6e04a8130",
+    "parcel-eight-tests.log": "dee92c500b88f757e5932acb96ef11152e5185598f274be2d1eb3231b13031d8",
+    "eight-package-type.log": "217470e9f13c88e9e0c494820a02efffa5cb4c84a75f080ecde627e6e04a8130",
+    "eight-package-tests.log": "779daadac32ce6169205b0d12bbfde48d0e750f354ffa0d54d22429e3ceeec89",
+    "eight-package-dry.log": "e8e86c4b59a2e4913a7544fbd34d1c254af223bedd3b26a5944ef0b640219125"
+  }
+}
