@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "d7a1df99261e7da5f2357cc1c3c600b525c95988",
+  "repositoryTypecheck": "passed",
+  "repositoryTests": 222,
+  "runtimeTypecheck": "passed",
+  "runtimeTests": 203,
+  "runtimeDependencySetup": "existing same-lockfile node_modules linked; no dependency changes",
+  "runtimeZipSha256": "c585c70ba9a84072d40fe0e38fc795f3740b495f02bc1436649cd10bc472ea5d",
+  "runtimeFileHashesVerified": 180,
+  "maxZipInternalPathLength": 73,
+  "offlineCommandAbsentFromRuntime": true,
+  "historicalReplayAbsentFromRuntimeTests": true,
+  "newModelCalls": 0,
+  "semanticQualityEvaluated": false
+}
