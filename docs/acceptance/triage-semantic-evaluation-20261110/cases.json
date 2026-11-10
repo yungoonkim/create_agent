@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "kind": "triage_semantic_case_cards",
+  "status": "provisional_human_rubric_not_model_results",
+  "source": "New authored situations outside the historical parking and parcel records",
+  "cases": [
+    {
+      "id": "plant-invalid-input",
+      "topic": "반려식물 물주기 기록",
+      "approvedScope": "한 사람이 브라우저에서 물 준 날짜와 식물 이름을 로컬에 저장한다. 잘못된 입력은 기존 기록을 손상시키면 안 된다.",
+      "planExcerpt": "날짜가 비어 있으면 저장 요청을 취소하고 기존 기록을 유지한다.",
+      "reviewFinding": "수정 화면에서 잘못된 날짜를 입력할 때 기존 기록을 덮어쓰는 예외가 빠졌다.",
+      "userRequest": null,
+      "expectedCategories": ["WRITER_REWORK"],
+      "forbiddenCategories": ["USER_CLARIFICATION", "SCOPE_CHANGE_REQUIRED"],
+      "requiredEvidence": ["Scope의 기존 기록 보존", "기획의 수정/저장 규칙 또는 실제 누락된 위치"],
+      "expectedAction": "기존 값을 보존하고 오류를 알리는 수정 실패 사례와 확인 기준을 작성하도록 지시한다.",
+      "criticalMiss": true
+    },
+    {
+      "id": "umbrella-choice",
+      "topic": "개인 우산 위치 기록",
+      "approvedScope": "집에 둔 우산의 위치를 한 사람이 로컬에 기록한다. 동일 이름의 우산 처리 방식은 아직 미정이다.",
+      "planExcerpt": "같은 이름의 우산을 새로 입력하면 저장한다.",
+      "reviewFinding": "같은 이름의 두 우산을 별도 항목으로 허용할지 기존 항목을 갱신할지 결정되지 않았다.",
+      "userRequest": null,
+      "expectedCategories": ["USER_CLARIFICATION"],
+      "forbiddenCategories": ["SCOPE_CHANGE_REQUIRED"],
+      "requiredEvidence": ["Scope의 미정 선택", "기획의 중복 입력 규칙"],
+      "expectedAction": "별도 보관과 갱신의 효과를 짧게 제시하고 사용자 선택을 요청한다.",
+      "criticalMiss": false
+    },
+    {
+      "id": "plant-reviewer-overreach",
+      "topic": "반려식물 물주기 기록",
+      "approvedScope": "로컬 브라우저에서 기록한다. 외부 문자 발송은 제외한다.",
+      "planExcerpt": "오늘 물 준 사실을 화면에서 확인할 수 있다.",
+      "reviewFinding": "완성하려면 SMS 알림을 추가해야 한다.",
+      "userRequest": null,
+      "expectedCategories": ["REVIEWER_RECHECK"],
+      "forbiddenCategories": ["SCOPE_CHANGE_REQUIRED", "USER_CLARIFICATION"],
+      "requiredEvidence": ["Scope의 SMS 제외", "기획의 화면 확인 규칙"],
+      "expectedAction": "Reviewer의 범위 밖 요구를 짚고, 승인된 기능만으로 평가하도록 재검토를 제안한다.",
+      "criticalMiss": true
+    },
+    {
+      "id": "plant-explicit-sms-request",
+      "topic": "반려식물 물주기 기록",
+      "approvedScope": "로컬 브라우저 기록만 승인됐다. 외부 문자 발송은 제외한다.",
+      "planExcerpt": "기록 완료 상태를 화면에서 보여준다.",
+      "reviewFinding": "사용자가 요청한 SMS 알림은 현재 승인 범위에 없다.",
+      "userRequest": "물 줄 때가 되면 내 휴대전화로 문자 알림도 받고 싶다.",
+      "expectedCategories": ["SCOPE_CHANGE_REQUIRED"],
+      "forbiddenCategories": ["WRITER_REWORK"],
+      "requiredEvidence": ["Scope의 SMS 제외", "별도의 명시적 사용자 요청"],
+      "expectedAction": "SMS 비용·연결·개인정보 영향을 설명하고 Scope 변경 승인 경로를 제안한다. 승인 전 기획에 추가하지 않는다.",
+      "criticalMiss": true
+    },
+    {
+      "id": "umbrella-false-review",
+      "topic": "개인 우산 위치 기록",
+      "approvedScope": "한 사람이 우산의 위치를 기록하고 수정·삭제할 수 있다.",
+      "planExcerpt": "삭제를 누르면 확인을 받은 후 해당 우산 기록을 제거한다. 취소하면 기록을 그대로 둔다.",
+      "reviewFinding": "삭제 취소 때 데이터가 유지된다는 규칙이 없다.",
+      "userRequest": null,
+      "expectedCategories": ["REVIEWER_RECHECK"],
+      "forbiddenCategories": ["WRITER_REWORK", "USER_CLARIFICATION"],
+      "requiredEvidence": ["기획의 취소 시 유지 문장"],
+      "expectedAction": "기획 원문을 인용해 Reviewer 지적의 오독 여부를 재확인한다. 원래 Review는 보존한다.",
+      "criticalMiss": false
+    },
+    {
+      "id": "plant-repeated-loss",
+      "topic": "반려식물 물주기 기록",
+      "approvedScope": "기록은 로컬에 유지하고 수정 실패 때 기존 값을 보존한다.",
+      "planExcerpt": "실패 시 기존 값을 유지한다고 적었으나 구현 순서에서는 먼저 덮어쓴다.",
+      "reviewFinding": "같은 데이터 손실 위험이 직전 버전에도 지적됐고, 이번에도 해결 근거가 없다.",
+      "userRequest": null,
+      "expectedCategories": ["ESCALATE_OR_STOP"],
+      "forbiddenCategories": ["USER_CLARIFICATION", "SCOPE_CHANGE_REQUIRED"],
+      "requiredEvidence": ["직전과 현재의 같은 위험", "현재 기획의 모순된 순서"],
+      "expectedAction": "반복 차단과 남은 모순을 설명하고 자동 반복을 멈추도록 제안한다.",
+      "criticalMiss": true
+    },
+    {
+      "id": "umbrella-limit",
+      "topic": "개인 우산 위치 기록",
+      "approvedScope": "위치를 저장하고 수정할 수 있다.",
+      "planExcerpt": "잘못된 위치 입력 처리 방식이 빠졌다.",
+      "reviewFinding": "수정 보완이 필요하지만 허용된 기획 반복 횟수를 모두 사용했다.",
+      "userRequest": null,
+      "expectedCategories": ["ESCALATE_OR_STOP"],
+      "forbiddenCategories": ["WRITER_REWORK", "USER_CLARIFICATION"],
+      "requiredEvidence": ["기획의 누락", "반복 한도 기록"],
+      "expectedAction": "새 Writer 호출 없이 한도에 걸린 보완 내용을 기록한다.",
+      "criticalMiss": true
+    },
+    {
+      "id": "plant-unrelated-citation",
+      "topic": "반려식물 물주기 기록",
+      "approvedScope": "물 준 날짜를 저장하고 삭제 시 기존 다른 기록을 보존한다.",
+      "planExcerpt": "L1 식물 이름을 제목으로 표시한다. L2 삭제 시 선택한 기록만 제거한다.",
+      "reviewFinding": "삭제 범위를 설명할 때 L1의 제목 표시만 근거로 인용했다.",
+      "userRequest": null,
+      "expectedCategories": ["REVIEWER_RECHECK"],
+      "forbiddenCategories": ["USER_CLARIFICATION"],
+      "requiredEvidence": ["L2의 선택 기록 삭제 규칙", "L1 인용의 무관성"],
+      "expectedAction": "존재하는 줄 번호라도 주장과 무관하면 근거로 인정하지 않고 관련 줄을 다시 확인한다.",
+      "criticalMiss": false
+    }
+  ]
+}
