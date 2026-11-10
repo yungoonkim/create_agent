@@ -1,7 +1,16 @@
 # ADTF 개발 인수인계
 
-마지막 정리: 2026-11-09 (Asia/Seoul)
+마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
+
+## 최신 작업 — Windows 긴 경로 오류용 실행 ZIP
+
+사용자가 main ZIP 해제 중0x80010135/긴 대상 경로 오류를 보고했고 C:\adtf 안내 후에도 실패했다. 단순 길이 계산만으로 탐색기 성공을 단정한 안내를 정정했다. [별도 ZIP 안내](../downloads/README.md), [구성/검증/한계](windows-run-bundle-20261110.md)를 우선한다. 원본 전체 ZIP과 별도 실행 ZIP을 혼동하지 않는다.
+
+- main 기반 `fix/windows-run-bundle`. Node 내장 ZIP STORE 생성기로 특정 Git 커밋의 src/예제/lock/설정/실행 검사를 묶는다. 과거 docs/acceptance와 인증/기존 실행 데이터는 원본 저장소에 보존하고 ZIP에서 제외한다. 내부 최장 경로73자, 최상위adtf-run이다. src/예제/lock·고정 시험 입력/실행기/생산 해시는 그대로다.
+- 실행 package.json은 기록 의존 검사6개와 Git 배포도구 검사2개를 제외한165개 검사 명령으로 조정한다. 전체 저장소는173개다. 두 범위를 구분하고 숨겨진 품질 통과로 해석하지 않는다. 실제 Windows 탐색기/CLI를 Cloud에서 재현한 것은 아니다.
+- 전체 타입 검사/173개 통과, 독립 Python ZIP CRC 검사·별도 해제·설치42패키지·타입 검사/165개·택배 고정 응답4회/유료0회 흐름 확인. 최초 Cloud npm 캐시 쓰기 실패는 workspace 캐시로 해결했고 Windows ZIP 문제와 구분했다. 생산/과거자료/승인 전후 해시를 확인한다.
+- 사용자는 현재 PC에서 실행을 재개했다. 마지막 모바일 전용 메모는11월9일 이력이다. 다운로드할 것은 Code→Download ZIP이 아니라 별도 adtf-run.zip이다. 기존 부분 해제 폴더/프로젝트는 보관하고 새 ZIP의 package.json 폴더에서 npm.cmd ci와 eval:review-evidence -- generate --run-live --bundle을 실행한다. 최대5유료요청, 결과 tar.gz 하나 전달, 오류 시 재실행/예약삭제 없이 보존한다. 이번 작업 실제 Gemini/OAuth0회다.
 
 ## 최신 완료 — 수정 전후 보존·근거 역할 보완, 실제 시험은 PC 복귀 후
 
