@@ -3,6 +3,12 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 작업 — 기록된 assessment 재사용·추가 challenge 최대1회 준비
+
+사용자가 다음 작업 진행을 지시했다. Sol·medium을 착수 전에 안내했다. `examples/parcel-challenge`는 실제 후보 assessment를 재사용해 일반 검토 과금을 반복하지 않고 반례만 새 최대1회 요청한다. 기존5회는 소진 이력이며 새1회를 더하면6이다(최초 인증 실패 별도). 기존 원문/승인/자료는 변경하지 않으며 분리한 시험 복사본에만 정식 Review·pending 승인을 기록할 수 있다. 최종 승인은 자동 생성하지 않는다. 이번 실제 Gemini/OAuth0회.
+
+타입 검사/전체183개 검사 통과. 새 ZIP `downloads/adtf-parcel-challenge.zip`의 `npm.cmd run complete:parcel-review -- --run-live --bundle`을 새 폴더에서 한 번 실행한다. 이전 진단/전체 generator를 재실행하지 않는다. dry-run은 TEST/STUB 차단 지적 때문에 limit_reached가 정상이다. 결과 요청 전 **GPT-6.1 Sol·medium**을 먼저 안내하고 RESULT_ARCHIVE tar.gz 하나만 받는다. 실제 반례 완료/정식 저장은 업로드 결과를 확인하기 전까지 미확인이다. [설계/한계](parcel-challenge-20261110.md), [실행 안내](../examples/parcel-challenge/README.md).
+
 ## 최신 관찰 — 후보 일반 검토 응답 STOP/pass, 반례·정식 저장은 미수행
 
 사용자 review-1794274580543-bbf1125b 원압축 SHA256은5a221227647023945a0982270c8f06d97764c9fa5c58daa2a332955726a316ff다. 같은 v2 요청에서 스키마만 바꾼 후보가1회 정상 응답 STOP을 받았다. 로컬 bind/validate 및 이전 원문 출처 검사를 통과했고 비교9행/해결4행·미해결0이다. 인용 일치는 의미상 완전성 보증이 아니며 단일 성공으로 특정 enum이400 원인이라고 확정하지 않는다.

@@ -1,0 +1,19 @@
+{
+  "label": "Previously received assessment reused without a new assessment API call",
+  "originalRunId": "local-1794271980331-b9076eca",
+  "assessmentRunId": "review-1794274580543-bbf1125b",
+  "role": {
+    "model": {
+      "providerId": "vertex-ai",
+      "modelId": "gemini-3.8-flash"
+    },
+    "personaId": "planning"
+  },
+  "newLiveRequestCap": 1,
+  "priorFollowupAndDiagnosticAttempts": 5,
+  "files": {
+    "context.json": "817a2559f11b90d44bad38d93228834086fd36a06e0b2ea1717ba127dcd899e4",
+    "request.json": "5967e5575bb61c9b883dd9f02cc09fd0f0272b6407994e6e6afaf878c82a840d",
+    "response.json": "255bae9a30fe8759f830a04e3ec4e3f4877d67560566c525c258caf68d7d8470"
+  }
+}

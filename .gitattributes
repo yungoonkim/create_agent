@@ -7,3 +7,5 @@ docs/acceptance/review-evidence-live-20261109/** -text -whitespace
 docs/acceptance/review-evidence-20261109/** -text -whitespace
 /downloads/*.zip -text
 /examples/reviewer-diagnostic/request.json -text
+
+/examples/parcel-challenge/*.json -text
