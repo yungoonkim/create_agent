@@ -1,0 +1,38 @@
+{
+  "sourceArchiveSha256": "84fa13a59fa2623b713fcec3aad39feb36e44d86123dadf5ddf5f692c25f152b",
+  "authorizationSource": "User approved next step after the explicit total 6 -> 7 request in this conversation",
+  "date": "2026-11-10",
+  "timezone": "Asia/Seoul",
+  "previousTotalCap": 6,
+  "approvedTotalCap": 7,
+  "alreadyUsed": 4,
+  "maximumNewRequests": 3,
+  "actualNewModelCalls": 0,
+  "status": {
+    "projectId": "parking-planning-trial",
+    "planning": {
+      "projectId": "parking-planning-trial",
+      "scopeContractId": "parking-scope",
+      "scopeVersion": 1,
+      "iterationCount": 1,
+      "maxIterations": 2,
+      "status": "revising",
+      "currentPlanVersion": 1,
+      "previousReviewId": "review-1"
+    },
+    "budget": {
+      "maxCalls": 7,
+      "priorCalls": 4,
+      "originalMaxCalls": 6,
+      "usedCalls": 4,
+      "remainingCalls": 3,
+      "unknownOutcomes": 0,
+      "knownTokens": 0,
+      "priorUsageIncluded": false,
+      "responsesWithoutUsage": 0
+    },
+    "nextAction": "run",
+    "additionalCallsForCompleteIteration": 0,
+    "finalApprovalAutomatic": false
+  }
+}

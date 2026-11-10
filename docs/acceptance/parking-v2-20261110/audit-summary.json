@@ -1,0 +1,114 @@
+{
+  "sourceArchiveSha256": "a7d7aea9d3fac4b70f7b9a1265465b3bbe31ca09e9c21082512dacc1921c6385",
+  "verifiedArchiveFiles": 31,
+  "status": {
+    "projectId": "parking-planning-trial",
+    "planning": {
+      "projectId": "parking-planning-trial",
+      "scopeContractId": "parking-scope",
+      "scopeVersion": 1,
+      "iterationCount": 2,
+      "maxIterations": 2,
+      "status": "awaiting_user_input",
+      "currentPlanVersion": 2,
+      "reviewId": "review-2",
+      "reason": "The same issue remains at the same or higher severity: issue-storage-validation-6."
+    },
+    "budget": {
+      "maxCalls": 7,
+      "priorCalls": 4,
+      "originalMaxCalls": 6,
+      "usedCalls": 7,
+      "remainingCalls": 0,
+      "unknownOutcomes": 0,
+      "knownTokens": 77323,
+      "priorUsageIncluded": false,
+      "responsesWithoutUsage": 0
+    },
+    "nextAction": "user_decision",
+    "additionalCallsForCompleteIteration": 3,
+    "finalApprovalAutomatic": false
+  },
+  "modelReviewOutcome": "pass",
+  "challengeCompleted": true,
+  "rawIssueCount": 0,
+  "priorLocalFindings": {
+    "issues": [
+      {
+        "id": "issue-storage-present_empty",
+        "kind": "implementation_risk",
+        "severity": "major",
+        "description": "present_empty: 키는 존재하지만 빈 문자열인 경우에 대한 명시적 분기 및 트리거 규격이 계획안에 명시되지 않았습니다. 해당 상황 자체의 조건 근거가 불충분합니다. 읽기 예외 및 유효값 검증 조건을 실제 원문과 연결하십시오.",
+        "suggestedDirection": "원본 보존·쓰기 차단으로 보완하거나, 명시적으로 허용된 복구 정책의 승인 Scope 근거를 확인하십시오."
+      },
+      {
+        "id": "issue-storage-validation-1",
+        "kind": "omission",
+        "severity": "major",
+        "description": "공통 검증 id: 비어있지 않은 고유 문자열 식별자: 로드 및 후보 검증 규칙은 있으나 id 형식 위반에 대한 구체적 인수 검증 사례가 없습니다.",
+        "suggestedDirection": "불러오기와 저장 후보 모두의 실제 검증 규칙 및 구체적인 잘못된 저장값/입력의 예상 결과를 보완하십시오."
+      },
+      {
+        "id": "issue-storage-validation-4",
+        "kind": "omission",
+        "severity": "major",
+        "description": "공통 검증 memo: 문자열 또는 null (선택 사항, 빈 문자열 허용): 타입 및 허용 규칙은 정의되었으나 memo 위반 입력에 대한 구체적 차단 사례가 없습니다.",
+        "suggestedDirection": "불러오기와 저장 후보 모두의 실제 검증 규칙 및 구체적인 잘못된 저장값/입력의 예상 결과를 보완하십시오."
+      },
+      {
+        "id": "issue-storage-validation-5",
+        "kind": "omission",
+        "severity": "major",
+        "description": "공통 검증 status: 'ACTIVE' 또는 'RESOLVED' 열거형 필수 문자열: 열거형 허용치 검증 규칙은 있으나 잘못된 상태값 차단에 대한 독립된 구체 사례가 없습니다.",
+        "suggestedDirection": "불러오기와 저장 후보 모두의 실제 검증 규칙 및 구체적인 잘못된 저장값/입력의 예상 결과를 보완하십시오."
+      },
+      {
+        "id": "issue-storage-validation-6",
+        "kind": "omission",
+        "severity": "major",
+        "description": "공통 검증 createdAt: 생성 시점의 유효한 ISO 8601 날짜 시각 문자열: 필드 검증 규칙은 명시되었으나 createdAt 위반에 대한 구체적 인수 검증 사례가 없습니다.",
+        "suggestedDirection": "불러오기와 저장 후보 모두의 실제 검증 규칙 및 구체적인 잘못된 저장값/입력의 예상 결과를 보완하십시오."
+      },
+      {
+        "id": "issue-storage-validation-8",
+        "kind": "omission",
+        "severity": "major",
+        "description": "공통 검증 식별자 고유성 불변식: 배열 내 모든 항목의 id는 상호 중복 불가: 중복 id 방지 불변식은 기술되었으나 중복 id 유입 시의 구체적 인수 검증 사례가 없습니다.",
+        "suggestedDirection": "불러오기와 저장 후보 모두의 실제 검증 규칙 및 구체적인 잘못된 저장값/입력의 예상 결과를 보완하십시오."
+      }
+    ],
+    "questions": []
+  },
+  "currentLocalFindings": {
+    "issues": [
+      {
+        "id": "issue-storage-validation-6",
+        "kind": "omission",
+        "severity": "major",
+        "description": "공통 검증 createdAt: 생성 시점의 유효한 ISO 8601 날짜 시각 문자열: 로드 및 후보 검증 공통 테이블에 필수 유효 날짜 형식으로 규정되어 있으며 acceptanceGroups[0]에서 포괄 검증된다.",
+        "suggestedDirection": "불러오기와 저장 후보 모두의 실제 검증 규칙 및 구체적인 잘못된 저장값/입력의 예상 결과를 보완하십시오."
+      }
+    ],
+    "questions": []
+  },
+  "allPriorResolutionsClaimedResolved": true,
+  "currentRuleSix": "createdAt: 생성 시점의 유효한 ISO 8601 날짜 시각 문자열",
+  "groupRuleIndexes": [
+    [
+      1,
+      3,
+      4,
+      5,
+      8,
+      9
+    ],
+    [
+      2,
+      3,
+      5
+    ]
+  ],
+  "manualFinding": "v2 lines 30 and 203-204 permit nonserialized concurrent writes when BroadcastChannel is unavailable; loss of existing records remains possible under the approved preservation Scope.",
+  "analysisModelCalls": 0,
+  "finalUserApprovalCreated": false
+}

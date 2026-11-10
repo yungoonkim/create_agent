@@ -25,7 +25,7 @@ export interface PlanningResumeAuthorization {
   readonly id: string;
   readonly planId: string;
   readonly expectedState: PlanningLoopState;
-  readonly kind: "answers" | "scope_change" | "revision";
+  readonly kind: "answers" | "scope_change" | "revision" | "review_revision";
   readonly revisionReason?: string;
   readonly scopeChangeRequestId?: string;
   readonly scopeChangeDecision?: "approved" | "rejected";
@@ -154,7 +154,8 @@ export class PlanningLoopController {
         status: "drafting",
         ...(authorization === undefined ? {} : { continuationId: authorization.id, currentPlanVersion: currentPlan!.version }),
       };
-      if (authorization !== undefined) initialState = this.stateFor(state, initialState);
+      if (authorization?.kind === "review_revision") initialState = state!;
+      else if (authorization !== undefined) initialState = this.stateFor(state, initialState);
       if (retry !== undefined) initialState = { ...state!, reviewRetry: { planId: retry.planId, planVersion: currentPlan!.version,
         sourceHash: createHash("sha256").update(JSON.stringify({ scope, plan: currentPlan, requirements: input.requirements,
           settledDecisions })).digest("hex"), reason: retry.reason.trim(), startedAt: this.now() } };
@@ -419,6 +420,13 @@ export class PlanningLoopController {
     if (authorization.kind === "answers") {
       if (state.status !== "awaiting_user_input" || state.reviewId !== review.id || scopeSnapshotKey(scope) !== scopeSnapshotKey(input.scopeContract) ||
           input.clarificationDecisions === undefined || input.clarificationDecisions.length === 0 || input.clarificationDecisions.some((item) => typeof item !== "string" || item.trim().length === 0)) throw new Error("User answers and unchanged approved Scope are required.");
+    } else if (authorization.kind === "review_revision") {
+      if (state.status !== "revising" || state.previousReviewId !== review.id ||
+        scopeSnapshotKey(scope) !== scopeSnapshotKey(input.scopeContract) ||
+        decideAfterReview({ review, currentPlan: plan, approvedScope: scope,
+          iterationCount: state.iterationCount, maxIterations: state.maxIterations }).type !== "REVISE") {
+        throw new Error("Saved revision continuation requires the unchanged version-bound REVISE decision.");
+      }
     } else if (authorization.kind === "revision") {
       if (state.status !== "awaiting_approval" || scopeSnapshotKey(scope) !== scopeSnapshotKey(input.scopeContract) ||
           typeof authorization.revisionReason !== "string" || authorization.revisionReason.trim().length === 0 ||

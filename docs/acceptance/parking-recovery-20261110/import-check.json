@@ -1,0 +1,33 @@
+{
+  "sourceArchiveSha256": "84fa13a59fa2623b713fcec3aad39feb36e44d86123dadf5ddf5f692c25f152b",
+  "modelCalls": 0,
+  "budgetIncreased": false,
+  "stop": "REQUEST_BUDGET: need up to 3 calls, 2 remain. Existing limits were preserved.",
+  "status": {
+    "projectId": "parking-planning-trial",
+    "planning": {
+      "projectId": "parking-planning-trial",
+      "scopeContractId": "parking-scope",
+      "scopeVersion": 1,
+      "iterationCount": 1,
+      "maxIterations": 2,
+      "status": "revising",
+      "currentPlanVersion": 1,
+      "previousReviewId": "review-1"
+    },
+    "budget": {
+      "maxCalls": 6,
+      "priorCalls": 4,
+      "originalMaxCalls": 6,
+      "usedCalls": 4,
+      "remainingCalls": 2,
+      "unknownOutcomes": 0,
+      "knownTokens": 0,
+      "priorUsageIncluded": false,
+      "responsesWithoutUsage": 0
+    },
+    "nextAction": "request_budget_decision",
+    "additionalCallsForCompleteIteration": 1,
+    "finalApprovalAutomatic": false
+  }
+}

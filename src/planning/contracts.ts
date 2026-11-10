@@ -136,6 +136,13 @@ export interface RevisionAudit {
 }
 
 export interface StorageValidation {
+  /** v2 permits a source-bound rejection scenario to cover several listed rules. */
+  readonly version?: 2;
+  readonly acceptanceGroups?: readonly {
+    readonly ruleIndexes: readonly number[];
+    readonly acceptance: PlanEvidence;
+    readonly rationale: string;
+  }[];
   readonly rationale: string;
   readonly rules: readonly {
     readonly rule: string;
