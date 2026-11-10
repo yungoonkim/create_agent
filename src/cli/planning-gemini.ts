@@ -66,7 +66,7 @@ async function main(): Promise<void> {
     console.log(`[ADTF] Scope change awaits separate approval (request: ${result.state.changeRequestId}).`);
   } else if (result.state.status === "awaiting_user_input") {
     console.log(`[ADTF] User input required: ${result.state.reason}`);
-  } else if (result.state.status === "limit_reached" || result.state.status === "failed") {
+  } else if (result.state.status === "limit_reached" || result.state.status === "failed" || result.state.status === "stopped") {
     console.log(`[ADTF] Safe stop: ${result.state.reason}`);
   }
   console.log(`[Memory] ${config.memory.directory}/projects/${config.projectId}`);
