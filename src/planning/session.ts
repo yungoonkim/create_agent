@@ -127,7 +127,7 @@ export async function increasePlanningSessionBudget(directory: string, maxCalls:
 }
 
 /** A user-invoked run serializes the project; only saved revisions/review failures can continue. */
-export async function runPlanningSession(directory: string, transport: SessionTransport): Promise<PlanningSessionStatus> {
+export async function runPlanningSession(directory: string, transport: SessionTransport, onLog?: (message: string) => void): Promise<PlanningSessionStatus> {
   const lock = await open(join(directory, "session.lock"), "wx");
   try {
     const data = await snapshot(directory);
@@ -137,8 +137,15 @@ export async function runPlanningSession(directory: string, transport: SessionTr
     const state = await memory.getPlanningLoopState(config.projectId);
     if (state !== undefined && !["revising", "reviewing"].includes(state.status)) return planningSessionStatus(directory);
     if (state === undefined || state.status === "revising") await ledger.assertAvailable(3);
-    const client = { models: { generateContent: (request: Parameters<SessionTransport["generateContent"]>[0]) => ledger.generate(request, transport) } } as unknown as GoogleGenAI;
-    const controller = new PlanningLoopController({ config, memory, writer: new GeminiPlanningWriter(client, memory), reviewer: new GeminiPlanningReviewer(client, memory) });
+    const client = { models: { generateContent: (request: Parameters<SessionTransport["generateContent"]>[0]) => ledger.generate(request, {
+      generateContent: async value => {
+        const progress = await ledger.status();
+        onLog?.(`[Model] SDK request ${progress.usedCalls}/${progress.maxCalls} started; model=${value.model}`);
+        return transport.generateContent(value);
+      },
+    }) } } as unknown as GoogleGenAI;
+    const controller = new PlanningLoopController({ config, memory, writer: new GeminiPlanningWriter(client, memory), reviewer: new GeminiPlanningReviewer(client, memory),
+      ...(onLog ? { onLog } : {}) });
     const input = { requirements: data.requirements, scopeContract: data.scope };
     if (state === undefined) await controller.run(input);
     else if (state.status === "revising") await controller.resume(input, { kind: "review_revision", id: `session-revision-${state.currentPlanVersion}`,
@@ -156,7 +163,8 @@ export async function exportPlanningSession(directory: string): Promise<string> 
     const status = await planningSessionStatus(directory);
     await save(join(directory, "runs", `${randomUUID()}.json`), status);
     const output = join(dirname(resolve(directory)), `${basename(directory)}-export-${randomUUID().slice(0, 8)}`);
-    await cp(directory, output, { recursive: true, force: false, errorOnExist: true,
+    await mkdir(output);
+    await cp(directory, join(output, "session"), { recursive: true, force: false, errorOnExist: true,
       filter: source => resolve(source) !== resolve(directory, "session.lock") });
     await save(join(output, "export-status.json"), status);
     if (state?.currentPlanVersion) {

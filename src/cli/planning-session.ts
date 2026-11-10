@@ -54,7 +54,7 @@ async function main(): Promise<void> {
       let client: ReturnType<typeof createVertexAiClient> | undefined;
       console.log(JSON.stringify(await runPlanningSession(directory, { generateContent: request => {
         client ??= createVertexAiClient(); return client.models.generateContent(request);
-      } }), null, 2));
+      } }, message => console.log(message)), null, 2));
     } catch (error) { failure = error; }
   }
   const output = await exportPlanningSession(directory);

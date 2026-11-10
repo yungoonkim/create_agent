@@ -113,6 +113,9 @@ test("one session command revises automatically, retains snapshots and stops for
   const output = await exportPlanningSession(f.session);
   assert.match(await readFile(join(output, "export-status.json"), "utf8"), /awaiting_approval/);
   assert.notEqual(output, f.session);
+  await runPlanningSession(join(output, "session"), f.transport); assert.equal(f.calls(), 5);
+  const restoredExport = await exportPlanningSession(join(output, "session"));
+  assert.match(await readFile(join(restoredExport, "export-status.json"), "utf8"), /awaiting_approval/);
 });
 test("insufficient budget stops before a new revision and repeated run does not reset counters or call models", async t => {
   const f = await fixture(t, 4);
