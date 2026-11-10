@@ -92,7 +92,14 @@ export function buildShadowContext(input: ShadowContextInput, userRequest?: stri
     findings.push({ id, origin, description, technicalBlocker }); references[`finding:${id}`] = description;
   };
   for (const i of review.issues) add("review", i.id, `${i.description} — ${i.suggestedDirection}`,
-    (i.severity === "major" || i.severity === "critical") && i.scopeDisposition !== "clarify" && i.scopeDisposition !== "change_scope");
+    i.kind === "scope_violation"
+      ? i.scopeDisposition === "revise_plan"
+      : (i.severity === "major" || i.severity === "critical"));
+  if (review.scopeViolation && !review.issues.some(i => i.kind === "scope_violation")) {
+    let key = "scope-violation-flag";
+    while (findings.some(f => f.id === `review:${key}`)) key += "-flag";
+    add("review", key, "Reviewer flagged a scope violation but did not provide a structured scope issue.", false);
+  }
   const storage = storageAuditFindings(review.storageAudit);
   for (const i of storage.issues) add("storage", i.id, `${i.description} — ${i.suggestedDirection}`, i.severity === "major" || i.severity === "critical");
   storage.questions.forEach((s, i) => add("storage", `question-${i + 1}`, s, false));

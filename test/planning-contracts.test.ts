@@ -168,6 +168,23 @@ test("clarification and question sources are ordered, deduplicated, and ordinary
   if (decision.type === "REQUEST_USER_INPUT") assert.deepEqual(decision.questions, ["Which option? — Choose behavior"]);
 });
 
+test("a user-input flag without a question fails closed, while legacy scope flags remain actionable", () => {
+  for (const overrides of [{ outcome: "needs_user_input" as const }, { userJudgmentRequired: true }]) {
+    const result = decideAfterReview(decisionInput(createReview(overrides)));
+    assert.deepEqual(result, { type: "FAILED", reason: "Reviewer requested user input without an actionable question." });
+  }
+  const blocked = createReview({ outcome: "needs_user_input", userJudgmentRequired: true, issues: [issue({ severity: "critical" })] });
+  assert.equal(decideAfterReview(decisionInput(blocked)).type, "FAILED");
+  const repeated = decideAfterReview(decisionInput(currentReview([issue({ severity: "critical" })], "needs_user_input"),
+    { currentPlan: planV2, previousReview: previousReview([issue({ severity: "critical" })]) }));
+  assert.equal(repeated.type, "STOP_REPEATED_REVIEW_ISSUES");
+  const scopeChange = createReview({ outcome: "needs_user_input", issues: [issue({ kind: "scope_violation" })] });
+  assert.equal(decideAfterReview(decisionInput(scopeChange)).type, "REQUEST_SCOPE_CHANGE_APPROVAL");
+  const legacy = decideAfterReview(decisionInput(createReview({ scopeViolation: true })));
+  assert.equal(legacy.type, "REQUEST_USER_INPUT");
+  if (legacy.type === "REQUEST_USER_INPUT") assert.equal(legacy.questions.length, 1);
+});
+
 test("a plan based on a scope other than the active approved version is blocked", () => {
   const outOfScopePlan = { ...plan, scopeContractId: "scope-unapproved", scopeVersion: 2 };
   const result = decideAfterReview(decisionInput(createReview(), { currentPlan: outOfScopePlan }));

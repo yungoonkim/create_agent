@@ -21,7 +21,8 @@ test('actual parking shadow retains local blocker, original policy and all seven
 });
 test('semantic fixtures expose history and limits while leaving gold and human review status outside model inputs',async()=>{
   const data=await materializeAll();assert.equal(data.cases.length,8);
-  const expected=['REVISE','REQUEST_USER_INPUT','REVISE','REQUEST_SCOPE_CHANGE_APPROVAL','REVISE','STOP_REPEATED_REVIEW_ISSUES','STOP_LIMIT_REACHED','REVISE'];
+  // The legacy choice fixture has a user-input flag but no actionable question.
+  const expected=['REVISE','FAILED','REVISE','REQUEST_SCOPE_CHANGE_APPROVAL','REVISE','STOP_REPEATED_REVIEW_ISSUES','STOP_LIMIT_REACHED','REVISE'];
   assert.deepEqual(data.cases.map(c=>c.context.baseline.type),expected);
   for(const c of data.cases){
     const input=JSON.stringify(c.context);

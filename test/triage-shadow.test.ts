@@ -48,6 +48,30 @@ test("technical blockers cannot become preferences and Reviewer SMS demand is no
   assert.equal(validateShadowProposal(requested, linked).status, "structurally_valid_for_manual_inspection");
   assert.equal(validateShadowProposal(requested, linked).baseline.type, "REQUEST_SCOPE_CHANGE_APPROVAL");
 });
+test("legacy scope approval and minor in-scope repairs have consistent shadow blockers", () => {
+  const source = input();
+  const legacy = buildShadowContext({ ...source, review: { ...review, scopeViolation: true, issues: [{ ...review.issues[0]!, id: "legacy", kind: "scope_violation", severity: "major" }] } });
+  assert.equal(legacy.baseline.type, "REQUEST_SCOPE_CHANGE_APPROVAL");
+  assert.equal(legacy.findings[0]?.technicalBlocker, false);
+  const legacyProposal = proposal(legacy, "USER_CLARIFICATION");
+  assert.equal(validateShadowProposal(legacy, legacyProposal).status, "structurally_valid_for_manual_inspection");
+  assert.ok(validateShadowProposal(legacy, proposal(legacy, "SCOPE_CHANGE_REQUIRED")).errors.some(s => s.startsWith("USER_REQUEST_REQUIRED:")));
+
+  const repair = buildShadowContext({ ...source, review: { ...review, scopeViolation: true, issues: [{ ...review.issues[0]!, id: "repair", kind: "scope_violation", severity: "minor", scopeDisposition: "revise_plan", dispositionReason: "Repair within approved Scope" }] } });
+  assert.equal(repair.baseline.type, "REVISE");
+  assert.equal(repair.findings[0]?.technicalBlocker, true);
+  assert.ok(validateShadowProposal(repair, proposal(repair, "USER_CLARIFICATION")).errors.includes("BLOCKER_DOWNGRADED:review:repair"));
+});
+test("an unstructured scope flag appears as a shadow finding without changing policy", () => {
+  const source = input();
+  const context = buildShadowContext({ ...source, review: { ...review, scopeViolation: true, issues: [] } });
+  assert.equal(context.baseline.type, "REQUEST_USER_INPUT");
+  assert.equal(context.findings.length, 1);
+  assert.equal(context.findings[0]?.origin, "review");
+  assert.equal(context.findings[0]?.technicalBlocker, false);
+  assert.match(context.references[`finding:${context.findings[0]?.id}`]!, /scope violation/);
+  assert.equal(validateShadowProposal(context, proposal(context, "USER_CLARIFICATION")).status, "structurally_valid_for_manual_inspection");
+});
 test("genuine questions and empty pass reviews stay separate from final approval", () => {
   const source = input(), questions = buildShadowContext({ ...source, review: { ...review, issues: [], outcome: "needs_user_input", userJudgmentRequired: true, suggestions: ["Which reminder time do you want?"] } });
   assert.equal(questions.baseline.type, "REQUEST_USER_INPUT");
