@@ -10,3 +10,4 @@ docs/acceptance/review-evidence-20261109/** -text -whitespace
 
 /examples/parcel-challenge/*.json -text
 /docs/acceptance/parcel-challenge-20261110/*.json -text
+/docs/acceptance/parcel-no-schema-20261110/*.json -text
