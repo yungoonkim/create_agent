@@ -3,6 +3,10 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 관찰 — 택배 v2 반례 검토 완료·시험 승인 대기
+
+사용자 `eight-1794288469054-589d8263.tar.gz`를 안전하게 확인했다. STOP, 인용 최대8개, 저장5사례/검증9규칙, 모델 질문/지적0, 분리한 시험 복사본의 정식 Review와 pending 승인 기록. 실제 최종 승인 없음, Scope DEMO FIXTURE. 관련9시도(최초 인증 실패 별도)이며 이 단계에서 추가 유료 호출0회. 원본 SHA-256 `8ca7b7f8d0283e4147ab95bd50c40153b304aa91991c6d42fc63b2120ac06174`. [원자료](acceptance/parcel-eight-20261110/manifest.json), [사용자 관점 검토](parcel-eight-content-review-20261110.md). 더 이상 동일 오류 반복 시험은 권하지 않는다.
+
 ## 최신 준비 — 반례 인용 최대8개 지침의 단일 시험
 
 사용자 중단 후 작업 재개 지시로 이전 프롬프트 후보에 모든 evidenceLines 최대8개 지침을 더한 별도 후보를 만들었다. 후보 요청은 systemInstruction만 변경하며 새 최대1회 단일 실행 CLI/ZIP을 준비했다. 해제 ZIP181개 검사/CRC/해시/dry-run도 통과했다. 기존8시도(최초 인증 실패 별도)·원자료·예약을 보존하고 준비 중 Gemini/OAuth0회. 타입 검사·전체193개 오프라인 검사 통과. [설계/한계](parcel-eight-run-20261110.md).

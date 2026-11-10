@@ -1,0 +1,66 @@
+{
+  "archiveSha256": "8ca7b7f8d0283e4147ab95bd50c40153b304aa91991c6d42fc63b2120ac06174",
+  "archiveBytes": 63120,
+  "fileSha256": {
+    "decision.json": "a23a73f23e9a80e68573746eb61fa34953c2c7873b3006fc1452496b1aad706d",
+    "review.md": "b0a1319be220c4635a669b9e52ad4e6484aef9880177f8a8d63e9f33f7d44d9f",
+    "plan.md": "d4f0563b55f446a078493aee80cefa46c48ceb8c7f7d24d0fe5cb4fbfb44c986",
+    "challenge-request.json": "14ea0cb0babe7e216f9c3d52f099cb09b7c89beff4cd1d1ba15e2b8da97d7a89",
+    "eight-1794288469054-589d8263.tar.gz": "8ca7b7f8d0283e4147ab95bd50c40153b304aa91991c6d42fc63b2120ac06174",
+    "summary.json": "0eee3e51666781ca93867519720de06198a8cf4cfdc7b1497d23f0b4fdb906d6",
+    "challenge-response.json": "1e4504e2012c6c38a54022312837026f3be0327d10e2402a21855140a020c42f",
+    "review.json": "537292379b66f3fc0c8b9eb90ca03214bba4d19373bb3617f72654e0d2500b3c"
+  },
+  "observations": {
+    "finishReasons": [
+      "STOP"
+    ],
+    "issues": 0,
+    "questions": 0,
+    "storageStates": [
+      "absent",
+      "present_empty",
+      "invalid",
+      "valid",
+      "read_error"
+    ],
+    "validationRules": 9,
+    "maxCaseEvidenceLength": 8,
+    "summary": {
+      "mode": "live",
+      "outcome": "review_recorded_in_isolated_copy",
+      "decision": "REQUEST_USER_APPROVAL",
+      "planningStatus": "awaiting_approval",
+      "challengeCompleted": true,
+      "formalReviewSaved": true,
+      "finalApprovalCreated": false,
+      "pendingApprovalCreated": true,
+      "reusedAssessmentCount": 1,
+      "reusedAssessmentBilledAgain": false,
+      "newSdkAttempts": 1,
+      "stubAttempts": 0,
+      "newUsage": {
+        "promptTokenCount": 6452,
+        "candidatesTokenCount": 2086,
+        "totalTokenCount": 11200,
+        "trafficType": "ON_DEMAND",
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 6452
+          }
+        ],
+        "candidatesTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2086
+          }
+        ],
+        "thoughtsTokenCount": 2662
+      },
+      "priorAttempts": 8,
+      "cumulativeTrialAttempts": 9,
+      "originalProjectChanged": false
+    }
+  }
+}
