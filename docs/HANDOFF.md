@@ -9,6 +9,12 @@
 
 ## 최신 준비 — 새로운 주차 위치 기록 기획 Scope 초안
 
+## 최신 관찰 — 주차 v1은 일반 pass 후 반례 API 오류로 중단
+
+사용자가 승인한 Scope v1의 로컬 결과를 받았다. Writer/일반 검토 STOP, 반례 API400 INVALID_ARGUMENT, SDK3/6회, reviewing/v1/iteration0, 공식 Review·최종 승인 없음. 내부25개 해시와 고정 입력 일치 확인. [결과/내용 반례](parking-planning-result-20261110.md), [원본](acceptance/parking-planning-20261110/parking-planning-result.tar.gz). 일반 Reviewer는 updatedAt 누락을 제안으로만 남겼으나 비교 후 setItem의 다중 탭 경쟁으로 기록 소실이 가능한 설계 빈틈이 있다. 공통 전송 경로는 과거 택배 성공 후보를 아직 통합하지 않았다. 전체 재시작/자동 유료 재호출 금지, 다음은 공통 전송 보완과 기존 반례 요청만 이어갈 오프라인 준비다. 이번 분석 추가 모델 호출0회.
+
+## 이전 준비 — 새로운 주차 위치 기록 기획 Scope 초안
+
 사용자는 장보기 주제의 중복을 지적했고, 장보기는 과거 비교 시험에 2회 포함됐음을 확인했다. 대신 주차 위치 기록을 선택했다. 사용자가 위치·시각·선택 메모, 차 찾음 이력, 수정/삭제, 현재 한 개를 정했다. 새 [Scope v1 초안과 입력](../examples/parking-planning/scope-v1.json) 및 [시험 기준](parking-planning-protocol-20261110.md)을 작성했다. 이 Scope는 미승인이고 실제 모델 호출0회다. 기존 live CLI는 원요청/응답 보존/단일 시작 예약이 약해, 실제 시험 전에 한 번 실행 도구를 준비해야 한다. 제품/팀원 실행은 하지 않는다.
 
 ## 최신 관찰 — 택배 v2 반례 검토 완료·시험 승인 대기
