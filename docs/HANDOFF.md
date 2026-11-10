@@ -5,6 +5,8 @@
 
 ## 최신 작업 — Windows 긴 경로 오류용 실행 ZIP
 
+구현 `d2ed076`과 배포/검증 `a008775`를 [PR #14](https://github.com/yungoonkim/create_agent/pull/14)에 제출하고 대화에 연결했다. [검증된 실행 ZIP](https://github.com/yungoonkim/create_agent/raw/a008775c67793ea3c138ab14dc9d9dc8867312ad/downloads/adtf-run.zip)은 PR 병합 전에도 해당 커밋 링크로 받을 수 있다. 사용자에게 이 별도 ZIP을 안내하고 Windows 해제·실행 확인을 이어간다.
+
 사용자가 main ZIP 해제 중0x80010135/긴 대상 경로 오류를 보고했고 C:\adtf 안내 후에도 실패했다. 단순 길이 계산만으로 탐색기 성공을 단정한 안내를 정정했다. [별도 ZIP 안내](../downloads/README.md), [구성/검증/한계](windows-run-bundle-20261110.md)를 우선한다. 원본 전체 ZIP과 별도 실행 ZIP을 혼동하지 않는다.
 
 - main 기반 `fix/windows-run-bundle`. Node 내장 ZIP STORE 생성기로 특정 Git 커밋의 src/예제/lock/설정/실행 검사를 묶는다. 과거 docs/acceptance와 인증/기존 실행 데이터는 원본 저장소에 보존하고 ZIP에서 제외한다. 내부 최장 경로73자, 최상위adtf-run이다. src/예제/lock·고정 시험 입력/실행기/생산 해시는 그대로다.

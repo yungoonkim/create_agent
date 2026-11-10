@@ -1,5 +1,7 @@
 # Windows 실행용 ZIP
 
+[현재 검증된 ZIP 직접 받기](https://github.com/yungoonkim/create_agent/raw/a008775c67793ea3c138ab14dc9d9dc8867312ad/downloads/adtf-run.zip). PR 병합 전에도 이 커밋 링크를 사용할 수 있다. 비공개 저장소이면 GitHub에 로그인한 브라우저에서 연다.
+
 Windows 탐색기로 전체 저장소 ZIP을 풀 때 과거 시험 기록의 깊은 경로 때문에 오류가 날 수 있다. **[adtf-run.zip](adtf-run.zip)** 파일을 열고 GitHub의 Download 버튼으로 받는다. 이것은 Code → Download ZIP과 다른 실행 전용 패키지다. ZIP의 기준 소스 커밋과 파일 해시는 압축 안의 `bundle-manifest.json`에 있다. 배포된 시점의 고정 패키지이므로 이후 main 변경이 자동 반영되는 것은 아니다.
 
 1. 기존 작업 폴더는 보관한다. 새 ZIP을 `C:\adtf` 같은 짧은 곳에 푼다.
