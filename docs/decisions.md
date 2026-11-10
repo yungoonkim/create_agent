@@ -507,3 +507,9 @@
 - 공개된 기존 주차/택배 응답을 성능 증명으로 재사용하지 않는다. 반려식물·우산 주제의 신규 카드8개를 만들고 기대 분류/금지 분류/필수 근거/중대 실패를 먼저 적는다.
 - 정식 Scope/Plan/Review 변환과 입력 해시 고정 후 사람의 독립 채점을 적용한다. 분류·인용 관련성·실행 가능성·사용자 설명을 평가하고 위험 유형 횟수를 별도로 집계한다. 구조 검증 통과나 Policy 일치만으로 의미 정답을 주장하지 않는다.
 - 중대 실패·승인 우회·근거 없는 Scope 확장0건을 후보의 최소 조건으로 삼되, 공개8사례만으로 제품 도입을 결정하지 않는다. 실제 모델/새 호출 상한/비용 기준은 첫 유료 호출 전에 별도 고정한다. [평가 설계](triage-semantic-evaluation-protocol-20261110.md).
+
+## D-075 — 의미 평가 카드를 합성 Shadow 입력으로 고정
+
+- 공개 카드8개를 실제 사용자 승인이나 새 Gemini 공식 Review로 표시하지 않고 `synthetic_offline_review_legacy_compatible`로 구분한다. 현재 Shadow API가 허용하는 Scope·Plan·Review 구조를 사용하고 기존 Policy 결과를 함께 보존한다.
+- 모델에 줄 `context.json`과 사람의 잠정 정답 `gold.json`을 분리한다. 예상 행동을 Review의 suggestedDirection에 복사해 답을 누설하지 않는다. 빈 채점표와 모든 입력 해시를 기록한다.
+- 이 자료는 의미 평가 준비용이며 수동 검수·새 호출 상한·실모델 점수는 다음 단계다. 저장된 주차 세션, 공식 승인/Review와 기존 유료 호출 기록을 변경하지 않는다. [생성 방법](../examples/supervisor-triage-semantic/README.md).

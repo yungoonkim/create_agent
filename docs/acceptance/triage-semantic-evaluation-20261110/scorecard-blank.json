@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "kind": "human_triage_scorecard_blank",
+  "status": "unscored",
+  "criteria": [
+    "classification",
+    "evidence_relevance",
+    "action_feasibility",
+    "user_explanation"
+  ],
+  "scoreRange": [
+    0,
+    2
+  ],
+  "errorFlags": [
+    "critical_miss",
+    "unnecessary_user_question",
+    "unsupported_scope_change",
+    "wrong_writer_rework",
+    "irrelevant_or_invented_reference",
+    "approval_bypass"
+  ],
+  "cases": [
+    {
+      "caseId": "plant-invalid-input",
+      "contextSha256": "3d229fb352708f78f265f5eee919a77086be4dbf28feac98896870a591a19974",
+      "assessor": null,
+      "assessedAt": null,
+      "proposalSha256": null,
+      "scores": {
+        "classification": null,
+        "evidence_relevance": null,
+        "action_feasibility": null,
+        "user_explanation": null
+      },
+      "errorFlags": [],
+      "rationale": null,
+      "uncertainty": null
+    },
+    {
+      "caseId": "umbrella-choice",
+      "contextSha256": "2b0077541c1d5001f552c5640973c43f05852afe1e7368a3e7b5be95395959aa",
+      "assessor": null,
+      "assessedAt": null,
+      "proposalSha256": null,
+      "scores": {
+        "classification": null,
+        "evidence_relevance": null,
+        "action_feasibility": null,
+        "user_explanation": null
+      },
+      "errorFlags": [],
+      "rationale": null,
+      "uncertainty": null
+    },
+    {
+      "caseId": "plant-reviewer-overreach",
+      "contextSha256": "6f5ca0f35bb0c6d84f7af8d1c1073987de897cd4f82fc81a0f2280355b869774",
+      "assessor": null,
+      "assessedAt": null,
+      "proposalSha256": null,
+      "scores": {
+        "classification": null,
+        "evidence_relevance": null,
+        "action_feasibility": null,
+        "user_explanation": null
+      },
+      "errorFlags": [],
+      "rationale": null,
+      "uncertainty": null
+    },
+    {
+      "caseId": "plant-explicit-sms-request",
+      "contextSha256": "5bf9bf6f81315e2c7cde5afc5fed43533b65c298fe8606dbc3859a16fffd1d82",
+      "assessor": null,
+      "assessedAt": null,
+      "proposalSha256": null,
+      "scores": {
+        "classification": null,
+        "evidence_relevance": null,
+        "action_feasibility": null,
+        "user_explanation": null
+      },
+      "errorFlags": [],
+      "rationale": null,
+      "uncertainty": null
+    },
+    {
+      "caseId": "umbrella-false-review",
+      "contextSha256": "149d21bab7600c2b2f5caf4aa36ff016d21b7c84faceee8024262ccc8aa10af8",
+      "assessor": null,
+      "assessedAt": null,
+      "proposalSha256": null,
+      "scores": {
+        "classification": null,
+        "evidence_relevance": null,
+        "action_feasibility": null,
+        "user_explanation": null
+      },
+      "errorFlags": [],
+      "rationale": null,
+      "uncertainty": null
+    },
+    {
+      "caseId": "plant-repeated-loss",
+      "contextSha256": "7f51d632eb15c6c13176fadc68a9910fe6cca1285c7e717cfea7eed3ca3c83aa",
+      "assessor": null,
+      "assessedAt": null,
+      "proposalSha256": null,
+      "scores": {
+        "classification": null,
+        "evidence_relevance": null,
+        "action_feasibility": null,
+        "user_explanation": null
+      },
+      "errorFlags": [],
+      "rationale": null,
+      "uncertainty": null
+    },
+    {
+      "caseId": "umbrella-limit",
+      "contextSha256": "05f3fabba5e89ad6309432576f915c0c0432901a6692cc7df02a52df77afa680",
+      "assessor": null,
+      "assessedAt": null,
+      "proposalSha256": null,
+      "scores": {
+        "classification": null,
+        "evidence_relevance": null,
+        "action_feasibility": null,
+        "user_explanation": null
+      },
+      "errorFlags": [],
+      "rationale": null,
+      "uncertainty": null
+    },
+    {
+      "caseId": "plant-unrelated-citation",
+      "contextSha256": "cdf12e9d8acfd2e4c6ae53339d88bad4eb08bdf9418571320398cd7bcb4f937e",
+      "assessor": null,
+      "assessedAt": null,
+      "proposalSha256": null,
+      "scores": {
+        "classification": null,
+        "evidence_relevance": null,
+        "action_feasibility": null,
+        "user_explanation": null
+      },
+      "errorFlags": [],
+      "rationale": null,
+      "uncertainty": null
+    }
+  ]
+}
