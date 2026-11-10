@@ -11,6 +11,6 @@ $env:GOOGLE_CLOUD_LOCATION = "global"
 npm.cmd run trial:parking-planning -- --run-live
 ```
 
-`GOOGLE_CLOUD_PROJECT`는 실제 Vertex AI 프로젝트 ID로 바꾸세요. 실행은 한 번만 합니다. 실패해도 자동 재실행하지 말고 `RESULT_ARCHIVE=` 뒤의 `parking-planning-result.tar.gz`를 보관하세요. 이 파일에는 원요청, 승인 Scope, 모델 요청·응답, 상태, 사용량, 검토표가 들어 있으므로 개인 자료를 포함한 결과물로 취급하세요. 인증 토큰과 ADC 파일은 넣지 않습니다. 원인과 기획 품질을 검토한 뒤 다음 동작을 결정합니다.
+`GOOGLE_CLOUD_PROJECT`는 실제 Vertex AI 프로젝트 ID로 바꾸세요. 실행은 한 번만 합니다. 실패해도 자동 재실행하지 말고 `RESULT_ARCHIVE=` 뒤의 `parking-planning-result.tar.gz`와 표시된 `RESULT_SHA256`을 보관하세요. 이 파일에는 원요청, 승인 Scope, 모델 요청·응답, 상태, 사용량, 검토표, 파일별 해시가 들어 있으므로 개인 자료를 포함한 결과물로 취급하세요. 인증 토큰과 ADC 파일은 넣지 않습니다. 원인과 기획 품질을 검토한 뒤 다음 동작을 결정합니다.
 
 결과 분석을 맡길 때 권장 Codex 설정은 **GPT-6.1 Sol · medium**입니다. 이 설정은 Gemini API 과금 설정과 별개입니다.

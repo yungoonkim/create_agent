@@ -5,6 +5,7 @@ import {readFile,writeFile,mkdir,open,appendFile,access} from 'node:fs/promises'
 import {join,resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
+import {fileHashes} from '../planning-comparison/lib.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
 const here=join(root,'examples/parking-planning');
@@ -109,9 +110,11 @@ try {
   await json(join(output,'summary.json'),{decision,status:state?.status??'before_planning',failure,
     sdkInvocations:count,maxSdkInvocations:6,ledger,exportCreated,finalPlanApproved:false,
     completedAt:new Date().toISOString()});
+  await json(join(output,'artifact-manifest.json'),{sha256:await fileHashes(output)});
   const archive=`${output}.tar.gz`;
   const packed=spawnSync('tar',['-czf',archive,'-C',root,'parking-planning-result'],{encoding:'utf8'});
   assert.equal(packed.status,0,`Archive failed: ${packed.stderr||packed.error?.message}`);
   console.log(`RESULT_ARCHIVE=${archive}`);
+  console.log(`RESULT_SHA256=${sha(await readFile(archive))}`);
   if(failure)process.exitCode=1;
 }
