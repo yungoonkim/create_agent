@@ -1,0 +1,9 @@
+{
+  "kind": "pre_live_input_manifest",
+  "modelCalls": 0,
+  "files": {
+    "request.md": "45b38ad4f24c43641a596e4bd2ff4084e99d862685c2d04e8e38a1d9884a254c",
+    "scope-v1.json": "2fd577d85570a6b238ec4d71c710d36abc01bcd654dd383c14204c2e03f7f80e",
+    "config.json": "751ef63d9e02a9adb7f622fa2b8ea4795301e99c75b964a770991c2cc2eba5a6"
+  }
+}

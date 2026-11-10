@@ -1,0 +1,10 @@
+{
+  "projectId": "parking-planning-trial",
+  "planning": {
+    "writer": { "providerId": "vertex-ai", "modelId": "gemini-3.8-flash", "personaId": "planning-writer" },
+    "reviewer": { "providerId": "vertex-ai", "modelId": "gemini-3.8-flash", "personaId": "planning-reviewer" },
+    "maxIterations": 2,
+    "requireUserApproval": true
+  },
+  "memory": { "type": "file", "directory": ".adtf/parking-planning-trial" }
+}

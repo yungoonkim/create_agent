@@ -3,6 +3,10 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 준비 — 새로운 주차 위치 기록 기획 Scope 초안
+
+사용자는 장보기 주제의 중복을 지적했고, 장보기는 과거 비교 시험에 2회 포함됐음을 확인했다. 대신 주차 위치 기록을 선택했다. 사용자가 위치·시각·선택 메모, 차 찾음 이력, 수정/삭제, 현재 한 개를 정했다. 새 [Scope v1 초안과 입력](../examples/parking-planning/scope-v1.json) 및 [시험 기준](parking-planning-protocol-20261110.md)을 작성했다. 이 Scope는 미승인이고 실제 모델 호출0회다. 기존 live CLI는 원요청/응답 보존/단일 시작 예약이 약해, 실제 시험 전에 한 번 실행 도구를 준비해야 한다. 제품/팀원 실행은 하지 않는다.
+
 ## 최신 관찰 — 택배 v2 반례 검토 완료·시험 승인 대기
 
 사용자 `eight-1794288469054-589d8263.tar.gz`를 안전하게 확인했다. STOP, 인용 최대8개, 저장5사례/검증9규칙, 모델 질문/지적0, 분리한 시험 복사본의 정식 Review와 pending 승인 기록. 실제 최종 승인 없음, Scope DEMO FIXTURE. 관련9시도(최초 인증 실패 별도)이며 이 단계에서 추가 유료 호출0회. 원본 SHA-256 `8ca7b7f8d0283e4147ab95bd50c40153b304aa91991c6d42fc63b2120ac06174`. [원자료](acceptance/parcel-eight-20261110/manifest.json), [사용자 관점 검토](parcel-eight-content-review-20261110.md). 더 이상 동일 오류 반복 시험은 권하지 않는다.

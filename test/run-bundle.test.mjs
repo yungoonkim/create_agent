@@ -44,3 +44,15 @@ test('diagnostic package exposes only the one-shot review command, not fresh pai
   assert.ok(files.has('adtf-run/examples/reviewer-diagnostic/request.json'));
   assert.ok(files.get('adtf-run/README.md').toString().includes('최대1회'));
 });
+test('parking planning package includes the approved Scope and only its live command',t=>{
+  const git=spawnSync('git',['rev-parse','--show-toplevel'],{encoding:'utf8'});
+  if(git.status!==0||resolve(git.stdout.trim())!==resolve(process.cwd())){t.skip('Distribution builder requires a full Git checkout');return;}
+  const bundle=buildRunBundle(process.cwd(),'HEAD','parking-planning');const files=entries(bundle.bytes);
+  const pkg=JSON.parse(files.get('adtf-run/package.json'));
+  assert.ok(pkg.scripts['trial:parking-planning']);
+  assert.equal(pkg.scripts['complete:parcel-eight'],undefined);
+  assert.ok(files.has('adtf-run/examples/parking-planning/scope-v1.json'));
+  assert.ok(files.has('adtf-run/examples/parking-planning/input-manifest.json'));
+  assert.ok(files.get('adtf-run/README.md').toString().includes('최대 6회'));
+  assert.ok(bundle.maxPathLength<=140);
+});
