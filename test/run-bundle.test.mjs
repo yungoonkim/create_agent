@@ -1,0 +1,36 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {spawnSync} from 'node:child_process';
+import {resolve} from 'node:path';
+import {buildRunBundle,makeZip} from '../scripts/create-run-bundle.mjs';
+
+function entries(zip){
+  const result=new Map();let at=0;
+  while(zip.readUInt32LE(at)===0x04034b50){
+    assert.equal(zip.readUInt16LE(at+8),0);const size=zip.readUInt32LE(at+18),len=zip.readUInt16LE(at+26),extra=zip.readUInt16LE(at+28);
+    const name=zip.subarray(at+30,at+30+len).toString();const start=at+30+len+extra;
+    assert.ok(!result.has(name));result.set(name,zip.subarray(start,start+size));at=start+size;
+  }
+  assert.equal(zip.readUInt32LE(at),0x02014b50);assert.equal(zip.readUInt32LE(zip.length-22),0x06054b50);
+  assert.equal(zip.readUInt16LE(zip.length-12),result.size);return result;
+}
+test('runtime ZIP uses standard STORE headers, known CRC and rejects unsafe Windows paths',()=>{
+  const zip=makeZip([{path:'adtf-run/check.txt',data:Buffer.from('123456789')}]);
+  assert.equal(zip.readUInt32LE(14),0xcbf43926);assert.equal(entries(zip).get('adtf-run/check.txt').toString(),'123456789');
+  for(const path of ['adtf-run/../secret','adtf-run/name:bad','adtf-run/'+ 'x'.repeat(150)])assert.throws(()=>makeZip([{path,data:Buffer.from('x')}]));
+});
+test('runtime bundle is reproducible, source-pinned and contains no deep records or credentials',t=>{
+  const git=spawnSync('git',['rev-parse','--show-toplevel'],{encoding:'utf8'});
+  if(git.status!==0||resolve(git.stdout.trim())!==resolve(process.cwd())){t.skip('Distribution builder requires a full Git checkout');return;}
+  const bundle=buildRunBundle(process.cwd());assert.deepEqual(buildRunBundle(process.cwd()).bytes,bundle.bytes);assert.ok(bundle.maxPathLength<=140);
+  const files=entries(bundle.bytes),manifest=JSON.parse(files.get('adtf-run/bundle-manifest.json'));
+  assert.equal(manifest.sourceCommit,bundle.manifest.sourceCommit);
+  assert.ok([...files.keys()].every(p=>!/^adtf-run\/(?:docs|node_modules|dist|\.git|\.adtf)\//.test(p)));
+  for(const [p,hash] of Object.entries(manifest.files))assert.equal(createHash('sha256').update(files.get('adtf-run/'+p)).digest('hex'),hash);
+  const pkg=JSON.parse(files.get('adtf-run/package.json'));assert.ok(!pkg.scripts.test.includes('planning-comparison.test.mjs'));assert.ok(!pkg.scripts.test.includes('run-bundle.test.mjs'));
+  assert.ok(pkg.scripts.test.includes('review-evidence.test.js'));assert.ok(pkg.scripts['eval:review-evidence']);
+  const freeze=JSON.parse(files.get('adtf-run/examples/review-evidence-live/freeze.json'));
+  for(const [p,hash] of Object.entries(freeze.productionSourceHashes))assert.equal(createHash('sha256').update(files.get('adtf-run/src/'+p)).digest('hex'),hash);
+  assert.equal(createHash('sha256').update(files.get('adtf-run/package-lock.json')).digest('hex'),freeze.packageLockSha256);
+});

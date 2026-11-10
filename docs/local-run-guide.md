@@ -1,6 +1,6 @@
 # 소스를 받아 ADTF 실행하기
 
-기준일: 2026-11-09 (한국 시간). **실행 대상은 터미널에서 사용하는 ADTF 지휘자·기획자 CLI**다. 예제 ‘할 일 관리’ 앱은 기획과 작업 지시 자료이며, 이 저장소에 완성된 할 일 웹앱이 들어 있는 것은 아니다.
+기준일: 2026-11-10 (한국 시간). **실행 대상은 터미널에서 사용하는 ADTF 지휘자·기획자 CLI**다. 예제 ‘할 일 관리’ 앱은 기획과 작업 지시 자료이며, 이 저장소에 완성된 할 일 웹앱이 들어 있는 것은 아니다.
 
 처음에는 **소스 받기 → 설치 → 모델 없는 데모**까지만 실행해도 된다. 실제 Gemini를 쓰려면 그다음 ADC 인증과 새 프로젝트 설정을 진행한다. 현재 팀원 Agent 자동 실행은 제공하지 않는다.
 
@@ -27,14 +27,16 @@ git clone --branch main --single-branch https://github.com/yungoonkim/create_age
 cd create_agent
 ```
 
-ZIP 방식: [main 브랜치](https://github.com/yungoonkim/create_agent/tree/main)에서 **Code → Download ZIP**을 선택하고 압축을 푼다. 저장소가 비공개이면 권한이 있는 GitHub 계정으로 접속한다. PowerShell에서 압축 해제 폴더로 이동한다.
+Windows 실행 ZIP: [별도 실행용 패키지](../downloads/README.md)의 `adtf-run.zip`을 받는다. `C:\adtf`에 풀면 `C:\adtf\adtf-run\package.json` 폴더가 실행 루트다. 이 ZIP은 깊은 과거 원자료를 제외하며 전체 저장소와 파일/테스트 범위가 다르다. 실행 ZIP의 npm test는165개, 전체 저장소는173개다.
+
+전체 소스 ZIP은 [main 브랜치](https://github.com/yungoonkim/create_agent/tree/main)의 **Code → Download ZIP**이다. 역사적 기록의 깊은 경로 때문에 Windows 탐색기 해제에서 오류가 날 수 있고 짧은 폴더로 옮기는 것만으로 해결된다고 보장하지 않는다. 기존 실패 폴더/실행 기록은 보관하고 별도 실행 ZIP을 새 폴더에 푼다. 저장소가 비공개이면 권한 있는 GitHub 계정으로 접속한다.
 
 ```powershell
 cd "C:\압축을 푼 위치\create_agent-폴더"
 Get-ChildItem package.json
 ```
 
-`package.json`, `src`, `examples`, `docs`가 보이는 폴더가 실행 루트다. 이후 명령은 모두 이 폴더에서 실행한다. 소스를 이미 수정하고 있다면 변경을 보존하고 브랜치를 확인한다. 이 가이드는 기존 파일을 강제로 되돌리는 명령을 사용하지 않는다.
+`package.json`, `src`, `examples`가 보이는 폴더가 실행 루트다. 전체 저장소에는 docs가 있고 실행 ZIP에는 대신 전용 README와 manifest가 있다. 이후 명령은 모두 이 폴더에서 실행한다. 소스를 이미 수정하고 있다면 변경을 보존하고 브랜치를 확인한다. 이 가이드는 기존 파일을 강제로 되돌리는 명령을 사용하지 않는다.
 
 ## 3. 설치와 기본 검사
 
