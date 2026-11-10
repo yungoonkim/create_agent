@@ -3,6 +3,10 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 준비 — INVALID_ARGUMENT 반례 요청의 오프라인 호환성 후보
+
+사용자 진행 지시에 따라 실패 요청에서 `config.responseJsonSchema`만 제거한 JSON MIME 후보를 준비했다. 원인은 여전히 미확정이다. 원본/후보 SHA-256을 고정하고 전체184개 오프라인 검사·타입 검사를 통과했다. 새 Gemini/OAuth0회. 기존1회 상한은 소진됐고 이 후보에 유료 실행 명령은 없다. [분석과 경계](parcel-challenge-compatibility-20261110.md), [후보 요청](acceptance/parcel-challenge-20261110/candidate-no-schema.json). 다음에 명시적 새 상한을 정해 시험하더라도 이전 결과·시작 예약을 지우거나 옛 명령을 반복하지 않는다.
+
 ## 최신 관찰 — 반례 요청 INVALID_ARGUMENT, 정식 Review 없음
 
 사용자 `challenge-1794276238394-8d70bb56.tar.gz`를 안전하게 확인했다. 일반 검토 재사용 1회, 새 반례 SDK 시도 1회, `INVALID_ARGUMENT`(HTTP 상태 미기록), 모델 응답/새 usage/정식 Review/최종 승인 없음. 원래 프로젝트 변경 없음. 후속/진단 이력 합계 6시도(최초 인증 실패 별도)이며 이번 허용 상한 1회를 소진했다. 특정 거부 필드와 원인은 불명이다. 재실행을 안내하지 않는다. 원본 SHA-256 `ccbd8cfae6a45fa00165c20c169964383766873d904c23e37f1f7514e9744b09`, [분석](parcel-challenge-result-20261110.md), [원자료](acceptance/parcel-challenge-20261110/manifest.json). 이번 보존·분석 추가 모델 호출 0회.

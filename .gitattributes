@@ -9,3 +9,4 @@ docs/acceptance/review-evidence-20261109/** -text -whitespace
 /examples/reviewer-diagnostic/request.json -text
 
 /examples/parcel-challenge/*.json -text
+/docs/acceptance/parcel-challenge-20261110/*.json -text
