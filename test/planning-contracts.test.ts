@@ -165,8 +165,8 @@ test("repeat detection considers issue ID, kind, related requirement, and severi
     decideAfterReview(decisionInput(currentReview([current]), { currentPlan: planV2, previousReview: prior }));
 
   assert.equal(runWith(issue({ severity: "minor" })).type, "REVISE");
-  assert.equal(runWith(issue({ severity: "major" })).type, "REQUEST_USER_INPUT");
-  assert.equal(runWith(issue({ severity: "critical" })).type, "REQUEST_USER_INPUT");
+  assert.equal(runWith(issue({ severity: "major" })).type, "STOP_REPEATED_REVIEW_ISSUES");
+  assert.equal(runWith(issue({ severity: "critical" })).type, "STOP_REPEATED_REVIEW_ISSUES");
   assert.equal(runWith(issue({ kind: "contradiction" })).type, "REVISE");
   assert.equal(runWith(issue({ id: "ISSUE-2" })).type, "REVISE");
   assert.equal(runWith(issue({ relatedRequirementId: "REQ-OTHER" })).type, "REVISE");

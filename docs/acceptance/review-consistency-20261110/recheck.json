@@ -1,0 +1,621 @@
+{
+  "kind": "offline_projection_only",
+  "originalArchiveSha256": "a7d7aea9d3fac4b70f7b9a1265465b3bbe31ca09e9c21082512dacc1921c6385",
+  "source": {
+    "projectId": "parking-planning-trial",
+    "scopeId": "parking-scope",
+    "scopeVersion": 1,
+    "scopeSha256": "f7ac52caab104c312a2a5a8ca447b0d617078763c95676afab240d289a9b6bb4",
+    "planId": "parking-planning-trial-plan",
+    "planVersion": 2,
+    "planSha256": "a3478c48427998935a7b082c5a2ff288fb54f4fa6f1ec980e36abe6e0bb857e2",
+    "reviewSha256": "d5aef3331c301d3362419a8ee8922034935c5ee6688e9138b7fa97311a5f69cb"
+  },
+  "savedState": {
+    "projectId": "parking-planning-trial",
+    "scopeContractId": "parking-scope",
+    "scopeVersion": 1,
+    "iterationCount": 2,
+    "maxIterations": 2,
+    "status": "awaiting_user_input",
+    "currentPlanVersion": 2,
+    "reviewId": "review-2",
+    "reason": "The same issue remains at the same or higher severity: issue-storage-validation-6."
+  },
+  "projectedStatus": {
+    "projectId": "parking-planning-trial",
+    "planning": {
+      "projectId": "parking-planning-trial",
+      "scopeContractId": "parking-scope",
+      "scopeVersion": 1,
+      "iterationCount": 2,
+      "maxIterations": 2,
+      "status": "awaiting_user_input",
+      "currentPlanVersion": 2,
+      "reviewId": "review-2",
+      "reason": "The same issue remains at the same or higher severity: issue-storage-validation-6."
+    },
+    "budget": {
+      "maxCalls": 7,
+      "priorCalls": 4,
+      "originalMaxCalls": 6,
+      "usedCalls": 7,
+      "remainingCalls": 0,
+      "unknownOutcomes": 0,
+      "knownTokens": 77323,
+      "priorUsageIncluded": false,
+      "responsesWithoutUsage": 0
+    },
+    "nextAction": "review_correction",
+    "additionalCallsForCompleteIteration": 3,
+    "finalApprovalAutomatic": false
+  },
+  "newPolicyDecision": {
+    "type": "STOP_REPEATED_REVIEW_ISSUES",
+    "issueIds": [
+      "issue-storage-validation-6"
+    ],
+    "reason": "REVIEW_REPEAT: 같은 차단 지적이 반복돼 자동 실행을 중단했습니다. 사용자 취향 질문이 아니라 기획·검토 근거 보완이 필요합니다. issue-storage-validation-6: 공통 검증 createdAt: 생성 시점의 유효한 ISO 8601 날짜 시각 문자열: 개별·공유 확인 사례에 이 규칙을 뒷받침하는 연결 근거 없음 (모델의 supported 주장과 근거가 일치하지 않음). 모델 설명: 로드 및 후보 검증 공통 테이블에 필수 유효 날짜 형식으로 규정되어 있으며 acceptanceGroups[0]에서 포괄 검증된다."
+  },
+  "modelClaims": [
+    {
+      "issueId": "issue-storage-present_empty",
+      "status": "resolved",
+      "current": {
+        "evidenceLines": [
+          10,
+          60,
+          93,
+          170,
+          171,
+          172
+        ],
+        "evidence": [
+          "1. **저장소 빈 값(`present_empty`) 명시:** 키는 존재하나 내용이 빈 문자열(`\"\"`) 또는 공백만 있는 경우, 암묵적 빈 배열 리셋 대신 손상 데이터로 판정하여 원본 문자열을 보존하고 쓰기를 차단하도록 처리 규격을 보완함.",
+          "2. 로컬 저장소 데이터가 외부 요인에 의해 훼손되었거나 읽기 권한이 차단된 경우, 또는 키는 있으나 내용이 빈 텍스트인 경우 시스템은 절대로 저장소를 빈 배열로 초기화하거나 새 데이터로 덮어쓰지 않는다.",
+          "  4. *사례 4 (저장소 손상 및 빈 값 보호):* 저장소 키의 값이 비정상적인 문자열이거나 빈 텍스트(`\"\"`)인 상태에서 페이지를 열면 화면에 \"데이터 무결성 오류: 안전을 위해 읽기 전용으로 잠깁니다\" 경고가 노출되며 원본 키를 빈 배열로 덮어쓰지 않고 쓰기 버튼이 비활성화된다.",
+          "2. **키 존재 및 빈 값 (Present Empty):**",
+          "   - 저장소에 키는 존재하지만 값이 빈 문자열(`\"\"`)이거나 공백 문자로만 채워져 있는 경우.",
+          "   - **처리:** 키 부재(정상 초기 상태)로 간주하지 않고 '손상 데이터'로 판정한다. 원본 문자열을 빈 배열로 덮어쓰지 않고 그대로 보존하며 시스템을 읽기 전용 모드로 잠근다."
+        ]
+      },
+      "rationale": "키가 존재하나 빈 문자열인 경우 암묵적 빈 배열 리셋이 아닌 손상 데이터(손상 데이터 판정, 원본 문자열 보존, 읽기 전용 잠금)로 처리하도록 명확히 보완되었습니다."
+    },
+    {
+      "issueId": "issue-storage-validation-1",
+      "status": "resolved",
+      "current": {
+        "evidenceLines": [
+          12,
+          105,
+          122,
+          129,
+          138,
+          149,
+          151,
+          152
+        ],
+        "evidence": [
+          "3. **통합 불량 데이터 검증 인수 사례 보완:** 개별 필드(`id`, `memo`, `status`, `createdAt`) 및 고유성 불변식 위반을 포괄 검증하는 통합 로드 차단 사례와 통합 후보 차단 사례를 명시함.",
+          "| `id` | 문자열 (String) | 필수 | 비어있지 않은 고유 식별 문자열 (공백 불가) | 허용: `\"c3a0-4b2e\"`, 차단: `\"\"`, `\"   \"`, `null` |",
+          "- **저장소 보관 내용 예시 (스키마는 맞으나 값·불변식 위반 복합 페이로드):**",
+          "        \"id\": \"rec-duplicate-01\",",
+          "        \"id\": \"rec-duplicate-01\",",
+          "- **문제점:** JSON 문법 및 키 구조는 존재하나, `rec-duplicate-01`의 주차 시각(`2월 31일`)이 불가능한 날짜이고, `memo`에 비문자열 숫자가 들어있으며, `id`가 중복되었고, 컬렉션 내 `ACTIVE` 상태가 2건 존재하여 모든 검증 규칙과 불변식을 위반함.",
+          "  - 기존 `localStorage` 데이터를 빈 배열로 초기화하거나 임의로 수정하여 덮어쓰지 않고 **있는 그대로 보존**한다.",
+          "  - 시스템은 '데이터 무결성 오류' 상태로 진입하고, 화면에 \"기존 저장 데이터에 오류가 있어 데이터를 변경할 수 없습니다. 안전을 위해 읽기 전용으로 잠깁니다.\" 알림을 띄운다."
+        ]
+      },
+      "rationale": "식별자 id 위반(중복 ID 유입)을 포함한 통합 로드 시나리오(4.2 (1))에서 검증 차단 및 원본 보존, 읽기 전용 잠금 동작이 명시되었습니다."
+    },
+    {
+      "issueId": "issue-storage-validation-4",
+      "status": "resolved",
+      "current": {
+        "evidenceLines": [
+          12,
+          108,
+          122,
+          132,
+          149,
+          151,
+          152
+        ],
+        "evidence": [
+          "3. **통합 불량 데이터 검증 인수 사례 보완:** 개별 필드(`id`, `memo`, `status`, `createdAt`) 및 고유성 불변식 위반을 포괄 검증하는 통합 로드 차단 사례와 통합 후보 차단 사례를 명시함.",
+          "| `memo` | 문자열 (String) 또는 null | 선택 | 문자열 규격 (문자열 또는 빈 문자열, null 허용) | 허용: `\"기둥 뒤\"`, `\"\"`, `null`, 차단: 숫자, 배열 등 비문자열 타입 |",
+          "- **저장소 보관 내용 예시 (스키마는 맞으나 값·불변식 위반 복합 페이로드):**",
+          "        \"memo\": 12345,",
+          "- **문제점:** JSON 문법 및 키 구조는 존재하나, `rec-duplicate-01`의 주차 시각(`2월 31일`)이 불가능한 날짜이고, `memo`에 비문자열 숫자가 들어있으며, `id`가 중복되었고, 컬렉션 내 `ACTIVE` 상태가 2건 존재하여 모든 검증 규칙과 불변식을 위반함.",
+          "  - 기존 `localStorage` 데이터를 빈 배열로 초기화하거나 임의로 수정하여 덮어쓰지 않고 **있는 그대로 보존**한다.",
+          "  - 시스템은 '데이터 무결성 오류' 상태로 진입하고, 화면에 \"기존 저장 데이터에 오류가 있어 데이터를 변경할 수 없습니다. 안전을 위해 읽기 전용으로 잠깁니다.\" 알림을 띄운다."
+        ]
+      },
+      "rationale": "memo에 비문자열 숫자가 포함된 데이터가 저장소에 존재할 때 검증 탈락 및 읽기 전용 잠금 처리 사례가 명시되었습니다."
+    },
+    {
+      "issueId": "issue-storage-validation-5",
+      "status": "resolved",
+      "current": {
+        "evidenceLines": [
+          12,
+          109,
+          156,
+          157,
+          158,
+          160,
+          161
+        ],
+        "evidence": [
+          "3. **통합 불량 데이터 검증 인수 사례 보완:** 개별 필드(`id`, `memo`, `status`, `createdAt`) 및 고유성 불변식 위반을 포괄 검증하는 통합 로드 차단 사례와 통합 후보 차단 사례를 명시함.",
+          "| `status` | 문자열 (String) | 필수 | 열거형 값: `\"ACTIVE\"`(현재 주차 중) 또는 `\"RESOLVED\"`(차 찾음 완료) | 허용: `\"ACTIVE\"`, `\"RESOLVED\"`, 차단: `\"PARKED\"`, `\"DELETED\"`, `\"\"` |",
+          "- **사용자 입력 내용:** 위치란에 `\"     \"`(스페이스 공백만 입력), 주차 시각에 달력 형식을 벗어난 값 입력, 또는 내부 조작으로 status에 `\"INVALID\"`가 주입된 후보 상태.",
+          "- **처리 동작:**",
+          "  - 저장소 쓰기 단계(Candidate Commit)로 진입하지 않고 즉시 차단한다.",
+          "  - 사용자가 작성 중인 텍스트나 입력 폼 내용을 지우지 않고 그대로 유지하여 재입력할 수 있도록 한다.",
+          "  - 기존 브라우저 저장소 데이터는 1바이트도 수정되지 않는다."
+        ]
+      },
+      "rationale": "후보 상태 생성 시 status가 비정상 값('INVALID')으로 주입되는 경우 쓰기 진입 전 즉시 차단되고 입력이 보존되는 사례가 명시되었습니다."
+    },
+    {
+      "issueId": "issue-storage-validation-6",
+      "status": "resolved",
+      "current": {
+        "evidenceLines": [
+          12,
+          110,
+          122,
+          134,
+          143,
+          149,
+          152
+        ],
+        "evidence": [
+          "3. **통합 불량 데이터 검증 인수 사례 보완:** 개별 필드(`id`, `memo`, `status`, `createdAt`) 및 고유성 불변식 위반을 포괄 검증하는 통합 로드 차단 사례와 통합 후보 차단 사례를 명시함.",
+          "| `createdAt` | 문자열 (String) | 필수 | 생성 시점의 유효한 ISO 8601 날짜 시각 문자열 | 허용: `\"2026-11-10T14:30:00.000Z\"`, 차단: 유효하지 않은 날짜 포맷 |",
+          "- **저장소 보관 내용 예시 (스키마는 맞으나 값·불변식 위반 복합 페이로드):**",
+          "        \"createdAt\": \"2026-02-10T14:00:00Z\",",
+          "        \"createdAt\": \"2026-11-10T10:00:00Z\",",
+          "- **문제점:** JSON 문법 및 키 구조는 존재하나, `rec-duplicate-01`의 주차 시각(`2월 31일`)이 불가능한 날짜이고, `memo`에 비문자열 숫자가 들어있으며, `id`가 중복되었고, 컬렉션 내 `ACTIVE` 상태가 2건 존재하여 모든 검증 규칙과 불변식을 위반함.",
+          "  - 시스템은 '데이터 무결성 오류' 상태로 진입하고, 화면에 \"기존 저장 데이터에 오류가 있어 데이터를 변경할 수 없습니다. 안전을 위해 읽기 전용으로 잠깁니다.\" 알림을 띄운다."
+        ]
+      },
+      "rationale": "공통 유효성 검증 테이블에 ISO 8601 필수 제약이 명시되고, 4.2 통합 검증 사례를 통해 잘못된 형식 차단이 확인 가능하도록 반영되었습니다."
+    },
+    {
+      "issueId": "issue-storage-validation-8",
+      "status": "resolved",
+      "current": {
+        "evidenceLines": [
+          12,
+          115,
+          122,
+          129,
+          138,
+          149,
+          151,
+          152
+        ],
+        "evidence": [
+          "3. **통합 불량 데이터 검증 인수 사례 보완:** 개별 필드(`id`, `memo`, `status`, `createdAt`) 및 고유성 불변식 위반을 포괄 검증하는 통합 로드 차단 사례와 통합 후보 차단 사례를 명시함.",
+          "2. **식별자 고유성 불변식:** `records` 배열 내 모든 항목의 `id`는 상호 중복되지 않아야 한다.",
+          "- **저장소 보관 내용 예시 (스키마는 맞으나 값·불변식 위반 복합 페이로드):**",
+          "        \"id\": \"rec-duplicate-01\",",
+          "        \"id\": \"rec-duplicate-01\",",
+          "- **문제점:** JSON 문법 및 키 구조는 존재하나, `rec-duplicate-01`의 주차 시각(`2월 31일`)이 불가능한 날짜이고, `memo`에 비문자열 숫자가 들어있으며, `id`가 중복되었고, 컬렉션 내 `ACTIVE` 상태가 2건 존재하여 모든 검증 규칙과 불변식을 위반함.",
+          "  - 기존 `localStorage` 데이터를 빈 배열로 초기화하거나 임의로 수정하여 덮어쓰지 않고 **있는 그대로 보존**한다.",
+          "  - 시스템은 '데이터 무결성 오류' 상태로 진입하고, 화면에 \"기존 저장 데이터에 오류가 있어 데이터를 변경할 수 없습니다. 안전을 위해 읽기 전용으로 잠깁니다.\" 알림을 띄운다."
+        ]
+      },
+      "rationale": "중복 id(`rec-duplicate-01`)가 저장소에 보관된 로드 시나리오를 구체적 JSON 예시로 제시하고, 식별자 고유성 위반 시 원본 보존 및 읽기 전용 잠금으로 처리함을 명시하였습니다."
+    },
+    {
+      "issueId": "storage:question:present_empty",
+      "status": "resolved",
+      "current": {
+        "evidenceLines": [
+          10,
+          60,
+          93,
+          170,
+          171,
+          172
+        ],
+        "evidence": [
+          "1. **저장소 빈 값(`present_empty`) 명시:** 키는 존재하나 내용이 빈 문자열(`\"\"`) 또는 공백만 있는 경우, 암묵적 빈 배열 리셋 대신 손상 데이터로 판정하여 원본 문자열을 보존하고 쓰기를 차단하도록 처리 규격을 보완함.",
+          "2. 로컬 저장소 데이터가 외부 요인에 의해 훼손되었거나 읽기 권한이 차단된 경우, 또는 키는 있으나 내용이 빈 텍스트인 경우 시스템은 절대로 저장소를 빈 배열로 초기화하거나 새 데이터로 덮어쓰지 않는다.",
+          "  4. *사례 4 (저장소 손상 및 빈 값 보호):* 저장소 키의 값이 비정상적인 문자열이거나 빈 텍스트(`\"\"`)인 상태에서 페이지를 열면 화면에 \"데이터 무결성 오류: 안전을 위해 읽기 전용으로 잠깁니다\" 경고가 노출되며 원본 키를 빈 배열로 덮어쓰지 않고 쓰기 버튼이 비활성화된다.",
+          "2. **키 존재 및 빈 값 (Present Empty):**",
+          "   - 저장소에 키는 존재하지만 값이 빈 문자열(`\"\"`)이거나 공백 문자로만 채워져 있는 경우.",
+          "   - **처리:** 키 부재(정상 초기 상태)로 간주하지 않고 '손상 데이터'로 판정한다. 원본 문자열을 빈 배열로 덮어쓰지 않고 그대로 보존하며 시스템을 읽기 전용 모드로 잠근다."
+        ]
+      },
+      "rationale": "저장소 빈 값(`present_empty`)에 대해 원본 보존 및 쓰기 차단 처리 분기가 4.3절에 공식 추가되었습니다."
+    }
+  ],
+  "localChecks": [
+    {
+      "ruleIndex": 1,
+      "rule": "id: 비어있지 않은 고유 식별 문자열 (공백 불가)",
+      "modelStatus": "supported",
+      "blocked": false,
+      "modelConflict": false,
+      "problems": [],
+      "acceptanceSources": [
+        {
+          "label": "공유 사례 1",
+          "proof": {
+            "evidenceLines": [
+              122,
+              129,
+              131,
+              132,
+              149,
+              151,
+              152,
+              153
+            ],
+            "evidence": [
+              "- **저장소 보관 내용 예시 (스키마는 맞으나 값·불변식 위반 복합 페이로드):**",
+              "        \"id\": \"rec-duplicate-01\",",
+              "        \"parkedAt\": \"2026-02-31T14:00\",",
+              "        \"memo\": 12345,",
+              "- **문제점:** JSON 문법 및 키 구조는 존재하나, `rec-duplicate-01`의 주차 시각(`2월 31일`)이 불가능한 날짜이고, `memo`에 비문자열 숫자가 들어있으며, `id`가 중복되었고, 컬렉션 내 `ACTIVE` 상태가 2건 존재하여 모든 검증 규칙과 불변식을 위반함.",
+              "  - 기존 `localStorage` 데이터를 빈 배열로 초기화하거나 임의로 수정하여 덮어쓰지 않고 **있는 그대로 보존**한다.",
+              "  - 시스템은 '데이터 무결성 오류' 상태로 진입하고, 화면에 \"기존 저장 데이터에 오류가 있어 데이터를 변경할 수 없습니다. 안전을 위해 읽기 전용으로 잠깁니다.\" 알림을 띄운다.",
+              "  - 모든 쓰기 동작(추가/수정/삭제/상태전환) 버튼을 비활성화한다."
+            ]
+          },
+          "rationale": "4.2(1)절의 로드된 손상 데이터 사례는 중복 ID, 유효하지 않은 주차 시각(2월 31일), 비문자열 메모, 다중 ACTIVE 상태를 복합 포함하며 원본 보존 및 읽기 전용 전환을 검증한다."
+        }
+      ]
+    },
+    {
+      "ruleIndex": 2,
+      "rule": "location: 앞뒤 공백 제거 후 1글자 이상 필수 문자열",
+      "modelStatus": "supported",
+      "blocked": false,
+      "modelConflict": false,
+      "problems": [],
+      "acceptanceSources": [
+        {
+          "label": "개별 확인 사례",
+          "proof": {
+            "evidenceLines": [
+              73
+            ],
+            "evidence": [
+              "  2. *사례 2 (공백 입력 차단):* 위치에 스페이스 공백만 입력하고 [주차 등록] 클릭 시 \"위치를 입력해주세요\" 오류가 뜨며 입력값과 저장소 상태가 유지된다."
+            ]
+          },
+          "rationale": "로드/후보 공통 검증 테이블에 명시되어 있으며 사례 2 및 acceptanceGroups[1]에서 공백 위치 차단과 기존 상태 보존을 검증한다."
+        },
+        {
+          "label": "공유 사례 2",
+          "proof": {
+            "evidenceLines": [
+              155,
+              156,
+              158,
+              159,
+              160,
+              161
+            ],
+            "evidence": [
+              "#### (2) 잘못된 신규 사용자 입력 및 후보 상태 예시 (Candidate Rejection Scenario)",
+              "- **사용자 입력 내용:** 위치란에 `\"     \"`(스페이스 공백만 입력), 주차 시각에 달력 형식을 벗어난 값 입력, 또는 내부 조작으로 status에 `\"INVALID\"`가 주입된 후보 상태.",
+              "  - 저장소 쓰기 단계(Candidate Commit)로 진입하지 않고 즉시 차단한다.",
+              "  - 화면에 \"주차 위치를 공백 없이 입력해 주세요\" 및 \"올바른 시각을 선택해 주세요\" 안내를 노출한다.",
+              "  - 사용자가 작성 중인 텍스트나 입력 폼 내용을 지우지 않고 그대로 유지하여 재입력할 수 있도록 한다.",
+              "  - 기존 브라우저 저장소 데이터는 1바이트도 수정되지 않는다."
+            ]
+          },
+          "rationale": "4.2(2)절의 신규 후보 상태 거절 사례는 공백 위치, 잘못된 시각 형식, 부적합 status 입력 시 쓰기 차단 및 입력값 유지를 검증한다."
+        }
+      ]
+    },
+    {
+      "ruleIndex": 3,
+      "rule": "parkedAt: ISO 8601 형식의 실제 유효한 달력 시각 문자열",
+      "modelStatus": "supported",
+      "blocked": false,
+      "modelConflict": false,
+      "problems": [],
+      "acceptanceSources": [
+        {
+          "label": "개별 확인 사례",
+          "proof": {
+            "evidenceLines": [
+              91
+            ],
+            "evidence": [
+              "  2. *사례 2 (수정 유효성 실패 보호):* 기존 시각 \"2026-11-10 10:00\"을 달력상 불가능한 값으로 임의 변경하려 할 경우 \"유효한 날짜와 시각이 아닙니다\" 오류가 뜨며 저장소가 바뀌지 않고 기존 시각이 유지된다."
+            ]
+          },
+          "rationale": "수정 시 불가능한 날짜 차단 사례(91행) 및 acceptanceGroups[0], [1]에서 달력상 불가능한 값 거절을 검증한다."
+        },
+        {
+          "label": "공유 사례 1",
+          "proof": {
+            "evidenceLines": [
+              122,
+              129,
+              131,
+              132,
+              149,
+              151,
+              152,
+              153
+            ],
+            "evidence": [
+              "- **저장소 보관 내용 예시 (스키마는 맞으나 값·불변식 위반 복합 페이로드):**",
+              "        \"id\": \"rec-duplicate-01\",",
+              "        \"parkedAt\": \"2026-02-31T14:00\",",
+              "        \"memo\": 12345,",
+              "- **문제점:** JSON 문법 및 키 구조는 존재하나, `rec-duplicate-01`의 주차 시각(`2월 31일`)이 불가능한 날짜이고, `memo`에 비문자열 숫자가 들어있으며, `id`가 중복되었고, 컬렉션 내 `ACTIVE` 상태가 2건 존재하여 모든 검증 규칙과 불변식을 위반함.",
+              "  - 기존 `localStorage` 데이터를 빈 배열로 초기화하거나 임의로 수정하여 덮어쓰지 않고 **있는 그대로 보존**한다.",
+              "  - 시스템은 '데이터 무결성 오류' 상태로 진입하고, 화면에 \"기존 저장 데이터에 오류가 있어 데이터를 변경할 수 없습니다. 안전을 위해 읽기 전용으로 잠깁니다.\" 알림을 띄운다.",
+              "  - 모든 쓰기 동작(추가/수정/삭제/상태전환) 버튼을 비활성화한다."
+            ]
+          },
+          "rationale": "4.2(1)절의 로드된 손상 데이터 사례는 중복 ID, 유효하지 않은 주차 시각(2월 31일), 비문자열 메모, 다중 ACTIVE 상태를 복합 포함하며 원본 보존 및 읽기 전용 전환을 검증한다."
+        },
+        {
+          "label": "공유 사례 2",
+          "proof": {
+            "evidenceLines": [
+              155,
+              156,
+              158,
+              159,
+              160,
+              161
+            ],
+            "evidence": [
+              "#### (2) 잘못된 신규 사용자 입력 및 후보 상태 예시 (Candidate Rejection Scenario)",
+              "- **사용자 입력 내용:** 위치란에 `\"     \"`(스페이스 공백만 입력), 주차 시각에 달력 형식을 벗어난 값 입력, 또는 내부 조작으로 status에 `\"INVALID\"`가 주입된 후보 상태.",
+              "  - 저장소 쓰기 단계(Candidate Commit)로 진입하지 않고 즉시 차단한다.",
+              "  - 화면에 \"주차 위치를 공백 없이 입력해 주세요\" 및 \"올바른 시각을 선택해 주세요\" 안내를 노출한다.",
+              "  - 사용자가 작성 중인 텍스트나 입력 폼 내용을 지우지 않고 그대로 유지하여 재입력할 수 있도록 한다.",
+              "  - 기존 브라우저 저장소 데이터는 1바이트도 수정되지 않는다."
+            ]
+          },
+          "rationale": "4.2(2)절의 신규 후보 상태 거절 사례는 공백 위치, 잘못된 시각 형식, 부적합 status 입력 시 쓰기 차단 및 입력값 유지를 검증한다."
+        }
+      ]
+    },
+    {
+      "ruleIndex": 4,
+      "rule": "memo: 문자열 규격 (문자열 또는 빈 문자열, null 허용, 기타 타입 차단)",
+      "modelStatus": "supported",
+      "blocked": false,
+      "modelConflict": false,
+      "problems": [],
+      "acceptanceSources": [
+        {
+          "label": "공유 사례 1",
+          "proof": {
+            "evidenceLines": [
+              122,
+              129,
+              131,
+              132,
+              149,
+              151,
+              152,
+              153
+            ],
+            "evidence": [
+              "- **저장소 보관 내용 예시 (스키마는 맞으나 값·불변식 위반 복합 페이로드):**",
+              "        \"id\": \"rec-duplicate-01\",",
+              "        \"parkedAt\": \"2026-02-31T14:00\",",
+              "        \"memo\": 12345,",
+              "- **문제점:** JSON 문법 및 키 구조는 존재하나, `rec-duplicate-01`의 주차 시각(`2월 31일`)이 불가능한 날짜이고, `memo`에 비문자열 숫자가 들어있으며, `id`가 중복되었고, 컬렉션 내 `ACTIVE` 상태가 2건 존재하여 모든 검증 규칙과 불변식을 위반함.",
+              "  - 기존 `localStorage` 데이터를 빈 배열로 초기화하거나 임의로 수정하여 덮어쓰지 않고 **있는 그대로 보존**한다.",
+              "  - 시스템은 '데이터 무결성 오류' 상태로 진입하고, 화면에 \"기존 저장 데이터에 오류가 있어 데이터를 변경할 수 없습니다. 안전을 위해 읽기 전용으로 잠깁니다.\" 알림을 띄운다.",
+              "  - 모든 쓰기 동작(추가/수정/삭제/상태전환) 버튼을 비활성화한다."
+            ]
+          },
+          "rationale": "4.2(1)절의 로드된 손상 데이터 사례는 중복 ID, 유효하지 않은 주차 시각(2월 31일), 비문자열 메모, 다중 ACTIVE 상태를 복합 포함하며 원본 보존 및 읽기 전용 전환을 검증한다."
+        }
+      ]
+    },
+    {
+      "ruleIndex": 5,
+      "rule": "status: ACTIVE 또는 RESOLVED 열거형 값만 허용",
+      "modelStatus": "supported",
+      "blocked": false,
+      "modelConflict": false,
+      "problems": [],
+      "acceptanceSources": [
+        {
+          "label": "공유 사례 1",
+          "proof": {
+            "evidenceLines": [
+              122,
+              129,
+              131,
+              132,
+              149,
+              151,
+              152,
+              153
+            ],
+            "evidence": [
+              "- **저장소 보관 내용 예시 (스키마는 맞으나 값·불변식 위반 복합 페이로드):**",
+              "        \"id\": \"rec-duplicate-01\",",
+              "        \"parkedAt\": \"2026-02-31T14:00\",",
+              "        \"memo\": 12345,",
+              "- **문제점:** JSON 문법 및 키 구조는 존재하나, `rec-duplicate-01`의 주차 시각(`2월 31일`)이 불가능한 날짜이고, `memo`에 비문자열 숫자가 들어있으며, `id`가 중복되었고, 컬렉션 내 `ACTIVE` 상태가 2건 존재하여 모든 검증 규칙과 불변식을 위반함.",
+              "  - 기존 `localStorage` 데이터를 빈 배열로 초기화하거나 임의로 수정하여 덮어쓰지 않고 **있는 그대로 보존**한다.",
+              "  - 시스템은 '데이터 무결성 오류' 상태로 진입하고, 화면에 \"기존 저장 데이터에 오류가 있어 데이터를 변경할 수 없습니다. 안전을 위해 읽기 전용으로 잠깁니다.\" 알림을 띄운다.",
+              "  - 모든 쓰기 동작(추가/수정/삭제/상태전환) 버튼을 비활성화한다."
+            ]
+          },
+          "rationale": "4.2(1)절의 로드된 손상 데이터 사례는 중복 ID, 유효하지 않은 주차 시각(2월 31일), 비문자열 메모, 다중 ACTIVE 상태를 복합 포함하며 원본 보존 및 읽기 전용 전환을 검증한다."
+        },
+        {
+          "label": "공유 사례 2",
+          "proof": {
+            "evidenceLines": [
+              155,
+              156,
+              158,
+              159,
+              160,
+              161
+            ],
+            "evidence": [
+              "#### (2) 잘못된 신규 사용자 입력 및 후보 상태 예시 (Candidate Rejection Scenario)",
+              "- **사용자 입력 내용:** 위치란에 `\"     \"`(스페이스 공백만 입력), 주차 시각에 달력 형식을 벗어난 값 입력, 또는 내부 조작으로 status에 `\"INVALID\"`가 주입된 후보 상태.",
+              "  - 저장소 쓰기 단계(Candidate Commit)로 진입하지 않고 즉시 차단한다.",
+              "  - 화면에 \"주차 위치를 공백 없이 입력해 주세요\" 및 \"올바른 시각을 선택해 주세요\" 안내를 노출한다.",
+              "  - 사용자가 작성 중인 텍스트나 입력 폼 내용을 지우지 않고 그대로 유지하여 재입력할 수 있도록 한다.",
+              "  - 기존 브라우저 저장소 데이터는 1바이트도 수정되지 않는다."
+            ]
+          },
+          "rationale": "4.2(2)절의 신규 후보 상태 거절 사례는 공백 위치, 잘못된 시각 형식, 부적합 status 입력 시 쓰기 차단 및 입력값 유지를 검증한다."
+        }
+      ]
+    },
+    {
+      "ruleIndex": 6,
+      "rule": "createdAt: 생성 시점의 유효한 ISO 8601 날짜 시각 문자열",
+      "modelStatus": "supported",
+      "blocked": true,
+      "modelConflict": true,
+      "problems": [
+        "개별·공유 확인 사례에 이 규칙을 뒷받침하는 연결 근거 없음"
+      ],
+      "acceptanceSources": []
+    },
+    {
+      "ruleIndex": 7,
+      "rule": "updatedAt: 최종 수정 시점의 유효한 ISO 8601 날짜 시각 문자열 (동시성 비교용)",
+      "modelStatus": "supported",
+      "blocked": false,
+      "modelConflict": false,
+      "problems": [],
+      "acceptanceSources": [
+        {
+          "label": "개별 확인 사례",
+          "proof": {
+            "evidenceLines": [
+              187
+            ],
+            "evidence": [
+              "2. **최신 저장소 재확인 (Re-read & Concurrency Check):** 저장소의 최신 직렬화 문자열을 읽고 직전 확인 시점의 `updatedAt`과 일치하는지 비교한다. 불일치 시 락을 해제하고 쓰기를 즉시 중단하며 \"다른 창에서 데이터가 변경되었습니다. 최신 데이터를 불러옵니다.\" 경고를 표시하고 최신 상태를 화면에 동기화한다."
+            ]
+          },
+          "rationale": "로드 및 후보 공통 테이블에 반영되었으며 187행의 버전 불일치 감지 및 롤백 흐름으로 검증된다."
+        }
+      ]
+    },
+    {
+      "ruleIndex": 8,
+      "rule": "단일 현재 주차 불변식: records 내 status === 'ACTIVE' 항목 수는 항상 0개 또는 1개",
+      "modelStatus": "supported",
+      "blocked": false,
+      "modelConflict": false,
+      "problems": [],
+      "acceptanceSources": [
+        {
+          "label": "개별 확인 사례",
+          "proof": {
+            "evidenceLines": [
+              74,
+              83
+            ],
+            "evidence": [
+              "  3. *사례 3 (중복 현재 주차 차단):* 이미 현재 기록이 1건 있는 상태에서 새 위치를 입력하고 [주차 등록] 클릭 시 \"이미 주차 중인 기록이 있습니다\" 경고가 나타나며, 기존 현재 기록과 신규 입력 양식 내용이 모두 보존된다.",
+              "  3. *사례 3 (취소 충돌 차단):* 이전 기록 A가 있는 상태에서 새 주차 B를 등록(`ACTIVE`)한 뒤, A의 [찾음 취소]를 누르면 \"현재 다른 주차 기록이 존재합니다\" 오류가 표시되고 A는 이전 기록에, B는 현재 기록에 그대로 유지된다."
+            ]
+          },
+          "rationale": "등록(74행), 되돌리기(83행) 충돌 차단 사례 및 acceptanceGroups[0]의 다중 ACTIVE 로드 차단 사례로 검증된다."
+        },
+        {
+          "label": "공유 사례 1",
+          "proof": {
+            "evidenceLines": [
+              122,
+              129,
+              131,
+              132,
+              149,
+              151,
+              152,
+              153
+            ],
+            "evidence": [
+              "- **저장소 보관 내용 예시 (스키마는 맞으나 값·불변식 위반 복합 페이로드):**",
+              "        \"id\": \"rec-duplicate-01\",",
+              "        \"parkedAt\": \"2026-02-31T14:00\",",
+              "        \"memo\": 12345,",
+              "- **문제점:** JSON 문법 및 키 구조는 존재하나, `rec-duplicate-01`의 주차 시각(`2월 31일`)이 불가능한 날짜이고, `memo`에 비문자열 숫자가 들어있으며, `id`가 중복되었고, 컬렉션 내 `ACTIVE` 상태가 2건 존재하여 모든 검증 규칙과 불변식을 위반함.",
+              "  - 기존 `localStorage` 데이터를 빈 배열로 초기화하거나 임의로 수정하여 덮어쓰지 않고 **있는 그대로 보존**한다.",
+              "  - 시스템은 '데이터 무결성 오류' 상태로 진입하고, 화면에 \"기존 저장 데이터에 오류가 있어 데이터를 변경할 수 없습니다. 안전을 위해 읽기 전용으로 잠깁니다.\" 알림을 띄운다.",
+              "  - 모든 쓰기 동작(추가/수정/삭제/상태전환) 버튼을 비활성화한다."
+            ]
+          },
+          "rationale": "4.2(1)절의 로드된 손상 데이터 사례는 중복 ID, 유효하지 않은 주차 시각(2월 31일), 비문자열 메모, 다중 ACTIVE 상태를 복합 포함하며 원본 보존 및 읽기 전용 전환을 검증한다."
+        }
+      ]
+    },
+    {
+      "ruleIndex": 9,
+      "rule": "식별자 고유성 불변식: records 내 모든 항목의 id는 상호 중복 불가",
+      "modelStatus": "supported",
+      "blocked": false,
+      "modelConflict": false,
+      "problems": [],
+      "acceptanceSources": [
+        {
+          "label": "공유 사례 1",
+          "proof": {
+            "evidenceLines": [
+              122,
+              129,
+              131,
+              132,
+              149,
+              151,
+              152,
+              153
+            ],
+            "evidence": [
+              "- **저장소 보관 내용 예시 (스키마는 맞으나 값·불변식 위반 복합 페이로드):**",
+              "        \"id\": \"rec-duplicate-01\",",
+              "        \"parkedAt\": \"2026-02-31T14:00\",",
+              "        \"memo\": 12345,",
+              "- **문제점:** JSON 문법 및 키 구조는 존재하나, `rec-duplicate-01`의 주차 시각(`2월 31일`)이 불가능한 날짜이고, `memo`에 비문자열 숫자가 들어있으며, `id`가 중복되었고, 컬렉션 내 `ACTIVE` 상태가 2건 존재하여 모든 검증 규칙과 불변식을 위반함.",
+              "  - 기존 `localStorage` 데이터를 빈 배열로 초기화하거나 임의로 수정하여 덮어쓰지 않고 **있는 그대로 보존**한다.",
+              "  - 시스템은 '데이터 무결성 오류' 상태로 진입하고, 화면에 \"기존 저장 데이터에 오류가 있어 데이터를 변경할 수 없습니다. 안전을 위해 읽기 전용으로 잠깁니다.\" 알림을 띄운다.",
+              "  - 모든 쓰기 동작(추가/수정/삭제/상태전환) 버튼을 비활성화한다."
+            ]
+          },
+          "rationale": "4.2(1)절의 로드된 손상 데이터 사례는 중복 ID, 유효하지 않은 주차 시각(2월 31일), 비문자열 메모, 다중 ACTIVE 상태를 복합 포함하며 원본 보존 및 읽기 전용 전환을 검증한다."
+        }
+      ]
+    }
+  ],
+  "wireSizes": [
+    {
+      "stage": "writer",
+      "originalDataBytes": 73026,
+      "compactDataBytes": 27711,
+      "reductionPercent": 62.1,
+      "measurement": "DATA JSON UTF-8 bytes only; not measured model tokens or billing"
+    },
+    {
+      "stage": "assessment",
+      "originalDataBytes": 109118,
+      "compactDataBytes": 61230,
+      "reductionPercent": 43.9,
+      "measurement": "DATA JSON UTF-8 bytes only; not measured model tokens or billing"
+    }
+  ],
+  "manualSemanticBlocker": "BroadcastChannel protocol is unspecified and its unsupported fallback permits lost writes contrary to the preservation requirement. No automated semantic clearance claimed.",
+  "modelCalls": 0,
+  "originalSnapshotsChanged": false
+}

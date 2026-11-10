@@ -342,6 +342,11 @@ export class PlanningLoopController {
         await memory.savePlanningLoopState(state);
         return { decision: decision.type, state, approval };
       }
+      case "STOP_REPEATED_REVIEW_ISSUES": {
+        const state = this.stateFor(previousState, { ...base, status: "stopped", currentPlanVersion: plan.version, reason: decision.reason });
+        await memory.savePlanningLoopState(state);
+        return { decision: decision.type, state };
+      }
       case "STOP_LIMIT_REACHED": {
         const state = this.stateFor(previousState, {
           ...base,

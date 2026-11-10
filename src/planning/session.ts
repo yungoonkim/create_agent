@@ -23,7 +23,7 @@ export interface PlanningSessionStatus {
   readonly projectId: string;
   readonly planning: PlanningLoopState | null;
   readonly budget: Awaited<ReturnType<FileSessionLedger["status"]>>;
-  readonly nextAction: "run" | "request_budget_decision" | "inspect_interrupted_request" | "user_decision";
+  readonly nextAction: "run" | "request_budget_decision" | "inspect_interrupted_request" | "user_decision" | "review_correction";
   readonly additionalCallsForCompleteIteration: number;
   readonly finalApprovalAutomatic: false;
 }
@@ -114,7 +114,10 @@ export async function planningSessionStatus(directory: string): Promise<Planning
   const memory = new FilePlanningMemoryStore(join(directory, "memory"));
   const planning = await memory.getPlanningLoopState(data.config.projectId) ?? null;
   const budget = await new FileSessionLedger(join(directory, "ledger")).status();
-  const nextAction = budget.unknownOutcomes ? "inspect_interrupted_request" :
+  const reason = planning !== null && "reason" in planning ? planning.reason : "";
+  const repeatedReviewStop = reason.startsWith("REVIEW_REPEAT:") ||
+    planning?.status === "awaiting_user_input" && reason.startsWith("The same issue remains at the same or higher severity:");
+  const nextAction = budget.unknownOutcomes ? "inspect_interrupted_request" : repeatedReviewStop ? "review_correction" :
     planning !== null && !["revising", "reviewing"].includes(planning.status) ? "user_decision" :
     (planning === null || planning.status === "revising") && budget.remainingCalls < 3 ? "request_budget_decision" : "run";
   return { projectId: data.config.projectId, planning, budget, nextAction,

@@ -7,6 +7,7 @@ import { createHash } from "node:crypto";
 import { loadLivePlanningConfig, parseScopeContract } from "../planning/config.js";
 import { createVertexAiClient } from "../planning/google-genai.js";
 import { initializePlanningSession, importPlanningRecovery, runPlanningSession, planningSessionStatus, exportPlanningSession, sessionFileHashes, increasePlanningSessionBudget } from "../planning/session.js";
+import { sessionFailureMessage } from "./planning-session-errors.js";
 
 async function main(): Promise<void> {
   const [command, ...args] = process.argv.slice(2);
@@ -67,8 +68,7 @@ async function main(): Promise<void> {
   if (failure) throw failure;
 }
 main().catch((error: unknown) => {
-  const message = error instanceof Error ? error.message : "Session stopped";
-  console.error(message.includes("REQUEST_BUDGET") || message.includes("Scope") || message.includes("Missing --") ? message :
-    "Session stopped. Inspect the saved state and model receipts; no automatic paid retry was made.");
+  const failure = sessionFailureMessage(error);
+  console.error(`[${failure.code}] ${failure.message}`);
   process.exitCode = 1;
 });

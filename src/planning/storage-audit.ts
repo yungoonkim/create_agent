@@ -1,4 +1,4 @@
-import { STORAGE_AUDIT_STATES, type PlanDraft, type ReviewIssue, type ScopeContract, type StorageAudit, type StorageValidation } from "./contracts.js";
+import { STORAGE_AUDIT_STATES, type PlanDraft, type PlanEvidence, type ReviewIssue, type ScopeContract, type StorageAudit, type StorageValidation } from "./contracts.js";
 import { evidenceFromLines, parsePlanEvidence, validatePlanEvidence } from "./review-quality.js";
 
 function object(value: unknown): Record<string, unknown> {
@@ -104,6 +104,33 @@ export function validateStorageAudit(audit: StorageAudit, plan: PlanDraft, scope
   for (const r of audit.validation?.rules ?? []) for (const e of [r.load, r.candidate, r.acceptance]) validatePlanEvidence(e, plan);
   for (const g of audit.validation?.acceptanceGroups ?? []) validatePlanEvidence(g.acceptance, plan);
 }
+export interface StorageRuleCheck {
+  readonly ruleIndex: number;
+  readonly rule: string;
+  readonly modelStatus: StorageValidation["rules"][number]["status"];
+  readonly blocked: boolean;
+  readonly modelConflict: boolean;
+  readonly problems: readonly string[];
+  readonly acceptanceSources: readonly { readonly label: string; readonly proof: PlanEvidence; readonly rationale: string }[];
+}
+/** Shared by policy and rendering: source presence is structural evidence, never semantic certification. */
+export function storageValidationChecks(validation: StorageValidation): readonly StorageRuleCheck[] {
+  const present = (proof: PlanEvidence): boolean => proof.evidence.length > 0 && !onlyHeadings(proof.evidence);
+  return validation.rules.map((r, index) => {
+    const acceptanceSources: { label: string; proof: PlanEvidence; rationale: string }[] = [];
+    if (present(r.acceptance)) acceptanceSources.push({ label: "개별 확인 사례", proof: r.acceptance, rationale: r.rationale });
+    if (validation.version === 2) validation.acceptanceGroups?.forEach((group, groupIndex) => {
+      if (group.ruleIndexes.includes(index + 1) && present(group.acceptance)) acceptanceSources.push({
+        label: `공유 사례 ${groupIndex + 1}`, proof: group.acceptance, rationale: group.rationale,
+      });
+    });
+    const gaps = [!present(r.load) ? "불러오기 검증 근거 없음" : "", !present(r.candidate) ? "저장 후보 검증 근거 없음" : "",
+      !acceptanceSources.length ? "개별·공유 확인 사례에 이 규칙을 뒷받침하는 연결 근거 없음" : ""].filter(Boolean);
+    const problems = [...(r.status !== "supported" ? ["모델이 누락 또는 불명확으로 판단함"] : []), ...gaps];
+    return { ruleIndex: index + 1, rule: r.rule, modelStatus: r.status, blocked: problems.length > 0,
+      modelConflict: r.status === "supported" && gaps.length > 0, problems, acceptanceSources };
+  });
+}
 export function storageAuditFindings(audit: StorageAudit | undefined): { readonly issues: readonly ReviewIssue[]; readonly questions: readonly string[] } {
   const issues: ReviewIssue[] = []; const questions: string[] = [];
   if (audit === undefined) return { issues, questions };
@@ -125,12 +152,12 @@ export function storageAuditFindings(audit: StorageAudit | undefined): { readonl
   if (audit.format === "json" && audit.validation !== undefined) {
     if (!audit.validation.rules.length) issues.push({ id: "issue-storage-validation-empty", kind: "omission", severity: "major",
       description: "저장값과 변경 후보에 적용하는 공통 필드·값 검증 근거가 없습니다.", suggestedDirection: "위임된 저장 설계를 구체화하고 로드/후보에 같은 규칙과 잘못된 값 확인 사례를 명시하십시오." });
-    audit.validation.rules.forEach((r, i) => {
-      const groupCovered = audit.validation?.version === 2 && audit.validation.acceptanceGroups?.some(g =>
-        g.ruleIndexes.includes(i + 1) && g.acceptance.evidence.length > 0 && !onlyHeadings(g.acceptance.evidence));
-      if (r.status !== "supported" || [r.load, r.candidate].some(e => !e.evidence.length || onlyHeadings(e.evidence)) ||
-        (!groupCovered && (!r.acceptance.evidence.length || onlyHeadings(r.acceptance.evidence)))) issues.push({
-        id: `issue-storage-validation-${i + 1}`, kind: "omission", severity: "major", description: `공통 검증 ${r.rule}: ${r.rationale}`,
+    storageValidationChecks(audit.validation).forEach(check => {
+      const r = audit.validation!.rules[check.ruleIndex - 1]!;
+      if (check.blocked) issues.push({
+        id: `issue-storage-validation-${check.ruleIndex}`, kind: "omission", severity: "major",
+        // Immutable legacy trials retain their exact feedback text for replay/source binding.
+        description: `공통 검증 ${r.rule}: ${audit.validation!.version === 2 ? `${check.problems.join("; ")}${check.modelConflict ? " (모델의 supported 주장과 근거가 일치하지 않음)" : ""}. 모델 설명: ` : ""}${r.rationale}`,
         suggestedDirection: "불러오기와 저장 후보 모두의 실제 검증 규칙 및 구체적인 잘못된 저장값/입력의 예상 결과를 보완하십시오." });
     });
   }

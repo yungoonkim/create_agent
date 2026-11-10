@@ -3,7 +3,7 @@ import type { ApprovalRecord } from "../core/types.js";
 import type { PlanDraft, PlanReview, PlanningLoopState, PlanningErrorRecord, PlanEvidence, ScopeContract } from "./contracts.js";
 import { validatePlanReview } from "./policy.js";
 import { qualityFindings } from "./review-quality.js";
-import { storageAuditFindings } from "./storage-audit.js";
+import { storageAuditFindings, storageValidationChecks } from "./storage-audit.js";
 import { reviewAssuranceFindings } from "./revision-audit.js";
 import type { RevisionAudit, StorageValidation } from "./contracts.js";
 
@@ -39,6 +39,8 @@ export interface UserReviewTable {
   readonly failures: readonly PlanningErrorRecord[];
   readonly revisionAudit?: RevisionAudit;
   readonly storageValidation?: StorageValidation;
+  readonly localReviewIssues?: readonly { readonly id: string; readonly description: string }[];
+  readonly technicalStop?: string;
 }
 export interface UserReviewInput {
   readonly scope: ScopeContract;
@@ -69,6 +71,15 @@ export function buildUserReviewTable(input: UserReviewInput): UserReviewTable {
   if (review === undefined) warnings.push("현재 기획의 완료된 검토가 없습니다. 이전 버전의 pass를 재사용하지 않습니다.");
   const findings = review === undefined ? [] : [...qualityFindings(review), ...reviewAssuranceFindings(review)];
   const storage = storageAuditFindings(review?.storageAudit);
+  const localReviewIssues = [...(review?.issues ?? []), ...storage.issues].filter(i => i.severity === "major" || i.severity === "critical")
+    .map(i => ({ id: i.id, description: i.description }));
+  const questions = [...findings.filter(f => f.status === "needs_user_input").map(f => f.message), ...storage.questions,
+    ...(review?.outcome === "needs_user_input" || review?.userJudgmentRequired ? review.suggestions : [])];
+  const reason = planning !== undefined && "reason" in planning ? planning.reason : "";
+  const technicalStop = reason.startsWith("REVIEW_REPEAT:") ||
+    planning?.status === "awaiting_user_input" && reason.startsWith("The same issue remains at the same or higher severity:") && !questions.length && localReviewIssues.length > 0
+    ? "같은 차단 지적이 반복됐습니다. 제품 선호에 대한 추가 답변이 아니라 기획·검토 근거 보완이 필요합니다. 저장된 상태는 변경하지 않았습니다." : undefined;
+  if (technicalStop) warnings.push(technicalStop);
   warnings.push(...findings.map(f => f.message), ...storage.issues.map(i => i.description));
   const unfinished = !stateMatches || planning === undefined || ["drafting", "reviewing", "revising", "failed", "stopped"].includes(planning.status);
   if (unfinished) warnings.push("기획/검토가 진행 중이거나 중단됐습니다. 저장된 후보를 완성본으로 취급하지 않습니다.");
@@ -107,9 +118,8 @@ export function buildUserReviewTable(input: UserReviewInput): UserReviewTable {
     scopeSha256: digest(scope), planId: plan.id, planVersion: plan.version, planSha256: digest(plan), reviewSha256: review === undefined ? null : digest(review) },
     planningStatus: planning?.status ?? "unknown", scopeApproval, finalPlanApproval, implementationVerification: "not_performed",
     evidenceAuthority: "model_reported_source_references", rows, warnings,
-    questions: [...findings.filter(f => f.status === "needs_user_input").map(f => f.message), ...storage.questions,
-      ...(review?.outcome === "needs_user_input" || review?.userJudgmentRequired ? review.suggestions : [])],
-    suggestions: review?.suggestions ?? [], failures,
+    questions, suggestions: review?.suggestions ?? [], failures, localReviewIssues,
+    ...(technicalStop ? { technicalStop } : {}),
     ...(review?.revisionAudit === undefined ? {} : { revisionAudit: review.revisionAudit }),
     ...(review?.storageAudit?.validation === undefined ? {} : { storageValidation: review.storageAudit.validation }) };
 }
@@ -131,17 +141,28 @@ function assuranceSections(table: UserReviewTable): string[] {
       lines.push(`비교 기준: 이전 기획 v${a.baseline!.planVersion} / 본문 SHA-256 ${a.baseline!.contentSha256}`, "",
         "| 요구/제약 출처 | 모델 판단 | 이전 기획 원문 | 현재 기획 원문 | 이유 |", "| --- | --- | --- | --- | --- |",
         ...a.preservation.map(r => `| ${escape(r.sourceId)} | ${status[r.status]} | ${cite(r.before)} | ${cite(r.after)} | ${escape(r.rationale)} |`), "",
-        "| 이전 지적 ID | 해결 판단 | 현재 규칙·확인 사례 | 이유 |", "| --- | --- | --- | --- |");
-      const resolved = { resolved: "해결됨", unresolved: "미해결", unclear: "확인 필요" };
-      lines.push(...a.resolutions.map(r => `| ${escape(r.issueId)} | ${resolved[r.status]} | ${cite(r.current)} | ${escape(r.rationale)} |`));
-      if (!a.resolutions.length) lines.push("| — | 구조화된 이전 지적 없음 | — | 사용자 수정 요청과 확정 결정은 별도 검토 | ");
+        "| 이전 지적 ID | 모델 해결 판단 | 같은 ID의 현재 차단 사유 | 현재 규칙·확인 사례 | 모델 설명 |", "| --- | --- | --- | --- | --- |");
+      const resolved = { resolved: "해결 주장", unresolved: "미해결", unclear: "확인 필요" };
+      lines.push(...a.resolutions.map(r => {
+        const blocked = table.localReviewIssues?.filter(i => i.id === r.issueId).map(i => i.description) ?? [];
+        return `| ${escape(r.issueId)} | ${resolved[r.status]} | ${blocked.length ? escape(blocked.join("\n")) : "기록된 동일 ID 차단 없음(해결 인증 아님)"} | ${cite(r.current)} | ${escape(r.rationale)} |`;
+      }));
+      if (!a.resolutions.length) lines.push("| — | 구조화된 이전 지적 없음 | — | — | 사용자 수정 요청과 확정 결정은 별도 검토 | ");
     }
   }
   if (table.storageValidation) {
     const v = table.storageValidation, status = { supported: "근거 있음", missing: "누락", unclear: "확인 필요" };
     lines.push("", "## 저장값·변경 후보의 공통 검증", "", escape(v.rationale), "",
-      "| 검증 규칙 | 모델 판단 | 불러올 때 | 저장하기 전 후보 | 구체적인 확인 사례 | 이유 |", "| --- | --- | --- | --- | --- | --- |",
-      ...v.rules.map(r => `| ${escape(r.rule)} | ${status[r.status]} | ${cite(r.load)} | ${cite(r.candidate)} | ${cite(r.acceptance)} | ${escape(r.rationale)} |`));
+      "로컬 검사는 실제 인용과 연결 누락을 확인합니다. 사례가 규칙을 의미상 검증하는지는 별도 내용 검토가 필요합니다.", "",
+      "| 검증 규칙 | 모델 판단 | 로컬 근거 연결 검사 | 불러올 때 | 저장하기 전 후보 | 구체적인 확인 사례 | 모델 설명 |", "| --- | --- | --- | --- | --- | --- | --- |",
+      ...storageValidationChecks(v).map(check => {
+        const r = v.rules[check.ruleIndex - 1]!;
+        const groups = check.acceptanceSources.filter(s => s.label !== "개별 확인 사례").map(s => `${escape(s.label)} 참조`);
+        const acceptance = [r.acceptance.evidence.length ? cite(r.acceptance) : "", ...groups].filter(Boolean).join("<br>") || "개별·공유 확인 근거 없음";
+        return `| ${escape(r.rule)} | ${status[r.status]} | ${check.blocked ? `차단: ${escape(check.problems.join("; "))}` : "연결 근거 확인(의미 인증 아님)"} | ${cite(r.load)} | ${cite(r.candidate)} | ${acceptance} | ${escape(r.rationale)} |`;
+      }));
+    if (v.version === 2) v.acceptanceGroups?.forEach((group, index) => lines.push("", `### 공유 사례 ${index + 1}`, "",
+      `연결된 규칙 번호: ${group.ruleIndexes.join(", ")}`, "", cite(group.acceptance), "", `모델의 연결 설명: ${escape(group.rationale)}`));
   }
   return lines;
 }
@@ -154,7 +175,7 @@ export function renderUserReviewTable(table: UserReviewTable): string {
   const scopeLabels = { approved: "사용자 승인 기록 있음", fixture: "시험용 승인", unconfirmed: "확인되지 않음" };
   const approvalLabels = { approved: "사용자 승인 기록 있음", pending: "승인 대기", unconfirmed: "확인되지 않음" };
   return ["# 사용자 기획 검토표", "", `기획: ${escape(table.source.planId)} v${table.source.planVersion} / Scope: ${escape(table.source.scopeId)} v${table.source.scopeVersion}`,
-    `상태: ${planningLabels[table.planningStatus]} / Scope: ${scopeLabels[table.scopeApproval]} / 최종 기획: ${approvalLabels[table.finalPlanApproval]}`,
+    `상태: ${table.technicalStop ? "검토 근거 보완 필요(기술적 중단)" : planningLabels[table.planningStatus]} / Scope: ${scopeLabels[table.scopeApproval]} / 최종 기획: ${approvalLabels[table.finalPlanApproval]}`,
     "실제 구현·실행 검증: 수행하지 않음. ‘반영됨’은 모델의 문서 판단이며 사용자 승인이나 실제 테스트 통과가 아닙니다.", "",
     ...table.warnings.map(w => `- ${escape(w)}`), "",
     "| 승인된 조건 | 판단 | 정상 동작의 원문 | 실패/무변경 동작의 원문 | 확인 사례의 원문 | 이유·남은 문제 |",

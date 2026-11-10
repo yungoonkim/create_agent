@@ -261,8 +261,8 @@ test("a pass result with a recurring major issue cannot reach final approval", a
   const harness = await createHarness("pass-with-major");
   try {
     const result = await harness.controller.run({ requirements: "Write a bounded plan.", scopeContract: scope });
-    assert.equal(result.decision, "REQUEST_USER_INPUT");
-    assert.equal(result.state.status, "awaiting_user_input");
+    assert.equal(result.decision, "STOP_REPEATED_REVIEW_ISSUES");
+    assert.equal(result.state.status, "stopped");
     assert.equal(result.approval, undefined);
     const review = await harness.memory.getPlanReview(scope.projectId, "demo-project-plan", 1);
     assert.equal(review?.outcome, "pass");

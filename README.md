@@ -4,7 +4,7 @@ ADTF는 여러 AI Agent를 조율하기 위한 재사용 가능한 프레임워�
 
 ## 현재 상태
 
-현재 공통 반례 경로는 JSON 전송 보완 후 주차 시험에서 정상 검토·REVISE까지 완료했습니다. [지속 기획 세션](examples/planning-session/README.md)은 승인 입력·버전·누적 SDK 상한을 보존하고 `npm run planning:session -- run --session <폴더> --run-live`로 수정·검토를 이어갑니다. 전체205개 오프라인 테스트 통과, 현재 주차는4/6회·남은2회이며 다음 최대3회 반복은 예산 결정 전까지 차단합니다. 실제 기획 최종 승인·제품 구현은 아직 수행하지 않았습니다.
+현재 주차 시험은 v2 작성·일반·반례 검토까지 실행됐으며 누적7/7회·반복2/2회에서 중단됐습니다. [검토 판정·근거 표시 보완](docs/review-consistency-20261110.md)은 기술적 반복 지적을 사용자 취향 질문과 구분하고 공유 사례와 현재 차단 사유를 표시합니다. 전체211개 오프라인 테스트를 통과했습니다. [지속 기획 세션](examples/planning-session/README.md)은 버전과 누적 예산을 보존하며, 현재 원본 기획과 승인 상태는 변경하지 않았습니다. 추가 모델 호출·기획 최종 승인·제품 구현은 수행하지 않았습니다.
 
 이전 택배 진단 기록: 택배 시험은 v2 재검토에서 HTTP400/INVALID_ARGUMENT로 중단됐다. [전송 스키마 호환성 후보](docs/parcel-review-diagnostic-20261110.md)를 준비했고 전체178개/후보 패키지169개 오프라인 검사를 통과했다. 실제 서버 해결은 미확인이다. 기존 기획을 처음부터 실행하지 않고 [후보 ZIP](https://github.com/yungoonkim/create_agent/raw/5a37459c303b8f3b7e69357366045ee9f50d4788/downloads/adtf-review-schema-candidate.zip)의 명시적 단일 진단으로 이어간다.
 

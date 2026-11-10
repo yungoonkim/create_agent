@@ -308,6 +308,7 @@ export type PlanningDecision =
       readonly reason: string;
     }
   | { readonly type: "STOP_LIMIT_REACHED"; readonly reason: string }
+  | { readonly type: "STOP_REPEATED_REVIEW_ISSUES"; readonly issueIds: readonly string[]; readonly reason: string }
   | { readonly type: "FAILED"; readonly reason: string };
 
 export interface PlanningDecisionInput {
