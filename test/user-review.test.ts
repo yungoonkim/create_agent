@@ -109,7 +109,7 @@ test("Policy and user table keep clarify, quality and storage questions in the s
     description: "Choose duplicate behavior?", suggestedDirection: "Ask once", scopeDisposition: "clarify" as const,
     dispositionReason: "User choice is unresolved" };
   const mixed: PlanReview = { ...good, outcome: "needs_user_input", scopeViolation: true, userJudgmentRequired: true,
-    issues: [question], suggestions: ["Another choice?", "Another choice?", "Optional sorting improvement"],
+    issues: [question], suggestions: ["날짜 표시 형식을 선택해 주세요.", "저장 방식 중 하나를 결정해 주세요.", "정렬 기능 개선을 권장합니다."],
     qualityAssessment: { ...quality, requirements: quality.requirements.map((r, index) => index === 0
       ? { ...r, status: "needs_user_input" as const, evidenceLines: [], evidence: [], rationale: "Choose a rule" } : r) },
     storageAudit: { ...storage, cases: storage.cases.map(c => c.state === "present_empty"
@@ -121,8 +121,9 @@ test("Policy and user table keep clarify, quality and storage questions in the s
   assert.deepEqual(table.questions, decision.questions);
   assert.match(decision.questions[0] ?? "", /Choose duplicate behavior/);
   assert.ok(decision.questions.some(q => q.includes("present_empty")));
-  assert.equal(decision.questions.filter(q => q === "Another choice?").length, 1);
-  assert.ok(!decision.questions.includes("Optional sorting improvement"));
+  assert.ok(decision.questions.includes("날짜 표시 형식을 선택해 주세요."));
+  assert.ok(decision.questions.includes("저장 방식 중 하나를 결정해 주세요."));
+  assert.ok(decision.questions.includes("정렬 기능 개선을 권장합니다."));
 });
 
 test("generic corrupt-data citations cannot establish a read-operation exception; valid exception evidence stays usable", () => {

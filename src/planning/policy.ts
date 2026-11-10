@@ -225,10 +225,10 @@ export function collectReviewQuestions(review: PlanReview): readonly string[] {
     ...[...qualityFindings(review), ...reviewAssuranceFindings(review)].filter(f => f.status === "needs_user_input").map(f => f.message),
     ...storageAuditFindings(review.storageAudit).questions,
   ];
-  // Legacy Reviews use suggestions for user questions. When explicit questions
-  // exist, only visibly phrased questions join them; ordinary advice stays advice.
+  // The legacy Review contract does not identify which suggestions are questions.
+  // Preserve them when judgment is requested; punctuation cannot safely classify them.
   const suggestions = review.outcome === "needs_user_input" || review.userJudgmentRequired
-    ? review.suggestions.filter(s => explicitQuestions.length === 0 || /[?？]\s*$/.test(s)) : [];
+    ? review.suggestions : [];
   return [...new Set([...explicitQuestions, ...suggestions])];
 }
 
