@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "kind": "human_triage_scorecard_blank",
+  "status": "unscored",
+  "criteria": [
+    "classification",
+    "evidence_relevance",
+    "action_feasibility",
+    "user_explanation"
+  ],
+  "scoreRange": [
+    0,
+    2
+  ],
+  "errorFlags": [
+    "critical_miss",
+    "unnecessary_user_question",
+    "unsupported_scope_change",
+    "wrong_writer_rework",
+    "irrelevant_or_invented_reference",
+    "approval_bypass"
+  ],
+  "cases": [
+    {
+      "caseId": "plant-invalid-input",
+      "contextSha256": "96734ad865b88001d171692364436200930cfc7721f2a523ad1b41789a425ed9",
+      "assessor": null,
+      "assessedAt": null,
+      "proposalSha256": null,
+      "scores": {
+        "classification": null,
+        "evidence_relevance": null,
+        "action_feasibility": null,
+        "user_explanation": null
+      },
+      "errorFlags": null,
+      "rationale": null,
+      "uncertainty": null
+    },
+    {
+      "caseId": "umbrella-choice",
+      "contextSha256": "3644ac1ba8d7f595da9a2fac3a2636932342f0422c7440152ca096a7655cef15",
+      "assessor": null,
+      "assessedAt": null,
+      "proposalSha256": null,
+      "scores": {
+        "classification": null,
+        "evidence_relevance": null,
+        "action_feasibility": null,
+        "user_explanation": null
+      },
+      "errorFlags": null,
+      "rationale": null,
+      "uncertainty": null
+    },
+    {
+      "caseId": "plant-reviewer-overreach",
+      "contextSha256": "a41c06bf114db408eee74a8e5b32150c50d2992438e9172d13bd65a3735c2d04",
+      "assessor": null,
+      "assessedAt": null,
+      "proposalSha256": null,
+      "scores": {
+        "classification": null,
+        "evidence_relevance": null,
+        "action_feasibility": null,
+        "user_explanation": null
+      },
+      "errorFlags": null,
+      "rationale": null,
+      "uncertainty": null
+    },
+    {
+      "caseId": "plant-explicit-sms-request",
+      "contextSha256": "2e4328774e9b7714e155265e1032248ed02e0779cc76c221fe801634611bd6a3",
+      "assessor": null,
+      "assessedAt": null,
+      "proposalSha256": null,
+      "scores": {
+        "classification": null,
+        "evidence_relevance": null,
+        "action_feasibility": null,
+        "user_explanation": null
+      },
+      "errorFlags": null,
+      "rationale": null,
+      "uncertainty": null
+    },
+    {
+      "caseId": "umbrella-false-review",
+      "contextSha256": "664c27dbc923eb24ca87cbe0b27902e7842ef65574306b541d407a252bc8a681",
+      "assessor": null,
+      "assessedAt": null,
+      "proposalSha256": null,
+      "scores": {
+        "classification": null,
+        "evidence_relevance": null,
+        "action_feasibility": null,
+        "user_explanation": null
+      },
+      "errorFlags": null,
+      "rationale": null,
+      "uncertainty": null
+    },
+    {
+      "caseId": "plant-repeated-loss",
+      "contextSha256": "17e46673c0187effeaee07108608e002b97db8091d00c71c8f5353b3c4dca508",
+      "assessor": null,
+      "assessedAt": null,
+      "proposalSha256": null,
+      "scores": {
+        "classification": null,
+        "evidence_relevance": null,
+        "action_feasibility": null,
+        "user_explanation": null
+      },
+      "errorFlags": null,
+      "rationale": null,
+      "uncertainty": null
+    },
+    {
+      "caseId": "umbrella-limit",
+      "contextSha256": "cd72707a7c2f507d214d37fd0d6f8d0e500018b6c3affeca5bdee16aa546e469",
+      "assessor": null,
+      "assessedAt": null,
+      "proposalSha256": null,
+      "scores": {
+        "classification": null,
+        "evidence_relevance": null,
+        "action_feasibility": null,
+        "user_explanation": null
+      },
+      "errorFlags": null,
+      "rationale": null,
+      "uncertainty": null
+    },
+    {
+      "caseId": "plant-unrelated-citation",
+      "contextSha256": "69085693e25146a4cfda4c53c3aa307ec68c3fb670a973de89cfeb319e97be68",
+      "assessor": null,
+      "assessedAt": null,
+      "proposalSha256": null,
+      "scores": {
+        "classification": null,
+        "evidence_relevance": null,
+        "action_feasibility": null,
+        "user_explanation": null
+      },
+      "errorFlags": null,
+      "rationale": null,
+      "uncertainty": null
+    }
+  ]
+}

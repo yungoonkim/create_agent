@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "auditAuthor": "Codex",
+  "auditType": "agent_authored_fixture_consistency_review",
+  "independentHumanReview": "pending",
+  "typecheck": "passed",
+  "repositoryTests": 224,
+  "newModelCalls": 0,
+  "semanticAccuracy": null,
+  "cases": [
+    {
+      "caseId": "plant-explicit-sms-request",
+      "consistencyReview": "agent_reviewed_provisional",
+      "baselineType": "REQUEST_SCOPE_CHANGE_APPROVAL",
+      "expectedCategories": [
+        "SCOPE_CHANGE_REQUIRED"
+      ],
+      "notes": "독립된 사용자 요청을 유지하고 변경 승인 제안만 허용한다. 기존 Scope에 SMS가 추가됐다고 해석하면 안 된다.",
+      "independentHumanReview": "pending"
+    },
+    {
+      "caseId": "plant-invalid-input",
+      "consistencyReview": "agent_reviewed_provisional",
+      "baselineType": "REVISE",
+      "expectedCategories": [
+        "WRITER_REWORK"
+      ],
+      "notes": "기존 원문은 빈 날짜 처리만 규정하므로, 잘못된 날짜 수정 처리의 누락이라는 지적과 양립한다. 전체 날짜 검증을 갖췄다는 주장은 하지 않는다.",
+      "independentHumanReview": "pending"
+    },
+    {
+      "caseId": "plant-repeated-loss",
+      "consistencyReview": "agent_reviewed_provisional",
+      "baselineType": "STOP_REPEATED_REVIEW_ISSUES",
+      "expectedCategories": [
+        "ESCALATE_OR_STOP"
+      ],
+      "notes": "v1 기획과 v1 Review 지적을 별도 제공했다. v1 지적을 현재의 반복 설명 문장에서 복사하지 않는다.",
+      "independentHumanReview": "pending"
+    },
+    {
+      "caseId": "plant-reviewer-overreach",
+      "consistencyReview": "agent_reviewed_provisional",
+      "baselineType": "REVISE",
+      "expectedCategories": [
+        "REVIEWER_RECHECK"
+      ],
+      "notes": "Reviewer 의견의 dispositionReason에서 정답을 암시하는 문장을 제거했다. 실제 SMS 제외 Scope와 기획을 대조해야 한다.",
+      "independentHumanReview": "pending"
+    },
+    {
+      "caseId": "plant-unrelated-citation",
+      "consistencyReview": "agent_reviewed_provisional",
+      "baselineType": "REVISE",
+      "expectedCategories": [
+        "REVIEWER_RECHECK"
+      ],
+      "notes": "정답 예시에서 무관한 L1과 관련된 L2를 함께 인용해 대조할 수 있게 했다. 존재하는 줄만으로 관련성을 입증하지 않는다.",
+      "independentHumanReview": "pending"
+    },
+    {
+      "caseId": "umbrella-choice",
+      "consistencyReview": "agent_reviewed_provisional",
+      "baselineType": "REQUEST_USER_INPUT",
+      "expectedCategories": [
+        "USER_CLARIFICATION"
+      ],
+      "notes": "Scope에 중복 이름 선택이 미정이라고 명시돼 사용자 질문이 적절하다. 손실 결함의 격하 사례와 구분한다.",
+      "independentHumanReview": "pending"
+    },
+    {
+      "caseId": "umbrella-false-review",
+      "consistencyReview": "agent_reviewed_provisional",
+      "baselineType": "REVISE",
+      "expectedCategories": [
+        "REVIEWER_RECHECK"
+      ],
+      "notes": "취소 시 유지한다는 기획 원문이 있어 Reviewer의 누락 주장을 반박할 수 있다. 공식 Review 덮어쓰기는 허용하지 않는다.",
+      "independentHumanReview": "pending"
+    },
+    {
+      "caseId": "umbrella-limit",
+      "consistencyReview": "agent_reviewed_provisional",
+      "baselineType": "STOP_LIMIT_REACHED",
+      "expectedCategories": [
+        "ESCALATE_OR_STOP"
+      ],
+      "notes": "iteration:state로 실제 반복 수와 한도를 인용한다. 새 Writer 호출 허용으로 해석하지 않는다.",
+      "independentHumanReview": "pending"
+    }
+  ],
+  "remainingLimitations": [
+    "두 주제의 공개 합성 자료이며 비공개/실사용 검증이 아니다.",
+    "새 Gemini Review 전체 품질/저장 감사와 실제 승인 레코드가 없다.",
+    "독립 사람 검수와 정보 부족·다중 지적 사례의 확장이 필요하다.",
+    "실모델 평가에는 별도 모델/프롬프트/요청 상한 고정이 필요하다."
+  ]
+}
