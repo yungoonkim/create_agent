@@ -3,6 +3,10 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 관찰 — 새 반례 요청은 STOP 응답, 형식 검증 실패
+
+사용자 `no-schema-1794277203243-9036abe9.tar.gz`를 확인했다. 고정 후보 요청 그대로 SDK 1회, STOP 응답, 새 토큰 총11,929 기록. `questions` 대신 `userQuestions`, 저장 감사 상위 근거/이유와 5사례의 상태/판정 누락으로 로컬 검증에서 중단했다. HTTP 제공자 오류는 아니며 정식 v2 Review/최종 승인 없음. 관련 이력7시도(최초 인증 실패 별도), 이번 추가 상한 소진, 재실행 금지. 원본 SHA-256 `fcd3f3ec2e150be27f45927823a34f6a55c6a463598afbd8dbd9dcad62e59a67`. [분석](parcel-no-schema-result-20261110.md), [원자료](acceptance/parcel-no-schema-20261110/manifest.json). 이번 분석 추가 모델 호출0회.
+
 ## 최신 준비 — 반례 전송 스키마 없는 단일 시험 도구
 
 사용자가 PR #17 병합 후 다음 작업을 지시했다. GPT-6 Sol·medium을 착수 전에 안내했다. 고정 일반 검토 재사용, 원래 실패 반례 요청 해시 확인, responseJsonSchema 한 필드 제거 후보 일치 확인, 별도 시작 예약/새 최대1회 Gemini 호출 도구와 짧은 경로 ZIP을 준비했다. 전체186개·해제 ZIP176개 테스트/타입 검사/CRC를 통과했다. dry-run은 유료0회·limit_reached로 정지했다. 이전6시도와 새1회 상한을 구분한다. 실제 추가 호출0회. 로컬 출력/원자료/기존 승인 보존, 정식 Review는 분리한 복사본만, 최종 승인 없음. [설계와 한계](parcel-no-schema-run-20261110.md).

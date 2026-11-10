@@ -1,0 +1,57 @@
+{
+  "archiveSha256": "fcd3f3ec2e150be27f45927823a34f6a55c6a463598afbd8dbd9dcad62e59a67",
+  "archiveBytes": 45337,
+  "fileSha256": {
+    "challenge-request.json": "f1b70c424b287fbb5f3c15c6018280b8010fca70c019654524d62a0c9598c46a",
+    "challenge-response.json": "dd58c4a67d524c0caf7d82e54668a4cefd6a6525696403379dfe02a1f3a9b726",
+    "failure.json": "3e70d79205f642596e8f85f951ce8560fbff8b63ee5685f0416c4dfdff7ac7d1",
+    "summary.json": "0830bf33ebb1a671fae29dfee343556f352d5867e54bb4776f0cb60ba7c7df41"
+  },
+  "requestEqualsPinnedCandidate": true,
+  "observations": {
+    "sdkAttempts": 1,
+    "assessmentReused": 1,
+    "responseReceived": true,
+    "finishReason": "STOP",
+    "jsonParsed": true,
+    "responseKeys": [
+      "issues",
+      "userQuestions",
+      "storageAudit"
+    ],
+    "questionsKeyPresent": false,
+    "userQuestionsKeyPresent": true,
+    "storageAuditMissingFields": [
+      "evidenceLines",
+      "rationale"
+    ],
+    "caseCount": 5,
+    "casesMissingState": 5,
+    "casesMissingVerdict": 5,
+    "validationRuleCount": 9,
+    "modelLabeledMissingRules": 6,
+    "formalReviewSaved": false,
+    "finalApprovalCreated": false,
+    "newSdkAttempts": 1,
+    "cumulativeTrialAttempts": 7,
+    "newUsage": {
+      "promptTokenCount": 6111,
+      "candidatesTokenCount": 1614,
+      "totalTokenCount": 11929,
+      "trafficType": "ON_DEMAND",
+      "promptTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 6111
+        }
+      ],
+      "candidatesTokensDetails": [
+        {
+          "modality": "TEXT",
+          "tokenCount": 1614
+        }
+      ],
+      "thoughtsTokenCount": 4204
+    }
+  }
+}

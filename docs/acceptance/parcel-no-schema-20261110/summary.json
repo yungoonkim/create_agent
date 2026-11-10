@@ -1,0 +1,34 @@
+{
+  "mode": "live",
+  "outcome": "failed",
+  "stage": "challenge",
+  "challengeCompleted": false,
+  "formalReviewSaved": false,
+  "finalApprovalCreated": false,
+  "reusedAssessmentCount": 1,
+  "reusedAssessmentBilledAgain": false,
+  "newSdkAttempts": 1,
+  "stubAttempts": 0,
+  "newUsage": {
+    "promptTokenCount": 6111,
+    "candidatesTokenCount": 1614,
+    "totalTokenCount": 11929,
+    "trafficType": "ON_DEMAND",
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 6111
+      }
+    ],
+    "candidatesTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1614
+      }
+    ],
+    "thoughtsTokenCount": 4204
+  },
+  "priorAttempts": 6,
+  "cumulativeTrialAttempts": 7,
+  "originalProjectChanged": false
+}
