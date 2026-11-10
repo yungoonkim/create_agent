@@ -1,0 +1,16 @@
+{
+  "mode": "live",
+  "outcome": "failed",
+  "stage": "challenge",
+  "challengeCompleted": false,
+  "formalReviewSaved": false,
+  "finalApprovalCreated": false,
+  "reusedAssessmentCount": 1,
+  "reusedAssessmentBilledAgain": false,
+  "newSdkAttempts": 1,
+  "stubAttempts": 0,
+  "newUsage": null,
+  "priorAttempts": 5,
+  "cumulativeTrialAttempts": 6,
+  "originalProjectChanged": false
+}
