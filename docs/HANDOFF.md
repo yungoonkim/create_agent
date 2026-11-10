@@ -3,6 +3,10 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 준비 — 실응답 재생과 필수 JSON 필드 프롬프트 후보
+
+사용자 다음 작업 지시에 따라 기록된 STOP 응답을 오프라인 재생해 `questions` 누락 시 정식 Review/승인이 없음을 확인했다. 정확한 필드 이름과 저장 사례·검증 규칙을 요구하는 별도 프롬프트 후보를 만들고, 이전 요청에서 systemInstruction만 바뀌는 요청 스냅샷을 고정했다. 공통 production 프롬프트와 과거 실행용 ZIP은 불변이다. 새 모델 호출0회, 타입 검사/전체188개 통과. [분석/후보](parcel-challenge-prompt-candidate-20261110.md). 현재 관련7시도와 새 상한 소진 상태는 그대로다.
+
 ## 최신 관찰 — 새 반례 요청은 STOP 응답, 형식 검증 실패
 
 사용자 `no-schema-1794277203243-9036abe9.tar.gz`를 확인했다. 고정 후보 요청 그대로 SDK 1회, STOP 응답, 새 토큰 총11,929 기록. `questions` 대신 `userQuestions`, 저장 감사 상위 근거/이유와 5사례의 상태/판정 누락으로 로컬 검증에서 중단했다. HTTP 제공자 오류는 아니며 정식 v2 Review/최종 승인 없음. 관련 이력7시도(최초 인증 실패 별도), 이번 추가 상한 소진, 재실행 금지. 원본 SHA-256 `fcd3f3ec2e150be27f45927823a34f6a55c6a463598afbd8dbd9dcad62e59a67`. [분석](parcel-no-schema-result-20261110.md), [원자료](acceptance/parcel-no-schema-20261110/manifest.json). 이번 분석 추가 모델 호출0회.
