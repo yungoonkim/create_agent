@@ -5,6 +5,8 @@
 
 ## 최신 작업 — HTTP400 확인 및 전송 스키마 단순화 후보
 
+[PR #15](https://github.com/yungoonkim/create_agent/pull/15)에 후보 구현과178/169개 오프라인 검증을 제출했다. [후보 ZIP](https://github.com/yungoonkim/create_agent/raw/5a37459c303b8f3b7e69357366045ee9f50d4788/downloads/adtf-review-schema-candidate.zip)의 diagnose:review -- --schema-candidate --run-live --bundle만 새 폴더에서 최대1회 실행한다. 원인 해결은 미확정이며 원본 동일요청 진단이나 전체 기획 시작을 다시 실행하지 않는다. 현재 추가 실제 호출0회다.
+
 사용자 단일 진단 review-1794273612105-a20a09aa는 HTTP400/INVALID_ARGUMENT로 실패했다. 원압축을 보존했으며 어느 필드가 거부됐는지는 불명이다. 원시 상세 메시지는 안전상 생략됐다. 인증 반복이나 무작정 유료 재실행을 요구하지 않는다.
 
 wire-schema.ts는 전송용 줄 번호 enum을 숫자 범위로, 동적 출처/지적/요구 ID enum을 문자열로 단순화한다. 정식 Review의 기존 정확한 줄/ID/중복/개수 검사는 그대로다. 원본 스키마를 변경하지 않는 순수 변환이며 모델/프롬프트/출력/반복 한도는 유지한다. 이것은 원인이 입증된 해결책이 아니라 호환성 후보다. 기존 frozen 사례/실행기/실패 기록은 고치지 않아 옛 generator가 변경 소스를 차단하는 것이 정상이다.
