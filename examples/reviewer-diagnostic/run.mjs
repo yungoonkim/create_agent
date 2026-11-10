@@ -38,14 +38,19 @@ export async function runDiagnostic({directory,client,request,source,mode}){
   await save('summary.json',summary);return summary;
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
-  const args=process.argv.slice(2);assert.ok(args.every(a=>['--run-live','--dry-run','--bundle'].includes(a))&&new Set(args).size===args.length,'Unknown/duplicate argument');
+  const args=process.argv.slice(2);assert.ok(args.every(a=>['--run-live','--dry-run','--bundle','--schema-candidate'].includes(a))&&new Set(args).size===args.length,'Unknown/duplicate argument');
   assert.ok(args.includes('--run-live')!==args.includes('--dry-run'),'Choose --dry-run or explicit paid --run-live (maximum ONE SDK request)');
   const mode=args.includes('--run-live')?'live':'dry';
   const bytes=await readFile(join(here,'request.json')),source=JSON.parse(await readFile(join(here,'source.json'),'utf8'));
   assert.equal(hash(bytes),source.requestSha256,'Original failed request changed');
   const request=JSON.parse(bytes);assert.equal(request.model,'gemini-3.8-flash');assert.equal(request.config.httpOptions.retryOptions.attempts,1);
+  if(args.includes('--schema-candidate')){
+    const {compactReviewSchema}=await import('../../dist/src/planning/wire-schema.js');
+    request.config.responseJsonSchema=compactReviewSchema(request.config.responseJsonSchema);
+    source.variant='compacted_schema_candidate_not_proven_fix';source.candidateRequestSha256=hash(JSON.stringify(request,null,2)+'\n');
+  }
   const base=join(root,'diagnostics');await mkdir(base,{recursive:true});
-  if(mode==='live'){const marker=await open(join(base,'parcel-v2-diagnostic.started.json'),'wx');await marker.writeFile(JSON.stringify({startedAt:new Date().toISOString(),maxSdkAttempts:1}));await marker.close();}
+  if(mode==='live'){const marker=await open(join(base,args.includes('--schema-candidate')?'parcel-v2-schema-candidate.started.json':'parcel-v2-diagnostic.started.json'),'wx');await marker.writeFile(JSON.stringify({startedAt:new Date().toISOString(),maxSdkAttempts:1}));await marker.close();}
   const directory=join(base,`review-${Date.now()}-${randomUUID().slice(0,8)}`);
   const api=mode==='live'?{models:{generateContent:async wire=>{
     const {GoogleGenAI}=await import('@google/genai');return new GoogleGenAI({vertexai:true,project:'iceu-songpa11',location:'global'}).models.generateContent(wire);

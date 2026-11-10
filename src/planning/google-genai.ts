@@ -15,6 +15,7 @@ import { decideAfterReview, validatePlanReview } from "./policy.js";
 import { REVIEW_CHECK_IDS } from "./contracts.js";
 import { WRITER_SYSTEM_INSTRUCTION, REVIEWER_SYSTEM_INSTRUCTION, REVIEW_CHALLENGE_SYSTEM_INSTRUCTION } from "./prompts.js";
 import { bindReviewEvidence, parseReviewQuality } from "./review-quality.js";
+import { compactReviewSchema } from "./wire-schema.js";
 import { bindStorageAudit, scopeAuthorizationSources } from "./storage-audit.js";
 import { STORAGE_AUDIT_STATES } from "./contracts.js";
 import { assertCompleteOutput, modelOutputFailure } from "./model-output.js";
@@ -209,7 +210,7 @@ export class GeminiPlanningReviewer implements PlanningReviewer {
       const response = await this.client.models.generateContent({
         model: role.model.modelId, contents: prompt,
         config: { systemInstruction: REVIEWER_SYSTEM_INSTRUCTION, responseMimeType: "application/json",
-          responseJsonSchema: reviewSchemaFor(context.currentPlan, context.approvedScope, context.previousPlan, Object.keys(priorIssues)), maxOutputTokens: 16_000, thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM },
+          responseJsonSchema: compactReviewSchema(reviewSchemaFor(context.currentPlan, context.approvedScope, context.previousPlan, Object.keys(priorIssues))), maxOutputTokens: 16_000, thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM },
           httpOptions: { retryOptions: { attempts: 1 } } },
       });
       capture(response.usageMetadata);
@@ -246,7 +247,7 @@ export class GeminiPlanningReviewer implements PlanningReviewer {
           approvedScopeSources: scopeAuthorizationSources(context.approvedScope),
           currentPlanLines: sourceLinesFor(context.currentPlan) }),
         config: { systemInstruction: REVIEW_CHALLENGE_SYSTEM_INSTRUCTION, responseMimeType: "application/json",
-          responseJsonSchema: challengeSchemaFor(context.currentPlan, context.approvedScope), maxOutputTokens: 16_000, thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM },
+          responseJsonSchema: compactReviewSchema(challengeSchemaFor(context.currentPlan, context.approvedScope)), maxOutputTokens: 16_000, thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM },
           httpOptions: { retryOptions: { attempts: 1 } } },
       });
       capture(challenge.usageMetadata);

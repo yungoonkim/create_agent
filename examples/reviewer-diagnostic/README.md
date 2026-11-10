@@ -1,3 +1,20 @@
+# HTTP400 이후 스키마 호환성 후보
+
+권장 Codex는 GPT-6.1 Sol · medium이며 결과 파일 전송 전에 설정한다. 원본 요청 진단에서 HTTP400/INVALID_ARGUMENT가 확인됐지만 거부된 필드는 불명이다. 아래 기존 안내는 원본 진단의 기록이며 동일 요청을 반복하지 않는다.
+
+새 후보 ZIP은 같은 v2의 전송 스키마만 단순화하며 해결을 보장하지 않는다. 새 폴더의 package.json 위치에서 다음을 실행한다.
+
+```powershell
+npm.cmd ci
+npm.cmd run diagnose:review -- --schema-candidate --run-live --bundle
+```
+
+최대1회 과금 가능 요청이다. Writer 재작성/원래 상태 변경/정식 Review 저장/자동 반례·승인은 없다. 기존 후속3+진단1=4이며 후보 실행 후5다. 성공/실패 모두 RESULT_ARCHIVE tar.gz 하나를 전달하고 재실행하지 않는다. 실제 후보 응답을 받아도 원문·스키마·의미 검증 전 품질 통과로 보지 않는다.
+
+모델 없는 확인은 --schema-candidate --dry-run --bundle이다. npm 명령이 먼저 빌드하므로 dist를 수동 복사하지 않는다.
+
+---
+
 # 중단된 택배 기획 v2 요청의 단일 진단
 
 실제 진단은 아직 실행하지 않았다. 원인 분석 권장 설정은 **GPT-6.1 Sol · medium**이며 결과 파일을 보내기 전에 설정한다.
