@@ -1,6 +1,6 @@
 # 새 일상 주제: 주차 위치 기록 기획 시험
 
-이 시험의 주제는 기존 장보기·생활비·주간 식단·할 일·택배 시험과 겹치지 않는 **주차 위치 기록**이다. 사용자가 이 대화에서 정한 선택: 웹 브라우저에서 혼자 사용, 내 컴퓨터에 보존, 위치·주차 시각·선택 메모, 차 찾음 표시 후 이력 보관, 수정·삭제, 현재 주차 기록 최대 한 개. [원요청](../examples/parking-planning/request.md), [Scope v1 초안](../examples/parking-planning/scope-v1.json), [모델 설정](../examples/parking-planning/config.json)을 실제 생성 전에 분리해 기록한다.
+이 시험의 주제는 기존 장보기·생활비·주간 식단·할 일·택배 시험과 겹치지 않는 **주차 위치 기록**이다. 사용자가 이 대화에서 정한 선택: 웹 브라우저에서 혼자 사용, 내 컴퓨터에 보존, 위치·주차 시각·선택 메모, 차 찾음 표시 후 이력 보관, 수정·삭제, 현재 주차 기록 최대 한 개. [원요청](../examples/parking-planning/request.md), [Scope v1](../examples/parking-planning/scope-v1.json), [모델 설정](../examples/parking-planning/config.json)을 실제 생성 전에 분리해 기록했다. 사용자는 2026-11-10 Codex 대화에서 이 Scope대로 진행하겠다고 승인했다. 이 승인은 최종 기획안 승인이 아니다.
 
 ## 사용자가 판단할 수 있는 성공 기준
 
@@ -17,8 +17,8 @@
 
 ## 실행 경계와 비용
 
-이번 단계는 **기획안 작성·검토만**이다. 제품 구현·팀원 실행·최종 기획 승인 자동화는 하지 않는다. `parking-scope` v1은 사용자가 검토할 **초안**이며 승인된 것으로 표시하지 않는다. Scope를 실제로 승인한 뒤에만 Writer를 호출한다. 모델은 설정된 Vertex AI `gemini-3.8-flash` Writer/Reviewer이며 Codex의 GPT 설정과 별도다.
+이번 단계는 **기획안 작성·검토만**이다. 제품 구현·팀원 실행·최종 기획 승인 자동화는 하지 않는다. `parking-scope` v1 승인 근거는 위 대화이며 전용 실행기는 이 근거를 프로젝트 승인 기록에 남긴 뒤 Writer를 호출한다. 모델은 설정된 Vertex AI `gemini-3.8-flash` Writer/Reviewer이며 Codex의 GPT 설정과 별도다.
 
 `maxIterations:2`이면 최악의 경우 Writer 2회와 각 반복의 일반/반례 Reviewer 최대 2회, **Gemini SDK 요청 최대6회**가 가능하다. 조기 종료하면 적다. 추가 유료 채점은 하지 않는다. 자동 실패 재실행이나 다른 주제까지의 일괄 호출은 계획하지 않는다. 기존 택배 시험8+1 시도는 이 새 주제의 예산에 합치지 않는다. 이번 준비 작업의 실제 Gemini/OAuth 호출은 0회다.
 
-[기존 live CLI](../src/cli/planning-gemini.ts)는 Scope 승인과 `CALL` 입력을 요구하지만 이전 고정 실험처럼 원요청/응답 전체와 단일 시작 예약을 묶은 전용 ZIP을 제공하지 않는다. 실제 시험 전에 별도 한 번 실행 도구와 보존 형식을 확정한다. 사용자에게 현재 설정을 곧바로 실행하도록 안내하지 않는다.
+[전용 실행기](../examples/parking-planning/run.mjs)는 입력 SHA-256을 확인하고 시작 예약을 만든 뒤 최대 6회만 호출한다. 모델 요청·응답, 사용량, 기획 상태, 사용자 검토표를 `parking-planning-result.tar.gz`로 보존한다. 오류가 나도 같은 패키지에서는 재실행하지 않는다. 최종 기획안은 결과물을 보고 사용자가 별도로 판단한다. [Windows 안내](../examples/parking-planning/README.md)를 따른다.

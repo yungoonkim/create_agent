@@ -24,7 +24,8 @@
     "complete:parcel-review": "npm run build && node examples/parcel-challenge/run.mjs",
     "complete:parcel-no-schema": "npm run build && node examples/parcel-challenge/run-no-schema.mjs",
     "complete:parcel-prompt": "npm run build && node examples/parcel-challenge/run-prompt.mjs",
-    "complete:parcel-eight": "npm run build && node examples/parcel-challenge/run-eight.mjs"
+    "complete:parcel-eight": "npm run build && node examples/parcel-challenge/run-eight.mjs",
+    "trial:parking-planning": "npm run build && node examples/parking-planning/run.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
