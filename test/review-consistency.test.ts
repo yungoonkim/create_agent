@@ -37,7 +37,7 @@ test("same blocking issues stop technically; reordered legacy positions do not p
   if (repeated.type === "STOP_REPEATED_REVIEW_ISSUES") assert.match(repeated.reason, /사용자 취향 질문이 아니라/);
   assert.equal(decide(review(["field-b", "field-a"], 2)).type, "REVISE");
   const question = { ...review(["field-a", "field-b"], 2), outcome: "needs_user_input" as const, userJudgmentRequired: true, suggestions: ["Which date display do you want?"] };
-  assert.equal(decide(question).type, "REQUEST_USER_INPUT");
+  assert.equal(decide(question).type, "STOP_REPEATED_REVIEW_ISSUES");
 });
 test("repeated optional minor suggestions do not stop a passing plan", () => {
   const { storageAudit: omitted, ...base } = review([], 2); void omitted;

@@ -173,6 +173,14 @@ export function decideAfterReview(input: PlanningDecisionInput): PlanningDecisio
       reason: "Reviewer identified a scope change requiring separate approval; approved Scope was not modified.",
     };
   }
+  const repeatedIssues = findUnresolvedRepeatedIssues(review, input.previousReview);
+  if (repeatedIssues.length > 0) {
+    return {
+      type: "STOP_REPEATED_REVIEW_ISSUES",
+      issueIds: repeatedIssues.map(issue => issue.id),
+      reason: `REVIEW_REPEAT: 같은 차단 지적이 반복돼 자동 실행을 중단했습니다. 사용자 취향 질문이 아니라 기획·검토 근거 보완이 필요합니다. ${repeatedIssues.map(issue => `${issue.id}: ${issue.description}`).join(" / ")}`,
+    };
+  }
   const findings = [...qualityFindings(review), ...reviewAssuranceFindings(review)];
   const storageFindings = storageAuditFindings(review.storageAudit);
   const questions = collectReviewQuestions(review);
@@ -183,15 +191,6 @@ export function decideAfterReview(input: PlanningDecisionInput): PlanningDecisio
   const blockingIssues = [...review.issues, ...storageFindings.issues].filter(
     (issue) => issue.severity === "major" || issue.severity === "critical",
   );
-  const repeatedIssues = findUnresolvedRepeatedIssues(review, input.previousReview);
-  if (repeatedIssues.length > 0) {
-    return {
-      type: "STOP_REPEATED_REVIEW_ISSUES",
-      issueIds: repeatedIssues.map(issue => issue.id),
-      reason: `REVIEW_REPEAT: 같은 차단 지적이 반복돼 자동 실행을 중단했습니다. 사용자 취향 질문이 아니라 기획·검토 근거 보완이 필요합니다. ${repeatedIssues.map(issue => `${issue.id}: ${issue.description}`).join(" / ")}`,
-    };
-  }
-
   const needsRevision = review.outcome === "revise" || blockingIssues.length > 0 || findings.length > 0 || scopeIssues.length > 0;
   if (!needsRevision) {
     return { type: "REQUEST_USER_APPROVAL", planId: review.planId, version: review.planVersion };

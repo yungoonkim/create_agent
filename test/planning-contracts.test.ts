@@ -192,11 +192,27 @@ test("repeat detection considers issue ID, kind, related requirement, and severi
   assert.equal(runWith(issue({ relatedRequirementId: "REQ-OTHER" })).type, "REVISE");
 });
 
+test("confirmed repeated blockers stop before questions, but first or different issues still ask", () => {
+  for (const severity of ["major", "critical"] as const) {
+    const prior = previousReview([issue({ severity })]);
+    const question = currentReview([issue({ severity })], "needs_user_input");
+    const withQuestion = { ...question, userJudgmentRequired: true, suggestions: ["Which display format?"] };
+    const source = { currentPlan: planV2, previousReview: prior };
+    assert.equal(decideAfterReview(decisionInput(withQuestion, source)).type, "STOP_REPEATED_REVIEW_ISSUES");
+    assert.equal(decideAfterReview(decisionInput(withQuestion, { currentPlan: planV2 })).type, "REQUEST_USER_INPUT");
+    assert.equal(decideAfterReview(decisionInput({ ...withQuestion, issues: [issue({ id: "OTHER", severity })] }, source)).type, "REQUEST_USER_INPUT");
+  }
+});
+
 test("review iteration limit stops revision and invalid counters fail closed", () => {
   const revise = createReview({ outcome: "revise", issues: [issue()] });
   assert.equal(decideAfterReview(decisionInput(revise, { iterationCount: 3 })).type, "STOP_LIMIT_REACHED");
   assert.equal(decideAfterReview(decisionInput(revise, { iterationCount: 4 })).type, "FAILED");
   assert.equal(decideAfterReview(decisionInput(revise, { maxIterations: 0 })).type, "FAILED");
+});
+
+test("a final allowed passing Review can still await explicit user approval", () => {
+  assert.equal(decideAfterReview(decisionInput(createReview(), { iterationCount: 3, maxIterations: 3 })).type, "REQUEST_USER_APPROVAL");
 });
 
 test("invalid planning transitions are rejected", () => {
