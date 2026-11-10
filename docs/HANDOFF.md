@@ -3,6 +3,10 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 준비 — 반례 인용 최대8개 지침의 단일 시험
+
+사용자 중단 후 작업 재개 지시로 이전 프롬프트 후보에 모든 evidenceLines 최대8개 지침을 더한 별도 후보를 만들었다. 후보 요청은 systemInstruction만 변경하며 새 최대1회 단일 실행 CLI/ZIP을 준비 중이다. 기존8시도(최초 인증 실패 별도)·원자료·예약을 보존하고 준비 중 Gemini/OAuth0회. 타입 검사·전체193개 오프라인 검사 통과. [설계/한계](parcel-eight-run-20261110.md).
+
 ## 최신 관찰 — 프롬프트 후보 실응답은 인용 배열 11개로 실패
 
 사용자 `prompt-1794283531575-fc89d831.tar.gz`는 STOP/새 요청1회·총9,775토큰. `valid.trigger.evidenceLines` 11개가 코드 최대8개를 위반해 정식 Review/승인 없음. 수정 복사본의 8개 라인 오프라인 가정 시험은 `REQUEST_USER_APPROVAL`까지 통과했지만 실제 승인/품질 근거는 아니다. 관련8시도(최초 인증 실패 별도), 새 상한 소진, 재실행 금지. 원본 SHA-256 `1f94b450510e7c1dcad3d7e7799db4a7b0b8c0d1e45cac2defbbb7340d6c10b4`. [분석](parcel-prompt-result-20261110.md). 이번 분석 새 모델 호출0회.
