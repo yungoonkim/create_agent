@@ -3,6 +3,12 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 작업 — 지속 기획 세션과 검토 기준 v2
+
+사용자의 반복 절차 절감 요청으로 `planning:session` 공통 CLI를 추가했다. 최초 승인 입력/복구 import 후 같은 session 경로로 run/status/export를 사용한다. Controller의 수정 반복·사용자 결정 경계를 유지하고 완료 요청 재사용, 누적 SDK 예약/상한, 명시적 예산 증액 이력을 제공한다. 새 v2 저장 검토는 관련 필드의 실패 사례를 그룹으로 묶되 개별 로드/후보 근거·실제 인용은 계속 요구한다. 기존 검토는 수정하지 않는다. [설계/검증](durable-planning-session-20261110.md), [실행 안내](../examples/planning-session/README.md).
+
+실제 주차 복구 원본은 반례 완료·REVISE·4/6회(내부16개 해시 통과)로 보존했다. 원본을 세션으로 오프라인 가져와 revising/반복1/2/남은2를 확인했다. 다음 수정 반복은 최대3회이므로 새 호출0회로 멈췄다. 6→7 상한 증액은 아직 사용자가 결정하지 않았으며 실행하지 않았다. 준비·검증의 유료 호출0회. 다음 실제 생성 전에 명시적 예산 결정을 받아야 한다.
+
 ## 최신 수정 — 공통 반례 JSON 모드와 주차 이어가기
 
 사용자가 반례 경로 수정을 요청했다. 공통 Reviewer에서 반례 responseJsonSchema를 제거하고 택배 성공 후보의 필수 키/인용8개 지침을 적용했다. 로컬 검증은 유지한다. 주차 기획 v1/일반 검토를 고정 입력으로 재사용하는 최대1회 도구와 Windows ZIP 프로필을 추가했다. 이전3+새1=최대4/6회, Writer·최종 승인 없음, 준비 중 Gemini0회. [설계](common-challenge-fix-20261110.md), [실행 안내](../examples/parking-planning/README-recovery.md). 실제 모델 결과는 로컬 실행 후 확인한다.

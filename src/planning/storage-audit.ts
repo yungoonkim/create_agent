@@ -31,7 +31,11 @@ export function bindStorageAudit(raw: unknown, plan: PlanDraft): unknown {
   const validation = audit.validation === undefined ? undefined : object(audit.validation);
   if (validation !== undefined && !Array.isArray(validation.rules)) throw new Error("Missing common validation rules.");
   return { ...audit, evidence: evidenceFromLines(audit.evidenceLines, plan),
-    ...(validation === undefined ? {} : { validation: { ...validation, rules: (validation.rules as unknown[]).map(value => {
+    ...(validation === undefined ? {} : { validation: { ...validation,
+      ...(validation.acceptanceGroups === undefined ? {} : { acceptanceGroups: (validation.acceptanceGroups as unknown[]).map(value => {
+        const g = object(value); const e = object(g.acceptance);
+        return { ...g, acceptance: { ...e, evidence: evidenceFromLines(e.evidenceLines, plan) } };
+      }) }), rules: (validation.rules as unknown[]).map(value => {
       const r = object(value);
       return { ...r, ...Object.fromEntries(["load", "candidate", "acceptance"].map(key => {
         const e = object(r[key]); return [key, { ...e, evidence: evidenceFromLines(e.evidenceLines, plan) }];
@@ -52,7 +56,16 @@ function parseValidation(raw: unknown): StorageValidation {
       load: parsePlanEvidence(r.load), candidate: parsePlanEvidence(r.candidate), acceptance: parsePlanEvidence(r.acceptance), rationale: text(r.rationale) };
   });
   if (new Set(rules.map(r => r.rule)).size !== rules.length) throw new Error("Duplicate common validation rules.");
-  return { rationale: text(v.rationale), rules };
+  if (v.version !== undefined && v.version !== 2) throw new Error("Unsupported storage validation version.");
+  if (v.acceptanceGroups !== undefined && (v.version !== 2 || !Array.isArray(v.acceptanceGroups) || v.acceptanceGroups.length > 16)) throw new Error("Invalid grouped acceptance evidence.");
+  const groups = (v.acceptanceGroups as unknown[] | undefined)?.map(value => {
+    const g = object(value);
+    if (!Array.isArray(g.ruleIndexes) || !g.ruleIndexes.length || new Set(g.ruleIndexes).size !== g.ruleIndexes.length ||
+      g.ruleIndexes.some(n => !Number.isSafeInteger(n) || n < 1 || n > rules.length)) throw new Error("Invalid acceptance group rule indexes.");
+    return { ruleIndexes: g.ruleIndexes as number[], acceptance: parsePlanEvidence(g.acceptance), rationale: text(g.rationale) };
+  });
+  return { rationale: text(v.rationale), rules, ...(v.version === 2 ? { version: 2 as const } : {}),
+    ...(groups === undefined ? {} : { acceptanceGroups: groups }) };
 }
 export function parseStorageAudit(raw: unknown): StorageAudit {
   const audit = object(raw);
@@ -89,6 +102,7 @@ export function validateStorageAudit(audit: StorageAudit, plan: PlanDraft, scope
     if (row.authorizationScopeIds.some((id) => sources[id] === undefined)) throw new Error("Storage recovery authorization references an unknown approved Scope source.");
   }
   for (const r of audit.validation?.rules ?? []) for (const e of [r.load, r.candidate, r.acceptance]) validatePlanEvidence(e, plan);
+  for (const g of audit.validation?.acceptanceGroups ?? []) validatePlanEvidence(g.acceptance, plan);
 }
 export function storageAuditFindings(audit: StorageAudit | undefined): { readonly issues: readonly ReviewIssue[]; readonly questions: readonly string[] } {
   const issues: ReviewIssue[] = []; const questions: string[] = [];
@@ -112,7 +126,10 @@ export function storageAuditFindings(audit: StorageAudit | undefined): { readonl
     if (!audit.validation.rules.length) issues.push({ id: "issue-storage-validation-empty", kind: "omission", severity: "major",
       description: "저장값과 변경 후보에 적용하는 공통 필드·값 검증 근거가 없습니다.", suggestedDirection: "위임된 저장 설계를 구체화하고 로드/후보에 같은 규칙과 잘못된 값 확인 사례를 명시하십시오." });
     audit.validation.rules.forEach((r, i) => {
-      if (r.status !== "supported" || [r.load, r.candidate, r.acceptance].some(e => !e.evidence.length || onlyHeadings(e.evidence))) issues.push({
+      const groupCovered = audit.validation?.version === 2 && audit.validation.acceptanceGroups?.some(g =>
+        g.ruleIndexes.includes(i + 1) && g.acceptance.evidence.length > 0 && !onlyHeadings(g.acceptance.evidence));
+      if (r.status !== "supported" || [r.load, r.candidate].some(e => !e.evidence.length || onlyHeadings(e.evidence)) ||
+        (!groupCovered && (!r.acceptance.evidence.length || onlyHeadings(r.acceptance.evidence)))) issues.push({
         id: `issue-storage-validation-${i + 1}`, kind: "omission", severity: "major", description: `공통 검증 ${r.rule}: ${r.rationale}`,
         suggestedDirection: "불러오기와 저장 후보 모두의 실제 검증 규칙 및 구체적인 잘못된 저장값/입력의 예상 결과를 보완하십시오." });
     });

@@ -55,3 +55,8 @@ export {
   resolveProjectPath,
 } from "./config.js";
 export type { DemoApprovalFixture, FakeReviewScenario, LivePlanningConfig, OfflinePlanningConfig } from "./config.js";
+
+export { FileSessionLedger } from "./session-ledger.js";
+export type { SessionBudget, SessionTransport } from "./session-ledger.js";
+export { initializePlanningSession, importPlanningRecovery, runPlanningSession, planningSessionStatus, exportPlanningSession, increasePlanningSessionBudget } from "./session.js";
+export type { PlanningSessionStatus } from "./session.js";
