@@ -13,3 +13,5 @@ docs/acceptance/review-evidence-20261109/** -text -whitespace
 /docs/acceptance/parcel-no-schema-20261110/*.json -text
 
 /docs/acceptance/parcel-prompt-20261110/*.json -text
+
+/docs/acceptance/parcel-eight-20261110/** -text -whitespace
