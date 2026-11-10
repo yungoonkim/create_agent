@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import type { ApprovalRecord } from "../core/types.js";
 import type { PlanDraft, PlanReview, PlanningLoopState, PlanningErrorRecord, PlanEvidence, ScopeContract } from "./contracts.js";
-import { validatePlanReview } from "./policy.js";
+import { collectReviewQuestions, validatePlanReview } from "./policy.js";
 import { qualityFindings } from "./review-quality.js";
 import { storageAuditFindings, storageValidationChecks } from "./storage-audit.js";
 import { reviewAssuranceFindings } from "./revision-audit.js";
@@ -92,8 +92,7 @@ export function buildUserReviewTable(input: UserReviewInput): UserReviewTable {
   const storage = storageAuditFindings(review?.storageAudit);
   const localReviewIssues = [...(review?.issues ?? []), ...storage.issues].filter(i => i.severity === "major" || i.severity === "critical")
     .map(i => ({ id: i.id, description: i.description }));
-  const questions = [...findings.filter(f => f.status === "needs_user_input").map(f => f.message), ...storage.questions,
-    ...(review?.outcome === "needs_user_input" || review?.userJudgmentRequired ? review.suggestions : [])];
+  const questions = review ? collectReviewQuestions(review) : [];
   const reason = planning !== undefined && "reason" in planning ? planning.reason : "";
   const technicalStop = reason.startsWith("REVIEW_REPEAT:") ||
     planning?.status === "awaiting_user_input" && reason.startsWith("The same issue remains at the same or higher severity:") && !questions.length && localReviewIssues.length > 0

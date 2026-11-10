@@ -232,6 +232,25 @@ test("Scope violations request a separate approval and never create a plan appro
   }
 });
 
+test("Scope change request stores only change issues from a mixed Review", async () => {
+  const harness = await createHarness();
+  const controller = new PlanningLoopController({ config: harness.config, memory: harness.memory,
+    writer: new FakePlanningWriter(() => "2026-01-01T00:00:00.000Z"),
+    reviewer: { review: async context => makeReview(context.currentPlan, { outcome: "revise", scopeViolation: true, issues: [
+      { id: "change", kind: "scope_violation", severity: "major", description: "Add an unapproved feature", suggestedDirection: "Ask for Scope approval", scopeDisposition: "change_scope", dispositionReason: "New requirement" },
+      { id: "repair", kind: "scope_violation", severity: "major", description: "Remove an excluded feature", suggestedDirection: "Repair within Scope", scopeDisposition: "revise_plan", dispositionReason: "Already excluded" },
+      { id: "clarify", kind: "scope_violation", severity: "minor", description: "Choose a display rule", suggestedDirection: "Ask the user", scopeDisposition: "clarify", dispositionReason: "Choice remains open" },
+      { id: "defect", kind: "omission", severity: "major", description: "Fix data loss", suggestedDirection: "Preserve data" },
+    ] }) }, now: () => "2026-01-01T00:00:00.000Z" });
+  try {
+    const result = await controller.run({ requirements: "Write a bounded plan.", scopeContract: scope });
+    assert.equal(result.state.status, "awaiting_scope_change_approval");
+    if (result.state.status !== "awaiting_scope_change_approval") return;
+    const request = await harness.memory.getScopeChangeRequest(scope.projectId, result.state.changeRequestId);
+    assert.deepEqual(request?.proposedChanges, ["Add an unapproved feature Suggested: Ask for Scope approval"]);
+  } finally { await rm(harness.root, { recursive: true, force: true }); }
+});
+
 test("scope version mismatch is rejected before any plan is created", async () => {
   const harness = await createHarness();
   try {

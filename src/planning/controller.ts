@@ -315,7 +315,8 @@ export class PlanningLoopController {
           baseScopeVersion: scope.version,
           rationale: decision.reason,
           proposedChanges: review.issues
-            .filter((issue) => decision.issueIds.length === 0 || decision.issueIds.includes(issue.id))
+            .filter((issue) => issue.kind === "scope_violation" &&
+              (issue.scopeDisposition === undefined || issue.scopeDisposition === "change_scope") && decision.issueIds.includes(issue.id))
             .map((issue) => `${issue.description} Suggested: ${issue.suggestedDirection}`),
           approvalId: approval.id,
         };

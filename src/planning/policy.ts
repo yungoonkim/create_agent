@@ -165,29 +165,19 @@ export function decideAfterReview(input: PlanningDecisionInput): PlanningDecisio
   }
   if (review.outcome === "failed") return { type: "FAILED", reason: "Reviewer reported a failed review." };
   const scopeIssues = review.issues.filter((issue) => issue.kind === "scope_violation");
-  const scopeIssueIds = scopeIssues.map((issue) => issue.id);
-  if (review.scopeViolation || scopeIssueIds.length > 0) {
-    if (scopeIssueIds.length === 0) {
-      return {
-        type: "REQUEST_USER_INPUT",
-        questions: ["Reviewer flagged a scope violation but did not provide a structured scope issue."],
-      };
-    }
+  const scopeChangeIssues = scopeIssues.filter(issue => issue.scopeDisposition === undefined || issue.scopeDisposition === "change_scope");
+  if (review.scopeViolation || scopeIssues.length > 0) {
     // Legacy issues retain the conservative approval route; new issues must state how to resolve them.
-    if (scopeIssues.some(issue => issue.scopeDisposition === undefined || issue.scopeDisposition === "change_scope")) return {
-      type: "REQUEST_SCOPE_CHANGE_APPROVAL", planId: review.planId, version: review.planVersion, issueIds: scopeIssueIds,
+    if (scopeChangeIssues.length > 0) return {
+      type: "REQUEST_SCOPE_CHANGE_APPROVAL", planId: review.planId, version: review.planVersion, issueIds: scopeChangeIssues.map(issue => issue.id),
       reason: "Reviewer identified a scope change requiring separate approval; approved Scope was not modified.",
-    };
-    if (scopeIssues.some(issue => issue.scopeDisposition === "clarify")) return {
-      type: "REQUEST_USER_INPUT", questions: scopeIssues.filter(issue => issue.scopeDisposition === "clarify")
-        .map(issue => `${issue.description} — ${issue.dispositionReason}`),
     };
   }
   const findings = [...qualityFindings(review), ...reviewAssuranceFindings(review)];
   const storageFindings = storageAuditFindings(review.storageAudit);
-  const questions = [...findings.filter((finding) => finding.status === "needs_user_input").map((finding) => finding.message), ...storageFindings.questions];
+  const questions = collectReviewQuestions(review);
   if (review.outcome === "needs_user_input" || review.userJudgmentRequired || questions.length > 0) {
-    return { type: "REQUEST_USER_INPUT", questions: [...questions, ...review.suggestions] };
+    return { type: "REQUEST_USER_INPUT", questions };
   }
 
   const blockingIssues = [...review.issues, ...storageFindings.issues].filter(
@@ -224,6 +214,22 @@ export function decideAfterReview(input: PlanningDecisionInput): PlanningDecisio
     ].join("\n"),
     nextVersion: review.planVersion + 1,
   };
+}
+
+/** Collect explicit questions once, in source order, for both policy and the user review table. */
+export function collectReviewQuestions(review: PlanReview): readonly string[] {
+  const scopeIssues = review.issues.filter(issue => issue.kind === "scope_violation");
+  const explicitQuestions = [
+    ...(review.scopeViolation && scopeIssues.length === 0 ? ["Reviewer flagged a scope violation but did not provide a structured scope issue."] : []),
+    ...scopeIssues.filter(issue => issue.scopeDisposition === "clarify").map(issue => `${issue.description} — ${issue.dispositionReason}`),
+    ...[...qualityFindings(review), ...reviewAssuranceFindings(review)].filter(f => f.status === "needs_user_input").map(f => f.message),
+    ...storageAuditFindings(review.storageAudit).questions,
+  ];
+  // The legacy Review contract does not identify which suggestions are questions.
+  // Preserve them when judgment is requested; punctuation cannot safely classify them.
+  const suggestions = review.outcome === "needs_user_input" || review.userJudgmentRequired
+    ? review.suggestions : [];
+  return [...new Set([...explicitQuestions, ...suggestions])];
 }
 
 const severityRank: Readonly<Record<ReviewSeverity, number>> = {
