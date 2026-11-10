@@ -3,6 +3,10 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 승인 — 주차 누적 요청 상한7회
+
+사용자는 누적6→7회 증액 질문에 다음 단계를 진행하겠다고 승인했다. 원래6회·기존4회를 보존한 채 새 최대3회를 허용한다. 확인용 세션에서 명시적 증액 기록을 남겼으며 실제 새 모델 호출은0회다. [승인 기록](acceptance/parking-recovery-20261110/budget-approved-7.json). Windows PC에서는 공통 ZIP을 한 번 설치한 뒤 기존 복구 result를 import하고 budget7을 기록해 run한다. 이후 같은 세션을 유지하며 새 import나 초기화를 반복하지 않는다.
+
 ## 최신 작업 — 지속 기획 세션과 검토 기준 v2
 
 사용자의 반복 절차 절감 요청으로 `planning:session` 공통 CLI를 추가했다. 최초 승인 입력/복구 import 후 같은 session 경로로 run/status/export를 사용한다. Controller의 수정 반복·사용자 결정 경계를 유지하고 완료 요청 재사용, 누적 SDK 예약/상한, 명시적 예산 증액 이력을 제공한다. 새 v2 저장 검토는 관련 필드의 실패 사례를 그룹으로 묶되 개별 로드/후보 근거·실제 인용은 계속 요구한다. 기존 검토는 수정하지 않는다. [설계/검증](durable-planning-session-20261110.md), [실행 안내](../examples/planning-session/README.md).
