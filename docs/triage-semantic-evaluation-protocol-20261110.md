@@ -4,7 +4,7 @@
 
 ## 실행 전에 고정할 자료
 
-각 카드를 정식 Scope·Plan·Review 스냅샷으로 바꿀 때 ID·버전·승인 출처, 실제 줄 번호, 직전 Review가 필요한 경우 그 원문, 기존 Policy 결과를 함께 저장한다. 현재 카드의 짧은 문장만으로 기존 `buildShadowContext()`에 넣을 수 있는 유효한 Review가 완성됐다고 주장하지 않는다. 변환 후에는 정식 입력과 카드 간 의미가 일치하는지 사람이 확인하고, 전체 입력 JSON과 해시를 고정한다. 평가 문구를 작성한 사람이 모델 출력을 보고 기대 답을 바꾸면 안 된다. 신규 사용자 요청은 Review 의견과 별도 출처로 보존한다.
+각 카드를 현재 Shadow API가 검증하는 Scope·Plan·Review 자료형으로 변환했다. [합성 스냅샷 archive](acceptance/triage-semantic-evaluation-20261110/synthetic-snapshots.tar.gz)에 ID·버전·실제 줄 번호, 반복 사례의 직전 Review, 기존 Policy 결과와 입력 해시가 있다. [생성 방법](../examples/supervisor-triage-semantic/README.md)과 [해시 기록](acceptance/triage-semantic-evaluation-20261110/snapshots-manifest.json)을 참고한다. 이 자료는 실제 사용자 승인 레코드나 새로운 Gemini 검토가 아니다. [검증 기록](acceptance/triage-semantic-evaluation-20261110/verification.json)에 8개 입력/수동 정답의 구조 검사, typecheck와 전체222개 테스트 결과를 남겼다. 평가 전에는 사람 검토자가 카드와 변환 자료의 의미가 일치하는지 확인한다. 평가 문구를 작성한 사람이 모델 출력을 보고 기대 답을 바꾸면 안 된다. 신규 사용자 요청은 Review 의견과 별도 출처로 보존한다.
 
 평가를 시작한다면 모델/버전, 프롬프트 버전, 입력 목록/해시, 최대 요청 수, 요청별 토큰·시간, 실패·재시도 처리, 결과 저장 위치를 **첫 유료 호출 전에** 정한다. 모델 응답 실패도 시도 횟수에 포함하고 숨은 자동 재시도는 허용하지 않는다. 현재 주차 세션의 소진된7회 예산과 공식 Review 파일은 사용하지 않는다. 이 문서 자체는 실제 호출을 승인하거나 실행하지 않는다.
 
@@ -33,4 +33,4 @@
 
 ## Gemini로 이어서 작업할 때
 
-권장 작업 모델은 Gemini 환경의 사용 가능 모델 중 비용이 낮은 것을 먼저 선택하고, 난도가 올라갈 때만 상향한다. 구체적인 과금·한도는 Gemini 화면에서 확인한다. 다음 작업은 이 사례 카드를 정식 입력 스냅샷으로 바꾸고 사람 검토용 채점표를 준비하는 것이다. 먼저 `AGENTS.md`, `docs/HANDOFF.md`, 이 문서, `src/supervisor/triage-shadow.ts`, `examples/supervisor-triage-shadow/README.md`를 읽는다. 사례의 기대 분류를 보지 않은 것처럼 평가했다고 주장하지 않는다. 저장된 주차 세션·공식 Review·승인 기록은 수정하지 않는다. 실제 Gemini API 호출 도구는 별도 상한이 정해지기 전까지 만들거나 실행하지 않는다.
+권장 작업 모델은 Gemini 환경의 사용 가능 모델 중 비용이 낮은 것을 먼저 선택하고, 난도가 올라갈 때만 상향한다. 구체적인 과금·한도는 Gemini 화면에서 확인한다. 합성 입력과 [빈 채점표](acceptance/triage-semantic-evaluation-20261110/scorecard-blank.json)는 준비됐다. 다음 작업은 독립된 사람이 카드와 변환 입력을 검수하고 평가 실행 조건을 확정하는 것이다. 먼저 `AGENTS.md`, `docs/HANDOFF.md`, 이 문서, `src/supervisor/triage-shadow.ts`, `examples/supervisor-triage-shadow/README.md`를 읽는다. 사례의 기대 분류를 보지 않은 것처럼 평가했다고 주장하지 않는다. 저장된 주차 세션·공식 Review·승인 기록은 수정하지 않는다. 실제 Gemini API 호출 도구는 별도 상한이 정해지기 전까지 만들거나 실행하지 않는다.

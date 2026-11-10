@@ -28,7 +28,8 @@
     "trial:parking-planning": "npm run build && node examples/parking-planning/run.mjs",
     "complete:parking-review": "npm run build && node examples/parking-planning/complete.mjs",
     "planning:session": "npm run build && node dist/src/cli/planning-session.js",
-    "eval:triage-shadow": "npm run build && node examples/supervisor-triage-shadow/run.mjs"
+    "eval:triage-shadow": "npm run build && node examples/supervisor-triage-shadow/run.mjs",
+    "eval:triage-semantic": "npm run build && node examples/supervisor-triage-semantic/materialize.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

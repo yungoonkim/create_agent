@@ -3,6 +3,10 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 작업 — 중재 의미 평가 합성 입력 8개 준비
+
+사용자가 #31 병합 후 진행을 지시했다. [합성 입력 생성기](../examples/supervisor-triage-semantic/README.md)로 기존8개 공개 카드를 Shadow API가 읽는 Scope·Plan·Review 스냅샷으로 변환했다. 입력과 정답을 분리하고 사람용 [빈 채점표](acceptance/triage-semantic-evaluation-20261110/scorecard-blank.json), 파일별 해시와 archive를 저장했다. 기준 Policy는 REVISE·REQUEST_USER_INPUT·REQUEST_SCOPE_CHANGE_APPROVAL·STOP_REPEATED_REVIEW_ISSUES·STOP_LIMIT_REACHED 분기를 포함한다. 실제 사용자 승인/실모델 Review가 아닌 합성 과거 형식이며 품질/저장 감사 전체는 없다. 사람의 의미 검수와 실모델 호출 상한 결정은 다음 단계다. 추가 모델 호출0회, 원래 주차 세션 변경 없음. [평가 설계](triage-semantic-evaluation-protocol-20261110.md).
+
 ## 최신 작업 — 중재 의미 평가 기준과 신규 사례 준비
 
 사용자가 #30 병합 후 다음 작업을 지시했다. [의미 평가 설계](triage-semantic-evaluation-protocol-20261110.md)와 [신규 사례8개](acceptance/triage-semantic-evaluation-20261110/cases.json)를 추가했다. 주차·택배 원자료와 구분되는 반려식물/우산 주제다. 분류·인용 관련성·제안의 실행 가능성·사용자 설명을 0~2점으로 사람 두 명이 가능하면 독립 채점하며 중대 실패는 별도 기록한다. 현재는 공개 카드/잠정 기준이며 정식 Scope/Plan/Review 스냅샷, 새 유료 호출 상한, 실제 모델 결과가 없다. 후속 Gemini 작업은 정식 스냅샷 변환과 채점표 준비부터 시작한다. 현재 저장 세션과 승인·예산은 변경하지 않았다.

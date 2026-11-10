@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "syntheticCaseCount": 8,
+  "shadowContextValidatedCount": 8,
+  "goldExampleStructuralValidationCount": 8,
+  "policyBranches": [
+    "REVISE",
+    "REQUEST_USER_INPUT",
+    "REQUEST_SCOPE_CHANGE_APPROVAL",
+    "STOP_REPEATED_REVIEW_ISSUES",
+    "STOP_LIMIT_REACHED"
+  ],
+  "repositoryTypecheck": "passed",
+  "repositoryTests": 222,
+  "archiveHashVerified": true,
+  "newModelCalls": 0,
+  "humanSemanticReviews": 0,
+  "modelSemanticAccuracy": null
+}

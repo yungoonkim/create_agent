@@ -52,6 +52,7 @@ export function buildRunBundle(repo,ref='HEAD',profile='runtime') {
   const originalPackage=source.get('package.json');const pkg=JSON.parse(originalPackage);
   assert.ok(pkg.scripts.test.startsWith('npm run build && node --test '),'Review test command before packaging');
   for(const p of excludedTests)pkg.scripts.test=pkg.scripts.test.replaceAll(` ${p}`,'');
+  delete pkg.scripts['eval:triage-semantic']; // Requires historical evaluation cards in the full repository.
   delete pkg.scripts['eval:triage-shadow']; // Offline evaluation requires historical evidence in the full repository.
   delete pkg.scripts['bundle:windows']; // Building distributions requires Git; running this one does not.
   if(profile.startsWith('diagnostic'))pkg.scripts=Object.fromEntries(Object.entries(pkg.scripts).filter(([name])=>['build','typecheck','test','diagnose:review'].includes(name)));
