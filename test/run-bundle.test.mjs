@@ -34,7 +34,9 @@ test('runtime bundle is reproducible, source-pinned and contains no deep records
   for(const [p,hash] of Object.entries(freeze.productionSourceHashes))assert.equal(createHash('sha256').update(files.get('adtf-run/src/'+p)).digest('hex'),hash);
   assert.equal(createHash('sha256').update(files.get('adtf-run/package-lock.json')).digest('hex'),freeze.packageLockSha256);
 });
-test('diagnostic package exposes only the one-shot review command, not fresh paid planning',()=>{
+test('diagnostic package exposes only the one-shot review command, not fresh paid planning',t=>{
+  const git=spawnSync('git',['rev-parse','--show-toplevel'],{encoding:'utf8'});
+  if(git.status!==0||resolve(git.stdout.trim())!==resolve(process.cwd())){t.skip('Distribution builder requires a full Git checkout');return;}
   const bundle=buildRunBundle(process.cwd(),'HEAD','diagnostic');const files=entries(bundle.bytes);
   const pkg=JSON.parse(files.get('adtf-run/package.json'));
   assert.ok(pkg.scripts['diagnose:review']);assert.equal(pkg.scripts['eval:review-evidence'],undefined);

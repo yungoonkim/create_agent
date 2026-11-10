@@ -1,0 +1,17 @@
+{
+  "fullTests": 176,
+  "runtimeDiagnosticTests": 167,
+  "typecheck": "passed",
+  "zipSha256": "47171cddc7d3eadee894bf75aa162bf54a5ccfca36401bf80c16f72986da43d5",
+  "maxZipPathLength": 73,
+  "originalArchives": {
+    "local-1794271980331-b9076eca.tar.gz": "7fc808f4bd0292ec09ce2bdcbadbd2e8ccd142ef1b4a8be96af7e57fabf3c814",
+    "local-1794271452438-549a78b2.tar.gz": "dc11c60e06128c1be75633dd91bda2f9c65eeecffd61a3ee7f71303c200069d3"
+  },
+  "extraLiveGeminiCalls": 0,
+  "extraOAuthCalls": 0,
+  "formalReviewWritten": false,
+  "causeConfirmed": false,
+  "failureMessagePolicy": "allowlisted HTTP status/code/tags only; raw messages/headers/stacks omitted",
+  "runtimeCheck": "independent ZIP CRC and extracted-package tests, reusing installed unchanged dependencies"
+}
