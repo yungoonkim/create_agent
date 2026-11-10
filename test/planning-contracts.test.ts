@@ -148,6 +148,26 @@ test("a scope violation in a passing review takes the scope approval path", () =
   assert.equal(decideAfterReview(decisionInput(review)).type, "REQUEST_SCOPE_CHANGE_APPROVAL");
 });
 
+test("scope approval IDs include only change requests and retain the legacy route", () => {
+  const change = issue({ id: "CHANGE", kind: "scope_violation", scopeDisposition: "change_scope", dispositionReason: "New feature requested" });
+  const legacy = issue({ id: "LEGACY", kind: "scope_violation" });
+  const repair = issue({ id: "REPAIR", kind: "scope_violation", scopeDisposition: "revise_plan", dispositionReason: "Repair within Scope" });
+  const clarify = issue({ id: "CLARIFY", kind: "scope_violation", scopeDisposition: "clarify", dispositionReason: "Choose behavior" });
+  const ordinary = issue({ id: "DEFECT" });
+  const review = createReview({ outcome: "revise", scopeViolation: true, issues: [change, repair, clarify, ordinary, legacy] });
+  const decision = decideAfterReview(decisionInput(review));
+  assert.equal(decision.type, "REQUEST_SCOPE_CHANGE_APPROVAL");
+  if (decision.type === "REQUEST_SCOPE_CHANGE_APPROVAL") assert.deepEqual(decision.issueIds, ["CHANGE", "LEGACY"]);
+});
+
+test("clarification and question sources are ordered, deduplicated, and ordinary suggestions stay separate", () => {
+  const clarify = issue({ id: "CLARIFY", kind: "scope_violation", scopeDisposition: "clarify", dispositionReason: "Choose behavior", description: "Which option?" });
+  const review = createReview({ outcome: "revise", scopeViolation: true, issues: [clarify], suggestions: ["Optional sorting improvement"] });
+  const decision = decideAfterReview(decisionInput(review));
+  assert.equal(decision.type, "REQUEST_USER_INPUT");
+  if (decision.type === "REQUEST_USER_INPUT") assert.deepEqual(decision.questions, ["Which option? — Choose behavior"]);
+});
+
 test("a plan based on a scope other than the active approved version is blocked", () => {
   const outOfScopePlan = { ...plan, scopeContractId: "scope-unapproved", scopeVersion: 2 };
   const result = decideAfterReview(decisionInput(createReview(), { currentPlan: outOfScopePlan }));
