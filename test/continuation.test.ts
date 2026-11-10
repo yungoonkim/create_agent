@@ -281,6 +281,10 @@ test("exhausted final Review permits answer recording but no resumed model call"
   await h.controller.answer({ "Q-1": "오늘", "Q-2": "개" });
   assert.equal(h.calls(), 1);
   assert.deepEqual(await h.memory.getPlanningLoopState(h.config.projectId), before);
+  const restarted = new SupervisorController({ ...h.options, store: new FileSupervisorStore(h.config.memory.directory) });
+  await restarted.report();
+  const reloaded = await new FileSupervisorStore(h.config.memory.directory).get(h.config.projectId);
+  assert.deepEqual(reloaded?.clarifications.map(item => item.answer), ["오늘", "개"]);
   await assert.rejects(h.controller.continuation().resumePlan(), /budget/);
   assert.equal(h.calls(), 1);
 });
