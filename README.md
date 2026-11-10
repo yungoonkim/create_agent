@@ -4,6 +4,8 @@ ADTF는 여러 AI Agent를 조율하기 위한 재사용 가능한 프레임워�
 
 ## 현재 상태
 
+최신 택배 시험은 v2 재검토에서 HTTP400/INVALID_ARGUMENT로 중단됐다. [전송 스키마 호환성 후보](docs/parcel-review-diagnostic-20261110.md)를 준비했고 전체178개/후보 패키지169개 오프라인 검사를 통과했다. 실제 서버 해결은 미확인이다. 기존 기획을 처음부터 실행하지 않고 [후보 ZIP](https://github.com/yungoonkim/create_agent/raw/5a37459c303b8f3b7e69357366045ee9f50d4788/downloads/adtf-review-schema-candidate.zip)의 명시적 단일 진단으로 이어간다.
+
 Windows ZIP 해제 중 경로 오류가 나면 **[실행용 ZIP](downloads/README.md)**을 사용한다. 깊은 과거 시험 원자료를 제외한 패키지이며 원본 기록은 이 저장소에 그대로 보존한다. 전체 저장소 검사173개와 실행 ZIP의 검사165개를 구분한다.
 
 최신 보완: [수정 전후 보존·지적 해결·공통 검증 근거](docs/review-evidence-preservation-20261109.md)를 구현했다. 직전 원문과 요구/제약별 비교 및 지적별 해결표를 저장하고, 불명확한 근거가 있으면 모델 pass와 별개로 수정/한도 분기한다. 타입 검사/전체171개 오프라인 테스트를 통과했다. [새 택배 시험](docs/review-evidence-live-protocol-20261109.md)은 최대5요청으로 준비했지만 실제 호출0회이며 오늘 로컬 실행은 필요 없다.

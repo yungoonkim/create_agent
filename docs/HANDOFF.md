@@ -3,6 +3,36 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 작업 — 기록된 assessment 재사용·추가 challenge 최대1회 준비
+
+사용자가 다음 작업 진행을 지시했다. Sol·medium을 착수 전에 안내했다. `examples/parcel-challenge`는 실제 후보 assessment를 재사용해 일반 검토 과금을 반복하지 않고 반례만 새 최대1회 요청한다. 기존5회는 소진 이력이며 새1회를 더하면6이다(최초 인증 실패 별도). 기존 원문/승인/자료는 변경하지 않으며 분리한 시험 복사본에만 정식 Review·pending 승인을 기록할 수 있다. 최종 승인은 자동 생성하지 않는다. 이번 실제 Gemini/OAuth0회.
+
+타입 검사/전체183개 검사 통과. 새 ZIP `downloads/adtf-parcel-challenge.zip`의 `npm.cmd run complete:parcel-review -- --run-live --bundle`을 새 폴더에서 한 번 실행한다. 이전 진단/전체 generator를 재실행하지 않는다. dry-run은 TEST/STUB 차단 지적 때문에 limit_reached가 정상이다. 결과 요청 전 **GPT-6.1 Sol·medium**을 먼저 안내하고 RESULT_ARCHIVE tar.gz 하나만 받는다. 실제 반례 완료/정식 저장은 업로드 결과를 확인하기 전까지 미확인이다. [설계/한계](parcel-challenge-20261110.md), [실행 안내](../examples/parcel-challenge/README.md).
+
+## 최신 관찰 — 후보 일반 검토 응답 STOP/pass, 반례·정식 저장은 미수행
+
+사용자 review-1794274580543-bbf1125b 원압축 SHA256은5a221227647023945a0982270c8f06d97764c9fa5c58daa2a332955726a316ff다. 같은 v2 요청에서 스키마만 바꾼 후보가1회 정상 응답 STOP을 받았다. 로컬 bind/validate 및 이전 원문 출처 검사를 통과했고 비교9행/해결4행·미해결0이다. 인용 일치는 의미상 완전성 보증이 아니며 단일 성공으로 특정 enum이400 원인이라고 확정하지 않는다.
+
+원자료와 candidate-response-validation.json을 보존했다. 반례 검토/정식 Review 저장/사용자 최종 승인은 미수행이고 기존 프로젝트는 그대로다. 원래 후속3+원본 요청 진단1+후보1=5회이며 추가 유료 호출은 하지 않는다. 반례 등 추가 호출이 필요하면 남은 예산/새 상한을 사용자와 먼저 정한다. 준비/분석 중 추가 실제 호출0회다. 결과 파일 요청 전 권장 Codex GPT-6.1 Sol·medium을 먼저 안내한다.
+
+## 최신 작업 — HTTP400 확인 및 전송 스키마 단순화 후보
+
+[PR #15](https://github.com/yungoonkim/create_agent/pull/15)에 후보 구현과178/169개 오프라인 검증을 제출했다. [후보 ZIP](https://github.com/yungoonkim/create_agent/raw/5a37459c303b8f3b7e69357366045ee9f50d4788/downloads/adtf-review-schema-candidate.zip)의 diagnose:review -- --schema-candidate --run-live --bundle만 새 폴더에서 최대1회 실행한다. 원인 해결은 미확정이며 원본 동일요청 진단이나 전체 기획 시작을 다시 실행하지 않는다. 현재 추가 실제 호출0회다.
+
+사용자 단일 진단 review-1794273612105-a20a09aa는 HTTP400/INVALID_ARGUMENT로 실패했다. 원압축을 보존했으며 어느 필드가 거부됐는지는 불명이다. 원시 상세 메시지는 안전상 생략됐다. 인증 반복이나 무작정 유료 재실행을 요구하지 않는다.
+
+wire-schema.ts는 전송용 줄 번호 enum을 숫자 범위로, 동적 출처/지적/요구 ID enum을 문자열로 단순화한다. 정식 Review의 기존 정확한 줄/ID/중복/개수 검사는 그대로다. 원본 스키마를 변경하지 않는 순수 변환이며 모델/프롬프트/출력/반복 한도는 유지한다. 이것은 원인이 입증된 해결책이 아니라 호환성 후보다. 기존 frozen 사례/실행기/실패 기록은 고치지 않아 옛 generator가 변경 소스를 차단하는 것이 정상이다.
+
+새 schema-candidate 진단 ZIP은 같은 실패 v2 요청의 responseJsonSchema만 변환해 --schema-candidate --run-live --bundle로 최대1회 전송한다. Writer 재작성/정식 Review 저장/자동 반례/자동 승인은 없다. 현재 후속3시도+동일 요청 진단1시도=4이며 후보1회를 실행하면5다. 성공해도 추가 유료 검토를 자동 실행하지 않고 먼저 원문/출처/남은 예산을 확인한다. 결과 업로드 요청 전에 GPT-6.1 Sol·medium을 먼저 권장한다. 이 작업의 추가 실제 Gemini 호출0회다.
+
+## 최신 작업 — 택배 v2 실패 요청의 단일 진단 준비
+
+사용자는 권장 모델/thinking을 작업 시작 및 파일 요청 전에 먼저 안내하도록 재차 요청했다. AGENTS에 저장했으며 이번 및 다음 진단 분석은 GPT-6.1 Sol·medium을 권장한다. 현재 설정을 직접 바꿀 수 있다고 주장하지 않는다.
+
+첫 택배 실행은 인증 실패1시도/응답0, ADC 후 후속은3시도/응답2로 v1 지적→Writer v2까지 성공했다. v2 일반 검토는 provider_or_network_failure이며 정확한 HTTP 상태는 없어 원인 미확정이다. [분석과 단일 진단](parcel-review-diagnostic-20261110.md)을 우선한다. 원압축2개를 보존하며 기존 기획/Scope/승인/실패 기록을 재작성하지 않는다.
+
+examples/reviewer-diagnostic는 원래 실패한 call-003 요청을 해시로 고정해 최대1회만 재전송한다. Writer 재작성/정식 Review 저장/자동 승인 없이 응답 또는 허용목록 HTTP 상태/오류코드/고정 분류만 기록한다. raw 예외/헤더/스택은 생략해 비밀 유출을 줄이며 상세 메시지가 없으면 원인 확정은 계속 불가능할 수 있다. 응답이 성공해도 품질 합격이 아니다. 새 ZIP의 diagnose:review -- --run-live --bundle을 명시 실행할 때만 과금 가능 요청1회다. 현재 준비 중 실제 Gemini/OAuth 호출0회다.
+
 ## 최신 작업 — Windows 긴 경로 오류용 실행 ZIP
 
 사용자가 main ZIP 해제 중0x80010135/긴 대상 경로 오류를 보고했고 C:\adtf 안내 후에도 실패했다. 단순 길이 계산만으로 탐색기 성공을 단정한 안내를 정정했다. [별도 ZIP 안내](../downloads/README.md), [구성/검증/한계](windows-run-bundle-20261110.md)를 우선한다. 원본 전체 ZIP과 별도 실행 ZIP을 혼동하지 않는다.

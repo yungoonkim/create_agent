@@ -21,3 +21,7 @@ credentials.json
 # 비공개 인증키
 *.pem
 *.key
+# Explicit one-shot reviewer diagnostics
+diagnostics/
+
+challenge-results/

@@ -1,0 +1,15 @@
+{
+  "mode": "live",
+  "startedAt": "2026-11-10T01:20:12.106Z",
+  "outcome": "request_failed",
+  "sdkAttempts": 1,
+  "httpStatus": 400,
+  "providerCode": "INVALID_ARGUMENT",
+  "messageTags": [
+    "invalid_argument"
+  ],
+  "rawMessageOmitted": true,
+  "formalReviewSaved": false,
+  "originalPlanChanged": false,
+  "finalApprovalCreated": false
+}

@@ -1,0 +1,67 @@
+{
+  "kind": "offline_package_validation",
+  "date": "2026-11-10",
+  "sourceCommit": "ef2ba824ca1f5ed1ffe5aff9c324d9e6de79fb7c",
+  "zipSha256": "755d8e07e3bbdb54c5f90d6cb6aa2c28363a7bea3c3433a43c700f93199551f6",
+  "zipCRC": "pass",
+  "zipFileCount": 141,
+  "maxZipPathLength": 73,
+  "fullRepositoryTests": {
+    "tests": 183,
+    "pass": 183,
+    "fail": 0,
+    "skipped": 0
+  },
+  "extractedPackageTests": {
+    "tests": 174,
+    "pass": 174,
+    "fail": 0,
+    "skipped": 0
+  },
+  "excludedPackageTests": {
+    "historicalComparison": 6,
+    "distributionBuilder": 3
+  },
+  "typecheck": {
+    "full": "pass",
+    "extracted": "pass"
+  },
+  "dependencySetup": "Extracted package reused unchanged installed node_modules via symlink; fresh Windows npm ci not repeated in Cloud",
+  "drySummary": {
+    "mode": "dry",
+    "outcome": "review_recorded_in_isolated_copy",
+    "decision": "STOP_LIMIT_REACHED",
+    "planningStatus": "limit_reached",
+    "challengeCompleted": true,
+    "formalReviewSaved": true,
+    "finalApprovalCreated": false,
+    "pendingApprovalCreated": false,
+    "reusedAssessmentCount": 1,
+    "reusedAssessmentBilledAgain": false,
+    "newSdkAttempts": 0,
+    "stubAttempts": 1,
+    "newUsage": null,
+    "priorAttempts": 5,
+    "cumulativeTrialAttempts": 5,
+    "originalProjectChanged": false
+  },
+  "actualNewGeminiRequests": 0,
+  "actualNewOAuthRequests": 0,
+  "windowsExecution": "not_observed_here",
+  "preservation": {
+    "baselineCommit": "368bbddf921a43bcecf7f673e780d5f6aa9c11dc",
+    "unchangedTrackedPaths": [
+      "src/",
+      "examples/review-evidence-live/",
+      "examples/reviewer-diagnostic/",
+      "docs/acceptance/"
+    ]
+  },
+  "logSha256": {
+    "parcel-typecheck.log": "217470e9f13c88e9e0c494820a02efffa5cb4c84a75f080ecde627e6e04a8130",
+    "parcel-tests.log": "91001c808f806009f20b3d9faf3cb23a1d668a1b15b99c233c328fb6252f8be7",
+    "parcel-package-typecheck.log": "217470e9f13c88e9e0c494820a02efffa5cb4c84a75f080ecde627e6e04a8130",
+    "parcel-package-tests.log": "f367df2a2cc464b63338456e562c26348f1f92a7066c330328facd7cad70d556",
+    "parcel-package-dry.log": "dc1fa39a351444bb6ef63075353e999ab9116526a3c0badc38a4dfb24a816862"
+  }
+}
