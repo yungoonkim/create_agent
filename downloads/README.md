@@ -1,5 +1,7 @@
 # Windows 실행용 ZIP
 
+**현재 택배 반례 프롬프트 후보 시험:** [adtf-parcel-prompt.zip](adtf-parcel-prompt.zip)을 새 폴더에 풀어 [실행 안내](../examples/parcel-challenge/README-prompt.md)에 따릅니다. 새 Gemini 요청 최대1회이며 과거 명령을 반복하지 않습니다. 아래는 이전 단계 안내입니다.
+
 **현재 택배 반례 호환성 시험:** [adtf-parcel-no-schema.zip](adtf-parcel-no-schema.zip)을 새 폴더에 풀어 [실행 안내](../examples/parcel-challenge/README-no-schema.md)에 따라 진행합니다. 새 Gemini 요청은 최대1회이며 이전 반례 명령을 재실행하지 않습니다. 아래는 과거 단계의 패키지 안내입니다.
 
 **현재 택배 v2 후속 시험:** [adtf-parcel-challenge.zip](adtf-parcel-challenge.zip)을 받습니다. 과거 일반 검토 응답을 재사용하고 반례만 **추가 최대1회** 요청합니다. [실행 안내](../examples/parcel-challenge/README.md)를 따르세요. 아래 adtf-run.zip의 전체 시험 시작은 이번 후속 단계에 사용하지 않습니다.
