@@ -3,6 +3,10 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 준비 — 반례 전송 스키마 없는 단일 시험 도구
+
+사용자가 PR #17 병합 후 다음 작업을 지시했다. GPT-6 Sol·medium을 착수 전에 안내했다. 고정 일반 검토 재사용, 원래 실패 반례 요청 해시 확인, responseJsonSchema 한 필드 제거 후보 일치 확인, 별도 시작 예약/새 최대1회 Gemini 호출 도구와 짧은 경로 ZIP을 준비 중이다. 이전6시도와 새1회 상한을 구분한다. 실제 추가 호출0회. 로컬 출력/원자료/기존 승인 보존, 정식 Review는 분리한 복사본만, 최종 승인 없음. [설계와 한계](parcel-no-schema-run-20261110.md).
+
 ## 최신 준비 — INVALID_ARGUMENT 반례 요청의 오프라인 호환성 후보
 
 사용자 진행 지시에 따라 실패 요청에서 `config.responseJsonSchema`만 제거한 JSON MIME 후보를 준비했다. 원인은 여전히 미확정이다. 원본/후보 SHA-256을 고정하고 전체184개 오프라인 검사·타입 검사를 통과했다. 새 Gemini/OAuth0회. 기존1회 상한은 소진됐고 이 후보에 유료 실행 명령은 없다. [분석과 경계](parcel-challenge-compatibility-20261110.md), [후보 요청](acceptance/parcel-challenge-20261110/candidate-no-schema.json). 다음에 명시적 새 상한을 정해 시험하더라도 이전 결과·시작 예약을 지우거나 옛 명령을 반복하지 않는다.

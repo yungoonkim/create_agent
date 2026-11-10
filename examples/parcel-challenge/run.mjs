@@ -20,7 +20,7 @@ export async function reserveLiveSlot(base){
   const f=await open(join(base,'parcel-v2-challenge.started.json'),'wx');
   try{await f.writeFile(JSON.stringify({startedAt:new Date().toISOString(),newRequestCap:1,priorAttempts:5}));}finally{await f.close();}
 }
-export async function completeChallenge({directory,inputs,api,mode}){
+export async function completeChallenge({directory,inputs,api,mode,transformChallengeRequest,priorAttempts=5}){
   const [{FilePlanningMemoryStore,GeminiPlanningReviewer,decideAfterReview,buildUserReviewTable,exportUserReviewBundle},prompts]=await Promise.all([
     import('../../dist/src/planning/index.js'),import('../../dist/src/planning/prompts.js')]);
   await mkdir(directory);
@@ -43,7 +43,8 @@ export async function completeChallenge({directory,inputs,api,mode}){
     assert.equal(request.config.systemInstruction,prompts.REVIEW_CHALLENGE_SYSTEM_INSTRUCTION);
     assert.equal(reused,1);assert.equal(newAttempts,0,'Only one new challenge request is permitted');
     assert.equal(request.config.httpOptions.retryOptions.attempts,1);stage='challenge';
-    const wire=withTimeout(request);
+    const originalWire=withTimeout(request);
+    const wire=transformChallengeRequest?transformChallengeRequest(originalWire):originalWire;
     await save('challenge-request.json',wire);newAttempts++;
     const response=await api.models.generateContent(wire);newUsage=response.usageMetadata??null;
     await save('challenge-response.json',{text:response.text??null,candidates:response.candidates??[],usageMetadata:newUsage,modelVersion:response.modelVersion??null});
@@ -67,7 +68,7 @@ export async function completeChallenge({directory,inputs,api,mode}){
     await save('failure.json',{stage,...safeProviderFailure(error)});
     summary={mode,outcome:'failed',stage,challengeCompleted,formalReviewSaved:formalSaved,finalApprovalCreated:false};
   }
-  summary={...summary,reusedAssessmentCount:reused,reusedAssessmentBilledAgain:false,newSdkAttempts:mode==='live'?newAttempts:0,stubAttempts:mode==='dry'?newAttempts:0,newUsage:mode==='live'?newUsage:null,priorAttempts:5,cumulativeTrialAttempts:5+(mode==='live'?newAttempts:0),originalProjectChanged:false};
+  summary={...summary,reusedAssessmentCount:reused,reusedAssessmentBilledAgain:false,newSdkAttempts:mode==='live'?newAttempts:0,stubAttempts:mode==='dry'?newAttempts:0,newUsage:mode==='live'?newUsage:null,priorAttempts,cumulativeTrialAttempts:priorAttempts+(mode==='live'?newAttempts:0),originalProjectChanged:false};
   await save('summary.json',summary);return summary;
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
