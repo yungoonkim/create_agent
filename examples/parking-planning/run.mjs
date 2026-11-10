@@ -58,7 +58,7 @@ const client={models:{generateContent:async request=>{
   assert.equal(request.config?.httpOptions?.retryOptions?.attempts,1,'SDK retries must be disabled');
   const id=`call-${String(++count).padStart(2,'0')}`;
   const stage=request.config.systemInstruction===prompts.WRITER_SYSTEM_INSTRUCTION?'writer':
-    request.config.systemInstruction===prompts.REVIEW_CHALLENGE_SYSTEM_INSTRUCTION?'challenge':'assessment';
+    request.config.systemInstruction?.startsWith(prompts.REVIEW_CHALLENGE_SYSTEM_INSTRUCTION)?'challenge':'assessment';
   const label={id,stage,startedAt:new Date().toISOString()};
   await json(join(output,'provider',`${id}.request.json`),{...label,request});
   console.log(JSON.stringify({event:'request_started',stage,request:count,maximum:6}));

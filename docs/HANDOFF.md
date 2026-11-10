@@ -3,6 +3,12 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 수정 — 공통 반례 JSON 모드와 주차 이어가기
+
+사용자가 반례 경로 수정을 요청했다. 공통 Reviewer에서 반례 responseJsonSchema를 제거하고 택배 성공 후보의 필수 키/인용8개 지침을 적용했다. 로컬 검증은 유지한다. 주차 기획 v1/일반 검토를 고정 입력으로 재사용하는 최대1회 도구와 Windows ZIP 프로필을 추가했다. 이전3+새1=최대4/6회, Writer·최종 승인 없음, 준비 중 Gemini0회. [설계](common-challenge-fix-20261110.md), [실행 안내](../examples/parking-planning/README-recovery.md). 실제 모델 결과는 로컬 실행 후 확인한다.
+
+## 최신 준비 — 새로운 주차 위치 기록 기획 Scope 초안
+
 ## 최신 관찰 — 주차 v1은 일반 pass 후 반례 API 오류로 중단
 
 사용자가 승인한 Scope v1의 로컬 결과를 받았다. Writer/일반 검토 STOP, 반례 API400 INVALID_ARGUMENT, SDK3/6회, reviewing/v1/iteration0, 공식 Review·최종 승인 없음. 내부25개 해시와 고정 입력 일치 확인. [결과/내용 반례](parking-planning-result-20261110.md), [원본](acceptance/parking-planning-20261110/parking-planning-result.tar.gz). 일반 Reviewer는 updatedAt 누락을 제안으로만 남겼으나 비교 후 setItem의 다중 탭 경쟁으로 기록 소실이 가능한 설계 빈틈이 있다. 공통 전송 경로는 과거 택배 성공 후보를 아직 통합하지 않았다. 전체 재시작/자동 유료 재호출 금지, 다음은 공통 전송 보완과 기존 반례 요청만 이어갈 오프라인 준비다. 이번 분석 추가 모델 호출0회.

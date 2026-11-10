@@ -40,10 +40,16 @@ export async function completeChallenge({directory,inputs,api,mode,transformChal
       // Do not repeat historical input/output/thinking tokens in the new usage ledger.
       return {text:assessment.text,candidates:assessment.candidates};
     }
-    assert.equal(request.config.systemInstruction,prompts.REVIEW_CHALLENGE_SYSTEM_INSTRUCTION);
+    assert.ok(request.config.systemInstruction.startsWith(prompts.REVIEW_CHALLENGE_SYSTEM_INSTRUCTION));
     assert.equal(reused,1);assert.equal(newAttempts,0,'Only one new challenge request is permitted');
     assert.equal(request.config.httpOptions.retryOptions.attempts,1);stage='challenge';
-    const originalWire=withTimeout(request);
+    // This historical harness deliberately replays the old schema request; common runtime now uses JSON mode.
+    const legacy=JSON.parse(await readFile(join(here,'legacy-challenge-request.json'),'utf8'));
+    const expected=structuredClone(legacy);
+    delete expected.config.responseJsonSchema;
+    expected.config.systemInstruction=prompts.REVIEW_CHALLENGE_JSON_SYSTEM_INSTRUCTION;
+    assert.deepEqual(withTimeout(request),expected,'Legacy experiment source drifted');
+    const originalWire=legacy;
     const wire=transformChallengeRequest?transformChallengeRequest(originalWire):originalWire;
     await save('challenge-request.json',wire);newAttempts++;
     const response=await api.models.generateContent(wire);newUsage=response.usageMetadata??null;
