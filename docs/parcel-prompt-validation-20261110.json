@@ -1,0 +1,58 @@
+{
+  "date": "2026-11-10",
+  "kind": "offline_prompt_distribution_validation",
+  "sourceCommit": "d03d53d8ea89690b07426efc1f4a96bd7376d292",
+  "zipSha256": "50310290a0808e582d5b6e26e668d1ccd956177eeef3550d1a7102420e3f6550",
+  "zipCRC": "pass",
+  "files": 151,
+  "maxPathLength": 73,
+  "fullRepositoryTests": {
+    "total": 190,
+    "pass": 190,
+    "fail": 0
+  },
+  "extractedPackageTests": {
+    "total": 178,
+    "pass": 178,
+    "fail": 0
+  },
+  "excludedTests": {
+    "historicalComparison": 6,
+    "bundleBuilder": 3,
+    "sourceArchiveCompatibility": 1,
+    "realResponseReplay": 2
+  },
+  "typecheck": {
+    "full": "pass",
+    "extracted": "pass"
+  },
+  "extractedDependencies": "Used symlink to unchanged installed node_modules; Windows npm ci remains to be observed",
+  "drySummary": {
+    "mode": "dry",
+    "outcome": "review_recorded_in_isolated_copy",
+    "decision": "STOP_LIMIT_REACHED",
+    "planningStatus": "limit_reached",
+    "challengeCompleted": true,
+    "formalReviewSaved": true,
+    "finalApprovalCreated": false,
+    "pendingApprovalCreated": false,
+    "reusedAssessmentCount": 1,
+    "reusedAssessmentBilledAgain": false,
+    "newSdkAttempts": 0,
+    "stubAttempts": 1,
+    "newUsage": null,
+    "priorAttempts": 7,
+    "cumulativeTrialAttempts": 7,
+    "originalProjectChanged": false
+  },
+  "newPaidModelCalls": 0,
+  "newOAuthCalls": 0,
+  "windowsExecution": "not_observed",
+  "logSha256": {
+    "prompt-run-type.log": "217470e9f13c88e9e0c494820a02efffa5cb4c84a75f080ecde627e6e04a8130",
+    "prompt-run-tests.log": "f5ff9e25a7e718335f7709e7a5c4a4d8d6253662d5113805f3bf3ef477789925",
+    "prompt-package-type.log": "217470e9f13c88e9e0c494820a02efffa5cb4c84a75f080ecde627e6e04a8130",
+    "prompt-package-tests.log": "d82c597c890dc0a84d380e0f0c9419abf0e4a3dfe64234b9ccbf600c70851fd0",
+    "prompt-package-dry.log": "c734c2f72e1e96e94de993f7bc63f32f538d7a3c503f8b97a1089f7fa818ce5a"
+  }
+}
