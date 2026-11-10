@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "complete": true,
+  "kind": "planning_document_review",
+  "source": {
+    "projectId": "trial-parcel-release-evidence-ready-20261109",
+    "scopeId": "parcel-scope",
+    "scopeVersion": 1,
+    "scopeSha256": "417bfd6d408633e5dd6cbe3f3a8b0f518ba8598c2853ff870e4c55decd076636",
+    "planId": "trial-parcel-release-evidence-ready-20261109-plan",
+    "planVersion": 2,
+    "planSha256": "9c48382cad8dc35dd9f9e661a87ae56b034ee5b812baa0643f2ac79a3680270e",
+    "reviewSha256": "5e11ed4128661a2abb0d768157c91f26a6184f245ec06e25d1e93cf553ec3982"
+  },
+  "implementationVerification": "not_performed",
+  "hashes": {
+    "plan.md": "740169345187ae6a5693b27b95ac69d2586abe206dd93dea26a25c0e51b5e3f6",
+    "review.json": "fa2c994c101d1f7612d38444a375a10f4900425735a0d631a6f0f410d5700841",
+    "review.md": "e7a9dd549c71fcc6c527cba053caaa68e868f5e73694ee799e738d85b82bc26a"
+  }
+}

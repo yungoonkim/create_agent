@@ -106,12 +106,55 @@ export interface RequirementBehaviorEvidence {
   readonly failureNotApplicableReason: string;
 }
 
+/** Source-bound model comparison, not a deterministic proof of semantic preservation. */
+export interface RevisionAudit {
+  readonly version: 1;
+  readonly mode: "initial" | "same_scope" | "scope_changed";
+  readonly baseline: {
+    readonly planId: string;
+    readonly planVersion: number;
+    readonly scopeContractId: string;
+    readonly scopeVersion: number;
+    readonly content: string;
+    readonly contentSha256: string;
+  } | null;
+  /** Controller-derived IDs, never invented by the reviewing model. */
+  readonly previousIssueIds: readonly string[];
+  readonly preservation: readonly {
+    readonly sourceId: string;
+    readonly status: "preserved" | "corrected" | "added" | "missing" | "unclear";
+    readonly before: PlanEvidence;
+    readonly after: PlanEvidence;
+    readonly rationale: string;
+  }[];
+  readonly resolutions: readonly {
+    readonly issueId: string;
+    readonly status: "resolved" | "unresolved" | "unclear";
+    readonly current: PlanEvidence;
+    readonly rationale: string;
+  }[];
+}
+
+export interface StorageValidation {
+  readonly rationale: string;
+  readonly rules: readonly {
+    readonly rule: string;
+    readonly status: "supported" | "missing" | "unclear";
+    readonly load: PlanEvidence;
+    readonly candidate: PlanEvidence;
+    readonly acceptance: PlanEvidence;
+    readonly rationale: string;
+  }[];
+}
+
 export const STORAGE_AUDIT_STATES = ["absent", "present_empty", "invalid", "valid", "read_error"] as const;
 export interface StorageAudit {
   readonly format: "json" | "other" | "none" | "unclear";
   readonly evidenceLines: readonly number[];
   readonly evidence: readonly string[];
   readonly rationale: string;
+  /** New JSON reviews trace the same field/value rules at load and before commit. */
+  readonly validation?: StorageValidation;
   readonly cases: readonly {
     readonly state: typeof STORAGE_AUDIT_STATES[number];
     readonly action: "initialize" | "load" | "preserve_and_block" | "reset_or_overwrite" | "unspecified";
@@ -143,6 +186,8 @@ export interface PlanReview {
   readonly challengeCompleted?: boolean;
   /** Present for new challenge reviews; older immutable reviews remain readable. */
   readonly storageAudit?: StorageAudit;
+  /** Absent on immutable legacy reviews; mandatory in new Gemini adapter results. */
+  readonly revisionAudit?: RevisionAudit;
 }
 
 export interface PlanningWriterContext {
@@ -161,6 +206,7 @@ export interface PlanningReviewerContext {
   readonly currentPlan: PlanDraft;
   readonly settledDecisions: readonly string[];
   readonly previousReviews?: readonly PlanReview[];
+  readonly previousPlan?: PlanDraft;
 }
 
 /** Port contracts only; implementations may use a fake or a runtime-backed adapter. */

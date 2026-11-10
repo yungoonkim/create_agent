@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "mode": "dry",
+  "runId": "release-evidence-ready-20261109",
+  "label": "TEST/STUB ONLY; not actual model quality",
+  "results": [
+    {
+      "caseId": "parcel",
+      "title": "택배 수령 기록",
+      "status": "awaiting_approval",
+      "failure": null,
+      "decision": "REQUEST_USER_APPROVAL",
+      "currentPlanVersion": 2,
+      "iterationCount": 2,
+      "scopeVersionUnchanged": true,
+      "exportCreated": true,
+      "rowStatuses": [
+        {
+          "requirementId": "PARCEL-1",
+          "status": "reflected"
+        },
+        {
+          "requirementId": "PARCEL-2",
+          "status": "reflected"
+        },
+        {
+          "requirementId": "PARCEL-3",
+          "status": "reflected"
+        }
+      ],
+      "actualUserApprovalCreated": false,
+      "implementationVerified": false,
+      "revisionAuditMode": "same_scope",
+      "preservationRows": 9,
+      "previousIssueIds": [
+        "issue-024477071cefce31",
+        "quality:check:data_integrity"
+      ],
+      "resolutionRows": [
+        {
+          "issueId": "issue-024477071cefce31",
+          "status": "resolved",
+          "current": {
+            "evidenceLines": [
+              11,
+              14,
+              20
+            ],
+            "evidence": [
+              "공통 검증표: 단일 키 parcel_data에 schemaVersion:1,nextSeq,items[{id,seq,name,date,memo,received}]이다. 로드와 전체 후보 모두 루트/필드 타입·고유 ID/seq·양의 안전 정수 seq·nextSeq > max(seq)·비공백 name·실제 date·문자열 memo·불리언 received를 검증한다.",
+              "유효 데이터 조건은 공통 검증표의 모든 필드·값 검증에 통과한 JSON이며, 그 경우에만 로드하여 목록을 표시한다.",
+              "공통 검증 확인: 저장 JSON의 received를 문자열 \"받음\"으로 바꾸거나 name을 공백으로 바꾸고 로드하면 원본 보존·무쓰기·변경 차단이다. 같은 잘못된 후보도 쓰기 전에 거부한다."
+            ]
+          },
+          "rationale": "TEST/STUB current rules and case."
+        },
+        {
+          "issueId": "quality:check:data_integrity",
+          "status": "resolved",
+          "current": {
+            "evidenceLines": [
+              11,
+              14,
+              20
+            ],
+            "evidence": [
+              "공통 검증표: 단일 키 parcel_data에 schemaVersion:1,nextSeq,items[{id,seq,name,date,memo,received}]이다. 로드와 전체 후보 모두 루트/필드 타입·고유 ID/seq·양의 안전 정수 seq·nextSeq > max(seq)·비공백 name·실제 date·문자열 memo·불리언 received를 검증한다.",
+              "유효 데이터 조건은 공통 검증표의 모든 필드·값 검증에 통과한 JSON이며, 그 경우에만 로드하여 목록을 표시한다.",
+              "공통 검증 확인: 저장 JSON의 received를 문자열 \"받음\"으로 바꾸거나 name을 공백으로 바꾸고 로드하면 원본 보존·무쓰기·변경 차단이다. 같은 잘못된 후보도 쓰기 전에 거부한다."
+            ]
+          },
+          "rationale": "TEST/STUB current rules and case."
+        }
+      ],
+      "commonValidationRuleCount": 1,
+      "factsOnlyNotQualityPass": true,
+      "manualChecks": [
+        "새 JSON 공통 검증 근거와 valid 조건 근거의 실제 의미를 감사한다.",
+        "고정 초안의 수령 상태 검증 우회를 찾아 승인 Scope 변경 없이 수정하는가.",
+        "수정 전후 모든 요구/제약과 이전 지적 ID의 근거가 실제 각 버전과 맞고 규칙의 강도가 유지되는가.",
+        "최초 revision_resolution은 코드 문맥상 해당 없음이며 재검토는 실제 지적별 해결을 확인하는가.",
+        "미해결/모호함·오류·부분 응답·한도를 성공으로 교체하지 않고 사용자 최종 승인을 하지 않는가."
+      ]
+    }
+  ],
+  "adapterInvocations": 4,
+  "liveSdkInvocations": 0,
+  "maxModelCalls": 5,
+  "incompleteCases": 0,
+  "maxTokensResponses": 0,
+  "knownProvidedTokenTariffSubtotalUsd": null,
+  "responsesWithUsage": 0,
+  "requestsWithoutUsage": 4,
+  "transportFailures": 0,
+  "invoiceClaim": false,
+  "additionalJudgeCalls": 0,
+  "primaryFilesUnchanged": true,
+  "manualAcceptance": "pending",
+  "completedAt": "2026-11-09T13:54:39.796Z"
+}

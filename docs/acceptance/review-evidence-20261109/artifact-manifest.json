@@ -1,0 +1,13 @@
+{
+  "label": "TEST/STUB and offline validation only, not actual model quality",
+  "hashes": {
+    "README.md": "3e531c54f84f7a1841a01a9f14638cd6518033f0c88f49b564505217e85680ee",
+    "dry-run-summary.json": "d986af7d6c9e304e6c3b54706e8630b639f6633e91a0449a32537727ee05046a",
+    "test-output.txt": "e00021ce13d22cf7a8669aaca7aaed5f46423643f2dc4e11789c89ea763bc12a",
+    "test-stub-bundle/bundle.json": "c9efc63b4226f9825fe42abf28dc11d39d55d78fc6db3aa04a83179a47878927",
+    "test-stub-bundle/plan.md": "740169345187ae6a5693b27b95ac69d2586abe206dd93dea26a25c0e51b5e3f6",
+    "test-stub-bundle/review.json": "fa2c994c101d1f7612d38444a375a10f4900425735a0d631a6f0f410d5700841",
+    "test-stub-bundle/review.md": "e7a9dd549c71fcc6c527cba053caaa68e868f5e73694ee799e738d85b82bc26a",
+    "validation.json": "c59e490f9aa28b0ea69b0b280a4ff9b03c7c69f64cb5fab0b65a294c5e304e66"
+  }
+}

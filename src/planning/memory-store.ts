@@ -16,6 +16,7 @@ import type {
 } from "./contracts.js";
 import type { DemoApprovalFixture } from "./config.js";
 import { parsePlanReview, ReviewValidationError, validatePlanReview } from "./policy.js";
+import { validateRevisionSource } from "./revision-audit.js";
 
 export type { PlanningErrorRecord } from "./contracts.js";
 
@@ -201,6 +202,11 @@ export class FilePlanningMemoryStore implements PlanningMemoryStore, ApprovalMan
     const scope = await this.getScopeContract(plan.projectId, plan.scopeVersion);
     if (scope === undefined) throw new ReviewValidationError("REVIEW_SCOPE_MISMATCH", "Referenced Scope does not exist.");
     const validated = validatePlanReview(parsed, plan, scope);
+    if (validated.revisionAudit !== undefined) {
+      const previous = plan.version > 1 ? await this.getPlanDraft(plan.projectId, plan.id, plan.version - 1) : undefined;
+      const previousReview = previous ? await this.getPlanReview(plan.projectId, plan.id, previous.version) : undefined;
+      validateRevisionSource(validated.revisionAudit, previous, previousReview);
+    }
     const link = await this.getScopeApprovalRecord(plan.projectId, scope.id);
     const approval = link === undefined ? undefined : await this.get(link.approvalId);
     if (
@@ -233,6 +239,15 @@ export class FilePlanningMemoryStore implements PlanningMemoryStore, ApprovalMan
     const result = parsePlanReview(raw);
     if (result.projectId !== projectId || result.planId !== planId || result.planVersion !== version) {
       throw new Error("Stored Plan Review does not match its project path.");
+    }
+    if (result.revisionAudit !== undefined) {
+      const plan = await this.getPlanDraft(projectId, planId, version);
+      const scope = plan === undefined ? undefined : await this.getScopeContract(projectId, plan.scopeVersion);
+      if (!plan || !scope) throw new Error("Stored revision review has missing Plan/Scope sources.");
+      validatePlanReview(result, plan, scope);
+      const previous = version > 1 ? await this.getPlanDraft(projectId, planId, version - 1) : undefined;
+      const previousReview = previous ? await this.getPlanReview(projectId, planId, version - 1) : undefined;
+      validateRevisionSource(result.revisionAudit, previous, previousReview);
     }
     return result;
   }

@@ -1,4 +1,4 @@
-import { STORAGE_AUDIT_STATES, type PlanDraft, type ReviewIssue, type ScopeContract, type StorageAudit } from "./contracts.js";
+import { STORAGE_AUDIT_STATES, type PlanDraft, type ReviewIssue, type ScopeContract, type StorageAudit, type StorageValidation } from "./contracts.js";
 import { evidenceFromLines, parsePlanEvidence, validatePlanEvidence } from "./review-quality.js";
 
 function object(value: unknown): Record<string, unknown> {
@@ -28,12 +28,31 @@ export function scopeAuthorizationSources(scope: ScopeContract): Readonly<Record
 export function bindStorageAudit(raw: unknown, plan: PlanDraft): unknown {
   const audit = object(raw);
   if (!Array.isArray(audit.cases)) throw new Error("Missing storage audit cases.");
-  return { ...audit, evidence: evidenceFromLines(audit.evidenceLines, plan), cases: audit.cases.map((rawCase) => {
+  const validation = audit.validation === undefined ? undefined : object(audit.validation);
+  if (validation !== undefined && !Array.isArray(validation.rules)) throw new Error("Missing common validation rules.");
+  return { ...audit, evidence: evidenceFromLines(audit.evidenceLines, plan),
+    ...(validation === undefined ? {} : { validation: { ...validation, rules: (validation.rules as unknown[]).map(value => {
+      const r = object(value);
+      return { ...r, ...Object.fromEntries(["load", "candidate", "acceptance"].map(key => {
+        const e = object(r[key]); return [key, { ...e, evidence: evidenceFromLines(e.evidenceLines, plan) }];
+      })) };
+    }) } }), cases: audit.cases.map((rawCase) => {
     const item = object(rawCase);
     const trigger = item.trigger === undefined ? undefined : object(item.trigger);
     return { ...item, evidence: evidenceFromLines(item.evidenceLines, plan),
       ...(trigger === undefined ? {} : { trigger: { ...trigger, evidence: evidenceFromLines(trigger.evidenceLines, plan) } }) };
   }) };
+}
+function parseValidation(raw: unknown): StorageValidation {
+  const v = object(raw);
+  if (!Array.isArray(v.rules) || v.rules.length > 16) throw new Error("Invalid common validation rule list.");
+  const rules = v.rules.map(value => {
+    const r = object(value);
+    return { rule: text(r.rule), status: choice(r.status, ["supported", "missing", "unclear"] as const),
+      load: parsePlanEvidence(r.load), candidate: parsePlanEvidence(r.candidate), acceptance: parsePlanEvidence(r.acceptance), rationale: text(r.rationale) };
+  });
+  if (new Set(rules.map(r => r.rule)).size !== rules.length) throw new Error("Duplicate common validation rules.");
+  return { rationale: text(v.rationale), rules };
 }
 export function parseStorageAudit(raw: unknown): StorageAudit {
   const audit = object(raw);
@@ -52,7 +71,10 @@ export function parseStorageAudit(raw: unknown): StorageAudit {
   if (format === "json" ? cases.length !== STORAGE_AUDIT_STATES.length || new Set(cases.map((c) => c.state)).size !== cases.length : cases.length !== 0) {
     throw new Error("JSON storage audit needs each input state exactly once; non-JSON formats use an empty case table.");
   }
-  return { format, evidenceLines: refs(audit.evidenceLines), evidence: evidence(audit.evidence), rationale: text(audit.rationale), cases };
+  const validation = audit.validation === undefined ? undefined : parseValidation(audit.validation);
+  if (format !== "json" && validation?.rules.length) throw new Error("Non-JSON audit cannot invent JSON validation rules.");
+  return { format, evidenceLines: refs(audit.evidenceLines), evidence: evidence(audit.evidence), rationale: text(audit.rationale), cases,
+    ...(validation === undefined ? {} : { validation }) };
 }
 export function validateStorageAudit(audit: StorageAudit, plan: PlanDraft, scope: ScopeContract): void {
   const sources = scopeAuthorizationSources(scope);
@@ -66,6 +88,7 @@ export function validateStorageAudit(audit: StorageAudit, plan: PlanDraft, scope
     if (row.action !== "unspecified" && row.evidence.length === 0) throw new Error("Declared storage action needs Plan evidence.");
     if (row.authorizationScopeIds.some((id) => sources[id] === undefined)) throw new Error("Storage recovery authorization references an unknown approved Scope source.");
   }
+  for (const r of audit.validation?.rules ?? []) for (const e of [r.load, r.candidate, r.acceptance]) validatePlanEvidence(e, plan);
 }
 export function storageAuditFindings(audit: StorageAudit | undefined): { readonly issues: readonly ReviewIssue[]; readonly questions: readonly string[] } {
   const issues: ReviewIssue[] = []; const questions: string[] = [];
@@ -75,14 +98,31 @@ export function storageAuditFindings(audit: StorageAudit | undefined): { readonl
   for (const row of audit.cases) {
     const destructiveWithoutSource = row.state !== "absent" && (row.action === "initialize" || row.action === "reset_or_overwrite") && row.authorizationScopeIds.length === 0;
     const triggerGap = row.trigger !== undefined && (row.trigger.evidence.length === 0 ||
-      row.state === "read_error" && !hasExplicitReadFailure(row.trigger.evidence));
+      row.state === "read_error" && !hasExplicitReadFailure(row.trigger.evidence) ||
+      row.state === "valid" && audit.validation !== undefined && !audit.validation.rules.some(r =>
+        r.load.evidenceLines.some(n => row.trigger!.evidenceLines.includes(n))));
     if (row.verdict === "unsafe" || row.action === "unspecified" || destructiveWithoutSource || triggerGap) {
       issues.push({ id: `issue-storage-${row.state}`, kind: "implementation_risk", severity: "major",
-        description: `${row.state}: ${row.rationale}${destructiveWithoutSource ? " 기존 JSON 값을 초기화/덮어쓰는 복구에 대한 승인 Scope 근거가 없습니다." : ""}${triggerGap ? " 해당 상황 자체의 원문 근거가 불충분하여 확인이 필요합니다. 손상된 값과 읽기 작업 자체의 실패를 구분하십시오." : ""}`,
-        suggestedDirection: "원본 보존·쓰기 차단으로 보완하거나, 명시적으로 허용된 복구 정책의 승인 Scope 근거를 확인하십시오." });
+        description: `${row.state}: ${row.rationale}${destructiveWithoutSource ? " 기존 JSON 값을 초기화/덮어쓰는 복구에 대한 승인 Scope 근거가 없습니다." : ""}${triggerGap ? " 해당 상황 자체의 조건 근거가 불충분합니다. 읽기 예외 및 유효값 검증 조건을 실제 원문과 연결하십시오." : ""}`,
+        suggestedDirection: row.state === "valid" ? "필드·값 공통 검증 통과 조건과 로드 동작의 원문 근거를 연결하십시오."
+          : "원본 보존·쓰기 차단으로 보완하거나, 명시적으로 허용된 복구 정책의 승인 Scope 근거를 확인하십시오." });
     } else if (row.verdict === "needs_user_input") questions.push(`${row.state}: ${row.rationale}`);
   }
+  if (audit.format === "json" && audit.validation !== undefined) {
+    if (!audit.validation.rules.length) issues.push({ id: "issue-storage-validation-empty", kind: "omission", severity: "major",
+      description: "저장값과 변경 후보에 적용하는 공통 필드·값 검증 근거가 없습니다.", suggestedDirection: "위임된 저장 설계를 구체화하고 로드/후보에 같은 규칙과 잘못된 값 확인 사례를 명시하십시오." });
+    audit.validation.rules.forEach((r, i) => {
+      if (r.status !== "supported" || [r.load, r.candidate, r.acceptance].some(e => !e.evidence.length || onlyHeadings(e.evidence))) issues.push({
+        id: `issue-storage-validation-${i + 1}`, kind: "omission", severity: "major", description: `공통 검증 ${r.rule}: ${r.rationale}`,
+        suggestedDirection: "불러오기와 저장 후보 모두의 실제 검증 규칙 및 구체적인 잘못된 저장값/입력의 예상 결과를 보완하십시오." });
+    });
+  }
   return { issues, questions };
+}
+
+/** Structural check only: headings are labels, not evidence of behavior. No semantic verdict is inferred. */
+export function onlyHeadings(quotes: readonly string[]): boolean {
+  return quotes.length > 0 && quotes.every(q => /^\s{0,3}#{1,6}\s/.test(q));
 }
 
 /** Conservative evidence gate, not semantic certification. Unrecognized phrasing stays unconfirmed. */

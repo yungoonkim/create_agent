@@ -4,7 +4,7 @@
 
 처음에는 **소스 받기 → 설치 → 모델 없는 데모**까지만 실행해도 된다. 실제 Gemini를 쓰려면 그다음 ADC 인증과 새 프로젝트 설정을 진행한다. 현재 팀원 Agent 자동 실행은 제공하지 않는다.
 
-추가 기능: [사용자 기획 검토표](user-planning-review.md)를 모델 호출 없이 생성할 수 있다. 처음 확인하려면 `npm.cmd run planning:review-demo -- --output "review-demo-01"`로 고정 응답 예시를 만들고 review.md를 연다. 기존 기획은 `review-plan`으로 읽기 전용 내보낸다. 새 폴더를 사용하며 승인/기획 재실행은 필요 없다. 구현 당시 경계는 [구현 보고서](planning-review-table-report-20261109.md), 전체158개 테스트와 이후 실제7개 응답의 관찰·한계는 [실모델 결과](planning-review-live-results-20261109.md)를 따른다.
+추가 기능: [사용자 기획 검토표](user-planning-review.md)를 모델 호출 없이 생성할 수 있다. 처음 확인하려면 `npm.cmd run planning:review-demo -- --output "review-demo-01"`로 고정 응답 예시를 만들고 review.md를 연다. 기존 기획은 `review-plan`으로 읽기 전용 내보낸다. 새 폴더를 사용하며 승인/기획 재실행은 필요 없다. 이전 실제7개 응답의 관찰·한계는 [실모델 결과](planning-review-live-results-20261109.md), 이후 원문 비교·지적 해결·공통 검증 근거와 전체171개 오프라인 검사는 [최신 보완](review-evidence-preservation-20261109.md)을 따른다. [새 택배 시험](../examples/review-evidence-live/README.md)은 나중에 PC에서 수행하며 지금 로컬 실행은 필요 없다.
 
 ## 1. 준비할 프로그램
 

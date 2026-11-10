@@ -11,6 +11,7 @@ import type {
 } from "./contracts.js";
 import { parseReviewQuality, qualityFindings, validateReviewQuality } from "./review-quality.js";
 import { parseStorageAudit, storageAuditFindings, validateStorageAudit } from "./storage-audit.js";
+import { parseRevisionAudit, validateRevisionAudit, reviewAssuranceFindings } from "./revision-audit.js";
 
 const allowedTransitions: Readonly<Record<PlanningLoopStatus, readonly PlanningLoopStatus[]>> = {
   drafting: ["reviewing", "awaiting_user_input", "failed", "stopped"],
@@ -158,6 +159,10 @@ export function decideAfterReview(input: PlanningDecisionInput): PlanningDecisio
     try { validateStorageAudit(parseStorageAudit(review.storageAudit), currentPlan, approvedScope); }
     catch { return { type: "FAILED", reason: "Review storage audit coverage or evidence is invalid." }; }
   }
+  if (review.revisionAudit !== undefined) {
+    try { validatePlanReview(review, currentPlan, approvedScope); }
+    catch { return { type: "FAILED", reason: "Review revision sources or coverage are invalid." }; }
+  }
   if (review.outcome === "failed") return { type: "FAILED", reason: "Reviewer reported a failed review." };
   const scopeIssues = review.issues.filter((issue) => issue.kind === "scope_violation");
   const scopeIssueIds = scopeIssues.map((issue) => issue.id);
@@ -178,7 +183,7 @@ export function decideAfterReview(input: PlanningDecisionInput): PlanningDecisio
         .map(issue => `${issue.description} — ${issue.dispositionReason}`),
     };
   }
-  const findings = qualityFindings(review);
+  const findings = [...qualityFindings(review), ...reviewAssuranceFindings(review)];
   const storageFindings = storageAuditFindings(review.storageAudit);
   const questions = [...findings.filter((finding) => finding.status === "needs_user_input").map((finding) => finding.message), ...storageFindings.questions];
   if (review.outcome === "needs_user_input" || review.userJudgmentRequired || questions.length > 0) {
@@ -296,6 +301,11 @@ export function parsePlanReview(raw: unknown): PlanReview {
     try { storageAudit = parseStorageAudit(value.storageAudit); }
     catch { throw invalidReviewField("storageAudit"); }
   }
+  let revisionAudit: PlanReview["revisionAudit"];
+  if (value.revisionAudit !== undefined) {
+    try { revisionAudit = parseRevisionAudit(value.revisionAudit); }
+    catch { throw invalidReviewField("revisionAudit"); }
+  }
   return {
     id: reviewIdentifier(value.id, "id"),
     projectId: reviewIdentifier(value.projectId, "projectId"),
@@ -312,6 +322,7 @@ export function parsePlanReview(raw: unknown): PlanReview {
     ...(qualityAssessment === undefined ? {} : { qualityAssessment }),
     ...(value.challengeCompleted === undefined ? {} : { challengeCompleted: reviewBoolean(value.challengeCompleted, "challengeCompleted") }),
     ...(storageAudit === undefined ? {} : { storageAudit }),
+    ...(revisionAudit === undefined ? {} : { revisionAudit }),
   };
 }
 
@@ -338,6 +349,14 @@ export function validatePlanReview(raw: unknown, plan: PlanDraft, approvedScope:
   if (review.storageAudit !== undefined) {
     try { validateStorageAudit(review.storageAudit, plan, approvedScope); }
     catch { throw invalidReviewField("storageAudit coverage or evidence"); }
+  }
+  if (review.revisionAudit !== undefined) {
+    try {
+      validateRevisionAudit(review.revisionAudit, plan, approvedScope);
+      const resolution = review.qualityAssessment?.checks.find(c => c.id === "revision_resolution");
+      if (review.revisionAudit.mode === "initial" && resolution?.status !== "not_applicable") throw new Error("Initial review has no previous corrections.");
+      if (review.revisionAudit.previousIssueIds.length && resolution?.status === "not_applicable") throw new Error("Existing feedback cannot be not_applicable.");
+    } catch { throw invalidReviewField("revisionAudit source/coverage or resolution context"); }
   }
   return review;
 }
