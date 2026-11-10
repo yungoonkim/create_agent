@@ -13,11 +13,10 @@ import type {
 } from "./contracts.js";
 import { decideAfterReview, validatePlanReview } from "./policy.js";
 import { REVIEW_CHECK_IDS } from "./contracts.js";
-import { WRITER_SYSTEM_INSTRUCTION, REVIEWER_SYSTEM_INSTRUCTION, REVIEW_CHALLENGE_SYSTEM_INSTRUCTION } from "./prompts.js";
+import { WRITER_SYSTEM_INSTRUCTION, REVIEWER_SYSTEM_INSTRUCTION, REVIEW_CHALLENGE_JSON_SYSTEM_INSTRUCTION } from "./prompts.js";
 import { bindReviewEvidence, parseReviewQuality } from "./review-quality.js";
 import { compactReviewSchema } from "./wire-schema.js";
 import { bindStorageAudit, scopeAuthorizationSources } from "./storage-audit.js";
-import { STORAGE_AUDIT_STATES } from "./contracts.js";
 import { assertCompleteOutput, modelOutputFailure } from "./model-output.js";
 import { assertRevisionContext, bindRevisionAudit, preservationSources, revisionIssueSources, revisionMode } from "./revision-audit.js";
 
@@ -246,8 +245,8 @@ export class GeminiPlanningReviewer implements PlanningReviewer {
           approvedScope: context.approvedScope, settledDecisions: context.settledDecisions,
           approvedScopeSources: scopeAuthorizationSources(context.approvedScope),
           currentPlanLines: sourceLinesFor(context.currentPlan) }),
-        config: { systemInstruction: REVIEW_CHALLENGE_SYSTEM_INSTRUCTION, responseMimeType: "application/json",
-          responseJsonSchema: compactReviewSchema(challengeSchemaFor(context.currentPlan, context.approvedScope)), maxOutputTokens: 16_000, thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM },
+        config: { systemInstruction: REVIEW_CHALLENGE_JSON_SYSTEM_INSTRUCTION, responseMimeType: "application/json",
+          maxOutputTokens: 16_000, thinkingConfig: { thinkingLevel: ThinkingLevel.MEDIUM },
           httpOptions: { retryOptions: { attempts: 1 } } },
       });
       capture(challenge.usageMetadata);
@@ -340,29 +339,6 @@ function issueSchemaFor(scope: ScopeContract): object {
   return { ...REVIEW_SCHEMA.properties.issues, items: { ...REVIEW_SCHEMA.properties.issues.items,
     properties: { ...properties, ...(ids.length === 0 ? {} : { relatedRequirementId: { type: "string", enum: ids } }) } } };
 }
-function challengeSchemaFor(plan: PlanDraft, scope: ScopeContract): object {
-  const evidenceLines = sourceLineRefsFor(plan);
-  const proof = { type: "object", properties: { evidenceLines }, required: ["evidenceLines"] };
-  return { type: "object", properties: {
-    issues: issueSchemaFor(scope), questions: { type: "array", items: { type: "string" } },
-    storageAudit: { type: "object", properties: {
-      format: { type: "string", enum: ["json", "other", "none", "unclear"] }, evidenceLines, rationale: { type: "string" },
-      validation: { type: "object", properties: { rationale: { type: "string" }, rules: { type: "array", maxItems: 16,
-        items: { type: "object", properties: { rule: { type: "string" }, status: { type: "string", enum: ["supported", "missing", "unclear"] },
-          load: proof, candidate: proof, acceptance: proof, rationale: { type: "string" } },
-          required: ["rule", "status", "load", "candidate", "acceptance", "rationale"] } } }, required: ["rationale", "rules"] },
-      cases: { type: "array", maxItems: 5, items: { type: "object", properties: {
-        state: { type: "string", enum: [...STORAGE_AUDIT_STATES] },
-        action: { type: "string", enum: ["initialize", "load", "preserve_and_block", "reset_or_overwrite", "unspecified"] },
-        verdict: { type: "string", enum: ["consistent", "unsafe", "needs_user_input"] }, evidenceLines,
-        trigger: { type: "object", properties: { evidenceLines }, required: ["evidenceLines"] },
-        authorizationScopeIds: { type: "array", items: { type: "string", enum: Object.keys(scopeAuthorizationSources(scope)) } },
-        rationale: { type: "string" },
-      }, required: ["state", "action", "verdict", "evidenceLines", "authorizationScopeIds", "rationale", "trigger"] } },
-    }, required: ["format", "evidenceLines", "rationale", "cases", "validation"] },
-  }, required: ["issues", "questions", "storageAudit"] };
-}
-
 /** Small Plans constrain exact lines; long Plans bound the range and rely on exact source validation. */
 function reviewSchemaFor(plan: PlanDraft, scope: ScopeContract, previousPlan?: PlanDraft, previousIssueIds: readonly string[] = []): object {
   const evidenceLines = sourceLineRefsFor(plan);

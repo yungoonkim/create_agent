@@ -79,7 +79,7 @@ test("new Gemini reviews require the quality protocol; legacy review data still 
     assert.deepEqual(parsePlanReview(legacy), legacy);
     let response: unknown = legacy;
     const client = { models: { generateContent: async (input: { config: { responseJsonSchema: { properties: Record<string, unknown> } } }) =>
-      ({ text: JSON.stringify(input.config.responseJsonSchema.properties.storageAudit === undefined ? response : { issues: [], questions: [], storageAudit: noStorageAudit }) }) } } as unknown as GoogleGenAI;
+      ({ text: JSON.stringify(input.config.responseJsonSchema !== undefined ? response : { issues: [], questions: [], storageAudit: noStorageAudit }) }) } } as unknown as GoogleGenAI;
     const adapter = new GeminiPlanningReviewer(client, memory);
     const context = { projectId: scope.projectId, currentPlan: plan, approvedScope: scope, originalRequirements: "Save a record", settledDecisions: [] };
     const role = { model: { providerId: "vertex-ai", modelId: "gemini-3.8-flash" }, personaId: "reviewer" };
@@ -200,12 +200,13 @@ test("long Plan schemas stay bounded in both review stages and preserve original
     approvedScope: scope, originalRequirements: "Save records", settledDecisions: [] },
     { model: { providerId: "vertex-ai", modelId: "gemini-3.8-flash" }, personaId: "reviewer" });
   assert.equal(requests.length, 2);
-  for (const request of requests) {
+  for (const request of requests.slice(0, 1)) {
     const schema = JSON.stringify(request.config.responseJsonSchema);
     assert.ok(schema.length < 6000, `Schema unexpectedly grows with Plan length: ${schema.length}`);
     assert.ok(schema.includes('"minimum":1,"maximum":600'));
     assert.ok(!schema.includes('"enum":[1,3,4'));
   }
+  assert.equal(requests[1]!.config.responseJsonSchema, undefined);
   const challenge = JSON.parse(requests[1]!.contents) as { currentPlanLines: { line: number; text: string }[] };
   assert.equal(challenge.currentPlanLines.length, 400);
   assert.deepEqual(challenge.currentPlanLines.at(-1), { line: 600, text: "Original line 600: save a record." });

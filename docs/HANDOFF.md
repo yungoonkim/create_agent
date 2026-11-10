@@ -3,6 +3,10 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 수정 — 공통 반례 JSON 모드와 주차 이어가기
+
+사용자가 반례 경로 수정을 요청했다. 공통 Reviewer에서 반례 responseJsonSchema를 제거하고 택배 성공 후보의 필수 키/인용8개 지침을 적용했다. 로컬 검증은 유지한다. 주차 기획 v1/일반 검토를 고정 입력으로 재사용하는 최대1회 도구와 Windows ZIP 프로필을 추가했다. 이전3+새1=최대4/6회, Writer·최종 승인 없음, 준비 중 Gemini0회. [설계](common-challenge-fix-20261110.md), [실행 안내](../examples/parking-planning/README-recovery.md). 실제 모델 결과는 로컬 실행 후 확인한다.
+
 ## 최신 준비 — 새로운 주차 위치 기록 기획 Scope 초안
 
 사용자는 장보기 주제의 중복을 지적했고, 장보기는 과거 비교 시험에 2회 포함됐음을 확인했다. 대신 주차 위치 기록을 선택했다. 사용자가 위치·시각·선택 메모, 차 찾음 이력, 수정/삭제, 현재 한 개를 정했다. 새 [Scope v1 초안과 입력](../examples/parking-planning/scope-v1.json) 및 [시험 기준](parking-planning-protocol-20261110.md)을 작성했다. 이 Scope는 미승인이고 실제 모델 호출0회다. 기존 live CLI는 원요청/응답 보존/단일 시작 예약이 약해, 실제 시험 전에 한 번 실행 도구를 준비해야 한다. 제품/팀원 실행은 하지 않는다.

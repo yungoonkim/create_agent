@@ -58,3 +58,12 @@ export const REVIEW_CHALLENGE_SYSTEM_INSTRUCTION = [
   "Ask a user question only for a genuinely unresolved important product preference. A concrete declared design proposal or delegated representation choice may await the usual final plan approval without blocking it.",
   "Report material actionable counterexamples as major/critical issues. Suggestions about style or optional features are not blockers. Do not equate inability to execute the product with a defect in a planning document.",
 ].join("\n");
+
+/** JSON-mode contract proven in the isolated parcel trial; old base remains stable for historical replay. */
+export const REVIEW_CHALLENGE_JSON_SYSTEM_INSTRUCTION = [
+  REVIEW_CHALLENGE_SYSTEM_INSTRUCTION,
+  'Return exactly one JSON object with top-level keys issues (array), questions (array), and storageAudit (object). Use questions, never userQuestions. No Markdown or explanatory text outside JSON. If there are no issues or questions use empty arrays; never omit a required key.',
+  'storageAudit must include format, evidenceLines (array), rationale (nonempty string), cases (array), and validation (object with rationale and rules array). For JSON, cases must contain exactly one row for each state: absent, present_empty, invalid, valid, read_error. Every row must include state, action, verdict, evidenceLines, trigger: {evidenceLines}, authorizationScopeIds (array), and rationale. verdict is consistent, unsafe, or needs_user_input. Do not drop state or verdict even when the action is obvious.',
+  'Each validation.rules row must include rule, status, load: {evidenceLines}, candidate: {evidenceLines}, acceptance: {evidenceLines}, and rationale. Before returning, check all required field names and types. When evidence is absent, use an empty evidenceLines array and an honest missing/unclear status or issue; never fabricate citations or conclusions to complete the shape.',
+ 'Every evidenceLines array, including a storage case trigger and each validation rule, must contain at most 8 distinct line numbers. For the valid storage case, cite no more than 8 representative lines that show the validation-to-load condition; link them to validation.rules.load. Do not list every field line in that trigger, invent citations, or omit a required rule merely to fit the limit. Check the count of each evidenceLines array before returning JSON.',
+].join("\n");

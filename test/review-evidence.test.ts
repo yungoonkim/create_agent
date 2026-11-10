@@ -198,7 +198,7 @@ test("Controller passes real previous snapshots and retains a detected regressio
   const requests: { contents: string; config: { systemInstruction: string } }[] = [];
   const client = { models: { generateContent: async (req: typeof requests[number]) => {
     requests.push(req);
-    if (req.config.systemInstruction === REVIEW_CHALLENGE_SYSTEM_INSTRUCTION) return { text: JSON.stringify({ issues: [], questions: [], storageAudit: storage() }) };
+    if (req.config.systemInstruction.startsWith(REVIEW_CHALLENGE_SYSTEM_INSTRUCTION)) return { text: JSON.stringify({ issues: [], questions: [], storageAudit: storage() }) };
     const marker = 'DATA:\n\n'; const data = JSON.parse(req.contents.slice(req.contents.lastIndexOf(marker) + marker.length));
     const raw = assessment(); const v = data.currentPlan.version;
     if (v === 1) { raw.outcome = "revise"; raw.issues = [{ kind: "omission", severity: "major", description: "TEST/STUB initial defect", suggestedDirection: "Restore common validation", scopeDisposition: "not_applicable", dispositionReason: "Within approved Scope" }]; }
