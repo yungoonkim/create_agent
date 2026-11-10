@@ -1,0 +1,211 @@
+{
+  "schemaVersion": 1,
+  "kind": "offline_triage_contract_evaluation",
+  "fixtureAuthor": "repository-maintainer",
+  "sourceArchiveSha256": "a7d7aea9d3fac4b70f7b9a1265465b3bbe31ca09e9c21082512dacc1921c6385",
+  "sourceFileHashes": {
+    "artifact-manifest.json": "0e72db5d9832d5a67de549294011820faeb739853c91378f381450fbe0f32cdc",
+    "export-status.json": "d72f901bab26573e14f9081279b1ffa79c5eb71da168333d21cf4a9212b325fe",
+    "review/bundle.json": "02735ca44c4508c793845b0f515c70af7abf1c2b089576b1478994651b853dfd",
+    "review/plan.md": "bf8d17c7da3bad7c333158e3cb4c1b4f3efc53ba478ff3d183bbe47b49424e69",
+    "review/review.json": "e8dd30dabc788c453374efad9937fce16bb52a0bd9de8e30e2ad488a25792b00",
+    "review/review.md": "da7068c00ce4e01a38f6ed6dcf2c46c47f73505b64ef5158e6c2066f3b8b2998",
+    "session/import-receipt.json": "27fde5b40c8e655755bd1554dc3e9a616690ef9de163c841699a5933fd23e630",
+    "session/ledger/budget-changes/0001.json": "e1b817b9f7c642414d60bf7f700c0cbb185718334b28010d4e355a4595df8e03",
+    "session/ledger/budget.json": "3256b767b07925d4d24b08242d7628b9b184de41994e92d3ec52e6daadd710b7",
+    "session/ledger/budget.sha256": "86d3171cf993686f5c0a77bfc8772bb7623817b449bc2daca773265a716fda47",
+    "session/ledger/calls/0001.request.json": "4e9f8cdc546eaa89d7452bddee1bcac711aba4e6461b8bfdb0903d9b20118d5c",
+    "session/ledger/calls/0001.response.json": "f70d38133c1fa7d39aad895bfbe5740929f11aa5d8b3831151baaf2ea839e6b4",
+    "session/ledger/calls/0001.started.json": "7a01a356ced38d6aafe4849ac22f7c9b7d625cd522c8ab48350355a8d3330e2d",
+    "session/ledger/calls/0002.request.json": "0685c5c46705ee7498ce34571dcbef4ebe8757b876de69082b147037d392e9b9",
+    "session/ledger/calls/0002.response.json": "568cf64b8bd75b6301d5d21e241d6d6d89b360eee778d82a21152482e60f6131",
+    "session/ledger/calls/0002.started.json": "3481a1b702ff422d84fcc5cddabad5e4b836b8e719bfaf43da3c280b199f5d1d",
+    "session/ledger/calls/0003.request.json": "2ed5aa07d532e329a60cb5e5f5487193c7c0384b862000662eae2544ff2ad3a1",
+    "session/ledger/calls/0003.response.json": "cc6f9ca0f4f9c2f1abfea789b2248502875b6dd9c9ad75e9d43fcf9463c6b232",
+    "session/ledger/calls/0003.started.json": "d3d1c46cc1b0a76d22938e92c8e39f3aeb86d489627ec213abbba66007a6498d",
+    "session/memory/approvals/approval-94969dbc-ab13-4e1b-991d-6621a7f7372d.json": "4d7531788bfdbaa0516aec7a796e313e5f046af9745c94e2df8c2e15ec2fcf94",
+    "session/memory/projects/parking-planning-trial/planning/plans/parking-planning-trial-plan/v1.json": "9b1d132b96d89be27be5f0765b4efded3123bf6a4ca13d343df9d8ae9a9c65e9",
+    "session/memory/projects/parking-planning-trial/planning/plans/parking-planning-trial-plan/v2.json": "1e8a9ea66debea18d11bd9f9b4a3bd409a63be5cff0b5bde3a943ef8d0bda50d",
+    "session/memory/projects/parking-planning-trial/planning/reviews/parking-planning-trial-plan/v1.json": "e6e1814d94f4a2cdb5ac525a81e5fa7e0593b63cc507e654943ecd8a3ba081a4",
+    "session/memory/projects/parking-planning-trial/planning/reviews/parking-planning-trial-plan/v2.json": "a1c869530d0951d77077b5c0ab0bbf8afa7b74c87943580d38c3cd88fe4bf3dd",
+    "session/memory/projects/parking-planning-trial/planning/state.json": "7c1dce9398478bc6cfd8eaa600d20a6995def476daededefd6a94966b33faf53",
+    "session/memory/projects/parking-planning-trial/planning/usage.jsonl": "c0fe9cde304edc1bffe6f7ac36715aa5cff55edc46d18f38119aa18c1a3dbbf7",
+    "session/memory/projects/parking-planning-trial/requirements.md": "45b38ad4f24c43641a596e4bd2ff4084e99d862685c2d04e8e38a1d9884a254c",
+    "session/memory/projects/parking-planning-trial/scope/approval-links/parking-scope.json": "78d06a0a46a7aa89e3151678d14d23d1c68b2987704a98c618adb532852c3d34",
+    "session/memory/projects/parking-planning-trial/scope/v1.json": "2fd577d85570a6b238ec4d71c710d36abc01bcd654dd383c14204c2e03f7f80e",
+    "session/runs/1692cc73-361d-4c2a-aae7-4770c96509b1.json": "d72f901bab26573e14f9081279b1ffa79c5eb71da168333d21cf4a9212b325fe",
+    "session/session.json": "a03b1cb66c16db409f972eb9412f75ea29b80d550cf1609ecddf4606fd2c0659",
+    "session/session.sha256": "12ccdb02eabf345aa963b3a50cb49e46869849261d713faf37ee96f7b0764f7d"
+  },
+  "baseline": {
+    "type": "STOP_REPEATED_REVIEW_ISSUES",
+    "issueIds": [
+      "issue-storage-validation-6"
+    ],
+    "reason": "REVIEW_REPEAT: 같은 차단 지적이 반복돼 자동 실행을 중단했습니다. 사용자 취향 질문이 아니라 기획·검토 근거 보완이 필요합니다. issue-storage-validation-6: 공통 검증 createdAt: 생성 시점의 유효한 ISO 8601 날짜 시각 문자열: 개별·공유 확인 사례에 이 규칙을 뒷받침하는 연결 근거 없음 (모델의 supported 주장과 근거가 일치하지 않음). 모델 설명: 로드 및 후보 검증 공통 테이블에 필수 유효 날짜 형식으로 규정되어 있으며 acceptanceGroups[0]에서 포괄 검증된다."
+  },
+  "rawReviewIssueCount": 0,
+  "localFindingCount": 2,
+  "cases": [
+    {
+      "id": "manual-recheck",
+      "expected": "structurally_valid_for_manual_inspection",
+      "validation": {
+        "status": "structurally_valid_for_manual_inspection",
+        "errors": [],
+        "baseline": {
+          "type": "STOP_REPEATED_REVIEW_ISSUES",
+          "issueIds": [
+            "issue-storage-validation-6"
+          ],
+          "reason": "REVIEW_REPEAT: 같은 차단 지적이 반복돼 자동 실행을 중단했습니다. 사용자 취향 질문이 아니라 기획·검토 근거 보완이 필요합니다. issue-storage-validation-6: 공통 검증 createdAt: 생성 시점의 유효한 ISO 8601 날짜 시각 문자열: 개별·공유 확인 사례에 이 규칙을 뒷받침하는 연결 근거 없음 (모델의 supported 주장과 근거가 일치하지 않음). 모델 설명: 로드 및 후보 검증 공통 테이블에 필수 유효 날짜 형식으로 규정되어 있으며 acceptanceGroups[0]에서 포괄 검증된다."
+        },
+        "proposalSha256": "7755b415aebfa819119827de7b6603e1a39d50c70db2fe52601f617e03dbf97d",
+        "semanticCorrectness": "not_evaluated",
+        "executed": false,
+        "newModelCalls": 0
+      }
+    },
+    {
+      "id": "omit-local-blocker",
+      "expected": "rejected",
+      "validation": {
+        "status": "rejected",
+        "errors": [
+          "OMITTED_FINDING:storage:issue-storage-validation-6",
+          "OMITTED_FINDING:suggestion:1"
+        ],
+        "baseline": {
+          "type": "STOP_REPEATED_REVIEW_ISSUES",
+          "issueIds": [
+            "issue-storage-validation-6"
+          ],
+          "reason": "REVIEW_REPEAT: 같은 차단 지적이 반복돼 자동 실행을 중단했습니다. 사용자 취향 질문이 아니라 기획·검토 근거 보완이 필요합니다. issue-storage-validation-6: 공통 검증 createdAt: 생성 시점의 유효한 ISO 8601 날짜 시각 문자열: 개별·공유 확인 사례에 이 규칙을 뒷받침하는 연결 근거 없음 (모델의 supported 주장과 근거가 일치하지 않음). 모델 설명: 로드 및 후보 검증 공통 테이블에 필수 유효 날짜 형식으로 규정되어 있으며 acceptanceGroups[0]에서 포괄 검증된다."
+        },
+        "proposalSha256": "ea298869e9ff03b53f8040b21e7906d0ab8ad7e77b7c0af40b1fe730e3538599",
+        "semanticCorrectness": "not_evaluated",
+        "executed": false,
+        "newModelCalls": 0
+      }
+    },
+    {
+      "id": "stale-context",
+      "expected": "rejected",
+      "validation": {
+        "status": "rejected",
+        "errors": [
+          "SOURCE_MISMATCH"
+        ],
+        "baseline": {
+          "type": "STOP_REPEATED_REVIEW_ISSUES",
+          "issueIds": [
+            "issue-storage-validation-6"
+          ],
+          "reason": "REVIEW_REPEAT: 같은 차단 지적이 반복돼 자동 실행을 중단했습니다. 사용자 취향 질문이 아니라 기획·검토 근거 보완이 필요합니다. issue-storage-validation-6: 공통 검증 createdAt: 생성 시점의 유효한 ISO 8601 날짜 시각 문자열: 개별·공유 확인 사례에 이 규칙을 뒷받침하는 연결 근거 없음 (모델의 supported 주장과 근거가 일치하지 않음). 모델 설명: 로드 및 후보 검증 공통 테이블에 필수 유효 날짜 형식으로 규정되어 있으며 acceptanceGroups[0]에서 포괄 검증된다."
+        },
+        "proposalSha256": "eba92b5d5494a745e7383dc92ca6212f9191c7a10877d741f0ed9e7b093036e0",
+        "semanticCorrectness": "not_evaluated",
+        "executed": false,
+        "newModelCalls": 0
+      }
+    },
+    {
+      "id": "invent-line",
+      "expected": "rejected",
+      "validation": {
+        "status": "rejected",
+        "errors": [
+          "INVALID_REFERENCE:storage:issue-storage-validation-6",
+          "OMITTED_FINDING:suggestion:1"
+        ],
+        "baseline": {
+          "type": "STOP_REPEATED_REVIEW_ISSUES",
+          "issueIds": [
+            "issue-storage-validation-6"
+          ],
+          "reason": "REVIEW_REPEAT: 같은 차단 지적이 반복돼 자동 실행을 중단했습니다. 사용자 취향 질문이 아니라 기획·검토 근거 보완이 필요합니다. issue-storage-validation-6: 공통 검증 createdAt: 생성 시점의 유효한 ISO 8601 날짜 시각 문자열: 개별·공유 확인 사례에 이 규칙을 뒷받침하는 연결 근거 없음 (모델의 supported 주장과 근거가 일치하지 않음). 모델 설명: 로드 및 후보 검증 공통 테이블에 필수 유효 날짜 형식으로 규정되어 있으며 acceptanceGroups[0]에서 포괄 검증된다."
+        },
+        "proposalSha256": "01a0c04d5a5c70bb2163b7f41a49f026aba3b060f73bb5e7af21e7e6b12011e5",
+        "semanticCorrectness": "not_evaluated",
+        "executed": false,
+        "newModelCalls": 0
+      }
+    },
+    {
+      "id": "turn-blocker-into-preference",
+      "expected": "rejected",
+      "validation": {
+        "status": "rejected",
+        "errors": [
+          "BLOCKER_DOWNGRADED:storage:issue-storage-validation-6",
+          "OMITTED_FINDING:suggestion:1"
+        ],
+        "baseline": {
+          "type": "STOP_REPEATED_REVIEW_ISSUES",
+          "issueIds": [
+            "issue-storage-validation-6"
+          ],
+          "reason": "REVIEW_REPEAT: 같은 차단 지적이 반복돼 자동 실행을 중단했습니다. 사용자 취향 질문이 아니라 기획·검토 근거 보완이 필요합니다. issue-storage-validation-6: 공통 검증 createdAt: 생성 시점의 유효한 ISO 8601 날짜 시각 문자열: 개별·공유 확인 사례에 이 규칙을 뒷받침하는 연결 근거 없음 (모델의 supported 주장과 근거가 일치하지 않음). 모델 설명: 로드 및 후보 검증 공통 테이블에 필수 유효 날짜 형식으로 규정되어 있으며 acceptanceGroups[0]에서 포괄 검증된다."
+        },
+        "proposalSha256": "5d98a5113d0748aee53f12650fe542b5cfbd85b9c0b96cc09b0682852256edb8",
+        "semanticCorrectness": "not_evaluated",
+        "executed": false,
+        "newModelCalls": 0
+      }
+    },
+    {
+      "id": "add-approval-authority",
+      "expected": "rejected",
+      "validation": {
+        "status": "rejected",
+        "errors": [
+          "INVALID_STRUCTURE"
+        ],
+        "baseline": {
+          "type": "STOP_REPEATED_REVIEW_ISSUES",
+          "issueIds": [
+            "issue-storage-validation-6"
+          ],
+          "reason": "REVIEW_REPEAT: 같은 차단 지적이 반복돼 자동 실행을 중단했습니다. 사용자 취향 질문이 아니라 기획·검토 근거 보완이 필요합니다. issue-storage-validation-6: 공통 검증 createdAt: 생성 시점의 유효한 ISO 8601 날짜 시각 문자열: 개별·공유 확인 사례에 이 규칙을 뒷받침하는 연결 근거 없음 (모델의 supported 주장과 근거가 일치하지 않음). 모델 설명: 로드 및 후보 검증 공통 테이블에 필수 유효 날짜 형식으로 규정되어 있으며 acceptanceGroups[0]에서 포괄 검증된다."
+        },
+        "proposalSha256": "0130334f33526e5a9209eab4ab0336210e4164daa8f725d6dbe2120e823c4a4b",
+        "semanticCorrectness": "not_evaluated",
+        "executed": false,
+        "newModelCalls": 0
+      }
+    },
+    {
+      "id": "invent-scope-demand",
+      "expected": "rejected",
+      "validation": {
+        "status": "rejected",
+        "errors": [
+          "BLOCKER_DOWNGRADED:storage:issue-storage-validation-6",
+          "USER_REQUEST_REQUIRED:storage:issue-storage-validation-6",
+          "OMITTED_FINDING:suggestion:1"
+        ],
+        "baseline": {
+          "type": "STOP_REPEATED_REVIEW_ISSUES",
+          "issueIds": [
+            "issue-storage-validation-6"
+          ],
+          "reason": "REVIEW_REPEAT: 같은 차단 지적이 반복돼 자동 실행을 중단했습니다. 사용자 취향 질문이 아니라 기획·검토 근거 보완이 필요합니다. issue-storage-validation-6: 공통 검증 createdAt: 생성 시점의 유효한 ISO 8601 날짜 시각 문자열: 개별·공유 확인 사례에 이 규칙을 뒷받침하는 연결 근거 없음 (모델의 supported 주장과 근거가 일치하지 않음). 모델 설명: 로드 및 후보 검증 공통 테이블에 필수 유효 날짜 형식으로 규정되어 있으며 acceptanceGroups[0]에서 포괄 검증된다."
+        },
+        "proposalSha256": "3e4d165ad3db601cd6ae3d566eeecd04c71222357e551b24db47a06aa0f2176a",
+        "semanticCorrectness": "not_evaluated",
+        "executed": false,
+        "newModelCalls": 0
+      }
+    }
+  ],
+  "contractCasesPassed": 7,
+  "totalContractCases": 7,
+  "originalFilesUnchanged": true,
+  "usedCalls": 7,
+  "newModelCalls": 0,
+  "semanticAccuracy": null,
+  "qualityImprovement": null,
+  "costBenefit": null,
+  "elapsedModelTime": null,
+  "limitation": "사람이 작성한 공개 고정 사례의 계약 검사입니다. 중재 모델의 의미 판단 정확도·품질 향상·비용 이득은 측정하지 않았습니다."
+}

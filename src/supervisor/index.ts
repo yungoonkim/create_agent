@@ -5,3 +5,5 @@ export { FileSupervisorStore } from "./memory-store.js";
 export { GeminiSupervisorProposer } from "./google-genai.js";
 export { PlanningContinuationController } from "./continuation.js";
 export type { PlanningContinuation, SupervisorUsageRecord } from "./contracts.js";
+export { buildShadowContext, validateShadowProposal, TRIAGE_CATEGORIES } from "./triage-shadow.js";
+export type { ShadowContext, ShadowFinding, ShadowProposal, ShadowValidation, TriageCategory } from "./triage-shadow.js";

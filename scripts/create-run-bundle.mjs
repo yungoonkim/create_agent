@@ -7,7 +7,7 @@ import {dirname,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
-const excludedTests = ['test/change-impact-replay.test.mjs','test/review-consistency-replay.test.mjs','test/common-challenge.test.mjs','test/planning-comparison.test.mjs','test/run-bundle.test.mjs','test/parcel-compatibility.test.mjs','test/parcel-no-schema-replay.test.mjs'];
+const excludedTests = ['test/triage-shadow-replay.test.mjs','test/change-impact-replay.test.mjs','test/review-consistency-replay.test.mjs','test/common-challenge.test.mjs','test/planning-comparison.test.mjs','test/run-bundle.test.mjs','test/parcel-compatibility.test.mjs','test/parcel-no-schema-replay.test.mjs'];
 function git(repo,...args) { return execFileSync('git',args,{cwd:repo,maxBuffer:32*1024*1024}); }
 function crc32(bytes) {
   let value=0xffffffff;
@@ -52,6 +52,7 @@ export function buildRunBundle(repo,ref='HEAD',profile='runtime') {
   const originalPackage=source.get('package.json');const pkg=JSON.parse(originalPackage);
   assert.ok(pkg.scripts.test.startsWith('npm run build && node --test '),'Review test command before packaging');
   for(const p of excludedTests)pkg.scripts.test=pkg.scripts.test.replaceAll(` ${p}`,'');
+  delete pkg.scripts['eval:triage-shadow']; // Offline evaluation requires historical evidence in the full repository.
   delete pkg.scripts['bundle:windows']; // Building distributions requires Git; running this one does not.
   if(profile.startsWith('diagnostic'))pkg.scripts=Object.fromEntries(Object.entries(pkg.scripts).filter(([name])=>['build','typecheck','test','diagnose:review'].includes(name)));
   if(profile==='parcel-challenge')pkg.scripts=Object.fromEntries(Object.entries(pkg.scripts).filter(([name])=>['build','typecheck','test','complete:parcel-review'].includes(name)));
