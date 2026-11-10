@@ -3,6 +3,12 @@
 마지막 정리: 2026-11-10 (Asia/Seoul)
 개발 환경: Codex Cloud `/workspace/create_agent`
 
+## 최신 관찰 — 후보 일반 검토 응답 STOP/pass, 반례·정식 저장은 미수행
+
+사용자 review-1794274580543-bbf1125b 원압축 SHA256은5a221227647023945a0982270c8f06d97764c9fa5c58daa2a332955726a316ff다. 같은 v2 요청에서 스키마만 바꾼 후보가1회 정상 응답 STOP을 받았다. 로컬 bind/validate 및 이전 원문 출처 검사를 통과했고 비교9행/해결4행·미해결0이다. 인용 일치는 의미상 완전성 보증이 아니며 단일 성공으로 특정 enum이400 원인이라고 확정하지 않는다.
+
+원자료와 candidate-response-validation.json을 보존했다. 반례 검토/정식 Review 저장/사용자 최종 승인은 미수행이고 기존 프로젝트는 그대로다. 원래 후속3+원본 요청 진단1+후보1=5회이며 추가 유료 호출은 하지 않는다. 반례 등 추가 호출이 필요하면 남은 예산/새 상한을 사용자와 먼저 정한다. 준비/분석 중 추가 실제 호출0회다. 결과 파일 요청 전 권장 Codex GPT-6.1 Sol·medium을 먼저 안내한다.
+
 ## 최신 작업 — HTTP400 확인 및 전송 스키마 단순화 후보
 
 [PR #15](https://github.com/yungoonkim/create_agent/pull/15)에 후보 구현과178/169개 오프라인 검증을 제출했다. [후보 ZIP](https://github.com/yungoonkim/create_agent/raw/5a37459c303b8f3b7e69357366045ee9f50d4788/downloads/adtf-review-schema-candidate.zip)의 diagnose:review -- --schema-candidate --run-live --bundle만 새 폴더에서 최대1회 실행한다. 원인 해결은 미확정이며 원본 동일요청 진단이나 전체 기획 시작을 다시 실행하지 않는다. 현재 추가 실제 호출0회다.

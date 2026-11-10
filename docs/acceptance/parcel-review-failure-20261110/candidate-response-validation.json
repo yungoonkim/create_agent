@@ -1,0 +1,14 @@
+{
+  "requestHashMatches": true,
+  "requestExceptSchemaUnchanged": true,
+  "localReviewValidation": "passed",
+  "previousSourceValidation": "passed",
+  "outcome": "pass",
+  "preservationRows": 9,
+  "resolutionRows": 4,
+  "unresolved": 0,
+  "challengeCompleted": false,
+  "formalReviewSaved": false,
+  "finalApprovalCreated": false,
+  "extraLiveCalls": 0
+}
