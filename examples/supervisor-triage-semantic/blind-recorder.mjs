@@ -31,19 +31,37 @@ function mapInput(original){
   if(input.previousPlan){const p=input.previousPlan;p.projectId=id('project',p.projectId);p.id=id('plan',p.id);p.scopeContractId=id('scope',p.scopeContractId);}
   return {input,token,forward,reverse};
 }
-function referenceMap(original,blind){
+export function referenceMap(original,blind,idForward){
   const forward={},reverse={};const add=(a,b)=>{assert.ok(Object.hasOwn(original.references,a)&&Object.hasOwn(blind.references,b),'Missing mapped reference.');assert.ok(!forward[a]&&!reverse[b],'Reference collision.');forward[a]=b;reverse[b]=a;};
+  const blindFindingIds=new Set(blind.findings.map(f=>f.id));
+  const findingIds={};
   assert.equal(original.findings.length,blind.findings.length);
-  original.findings.forEach((f,i)=>add(`finding:${f.id}`,`finding:${blind.findings[i].id}`));
-  const oldPrev=Object.keys(original.references).filter(k=>k.startsWith('previous-review:issue:'));
-  const newPrev=Object.keys(blind.references).filter(k=>k.startsWith('previous-review:issue:'));
-  assert.equal(oldPrev.length,newPrev.length);oldPrev.forEach((k,i)=>add(k,newPrev[i]));
-  for(const prefix of ['scope:requirement:','scope:excluded:']){
-    const a=Object.keys(original.references).filter(k=>k.startsWith(prefix)),b=Object.keys(blind.references).filter(k=>k.startsWith(prefix));
-    assert.equal(a.length,b.length);a.forEach((k,i)=>add(k,b[i]));
+  for(const f of original.findings){
+    let target;
+    if(f.origin==='review'){
+      assert.ok(f.id.startsWith('review:'));const issueId=f.id.slice('review:'.length),mapped=idForward['issue:'+issueId];
+      assert.ok(mapped,'Unmapped review issue: '+issueId);target='review:'+mapped;
+    }else target=f.id;
+    assert.ok(blindFindingIds.has(target),'Finding mapping mismatch: '+f.id);blindFindingIds.delete(target);findingIds[f.id]=target;
   }
-  for(const k of Object.keys(original.references))if(!forward[k])add(k,k);
-  assert.deepEqual(new Set(Object.values(forward)),new Set(Object.keys(blind.references)));
+  assert.equal(blindFindingIds.size,0,'Unexpected blinded finding.');
+  for(const k of Object.keys(original.references)){
+    let target=k;
+    if(k.startsWith('finding:')){
+      const id=k.slice('finding:'.length),mapped=findingIds[id];assert.ok(mapped,'Unmapped finding reference: '+id);target='finding:'+mapped;
+    }else if(k.startsWith('previous-review:issue:')){
+      const id=k.slice('previous-review:issue:'.length),mapped=idForward['issue:'+id];assert.ok(mapped,'Unmapped previous issue ID: '+id);target='previous-review:issue:'+mapped;
+    }else if(k.startsWith('scope:requirement:')){
+      const id=k.slice('scope:requirement:'.length),mapped=idForward['requirement:'+id];assert.ok(mapped,'Unmapped requirement ID: '+id);target='scope:requirement:'+mapped;
+      assert.equal(original.references[k],blind.references[target],'Requirement evidence was linked to a different reference.');
+    }else if(k.startsWith('scope:excluded:')){
+      assert.match(k,/^scope:excluded:[1-9]\d*$/);target=k;
+      assert.equal(original.references[k],blind.references[target],'Exclusion evidence was linked to a different reference.');
+    }
+    add(k,target);
+  }
+  assert.equal(Object.keys(blind.references).length,Object.keys(forward).length,'Unexpected blinded reference.');
+  assert.deepEqual(new Set(Object.values(forward)),new Set(Object.keys(blind.references)),'Unmapped blinded reference.');
   return {forward,reverse};
 }
 function equivalent(original,blind){
@@ -66,8 +84,9 @@ export async function prepareBlind({sourceDir,publicDir,privateDir,caseId}){
   assert.equal(gold.caseId,caseId);assert.equal(gold.independentHumanReview,'pending');
   assert.equal(JSON.stringify(buildShadowContext(input,userRequest??undefined)),JSON.stringify(context),'Original input/context mismatch.');
   const mapped=mapInput(input),blind=buildShadowContext(mapped.input,userRequest??undefined);equivalent(context,blind);
-  const refs=referenceMap(context,blind),findingForward={},findingReverse={};
-  context.findings.forEach((f,i)=>{findingForward[f.id]=blind.findings[i].id;findingReverse[blind.findings[i].id]=f.id;});
+  const refs=referenceMap(context,blind,mapped.forward),findingForward={},findingReverse={};
+  for(const f of context.findings){const target=f.origin==='review'?'review:'+mapped.forward['issue:'+f.id.slice('review:'.length)]:f.id;
+    assert.ok(!findingForward[f.id]&&!findingReverse[target],'Finding ID collision.');findingForward[f.id]=target;findingReverse[target]=f.id;}
   const publicInput={schemaVersion:1,kind:'offline_supervisor_triage_blind_input',inputVersion:3,context:blind};
   const publicBytes=bytes(publicInput),originalBytes=bytes(context);
   for(const secret of [caseId,context.contextSha256,sha(originalBytes),...Object.keys(mapped.forward).map(k=>k.slice(k.indexOf(':')+1))].filter(s=>s.length>3))

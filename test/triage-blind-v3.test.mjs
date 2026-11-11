@@ -5,7 +5,7 @@ import {mkdtemp,readFile,writeFile,rm,readdir,lstat} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {materializeV3,writeV3} from '../examples/supervisor-triage-semantic/materialize-v3.mjs';
-import {prepareBlind,recordBlind} from '../examples/supervisor-triage-semantic/blind-recorder.mjs';
+import {prepareBlind,recordBlind,referenceMap} from '../examples/supervisor-triage-semantic/blind-recorder.mjs';
 const sha=b=>createHash('sha256').update(b).digest('hex');
 async function fixture(t,id='umbrella-choice'){
   const root=await mkdtemp(join(tmpdir(),'adtf-blind-v3-'));t.after(()=>rm(root,{recursive:true,force:true}));
@@ -64,4 +64,29 @@ test('the same issue keeps one blind ID across review history and another case c
   const path=join(a.root,'response-repeated.json');await writeFile(path,JSON.stringify(response(a.model)));
   await assert.rejects(recordBlind({publicDir:b.pub,privateDir:b.priv,responseFile:path}),/source mismatch/i);
   await assert.rejects(lstat(join(b.priv,'results')));
+});
+test('reference map uses entity IDs across reordered previous issues and multi-item Scope lists',async()=>{
+  const [sample]=(await materializeV3()).cases;const original=structuredClone(sample.context),blind=structuredClone(sample.context);
+  original.findings=[{id:'review:issue-a',origin:'review'},{id:'review:issue-b',origin:'review'}];
+  blind.findings=[{id:'review:blind-b',origin:'review'},{id:'review:blind-a',origin:'review'}];
+  original.references={
+    'finding:review:issue-a':'A','finding:review:issue-b':'B',
+    'previous-review:issue:issue-a':'A','previous-review:issue:issue-b':'B',
+    'scope:requirement:R1':'one','scope:requirement:R2':'two',
+    'scope:excluded:1':'x1','scope:excluded:2':'x2','plan:L1':'line'
+  };
+  blind.references={
+    'finding:review:blind-b':'B','finding:review:blind-a':'A',
+    'previous-review:issue:blind-b':'B','previous-review:issue:blind-a':'A',
+    'scope:requirement:q2':'two','scope:requirement:q1':'one',
+    'scope:excluded:1':'x1','scope:excluded:2':'x2','plan:L1':'line'
+  };
+  const ids={'issue:issue-a':'blind-a','issue:issue-b':'blind-b','requirement:R1':'q1','requirement:R2':'q2'};
+  const map=referenceMap(original,blind,ids);
+  assert.equal(map.forward['previous-review:issue:issue-a'],'previous-review:issue:blind-a');
+  assert.equal(map.forward['previous-review:issue:issue-b'],'previous-review:issue:blind-b');
+  assert.equal(map.forward['scope:requirement:R1'],'scope:requirement:q1');
+  assert.equal(map.forward['scope:excluded:2'],'scope:excluded:2');
+  assert.throws(()=>referenceMap(original,blind,{'issue:issue-a':'blind-a','requirement:R1':'q1','requirement:R2':'q2'}),/Unmapped review issue/);
+  assert.throws(()=>referenceMap(original,{...blind,references:{...blind.references,'scope:requirement:q1':'collision'}},ids),/Requirement evidence was linked/);
 });
