@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "npm run build && node --test dist/test/contracts.test.js dist/test/planning-contracts.test.js dist/test/planning-loop.test.js dist/test/planning-quality.test.js dist/test/development-loop.test.js dist/test/verification.test.js dist/test/supervisor.test.js dist/test/continuation.test.js test/planning-comparison.test.mjs dist/test/user-review.test.js test/planning-review-live.test.mjs dist/test/review-evidence.test.js test/review-evidence-live.test.mjs test/run-bundle.test.mjs test/reviewer-diagnostic.test.mjs dist/test/wire-schema.test.js test/parcel-challenge.test.mjs test/parcel-compatibility.test.mjs test/parcel-no-schema.test.mjs test/parcel-no-schema-replay.test.mjs test/parcel-prompt.test.mjs test/parcel-eight.test.mjs test/common-challenge.test.mjs dist/test/planning-session.test.js dist/test/review-consistency.test.js test/review-consistency-replay.test.mjs dist/test/change-impact.test.js test/change-impact-replay.test.mjs dist/test/triage-shadow.test.js test/triage-shadow-replay.test.mjs test/triage-offline-recorder.test.mjs",
+    "test": "npm run build && node --test dist/test/contracts.test.js dist/test/planning-contracts.test.js dist/test/planning-loop.test.js dist/test/planning-quality.test.js dist/test/development-loop.test.js dist/test/verification.test.js dist/test/supervisor.test.js dist/test/continuation.test.js test/planning-comparison.test.mjs dist/test/user-review.test.js test/planning-review-live.test.mjs dist/test/review-evidence.test.js test/review-evidence-live.test.mjs test/run-bundle.test.mjs test/reviewer-diagnostic.test.mjs dist/test/wire-schema.test.js test/parcel-challenge.test.mjs test/parcel-compatibility.test.mjs test/parcel-no-schema.test.mjs test/parcel-no-schema-replay.test.mjs test/parcel-prompt.test.mjs test/parcel-eight.test.mjs test/common-challenge.test.mjs dist/test/planning-session.test.js dist/test/review-consistency.test.js test/review-consistency-replay.test.mjs dist/test/change-impact.test.js test/change-impact-replay.test.mjs dist/test/triage-shadow.test.js test/triage-shadow-replay.test.mjs test/triage-offline-recorder.test.mjs test/triage-blind-v3.test.mjs",
     "planning:demo": "npm run build && node dist/src/cli/planning.js --config examples/planning-demo/config.json --scope examples/planning-demo/scope-contract.json --approval-fixture examples/planning-demo/approval-fixture.json --requirements examples/planning-demo/requirements.md",
     "planning:gemini": "npm run build && node dist/src/cli/planning-gemini.js",
     "development": "npm run build && node dist/src/cli/development.js",
@@ -30,7 +30,9 @@
     "planning:session": "npm run build && node dist/src/cli/planning-session.js",
     "eval:triage-shadow": "npm run build && node examples/supervisor-triage-shadow/run.mjs",
     "eval:triage-semantic": "npm run build && node examples/supervisor-triage-semantic/materialize.mjs",
-    "eval:triage-recorder": "npm run build && node examples/supervisor-triage-semantic/offline-recorder.mjs"
+    "eval:triage-recorder": "npm run build && node examples/supervisor-triage-semantic/offline-recorder.mjs",
+    "eval:triage-semantic-v3": "npm run build && node examples/supervisor-triage-semantic/materialize-v3.mjs",
+    "eval:triage-recorder-blind": "npm run build && node examples/supervisor-triage-semantic/blind-recorder.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
