@@ -39,20 +39,20 @@
 ### 2.1 Git 커밋 및 브랜치 상태 (2026-11-11 확인)
 - **로컬 작업 저장소:** `create_agent-gemini-qa` (Windows PC, VS Code + Antigravity)
 - **원격 저장소 (origin):** `https://github.com/yungoonkim/create_agent.git`
-- **현재 체크아웃 브랜치:** `qa/gemini-blind-input-audit`
-- **현재 HEAD SHA:** `4133d5eefa5ec64e408d4f6da36f962125714a38`
-- **원격 `origin/main` 최신 SHA:** `19aeed3f8e7966df88fbc5c8e9af2dfbce63ede0` (PR #39 병합 커밋)
+- **현재 체크아웃 브랜치:** `qa/gemini-triage-blind-v3`
+- **현재 HEAD SHA:** `c7f3330` (최신 `origin/main` 병합 커밋)
+- **원격 `origin/main` 최신 SHA:** `cf07004a8459391cd2fb1c9a43997568b8e18443` (PR #42 병합 커밋)
 
 ### 2.2 각 QA 브랜치와 기준 main 커밋 비교
 > [!IMPORTANT]
-> 두 Gemini QA 브랜치는 `main`에 병합하지 않고 독립 검증 자료로 보존 중이며, 각각 분기된 기준 `main` 커밋이 최신 `origin/main`과 다릅니다.
+> 모든 Gemini QA 브랜치는 `main`에 직접 병합하지 않고 독립 검증 자료(Draft PR)로 보존 중이며, 각 QA 시점의 기준 `main` 커밋이 다릅니다.
 
 | 브랜치명 | 최신 커밋 SHA | 분기 기준 main 커밋 | 커밋 메시지 / 작업 내용 | 상태 |
 | :--- | :--- | :--- | :--- | :--- |
 | **`qa/gemini-independent-qa`** | `4fb4a10a8f3fa25c8aa6c01042d359c859fd2269` | `2426ebc70e7406de1da359d332a284052c5b453e` (PR #33 머지) | `test: Supervisor 정책 분기 우선순위 독립 QA 검증 추가` | 1차 QA 완료 및 커밋 보존 (PR #37) |
 | **`qa/gemini-blind-input-audit`** | `4133d5eefa5ec64e408d4f6da36f962125714a38` | `08d57f0174a7b05f002dfdbf8ea29a5a3781568f` (PR #35 머지) | `test: Supervisor 블라인드 평가 입력 누출 독립 감사 추가` | 2차 QA 완료 및 커밋 보존 (PR #40) |
-| **`origin/main`** | `19aeed3f8e7966df88fbc5c8e9af2dfbce63ede0` | — | `Merge pull request #39 from yungoonkim/fix/shadow-scope-empty-questions` | Codex의 1차 QA 반영 최신 main |
-| **`feature/triage-blind-v3` (검증 대상)** | `53f8823adb75e4c9fe780d236775829b752951e4` | `19aeed3f8e7966df88fbc5c8e9af2dfbce63ede0` (PR #39 머지) | `블라인드 참조 매핑의 순서 의존성 제거` | Codex PR #42 (3차 재검증 완료, 병합 승인 권장) |
+| **`qa/gemini-triage-blind-v3`** | `c7f3330` (또는 동기화 커밋) | `cf07004a8459391cd2fb1c9a43997568b8e18443` (PR #42 머지) | `Merge remote-tracking branch 'origin/main' into qa/gemini-triage-blind-v3` | 3차 QA 완료 및 main 동기화 (PR #44 Draft) |
+| **`origin/main`** | `cf07004a8459391cd2fb1c9a43997568b8e18443` | — | `Merge pull request #42 from yungoonkim/feature/triage-blind-v3` | Codex PR #42(블라인드 v3) 병합 완료 최신 main |
 
 ### 2.3 작업 트리 상태 및 로컬 전용 파일 유무
 - **작업 트리 상태:** `git status --short -uall` 실행 결과 출력 없음 (Clean).
