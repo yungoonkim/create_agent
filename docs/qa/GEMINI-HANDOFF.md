@@ -49,9 +49,10 @@
 
 | 브랜치명 | 최신 커밋 SHA | 분기 기준 main 커밋 | 커밋 메시지 / 작업 내용 | 상태 |
 | :--- | :--- | :--- | :--- | :--- |
-| **`qa/gemini-independent-qa`** | `4fb4a10a8f3fa25c8aa6c01042d359c859fd2269` | `2426ebc70e7406de1da359d332a284052c5b453e` (PR #33 머지) | `test: Supervisor 정책 분기 우선순위 독립 QA 검증 추가` | 1차 QA 완료 및 커밋 보존 |
-| **`qa/gemini-blind-input-audit`** | `4133d5eefa5ec64e408d4f6da36f962125714a38` | `08d57f0174a7b05f002dfdbf8ea29a5a3781568f` (PR #35 머지) | `test: Supervisor 블라인드 평가 입력 누출 독립 감사 추가` | 2차 QA 완료 및 커밋 보존 (원격 동일) |
+| **`qa/gemini-independent-qa`** | `4fb4a10a8f3fa25c8aa6c01042d359c859fd2269` | `2426ebc70e7406de1da359d332a284052c5b453e` (PR #33 머지) | `test: Supervisor 정책 분기 우선순위 독립 QA 검증 추가` | 1차 QA 완료 및 커밋 보존 (PR #37) |
+| **`qa/gemini-blind-input-audit`** | `4133d5eefa5ec64e408d4f6da36f962125714a38` | `08d57f0174a7b05f002dfdbf8ea29a5a3781568f` (PR #35 머지) | `test: Supervisor 블라인드 평가 입력 누출 독립 감사 추가` | 2차 QA 완료 및 커밋 보존 (PR #40) |
 | **`origin/main`** | `19aeed3f8e7966df88fbc5c8e9af2dfbce63ede0` | — | `Merge pull request #39 from yungoonkim/fix/shadow-scope-empty-questions` | Codex의 1차 QA 반영 최신 main |
+| **`feature/triage-blind-v3` (검증 대상)** | `53f8823adb75e4c9fe780d236775829b752951e4` | `19aeed3f8e7966df88fbc5c8e9af2dfbce63ede0` (PR #39 머지) | `블라인드 참조 매핑의 순서 의존성 제거` | Codex PR #42 (3차 재검증 완료, 병합 승인 권장) |
 
 ### 2.3 작업 트리 상태 및 로컬 전용 파일 유무
 - **작업 트리 상태:** `git status --short -uall` 실행 결과 출력 없음 (Clean).
@@ -213,6 +214,11 @@ node --test tests-evaluation/supervisor-mediation/policy-priority-combinations.t
 
 # 2차 블라인드 평가 입력 누출 감사 테스트 (7 tests pass)
 node --test tests-evaluation/supervisor-mediation/blind-input-leak-audit.test.mjs
+
+# 3차 PR #42 블라인드 평가 v3 독립 재검증 테스트 (6 tests pass)
+# 검증 대상 커밋: 53f8823adb75e4c9fe780d236775829b752951e4 (feature/triage-blind-v3)
+# (별도 worktree 참조 시: $env:PR42_ROOT="C:\dev\create_agent-pr42-audit")
+node --test tests-evaluation/supervisor-mediation/triage-blind-v3-audit.test.mjs
 ```
 
 ### 7.3 QA 테스트와 공식 Core 테스트의 차이
@@ -294,3 +300,64 @@ node --test tests-evaluation/supervisor-mediation/blind-input-leak-audit.test.mj
 4. 확인된 사실(브랜치 상태, 테스트 통과 여부, 원격 main과의 차이)을 간결히 요약 보고하세요.
 5. 보고가 끝나면 사용자 승인 전까지 Core 소스코드나 평가 원자료를 임의로 수정하지 마시고 다음 지시를 기다려 주세요.
 ```
+
+---
+
+## 11. 3차 Gemini QA 완료 내용 (Codex PR #42 블라인드 평가 v3 독립 감사)
+
+- **검증 일시:** 2026-11-11
+- **검증 주체:** ADTF 독립 QA 담당자 (Gemini)
+- **대상 PR 및 커밋:** PR #42 (`feature/triage-blind-v3`, 커밋 `574e6dca71c680d2256e834da35d418a271eca86`)
+- **작업 환경 및 격리:**
+  - 기존 작업 저장소(`create_agent-gemini-qa`)와 격리된 별도 Git worktree(`C:\dev\create_agent-pr42-audit`)를 생성하여 detached HEAD 상태로 읽기 전용 검사 수행.
+  - Core 소스코드(`src/**`, `test/**`) 및 PR #42 구현 코드 일체 수정 없음 (Zero Mutation).
+  - 외부 LLM API 호출 0회, ADC 인증 변경 0회, 오프라인 순수 인메모리 테스트로 수행.
+- **독립 QA 테스트 파일:** `tests-evaluation/supervisor-mediation/triage-blind-v3-audit.test.mjs` (5개 테스트 전원 통과, 0 fail)
+
+### 11.1 주요 검증 결과 요약
+
+1. **v3 8개 합성 사례 Policy Baseline 및 구조 일치:**
+   - 8개 사례의 Baseline 판정(`REVISE`, `REQUEST_USER_INPUT`, `REVISE`, `REQUEST_SCOPE_CHANGE_APPROVAL`, `REVISE`, `STOP_REPEATED_REVIEW_ISSUES`, `STOP_LIMIT_REACHED`, `REVISE`)이 예상값과 100% 일치.
+   - `umbrella-choice`: `review.suggestions[0]`에 질문 배치 -> PR #39 빈 질문 가드 통과 및 `REQUEST_USER_INPUT` 정상 반환, Shadow finding 2개(`review:issue-umbrella-choice`, `suggestion:1`) 정상 생성 확인.
+   - `plant-repeated-loss`: 본문의 정답 단서("직전", "반복") 제거 후 순수 Review 관계 및 issue ID로 `STOP_REPEATED_REVIEW_ISSUES` 판정 확인.
+   - `umbrella-limit`: 본문의 한도 소진 단서 문구 제거 후 `iteration:state` 값(`iterationCount: 1, maxIterations: 1`)으로 `STOP_LIMIT_REACHED` 판정 확인.
+   - `plant-unrelated-citation`: L1(식물 이름 제목, 무관 인용)과 L2(선택한 기록만 제거, 직접 근거)의 분리 확인.
+
+2. **L-01 ~ L-13 정보 누출 재검증 (100% 차단 확인):**
+   - L-01: 고정 파일명 `model-inputs/input.json`, `responses/template.json`으로 슬러그 노출 차단.
+   - L-02: `modelInput.source.caseId` 필드 제거 확인.
+   - L-03 ~ L-07: `mapInput()`을 통해 `projectId`, `planId`, `scopeContractId`, `reviewId`, `issueId`가 불투명 토큰(`*-<token>-<index>`)으로 100% 전단사 치환.
+   - L-08 ~ L-11: `mapped.input`으로 `buildShadowContext()`를 재생성하여 baseline 내부, `policy:baseline`, `previous-review:source` 직렬화 문자열까지 모두 중립 ID로 치환됨을 확인.
+   - L-12: `modelInput`에 공개 원본 해시가 전혀 노출되지 않으며, `contextSha256`은 무작위 토큰으로 매번 달라져 공개 매니페스트와 매칭 불가함을 확인.
+   - L-13: 원문 본문의 정답 암시 서술어 제거 및 사람 검수 대상으로 명확히 분리.
+
+3. **ID 역매핑, 해시 체인 및 저장 안전성:**
+   - findings 역순 응답 제출 시 사전 기반 역매핑을 통해 `restored`에 정확히 역매핑 복원 통과.
+   - 알 수 없는 findingId(`UNKNOWN_FINDING`), 위조된 evidenceRefs(`INVALID_REFERENCE`), finding 누락(`OMITTED_FINDING`), 중복 finding(`DUPLICATE_FINDING`) 모두 즉시 거부됨을 확인.
+   - 사례 간 응답 재사용(Cross-case replay) 시 `Blinded source mismatch`로 즉시 차단됨을 확인.
+   - `inside()` 및 `file()`, `directory()` 가드를 통해 저장소 내부 출력, 공개/비공개 폴더 중첩, 심볼릭 링크 및 경로 탈출 차단 확인.
+   - 파일 오류 발생 시 `try { ... } finally { rm(...) }` 트랜잭션 롤백으로 원본 불변성 보장 확인.
+
+4. **신규 관찰사항 및 Codex 보완 권고사항:**
+   - **`referenceMap()` 인덱스 의존성 개선 권장:** `blind-recorder.mjs` 라인 38-44에서 `previous-review:issue:` 및 `scope:requirement:`를 `Object.keys()`의 인덱스 순서(`oldPrev.forEach((k,i)=>add(k,newPrev[i]))`)로 매핑하고 있음. 현재 합성 사례는 단일 이슈라 문제없으나, 다중 이슈의 미래 안전성을 위해 `mapped.forward` 사전을 활용한 명시적 키 매핑(`mapped.forward['issue:' + oldId]`)으로 개선을 권장함.
+   - **중첩 감사 필드 차단:** `mapInput` 라인 29에서 Review의 중첩 감사 필드(`qualityAssessment`, `storageAudit`, `revisionAudit`)가 존재하면 `Unsupported audit ID field` 예외로 Fail-closed 차단하고 있음을 확인 (현 1단계 합성 평가 범위에서는 적절함).
+
+### 11.2 수정 커밋 `53f8823` 재검증 결과 (순서 의존성 완전 해결 확인)
+
+- **검증 대상 수정 커밋:** `53f8823adb75e4c9fe780d236775829b752951e4`
+- **커밋 메시지:** `블라인드 참조 매핑의 순서 의존성 제거`
+- **독립 테스트 파일:** `tests-evaluation/supervisor-mediation/triage-blind-v3-audit.test.mjs` (6 tests pass, 0 fail)
+- **수정 내용 및 검증 결과:**
+  1. **`referenceMap()` 사전 기반 리팩토링 완료:**
+     - `referenceMap(original, blind, idForward)` 형태로 시그니처가 확장되어, `idForward` 사전을 직접 참조하도록 수정됨.
+     - `previous-review:issue:${id}`에 대해 `idForward['issue:' + id]`를 명시적으로 조회하여 타겟 키(`previous-review:issue:${mapped}`)를 구성.
+     - `scope:requirement:${id}`에 대해 `idForward['requirement:' + id]`를 명시적으로 조회하고, 원본과 중립의 statement 일치 여부(`assert.equal(original.references[k], blind.references[target])`)까지 검증.
+     - `scope:excluded:${i}` 순번 키와 실제 근거값 일치 검증.
+     - `finding:${id}`에 대해 `findingIds[id]`를 명시적으로 조회하여 타겟 키 구성.
+  2. **다중 이슈 및 순서 뒤바뀜 반례 검증 통과 (`PR42-F1`):**
+     - 이전 Review에 3개의 이슈가 존재하고, 중립 Context에서 의도적으로 역순/무작위 순서로 배치된 상황에서도 사전 매핑을 통해 100% 정상 역매핑 및 복원이 이루어짐을 검증.
+     - 미매핑 이슈/Requirement 존재 시 즉시 거부, 근거 내용 불일치 시 즉시 거부, 잉여 finding 존재 시 즉시 거부됨을 확인.
+  3. **회귀 검증:**
+     - v3 8개 사례 Policy Baseline, L-01~L-13 누출 방어, ID 역매핑 및 위조 거부, 해시 무결성, 기존 v1/v2 원자료 불변성 모두 이상 없이 통과 (기존 5개 테스트 + 신규 1개 테스트 총 6 pass).
+  4. **최종 결론:**
+     - 3차 QA에서 지적되었던 `referenceMap()` 순서 의존성이 완벽하게 해결되었으며, PR #42는 이제 `main` 병합에 기술적 결함이 없는 상태임.
